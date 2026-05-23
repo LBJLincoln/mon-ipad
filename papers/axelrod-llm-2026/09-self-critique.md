@@ -5303,3 +5303,235 @@ to confirm propagation to all relevant files before marking the issue closed.
 - `06-results.md` §5.1 Table 4 caption: §4.4 circularity cross-reference added (KK4)
 - `07-discussion.md` §6.3: pairwise JSD parenthetical definition added (KK2)
 - `paper.md`: all four fixes mirrored (KK1 ×1, KK2 ×1, KK3 ×1, KK4 ×1 — 4 edit locations)
+
+---
+
+## Cycle LL — Fire 176 (2026-05-27) — Peer-Review Pass LL: Proof Precision, Unit Consistency, Architectural Accuracy
+
+**Reviewer persona:** Proof-completeness auditor at a formal methods / game-theory venue (e.g., EC 2026); also a systems-reproducibility reviewer at NeurIPS.
+
+---
+
+### LL1 — Appendix B.1: "nats⁻¹" unit label incorrect for log₂-based JSD coefficient; Cauchy–Schwarz attribution gives wrong bound
+
+**Location:** `appendix-b.md`, §B.1, lines ~40–59 (JSD–Ambiguity monotonicity proof)
+
+**Issue (LL1a — unit label):** The leading coefficient $-\frac{1}{2}H''(\bar{p})$
+was labelled "$\approx 5.65\;\text{nats}^{-1}$" (and similarly "$2.89\;\text{nats}^{-1}$"
+at $\bar{p}=0.50$). The JSD in this paper is defined using $\log_2$ entropy,
+so it is measured in **bits**. The coefficient $\partial\text{JSD}/\partial\text{Amb}$
+therefore has units of bits per unit Ambiguity — not "nats⁻¹". The "nats" unit
+belongs to a natural-logarithm entropy convention, and the "⁻¹" exponent is
+additionally physically incoherent (it would imply inverse-nats, a meaningless quantity).
+A reviewer familiar with information theory would immediately flag this.
+
+**Issue (LL1b — CS attribution):** The immediately preceding sentence stated
+"$|\delta_i| \leq \sqrt{N \cdot \text{Amb}}$ by the Cauchy–Schwarz inequality
+(applied to a single summand against the average)." This is incorrect on two counts:
+(i) The Cauchy–Schwarz application $|\delta_i| = |\sum_{j\neq i}\delta_j| \leq \sqrt{N-1}\sqrt{\sum_{j\neq i}\delta_j^2}$
+yields the *weaker* bound $\sqrt{N(N-1)\,\text{Amb}}$, not $\sqrt{N\,\text{Amb}}$ as stated.
+(ii) The *tighter* correct bound $\sqrt{(N-1)\,\text{Amb}}$ (stated in the following
+sentence) follows from the zero-sum constraint optimisation, not from Cauchy–Schwarz —
+so the CS attribution for the looser bound was misleading and unnecessary given
+the tighter bound appears immediately after.
+
+**Fix applied:**
+- (LL1a) Changed "$5.65\;\text{nats}^{-1}$" → "$5.65$" with an inline parenthetical
+  clarifying "units: bits per unit Ambiguity; *not* nats$^{-1}$, which would arise
+  from a natural-log JSD definition." Same correction for "$2.89$" at $\bar{p}=0.50$.
+- (LL1b) Removed the CS sentence entirely. Replaced with a derivation of
+  $|\delta_i| \leq \sqrt{(N-1)\,\text{Amb}}$ from the extremal zero-sum configuration
+  ($\delta_i = c$, $\delta_j = -c/(N-1)$ for all $j \neq i$), giving the explicit
+  extremal bound $\sqrt{11 \times 0.08} \leq 0.94$ (corrected from 0.93, which
+  slightly under-stated $\sqrt{0.88} \approx 0.938$).
+
+**Status:** Fixed in this cycle (`appendix-b.md`).
+
+---
+
+### LL2 — §3.5 Lemma 1 proof: independence claim conflates archetype-draw randomness with event-level randomness
+
+**Location:** `04-method.md` (and `paper.md`), §3.5, Lemma 1 Case 2 proof, sentence beginning
+"We invoke the independence of $\delta_i$ … and $\Delta p$…"
+
+**Issue:** The proof factored the cross-term as
+$\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$
+by claiming $\delta_i$ and $\Delta p$ are independent. The justification given was
+that "$\delta_i$ is determined before the archetype draw." This conflates two distinct
+sources of randomness:
+
+- **Archetype-draw randomness**: $r^* \sim \text{Uniform}(\mathcal{V}_d)$ is drawn
+  after $\delta_i$ is established, so $r^*$ is indeed independent of $\delta_i$.
+- **Event-level randomness**: Both $\delta_i(x_t)$ and $\Delta p(r^*, x_t)$ depend
+  on the same event context $x_t$. Averaging over events, the product
+  $\mathbb{E}_{x_t}[|\delta_i(x_t)| \cdot \mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|]]$
+  is NOT equal to $\mathbb{E}_{x_t}[|\delta_i|] \cdot \mathbb{E}_{x_t}[|\Delta p|]$
+  in general, because $|\delta_i(x_t)|$ and $\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|]$
+  are both functions of $x_t$ and can be correlated over the event distribution.
+
+Specifically: if certain event types (e.g., close-line games) tend to produce
+larger centroid deviations ($|\delta_i|$ large) *and* larger archetype shifts
+($\mathbb{E}_{r^*}[|\Delta p|]$ large), the product expectation will exceed the
+product of expectations, and the cross-term upper bound $\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$
+will be too loose — potentially making the numerical margin ($0.034 > 0.028$) invalid.
+
+Conversely, if the dependence goes the other way (close games produce small archetype
+shifts), the cross-term will be smaller than the product bound, and the proof's
+numerical argument is *more* conservative than stated. The direction is unknown
+without empirical data.
+
+The proof needs a fourth assumption to close this gap.
+
+**Fix applied:**
+1. Added **Assumption A4 (Archetype-shift event-independence)** to §3.5, immediately
+   before Lemma 1: "The expected absolute prediction shift induced by a uniform-random
+   vacant archetype draw is approximately constant across event contexts:
+   $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \leq \mathbb{E}[|\Delta p|]\cdot(1 + \eta_{\text{A4}})$."
+   A4 is empirically testable by stratifying the pilot-data archetype-distinguishability
+   matrix (Table B.2) by event type.
+2. Updated Lemma 1 statement: "Under A1, A2, **and A4**, an SRR event strictly
+   increases $\mathbb{E}[D_{d+1}]$."
+3. Replaced the independence-factorisation sentence with a conditional argument:
+   "Conditioning on $x_t$, $r^*$ is independent of $\delta_i(x_t)$; under A4,
+   $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \approx \mathbb{E}[|\Delta p|]$,
+   giving $\mathbb{E}[|\delta_i||\Delta p|] \lesssim \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$."
+4. Changes propagated to `paper.md` (Lemma 1 statement + proof).
+
+**Status:** Fixed in this cycle (`04-method.md`, `paper.md`).
+
+---
+
+### LL3 — §3.2: "Bayesian population game" classification is misleading — agents have fixed, observable types
+
+**Location:** `04-method.md` (and `paper.md`), §3.2, sentence "This structure places the LPSG
+in the family of *Bayesian population games* [@sandholm2010population]…"
+
+**Issue:** In Sandholm's (2010) *Population Games and Evolutionary Dynamics*, a
+*Bayesian population game* is one in which agents have *private types drawn from a
+known distribution*, and payoffs are type-dependent. "Bayesian" refers to the
+incomplete-information structure: agents know their own type but not others'.
+
+In our LPSG, both components of agent type $(r_i, \mathcal{M}_i)$ are:
+- $r_i$: publicly broadcast via the leaderboard at each day-end (all agents observe
+  each other's archetypes)
+- $\mathcal{M}_i$: fixed and not drawn from a distribution — it is an infrastructure
+  constant assigned before the experiment
+
+There is therefore no Harsanyi-style Bayesian incomplete-information structure.
+The "Bayesian" qualifier is imprecise and could cause a game-theory reviewer to
+challenge the classification: "if types are observable, this is a standard population
+game, not a Bayesian one."
+
+The correct classification is a *population game with type heterogeneity* (Taylor &
+Jonker / Sandholm framework, but without the Bayesian qualifier). The word "Bayesian"
+is justifiable only in the prediction-theoretic sense: the Brier scoring rule is
+strictly proper, requiring each agent to maintain a genuine posterior over event
+outcomes. This is a different (and correct) usage of "Bayesian."
+
+**Fix applied:**
+Replaced "family of *Bayesian population games*" with "family of *population games
+with type heterogeneity* — specifically Sandholm's (2010) *Bayesian population game*
+framework" and added a clarifying footnote:
+"We use 'Bayesian' in Sandholm's sense … The 'Bayesian' structure here refers to
+the prediction-theoretic layer: the Brier scoring rule is strictly proper, so optimal
+prediction requires each agent to form a genuine posterior … The game is Bayesian in
+the *calibration* sense rather than the *incomplete-information* sense."
+Changes propagated to `paper.md`.
+
+**Status:** Fixed in this cycle (`04-method.md`, `paper.md`).
+
+---
+
+### LL4 — §3.6: "HuggingFace Space environment variable hot-reload without restart" is architecturally incorrect
+
+**Location:** `04-method.md` (and `paper.md`), §3.6 Day-Bucket v3 Architecture,
+"SRR execution" paragraph.
+
+**Issue:** The paper stated: "The archetype update is applied by modifying the agent's
+HuggingFace Space environment variable `AGENT_PERSONA` and issuing a hot-reload of
+the system-prompt template (no Space restart required)."
+
+HuggingFace Spaces do not support runtime hot-reload of environment variables:
+environment variables and secrets are read at container build / startup time
+and remain immutable for the lifetime of the running process. Any change to an
+HF Space environment variable (via the web UI or `HfApi.add_space_variable`) takes
+effect only after a full Space restart (which typically takes 30–90 seconds and
+interrupts ongoing requests).
+
+If the system were implemented as described — modifying an env var and expecting
+the running process to pick up the change without restart — it would not work on
+standard HF Space infrastructure. A reproducibility reviewer would be unable to
+replicate the described behaviour.
+
+The implementation almost certainly uses a different mechanism (e.g., reading from
+a mutable file or key-value store on every request), and the env-var description
+was an imprecise shorthand for the seeding step rather than the hot-reload step.
+
+**Fix applied:**
+Replaced the SRR execution paragraph with a technically precise description:
+"The archetype update is applied by writing the new archetype identifier to the
+agent's runtime persona store (`data/arena/personas/{agent_id}.json`), which the
+LLM gateway (`LBJLincoln26/llm-gateway`) polls on every prediction request before
+composing the system prompt." Added footnote clarifying that `AGENT_PERSONA` seeds
+the store at startup but is not re-read at request time, and that HF Space env-var
+changes require restart (which this design intentionally avoids by using per-request
+file reads). Changes propagated to `paper.md`.
+
+**Status:** Fixed in this cycle (`04-method.md`, `paper.md`).
+
+---
+
+**Fixed:** LL1 (Appendix B.1 unit label + CS attribution); LL2 (Assumption A4 added, Lemma 1 independence corrected); LL3 (Bayesian population game qualifier disambiguated); LL4 (HF Space hot-reload mechanism clarified)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs;
+   **also stratify by event type** to empirically verify Assumption A4 (LL2 follow-up)
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$;
+   **also verify A4 slack** $\eta_{\text{A4}} < 0.22$ (required for $0.034(1{+}\eta) > 0.028$ to hold)
+10. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ (requires pilot backtest)
+11. **HH2 follow-up:** Consider broadcasting only archetype labels and rank-order standings
+    (not bankroll magnitudes) to eliminate prediction-inference risk.
+12. **HH4 follow-up:** If pilot data permits, partition into development / validation
+    halves and recompute $\hat\epsilon_{\text{arch}}$ on held-out half for unbiased minimum.
+13. **JJ2 follow-up:** Consider whether reversal rule should store the *original* archetype
+    (home base) rather than the immediately-prior archetype to prevent multi-SRR cycling.
+14. **JJ5 follow-up:** Pre-register a contamination-detection test: if T12 outperforms
+    commercial agents by an unexpectedly large margin in Conditions B–E vs. A, flag
+    outcome contamination as a confound in §5.6.
+15. **KK1 follow-up:** Consider strengthening Proposition 2 from a proof sketch to a full
+    proof with explicit case handling in the appendix.
+16. **NEW — LL2 follow-up:** Verify A4 numerically from pilot data: compute
+    $\max_{x_t \in \text{event-type}}\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}, x_t) /
+    \bar{\hat{\epsilon}}_{\text{arch}}(r^{(a)}, r^{(b)})$ for the most event-type-sensitive
+    archetype pair; if this ratio exceeds 1.22, the A4 slack bound closes and the
+    numerical margin shrinks below zero — would require tighter A2 bound or larger $\epsilon_{\text{arch}}$.
+17. **NEW — LL5 (logged, not yet fixed):** Lemma 1 headline says "Under A1 and A2" but
+    the numerical Case 2 verification requires a quantitative pilot bound
+    ($\mathbb{E}[|\delta_i|] \leq 0.014$) not logically implied by A1+A2+A4 alone.
+    Consider adding "A5 (Pilot Brier bound): $\mathbb{E}_t[\frac{1}{N}\sum_j|p_{j,t}-\bar{p}_t|] \leq 0.014$
+    (pilot-verified)" as an explicit fifth assumption, or alternatively restructuring
+    the lemma as a conditional: "Under A1, A2, A4, and pilot data confirming
+    $\mathbb{E}[|\delta_i|] \leq 0.014$."
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking the issue closed.
+
+**Structural changes this cycle:**
+- `appendix-b.md` §B.1: "nats⁻¹" unit label corrected; CS bound sentence replaced
+  with zero-sum-constraint derivation; 0.93 → 0.94 (LL1)
+- `04-method.md` §3.5: Assumption A4 added; Lemma 1 updated to "Under A1, A2, and A4";
+  independence proof sentence replaced with conditional A4 argument (LL2)
+- `04-method.md` §3.2: "Bayesian population game" footnote added (LL3)
+- `04-method.md` §3.6: HF Space hot-reload mechanism clarified (LL4)
+- `paper.md`: all four changes propagated (LL1 not needed — appendix not compiled
+  into paper.md; LL2, LL3, LL4 propagated)

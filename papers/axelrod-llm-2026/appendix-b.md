@@ -39,9 +39,11 @@ Therefore $-\frac{1}{2}H''(\bar{p}) = \frac{1}{2\bar{p}(1-\bar{p})\ln 2} > 0$.
 
 Numerically, at the boundary $\bar{p} = 0.15$:
 
-$$-\frac{1}{2}H''(0.15) = \frac{1}{2 \times 0.15 \times 0.85 \times \ln 2} \approx \frac{1}{0.1768} \approx 5.65 \;\text{nats}^{-1}$$
+$$-\frac{1}{2}H''(0.15) = \frac{1}{2 \times 0.15 \times 0.85 \times \ln 2} \approx \frac{1}{0.1768} \approx 5.65$$
 
-and at $\bar{p} = 0.50$, the coefficient is $\frac{1}{2 \times 0.25 \times \ln 2} \approx 2.89\;\text{nats}^{-1}$.
+(units: bits per unit Ambiguity, since JSD is in bits via $\log_2$ and Ambiguity is dimensionless;
+*not* nats$^{-1}$, which would arise from a natural-log JSD definition)
+and at $\bar{p} = 0.50$, the coefficient is $\frac{1}{2 \times 0.25 \times \ln 2} \approx 2.89$.
 
 **Bounding the remainder.** The third derivative is:
 
@@ -53,10 +55,12 @@ operating range. At $\bar{p} = 0.15$:
 $$|H'''(0.15)| = \frac{|1 - 0.30|}{(0.15)^2(0.85)^2 \ln 2}
 = \frac{0.70}{0.0225 \times 0.7225 \times 0.693} \approx 62.3$$
 
-Individual deviations satisfy $|\delta_i| \leq \sqrt{N \cdot \text{Amb}}$ by the
-Cauchy–Schwarz inequality (applied to a single summand against the average).
-In practice, with $N \leq 12$ and $\text{Amb} \leq 0.08$, the constraint
-$\sum_i \delta_i = 0$ implies $|\delta_i| \leq \sqrt{(N-1)\,\text{Amb}} \leq 0.93$.
+The zero-sum constraint $\sum_i \delta_i = 0$ implies
+$|\delta_i| \leq \sqrt{(N-1)\,\text{Amb}}$, attained by the extremal
+configuration $\delta_i = c$, $\delta_j = -c/(N-1)$ for all $j \neq i$,
+which satisfies $\frac{1}{N}(c^2 + (N-1)\cdot c^2/(N-1)^2) = c^2/(N-1) = \text{Amb}$,
+giving $c = \sqrt{(N-1)\,\text{Amb}}$.
+With $N = 12$ and $\text{Amb} \leq 0.08$: $|\delta_i| \leq \sqrt{11 \times 0.08} \leq 0.94$.
 The remainder bound is then:
 
 $$|\bar{R}| \leq \frac{1}{6}|H'''|_{\max}\cdot\frac{1}{N}\sum_i |\delta_i|^3

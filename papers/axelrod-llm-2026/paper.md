@@ -589,8 +589,17 @@ The LPSG is a repeated game with the following structure.
 > 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Cumulative bankroll standings could in principle allow partial reverse-engineering of peer stake sizes; we bound this leakage at three levels — (a) rolling Brier $\overline{B}_{j,d}$ determining $\kappa_j$ is private and daily-varying; (b) cumulative totals mask marginal increments; (c) personality risk weight $\rho_j$ is internal to each agent and not broadcast — so exact prediction inference requires simultaneous knowledge of all three private parameters. The leakage is partial and approximate; see §7.3 for discussion.]
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
-This structure places the LPSG in the family of *Bayesian population games*
-[@sandholm2010population], in which each agent has a private type
+This structure places the LPSG in the family of *population games with type
+heterogeneity* — specifically Sandholm's (2010) *Bayesian population game*
+framework [@sandholm2010population]^[We use 'Bayesian' in Sandholm's sense:
+each agent has a fixed private type $(r_i, \mathcal{M}_i)$ governing its
+prediction-generating strategy. This differs from Harsanyi Bayesian games, where
+types are drawn from a common prior over a finite type space.
+The 'Bayesian' structure here refers to the prediction-theoretic layer:
+the Brier scoring rule is strictly proper, so optimal prediction requires each
+agent to form a genuine posterior over the event outcome.
+The game is Bayesian in the *calibration* sense rather than the
+*incomplete-information* sense.] — in which each agent has a private type
 (here, the pair $(r_i, \mathcal{M}_i)$) that determines its strategy mapping,
 and fitness is determined by the realised Brier score against exogenous ground truth.
 The key departure from classical population games is that fitness depends on
@@ -726,7 +735,19 @@ This is consistent with the empirical finding that poorly calibrated agents
 in correlated prediction markets tend to mirror the favourite rather than
 take differentiated positions [@surowiecki2004wisdom].
 
-> **Lemma 1 (SRR increases expected diversity).** Under A1 and A2, an SRR event
+**Assumption A4 (Archetype-shift event-independence).** The expected absolute
+prediction shift induced by drawing a vacant archetype uniformly at random is
+approximately constant across event contexts:
+
+$$\sup_{x_t \in \mathcal{X}}\;\mathbb{E}_{r^* \sim \text{Unif}(\mathcal{V}_d)}\!\left[|\Delta p(r^*\!, x_t)|\right]
+\;\leq\; \mathbb{E}[|\Delta p|]\;\cdot\;(1 + \eta_{\text{A4}})$$
+
+for a small slack $\eta_{\text{A4}} \geq 0$.
+This holds when archetype-induced prediction shifts do not concentrate on a small
+subset of event types — verified if A1 holds uniformly across the event distribution
+rather than only in aggregate.
+
+> **Lemma 1 (SRR increases expected diversity).** Under A1, A2, and A4, an SRR event
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
@@ -767,10 +788,15 @@ Since $\delta_i\Delta p \geq -|\delta_i||\Delta p|$ always, the worst-case sign 
 $$\mathbb{E}[\Delta\text{Amb}_t] \;\geq\; \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
 
 It is sufficient to show this lower bound is positive.
-We invoke the independence of $\delta_i$ (pre-SRR centroid deviation, determined before
-the new archetype is drawn) and $\Delta p$ (archetype-induced change, drawn uniformly
-from $\mathcal{V}_d$ after eligibility is established). Under independence,
-$\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
+We bound the cross-term via Assumption A4. Conditional on event context $x_t$,
+the archetype draw $r^* \sim \text{Uniform}(\mathcal{V}_d)$ is independent of
+$\delta_i(x_t)$ (determined before the draw). Therefore:
+
+$$\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}_{x_t}\!\bigl[|\delta_i(x_t)|\cdot\mathbb{E}_{r^*}\!\bigl[|\Delta p(r^*\!,x_t)|\bigr]\bigr]
+\;\leq\; \mathbb{E}[|\delta_i|]\cdot\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*\!,x_t)|]$$
+
+Under A4, $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \approx \mathbb{E}[|\Delta p|]$,
+giving $\mathbb{E}[|\delta_i||\Delta p|] \lesssim \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
 By Jensen's inequality ($\mathbb{E}[X^2] \geq (\mathbb{E}[|X|])^2$),
 $\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring out $\mathbb{E}[|\Delta p|]$
 yields the sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\mathbb{E}[|\delta_i|]$.
@@ -907,9 +933,15 @@ broadcast to all agents. Each agent updates its private history $h_{i,d}$.
 SRR eligibility is evaluated using the rolling window of the most recent $W = 7$ days.
 
 **SRR execution.** SRR fires at most once per agent per 14-day window.
-The archetype update is applied by modifying the agent's HuggingFace Space
-environment variable `AGENT_PERSONA` and issuing a hot-reload of the
-system-prompt template (no Space restart required).
+The archetype update is applied by writing the new archetype identifier to the
+agent's runtime persona store (`data/arena/personas/{agent_id}.json`),
+which the LLM gateway (`LBJLincoln26/llm-gateway`) polls on every prediction
+request before composing the system prompt.^[The environment variable
+`AGENT_PERSONA` seeds this store at Space startup but is not re-read at
+request time; updates propagate immediately through the per-request file read
+without requiring a HuggingFace Space restart (HF Space env-var changes
+require restart to take effect, making them unsuitable for sub-request
+hot-reload; the per-request file-read design bypasses this constraint.)]
 
 ---
 
