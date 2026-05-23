@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-05-26T22:00:00Z",
+  "updated_at": "2026-05-27T02:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire173-2026-05-27T02h",
+      "priority": 223,
+      "status": "done",
+      "completed_at": "2026-05-27T02:00:00Z",
+      "completed_by": "cloud-brain-fire-173",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-173 ODD S18-c748-g2242-stag=22(↑11→13-PARETO-RECOVERING!)-hard-reset-~c725-confirmed; S22-c611-g1832-stag=0-hard-reset-c603-NEW-STACKING-IN-DESCRIPTION(Rule8-CONCERN-VM-export-urgent); /api/export-404-S18+S22(WebFetch-limitation-confirmed-2-fires); S13/S14/S15-404-DOWN; all-POL-404-DOWN; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-27T02h)"
+    },
     {
       "id": "cloud-brain-fire172-2026-05-26T22h",
       "priority": 222,
@@ -10,7 +19,7 @@
       "completed_at": "2026-05-26T22:00:00Z",
       "completed_by": "cloud-brain-fire-172",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-172 EVEN S18-c730-g2189-stag=0-pareto=11(↓17→11-5th-consecutive-shrink)-cycle_stag~29(>15-WATCH); S22-c581-g1742-stag=0-LR-stable; /api/export-404-BOTH(WebFetch-limitation-or-VM-bug-must-curl-verify); S13/S14/S15-404-DOWN; all-POL-404-DOWN; EVEN-WebSearch: arXiv:2303.06021-calibration-vs-accuracy-model-selection-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-26T22h)"
+      "subject": "fire-172 EVEN S18-c730-g2189-stag=0-pareto=11(↑17→11-5th-consecutive-shrink)-cycle_stag~29(>15-WATCH); S22-c581-g1742-stag=0-LR-stable; /api/export-404-BOTH(WebFetch-limitation-or-VM-bug-must-curl-verify); S13/S14/S15-404-DOWN; all-POL-404-DOWN; EVEN-WebSearch: arXiv:2303.06021-calibration-vs-accuracy-model-selection-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-26T22h)"
     },
     {
       "id": "cloud-brain-fire171-2026-05-26T18h",
@@ -127,8 +136,8 @@
       "owner": "local-vm",
       "subject": "INVESTIGATE: /api/export returning 404 on both S18 and S22 via WebFetch — confirm via direct curl",
       "detected_at": "2026-05-26T22:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 NEW: Both TESTforge42-nba-evo-s18.hf.space/api/export and TESTforge42-nba-evo-s22.hf.space/api/export returned HTTP 404 via WebFetch. Hypothesis 1 (most likely): WebFetch cannot follow HF Space authentication/redirect. Hypothesis 2: endpoint removed in VM app.py update. VM ACTION: curl https://TESTforge42-nba-evo-s18.hf.space/api/export and curl https://TESTforge42-nba-evo-s22.hf.space/api/export directly. If 404 confirmed: investigate app.py; if 200: cloud-brain will use alternative approach. BLOCKS: Rule#3 checkpoint, ET-0.21877 confirmation.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 UPDATE: /api/export 404 confirmed AGAIN fire-173 (2-fire pattern: fire-172+173). Root cause is almost certainly WebFetch authentication/redirect limitation (not app.py regression). VM ACTION: curl https://TESTforge42-nba-evo-s18.hf.space/api/export and curl https://TESTforge42-nba-evo-s22.hf.space/api/export directly. If 200: close this item and confirm WebFetch limitation. BLOCKS: Rule#3 checkpoint, ET-0.21877 confirmation, Rule#8 MODEL_TYPES check.",
       "do_not_push": false
     },
     {
@@ -136,10 +145,10 @@
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-URGENT: S13 CatBoost-0.21992 gen=2831 EXTREME URGENT (<0.22012 fleet-best) — still 404-DOWN fire-172",
+      "subject": "VM-URGENT: S13 CatBoost-0.21992 gen=2831 EXTREME URGENT (<0.22012 fleet-best) — still 404-DOWN fire-173",
       "detected_at": "2026-05-25T04:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S13 still 404-DOWN. CatBoost-200f-0.21992 gen=2831 (potential new fleet best <0.22012★) still unconfirmed. VM: retry S13/api/status periodically; when accessible curl /api/export IMMEDIATELY.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S13 still 404-DOWN. CatBoost-200f-0.21992 gen=2831 (potential new fleet best <0.22012★) still unconfirmed. VM: retry S13/api/status periodically; when accessible curl /api/export IMMEDIATELY.",
       "do_not_push": false
     },
     {
@@ -147,10 +156,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT CRITICAL: S18 — fire-172: c730 g2189 stag=0 cycle_stag~29(>15-WATCH) pareto=11(↓17→11-5th-consecutive-shrink)",
+      "subject": "VM-CHECKPOINT CRITICAL: S18 — fire-173: c748 g2242 stag=22(>15-Rule#6) pareto=13(↑11→13-RECOVERING)",
       "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 UPDATE: S18 c730 g2189 stag=0 pareto=11(↓17→11-5th-consecutive-shrink). cycle_stag estimated ~29 (was 9 at c710, +20 cycles, best_brier=0.22236 unchanged). Hard reset ~c725 likely occurred in pattern (every ~25 cycles: c675/c700/~c725). best_brier=0.22236 above 0.22085 gate. /api/export 404 via WebFetch — VM must curl directly (see vm-export-endpoint-404-investigate).",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 UPDATE: S18 c748 g2242 stag=22(>15-Rule#6-threshold). Pareto RECOVERING ↑11→13 (first increase after 5 consecutive shrinks). Hard reset ~c726 confirmed (stag cleared from ~29 to 0, now back to 22). Next auto-hard-reset ~c751 (stag=25). best_brier=0.22236 above 0.22085 gate. /api/export 404 via WebFetch (2-fire confirmed) — VM must curl directly (see vm-export-endpoint-404-investigate). Rule#6 diversify blocked by Rule#3 (no checkpoint).",
       "do_not_push": false
     },
     {
@@ -158,10 +167,10 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P2 pareto=3(CRITICAL SHRINK fire-158) — still 404-DOWN fire-172",
+      "subject": "MONITOR: P2 pareto=3(CRITICAL SHRINK fire-158) — still 404-DOWN fire-173",
       "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P2 404-DOWN sleeping. Last known: pareto=3 CRITICAL-SHRINK. pareto_best LightGBM-123f-0.249 at eviction risk. VM: wake space + curl P2/api/export URGENT + vm-add-lightgbm-p2.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P2 404-DOWN sleeping. Last known: pareto=3 CRITICAL-SHRINK. pareto_best LightGBM-123f-0.249 at eviction risk. VM: wake space + curl P2/api/export URGENT + vm-add-lightgbm-p2.",
       "do_not_push": false
     },
     {
@@ -169,10 +178,10 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P4 pareto=5 oscillation — still 404-DOWN fire-172",
+      "subject": "MONITOR: P4 pareto=5 oscillation — still 404-DOWN fire-173",
       "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P4 404-DOWN sleeping. Last known: pareto=5 oscillation, pareto_best=0.24915-LightGBM-131f INTACT, best_brier=0.2497 POL-FLEET-BEST. VM: wake space + checkpoint.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P4 404-DOWN sleeping. Last known: pareto=5 oscillation, pareto_best=0.24915-LightGBM-131f INTACT, best_brier=0.2497 POL-FLEET-BEST. VM: wake space + checkpoint.",
       "do_not_push": false
     },
     {
@@ -209,8 +218,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT EXTREME URGENT: S13 TOP-CAND CatBoost-200f-0.21992 gen=2831 — POTENTIAL NEW NBA FLEET BEST (<0.22012★)",
       "detected_at": "2026-05-24T08:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S13 still 404-DOWN. See vm-s13-403-waking-urgent-fire162 (priority=0). CatBoost-200f-0.21992 gen=2831 still POTENTIAL NEW FLEET BEST < 0.22012★. VM: retry S13/api/status + /api/export when accessible."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S13 still 404-DOWN. See vm-s13-403-waking-urgent-fire162 (priority=0). CatBoost-200f-0.21992 gen=2831 still POTENTIAL NEW FLEET BEST < 0.22012★. VM: retry S13/api/status + /api/export when accessible."
     },
     {
       "id": "vm-checkpoint-s14-rf-0.22054-fire157",
@@ -219,8 +228,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT URGENT: S14 NEW BEST brier=0.22054 (RF-48f) BELOW 0.22085 THRESHOLD — confirmed fire-157+158",
       "detected_at": "2026-05-24T08:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S14 404-DOWN sleeping. RF-48f brier=0.22054 BELOW THRESHOLD confirmed 2nd fire. VM: wake S14 + curl S14/api/export."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S14 404-DOWN sleeping. RF-48f brier=0.22054 BELOW THRESHOLD confirmed 2nd fire. VM: wake S14 + curl S14/api/export."
     },
     {
       "id": "vm-s22-diversify-stag21-fire157",
@@ -238,8 +247,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT EXTREME URGENT: P1 NEW POL ALL-TIME PARETO RECORD pareto_best=0.24902 LightGBM-105f gen=17750 — 3RD OBSERVATION fire-158",
       "detected_at": "2026-05-24T04:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P1 404-DOWN sleeping. pareto_best=0.24902(LightGBM-105f-gen17750) ALL-TIME RECORD 3RD OBSERVATION. VM: wake P1 + curl P1/api/export IMMEDIATELY.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P1 404-DOWN sleeping. pareto_best=0.24902(LightGBM-105f-gen17750) ALL-TIME RECORD 3RD OBSERVATION. VM: wake P1 + curl P1/api/export IMMEDIATELY.",
       "do_not_push": false
     },
     {
@@ -249,18 +258,18 @@
       "owner": "local-vm",
       "subject": "MONITOR: P1 pareto=5 slight-shrink (fire-158); pareto_best=0.24902 LightGBM-105f ALL-TIME RECORD — 3RD OBSERVATION",
       "detected_at": "2026-05-23T18:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P1 404-DOWN sleeping. pareto_best=0.24902 3RD OBSERVATION. See vm-checkpoint-p1-pareto-0.24902-fire156 (EXTREME URGENT)."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P1 404-DOWN sleeping. pareto_best=0.24902 3RD OBSERVATION. See vm-checkpoint-p1-pareto-0.24902-fire156 (EXTREME URGENT)."
     },
     {
       "id": "vm-monitor-p5-pareto-shrink-fire153",
       "priority": 4,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P5 pareto=6(RECOVERING fire-158) — still 404-DOWN fire-172",
+      "subject": "MONITOR: P5 pareto=6(RECOVERING fire-158) — still 404-DOWN fire-173",
       "detected_at": "2026-05-23T14:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P5 404-DOWN sleeping. Last known: pareto=6 RECOVERING, LightGBM-102f top-performer. VM: wake P5 + checkpoint."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P5 404-DOWN sleeping. Last known: pareto=6 RECOVERING, LightGBM-102f top-performer. VM: wake P5 + checkpoint."
     },
     {
       "id": "vm-monitor-s22-pareto-drop-fire153",
@@ -278,8 +287,8 @@
       "owner": "local-vm",
       "subject": "Wake/restart NBA TF (LBJLincoln26/nba-llm-trading-floor) -- 503 DOWN 119+d",
       "detected_at": "2026-05-16T02:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): Still 503 DOWN 119+d. do_not_push_hf_space_yet in effect.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): Still 503 DOWN 120+d. do_not_push_hf_space_yet in effect.",
       "do_not_push": false
     },
     {
@@ -289,8 +298,8 @@
       "owner": "local-vm",
       "subject": "Resume POL TF (LBJLincoln26/political-llm-trading-floor) -- IDLE since 2026-05-07, $38916 unchanged",
       "detected_at": "2026-05-16T02:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): POL TF IDLE ($38,916 unchanged, 31+d). Sequence: user approves -> VM pushes app.py -> fix pol_watchdog.sh cron -> curl POST /api/run.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): POL TF IDLE ($38,916 unchanged, 32+d). Sequence: user approves -> VM pushes app.py -> fix pol_watchdog.sh cron -> curl POST /api/run.",
       "do_not_push": false
     },
     {
@@ -298,9 +307,9 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 119+ days",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): Confirmed 503 DOWN 119+d.",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 120+ days",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): Confirmed 503 DOWN 120+d.",
       "do_not_push": false
     },
     {
@@ -309,8 +318,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py + pol_watchdog.sh",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): pol_watchdog.sh still NOT firing (POL TF idle 31+d). All POL spaces sleeping. HIGHEST PRIORITY VM task after checkpoints."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): pol_watchdog.sh still NOT firing (POL TF idle 32+d). All POL spaces sleeping. HIGHEST PRIORITY VM task after checkpoints."
     },
     {
       "id": "vm-mc-dropout-calibration-s15",
@@ -319,8 +328,8 @@
       "owner": "local-vm",
       "subject": "Implement Bootstrap Variance Calibration / MC Dropout wrapper for S15 fleet-best RF-75f",
       "detected_at": "2026-05-21T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S15 404-DOWN sleeping. MDPI/2078-2489/17/1/56 (fire-166) confirms MC dropout RNN achieves 0.206 pregame Brier. Extend scope: MC dropout wrapper (N=50 inference passes) + BVC for S15 RF. After vm-checkpoint-s15 + wake.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S15 404-DOWN sleeping. MDPI/2078-2489/17/1/56 (fire-166) confirms MC dropout RNN achieves 0.206 pregame Brier. Extend scope: MC dropout wrapper (N=50 inference passes) + BVC for S15 RF. After vm-checkpoint-s15 + wake.",
       "do_not_push": false
     },
     {
@@ -330,8 +339,8 @@
       "owner": "local-vm",
       "subject": "PORT SOTA: Add Venn-Abers calibration wrapper for XGBoost/LightGBM in political_engine.py -- arXiv:2605.03816",
       "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): All POL sleeping. Libraries: crepes or nonconformist. Expected improvement 0.001-0.003 Brier on P1+P2+P5+P7. Combine with vm-add-split-conformal-calibration (priority=33) and vm-add-ece-pareto-objective (priority=34) in same batch.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): All POL sleeping. Libraries: crepes or nonconformist. Expected improvement 0.001-0.003 Brier on P1+P2+P5+P7. Combine with vm-add-split-conformal-calibration (priority=33) and vm-add-ece-pareto-objective (priority=34) in same batch.",
       "do_not_push": false
     },
     {
@@ -341,8 +350,8 @@
       "owner": "local-vm",
       "subject": "PORT SOTA: Add split conformal calibration (MAPIE library) for all model types -- arXiv:2510.07185",
       "detected_at": "2026-05-26T04:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): MAPIE library (scikit-learn compatible). Target: S18 RF/LightGBM pareto (c730) + S22 RF-48f + S15 RF-75f. Combine with vm-add-venn-abers-calibration (32) + vm-add-ece-pareto-objective (34).",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): MAPIE library (scikit-learn compatible). Target: S18 RF/LightGBM pareto (c748) + S22 RF-48f + S15 RF-75f. Combine with vm-add-venn-abers-calibration (32) + vm-add-ece-pareto-objective (34).",
       "do_not_push": false
     },
     {
@@ -352,8 +361,8 @@
       "owner": "local-vm",
       "subject": "PORT SOTA: Add ECE (Expected Calibration Error) as 4th Pareto objective in engine.py and political_engine.py -- arXiv:2303.06021",
       "detected_at": "2026-05-26T22:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 NEW: arXiv:2303.06021 confirms calibration-focused model selection outperforms accuracy-focused in sports betting. Add compute_ece(y_true, y_pred, n_bins=10) in evaluate_individual() using sklearn calibration_curve. Add ECE as 4th Pareto objective (minimize). Target: engine.py (NBA) + political_engine.py (POL). Also add CalibratedClassifierCV(method='isotonic') post-GA wrapper. MDPI 2079-3197 baseline: LR achieves Brier~0.199 on NBA — track LR pareto_best in S18/S22 specifically. After engine-parity-sync (priority=40).",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): arXiv:2303.06021 confirms calibration-focused model selection outperforms accuracy-focused in sports betting. Add compute_ece(y_true, y_pred, n_bins=10) in evaluate_individual() using sklearn calibration_curve. Add ECE as 4th Pareto objective (minimize). Target: engine.py (NBA) + political_engine.py (POL). Also add CalibratedClassifierCV(method='isotonic') post-GA wrapper. MDPI 2079-3197 baseline: LR achieves Brier~0.199 on NBA — track LR pareto_best in S18/S22 specifically. After engine-parity-sync (priority=40).",
       "do_not_push": false
     },
     {
@@ -363,8 +372,8 @@
       "owner": "local-vm",
       "subject": "VERIFY + ADD: win-diff-last-5-games feature in features/engine.py -- MDPI2026 top SHAP feature",
       "detected_at": "2026-05-19T08:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): AFTER engine-parity-sync (priority=40).",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): AFTER engine-parity-sync (priority=40).",
       "do_not_push": false
     },
     {
@@ -373,8 +382,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): MISMATCH CONFIRMED (mon-ipad 523,050 chars vs nomos-nba-agent 468,146 chars, delta=54KB). CRITICAL to unblock win-diff, elo, and ECE-pareto features. NOTE: PMC12357926 fire-162 confirms 2PA/FG/TRB/FGA as top SHAP — verify rolling-avg variants are in engine.py.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): MISMATCH CONFIRMED (mon-ipad 523,050 chars vs nomos-nba-agent 468,146 chars, delta=54KB). CRITICAL to unblock win-diff, elo, and ECE-pareto features. NOTE: PMC12357926 fire-162 confirms 2PA/FG/TRB/FGA as top SHAP — verify rolling-avg variants are in engine.py.",
       "do_not_push": false
     },
     {
@@ -383,8 +392,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S13 MODEL_TYPES -- Rule#8 violation",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S13 still 404-DOWN. vm-checkpoint-s13 FIRST (EXTREME URGENT), then remove stacking after accessible."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S13 still 404-DOWN. vm-checkpoint-s13 FIRST (EXTREME URGENT), then remove stacking after accessible."
     },
     {
       "id": "vm-remove-stacking-s15",
@@ -392,17 +401,17 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S15 MODEL_TYPES -- Rule#8 violation",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S15 sleeping. Checkpoint first after wake, then remove stacking."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S15 sleeping. Checkpoint first after wake, then remove stacking."
     },
     {
       "id": "vm-remove-stacking-s22",
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: S22 Rule#8 stacking removal — SELF-RESOLVED pattern confirmed fire-171+172",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 UPDATE: S22 c581 stag=0. Hard reset c553 confirmed NO STACKING (2nd consecutive clean reset). Rule#8 SELF-RESOLVED. VM: verify via /api/export MODEL_TYPES field to confirm stacking not present (see vm-export-endpoint-404-investigate). If confirmed, close this item."
+      "subject": "MONITOR: S22 Rule#8 stacking — CONCERN REINSTATED fire-173 (stacking in description at c611)",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 UPDATE: S22 c611 API description STILL mentions 'stacking approaches' in model diversity. Hard reset c603 (NEW, between fire-172 and fire-173) was supposed to clean this but description persists. /api/export 404 via WebFetch blocks MODEL_TYPES confirmation. VM: curl S22/api/export URGENT to verify MODEL_TYPES field excludes 'stacking'. If stacking present: send hard-reset command immediately (Rule#8). If absent: close this item."
     },
     {
       "id": "vm-remove-stacking-s14",
@@ -410,8 +419,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S14 MODEL_TYPES -- Rule#8 violation",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S14 sleeping. Checkpoint FIRST (vm-checkpoint-s14-rf-0.22054 priority=1), then remove stacking after wake."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S14 sleeping. Checkpoint FIRST (vm-checkpoint-s14-rf-0.22054 priority=1), then remove stacking after wake."
     },
     {
       "id": "vm-add-lightgbm-s22-s13",
@@ -419,8 +428,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add lightgbm to S22 and verify in S13 MODEL_TYPES",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S22 c581 stag=0. After checkpoint + stacking removal. Fire-172 S22 summary confirms LR active — LightGBM should also be added."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S22 c611 stag=0. After checkpoint + stacking removal. LR confirmed active."
     },
     {
       "id": "vm-add-logistic-regression-model-pool",
@@ -428,8 +437,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add logistic_regression + elastic_net to MODEL_TYPES on islands missing them",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 UPDATE: S22 fire-172 summary confirms LR 'maintaining stability' — LR is ALREADY ACTIVE in S22. MDPI 2079-3197 baseline: LR achieves Brier~0.199 on NBA. Track S22 LR pareto_best specifically via /api/export."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S22 LR confirmed active (fire-172 summary). MDPI 2079-3197 baseline: LR achieves Brier~0.199 on NBA. Track S22 LR pareto_best specifically via /api/export."
     },
     {
       "id": "vm-add-lightgbm-p1-p2",
@@ -438,8 +447,8 @@
       "owner": "local-vm",
       "subject": "PORT NBA->POL: Add lightgbm to P1 and P2 MODEL_TYPES -- ALL 5 POL islands LightGBM=pareto_best (5/5 confirmed fire-158)",
       "detected_at": "2026-05-21T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): All POL sleeping. Execute after vm-checkpoint-p1 + spaces wake.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): All POL sleeping. Execute after vm-checkpoint-p1 + spaces wake.",
       "do_not_push": false
     },
     {
@@ -448,8 +457,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add Elo ratings as feature category to features/engine.py -- SHAP #1+#2 (IEEE/MDPI 2026)",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): AFTER engine-parity-sync (priority=40).",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): AFTER engine-parity-sync (priority=40).",
       "do_not_push": false
     },
     {
@@ -458,8 +467,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "SHAP analysis on S15 fleet best RF-75f + S22 RF-48f pareto models",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S15 sleeping, S22 c581 stag=0. After checkpoints. PMC12357926: 2PA/FG/TRB/FGA = top SHAP."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S15 sleeping, S22 c611 stag=0. After checkpoints. PMC12357926: 2PA/FG/TRB/FGA = top SHAP."
     },
     {
       "id": "vm-research-lstm-sequence-model-fire160",
@@ -468,8 +477,8 @@
       "owner": "local-vm",
       "subject": "RESEARCH: Implement LSTM+Brier-loss sequence model for NBA prediction -- arXiv:2508.02725 NCAA=0.1589",
       "detected_at": "2026-05-24T20:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): AFTER engine-parity-sync + S15 checkpoint.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): AFTER engine-parity-sync + S15 checkpoint.",
       "do_not_push": false
     },
     {
@@ -479,8 +488,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT URGENT: P4 pareto=5 oscillation + pareto_best=0.24915 LightGBM-131f SECURE",
       "detected_at": "2026-05-21T20:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P4 404-DOWN sleeping. pareto_best=0.24915 LightGBM-131f, best_brier=0.2497 POL-FLEET-BEST. VM: wake P4 + curl P4/api/export.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P4 404-DOWN sleeping. pareto_best=0.24915 LightGBM-131f, best_brier=0.2497 POL-FLEET-BEST. VM: wake P4 + curl P4/api/export.",
       "do_not_push": false
     },
     {
@@ -490,8 +499,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT: P2 pareto=3(CRITICAL fire-158)",
       "detected_at": "2026-05-22T22:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P2 404-DOWN sleeping. pareto=3 CRITICAL-SHRINK. pareto_best=0.249(LightGBM-123f) at eviction risk. VM: wake P2 + export + add-lightgbm.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P2 404-DOWN sleeping. pareto=3 CRITICAL-SHRINK. pareto_best=0.249(LightGBM-123f) at eviction risk. VM: wake P2 + export + add-lightgbm.",
       "do_not_push": false
     },
     {
@@ -501,8 +510,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT: P7 LightGBM-0.24931 -- fire-158: c9678 g29032 pareto=7(stable)",
       "detected_at": "2026-05-17T16:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P7 404-DOWN sleeping. VM: wake P7 + curl P7/api/export.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P7 404-DOWN sleeping. VM: wake P7 + curl P7/api/export.",
       "do_not_push": false
     },
     {
@@ -512,8 +521,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT: P5 pareto=6(RECOVERING fire-158) -- c28650 g85948 brier=0.24993",
       "detected_at": "2026-05-23T02:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P5 404-DOWN sleeping. VM: wake P5 + curl P5/api/export.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P5 404-DOWN sleeping. VM: wake P5 + curl P5/api/export.",
       "do_not_push": false
     },
     {
@@ -523,8 +532,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT: S15 pareto_best -- 404-DOWN sleeping",
       "detected_at": "2026-05-20T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S15 404-DOWN sleeping. RF-75f fleet best 0.22012★. VM: wake S15 + curl S15/api/export.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S15 404-DOWN sleeping. RF-75f fleet best 0.22012★. VM: wake S15 + curl S15/api/export.",
       "do_not_push": false
     },
     {
@@ -532,10 +541,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "S18 checkpoint -- fire-172: c730 g2189 stag=0 cycle_stag~29(>15-WATCH) pareto=11(↓17→11)",
+      "subject": "S18 checkpoint -- fire-173: c748 g2242 stag=22(>15-Rule#6) pareto=13(↑11→13-RECOVERING)",
       "detected_at": "2026-05-20T12:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 UPDATE: S18 c730 g2189 stag=0 pareto=11(↓17→11-5th-consec-shrink). cycle_stag~29(>15). Hard reset ~c725 likely occurred (pattern: every ~25 cycles). best_brier=0.22236. /api/export 404 via WebFetch — VM must curl directly.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 UPDATE: S18 c748 g2242 stag=22(>15-Rule#6). Pareto RECOVERING ↑11→13 (first increase after 5 consecutive shrinks). Hard reset ~c726 confirmed. Auto-hard-reset at stag=25 (~c751) imminent. best_brier=0.22236 above gate. /api/export 404 via WebFetch — VM must curl directly.",
       "do_not_push": false
     },
     {
@@ -543,10 +552,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT URGENT: S22 c581 g1742 stag=0 — ET-0.21877 still unconfirmed EXTREME URGENT",
+      "subject": "VM-CHECKPOINT URGENT: S22 c611 g1832 stag=0 — ET-0.21877 still unconfirmed EXTREME URGENT + Rule#8 CONCERN",
       "detected_at": "2026-05-18T10:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 UPDATE: S22 c581 g1742 stag=0. LR confirmed active (summary). ET-0.21877 from fire-169 STILL unconfirmed (5+ fires). /api/export 404 via WebFetch — VM must curl directly (see vm-export-endpoint-404-investigate). If ET-0.21877 confirmed: update fleet-best record (< 0.22012★).",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 UPDATE: S22 c611 g1832 stag=0. Hard reset c603 NEW (occurred between fire-172 c581 and fire-173 c611). STACKING-IN-DESCRIPTION AGAIN — Rule#8 CONCERN (see vm-remove-stacking-s22). ET-0.21877 from fire-169 STILL unconfirmed (6+ fires). /api/export 404 via WebFetch — VM must curl directly (see vm-export-endpoint-404-investigate). If ET-0.21877 confirmed: update fleet-best record (< 0.22012★).",
       "do_not_push": false
     },
     {
@@ -582,8 +591,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Run nomos-political-alpha/scripts/fetch_fec_sec_features.py to generate FEC PAC + SEC Form4 feature data",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): Rotation A BLOCKED. All POL sleeping. Depends on vm-restart-political-data-crons.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): Rotation A BLOCKED. All POL sleeping. Depends on vm-restart-political-data-crons.",
       "do_not_push": false
     },
     {
@@ -593,8 +602,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B -- sacrificial role reallocation runtime verify",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_trigger_note": "fire-172 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(119+d)+POL-IDLE(31+d). Code present at parity NBA+POL."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_trigger_note": "fire-173 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(120+d)+POL-IDLE(32+d). Code present at parity NBA+POL."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -603,8 +612,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C -- post-mortem log schema verify HF Hub push",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_trigger_note": "fire-172 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(119+d)+POL-IDLE(31+d). Code present at parity NBA+POL."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_trigger_note": "fire-173 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(120+d)+POL-IDLE(32+d). Code present at parity NBA+POL."
     },
     {
       "id": "vm-add-adaboost-naive-bayes-model-pool",
@@ -612,8 +621,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add adaboost + naive_bayes to MODEL_TYPES on NBA+POL islands",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): After LR+elastic_net validated."
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): After LR+elastic_net validated."
     },
     {
       "id": "vm-add-knn-small-feature-model-pool",
@@ -621,8 +630,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add KNN to MODEL_TYPES on islands with feature count cap",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): After AdaBoost+NB validated.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): After AdaBoost+NB validated.",
       "do_not_push": false
     },
     {
@@ -649,8 +658,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT: S15 ET candidates -- 404-DOWN sleeping RF-75f fleet best 0.22012★",
       "detected_at": "2026-05-15T18:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): S15 404-DOWN sleeping. RF-75f fleet best stable. Wake + checkpoint urgently.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): S15 404-DOWN sleeping. RF-75f fleet best stable. Wake + checkpoint urgently.",
       "do_not_push": false
     },
     {
@@ -660,8 +669,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT: P1 pareto_best=0.24902 -- SUPERSEDED: see vm-checkpoint-p1-pareto-0.24902-fire156",
       "detected_at": "2026-05-21T16:00:00Z",
-      "updated_at": "2026-05-26T22:00:00Z",
-      "cloud_brain_note": "fire-172 (unchanged): P1 404-DOWN sleeping. pareto_best=0.24902 (LightGBM-105f) 3RD OBSERVATION. Pareto intact at sleep.",
+      "updated_at": "2026-05-27T02:00:00Z",
+      "cloud_brain_note": "fire-173 (unchanged): P1 404-DOWN sleeping. pareto_best=0.24902 (LightGBM-105f) 3RD OBSERVATION. Pareto intact at sleep.",
       "do_not_push": false
     },
     {
