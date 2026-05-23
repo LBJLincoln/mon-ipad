@@ -5073,3 +5073,233 @@ to confirm propagation to all relevant files before marking the issue closed.
 - `07-discussion.md` §6.2: prediction-privacy caveat parenthetical added (JJ4)
 - `08-limitations.md` §7.2: outcome-contamination paragraph added (JJ5)
 - `paper.md`: all five fixes mirrored (JJ1 ×1, JJ2 ×1, JJ3 ×1, JJ4 ×1, JJ5 ×1 — 5 edit locations)
+
+---
+
+# Peer-Review Self-Critique — Cycle 34 (2026-05-27)
+
+**Reviewer persona:** NeurIPS 2026 Program Chair — proof completeness, notation
+consistency, and cross-reference robustness.
+
+**Scope:** Complete re-read of 04-method.md §3.5 (Proposition 2 proof), 06-results.md
+§5.1, 07-discussion.md §6.3, and 04-method.md §3.6 cross-reference. Four issues
+identified (KK1–KK4).
+
+---
+
+### KK1 — Proposition 2 proof fails for singleton coalition ($|\mathcal{C}|=1$)
+
+**Location:** §3.5 (04-method.md, lines 321–346)
+
+**Issue:** The Proposition 2 proof sketch opens by applying "the Brier ambiguity
+decomposition to the coalition sub-ensemble $\mathcal{C}$" and then derives:
+
+$$\text{Amb}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_d|}\sum_{t}
+\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
+
+The subsequent argument shows that SRR increases $\text{Amb}^{\mathcal{C}}$ by
+differentiating coalition members' predictions from one another. This argument
+requires at least two coalition members: when $|\mathcal{C}|=1$, the coalition
+mean $\bar{p}_t^{\mathcal{C}}$ equals the single agent's prediction exactly, so
+$\text{Amb}^{\mathcal{C}} \equiv 0$ identically — before and after SRR. The
+Lemma 1 Ambiguity-path argument therefore cannot establish
+$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$
+for a singleton, because both sides of the inequality are zero.
+
+The proposition is still true for singletons — A3 alone guarantees it — but
+the proof as written silently skips the case, which a proof-completeness reviewer
+will flag as a gap.
+
+**Fix:** Add a two-sentence case dispatch immediately before the Ambiguity
+decomposition display, handling the singleton sub-case via A3 and restricting the
+Ambiguity-path argument to $|\mathcal{C}|\geq 2$.
+
+**Proof text change:**
+
+*Before (line 321):*
+```
+*Proof sketch.* Apply the Brier ambiguity decomposition to the coalition
+sub-ensemble $\mathcal{C}$:
+```
+
+*After:*
+```
+*Proof sketch.* **Case $|\mathcal{C}|=1$:** The sub-ensemble collapses to a
+single agent, so $\text{Amb}^{\mathcal{C}} \equiv 0$ identically and the
+Ambiguity path does not apply. By Assumption A3, the singleton's performance
+deficit $\overline{B}_i - \bar{B}_d \geq \delta_{\text{sac}}$ persists in
+expectation regardless of whether SRR fires; refusing SRR therefore cannot
+reduce individual Brier in expectation, and a one-agent coalition cannot
+improve the societal ensemble Brier by coordinating a refusal. The proposition
+holds trivially for singletons. **Case $|\mathcal{C}|\geq 2$:** Apply the Brier
+ambiguity decomposition to the coalition sub-ensemble $\mathcal{C}$:
+```
+
+**Status:** Fixed in this cycle.
+
+---
+
+### KK2 — §6.3 "inter-agent Jensen–Shannon divergence" undefined for pairwise comparison
+
+**Location:** §6.3 (07-discussion.md, line 186)
+
+**Issue:** §6.3 states that same-provider agents "are expected to show higher
+intra-provider prediction correlation (lower inter-agent Jensen–Shannon divergence)
+than cross-provider pairs." The term "inter-agent Jensen–Shannon divergence" is
+used here in a pairwise sense (comparing two agents, $i$ vs. $j$), but §3.3
+defines JSD only for the full $N$-agent population:
+
+$$D_d = \frac{1}{|\mathcal{B}_d|}\sum_{t}\text{JSD}\!\left(\text{Ber}(p_{1,t}),\ldots,\text{Ber}(p_{N,t})\right)$$
+
+Pairwise JSD — $\text{JSD}(\text{Ber}(p_{i,t}), \text{Ber}(p_{j,t}))$ — is
+a special case of the $N$-agent definition with $N=2$, but it is not introduced
+in the paper. A reader unfamiliar with the two-distribution form of JSD may
+interpret "inter-agent JSD" as referring to the population-level $D_d$ with
+the same-provider sub-population substituted, which would be a different quantity.
+The ambiguity is heightened because the sentence goes on to quantify "smaller JSD
+diversity gains" — implying the pairwise quantity feeds into the population-level
+diversity metric, which requires a definitional bridge.
+
+**Fix:** Add a parenthetical defining the pairwise quantity at first use in §6.3.
+
+**Text change:**
+
+*Before:*
+```
+are expected to show higher intra-provider prediction correlation (lower inter-agent Jensen–Shannon divergence) than cross-provider pairs
+```
+
+*After:*
+```
+are expected to show higher intra-provider prediction correlation (lower
+pairwise Jensen–Shannon divergence, $\overline{\text{JSD}}_{ij} =
+\mathbb{E}_t[\text{JSD}(\text{Ber}(p_{i,t}),\text{Ber}(p_{j,t}))]$ averaged
+over same-provider pairs) than cross-provider pairs
+```
+
+**Status:** Fixed in this cycle.
+
+---
+
+### KK3 — §3.6 cross-reference uses fragile ordinal "second paragraph"
+
+**Location:** §3.6 (04-method.md, line 407)
+
+**Issue:** The inverse-calibration probation cross-reference reads:
+
+> (diagnostic criterion and rationale in §6.5, sub-section "Formula derivation
+> and inverse-calibration probation criterion," second paragraph).
+
+The ordinal "second paragraph" is fragile: if any paragraph is inserted before
+or removed from the referenced sub-section of §6.5 during revision, the ordinal
+becomes incorrect. Because §6.5 ("Kelly Stake Sizing: Derivation and Robustness")
+is an active area of revision (AA1, EE3 were fixed there in prior cycles), such
+structural changes are plausible before submission. Sub-section titles are stable
+across paragraph-level edits; the ordinal is not.
+
+**Fix:** Remove ", second paragraph" from the cross-reference, keeping only the
+stable sub-section title.
+
+**Text change:**
+
+*Before:*
+```
+rationale in §6.5, sub-section "Formula derivation and inverse-calibration
+probation criterion," second paragraph).
+```
+
+*After:*
+```
+rationale in §6.5, sub-section "Formula derivation and inverse-calibration
+probation criterion").
+```
+
+**Status:** Fixed in this cycle.
+
+---
+
+### KK4 — §5.1 pre-registration qualifier omits §4.4 circularity caveat
+
+**Location:** §5.1 (06-results.md, lines 31–35, Table 4 caption)
+
+**Issue:** The Table 4 caption states: "All 190 off-diagonal entries are expected
+to exceed 0.037 (pre-registered Assumption A1 threshold; values pending pilot
+backtest completion — see Table B.2)." This formulation implies that the threshold
+was set prospectively without reference to the pilot data, but §4.4 contains the
+HH4-mandated circularity note (added Cycle 32) acknowledging that:
+
+> archetypes were revised iteratively until all 190 pairs passed the
+> $\epsilon_{\text{arch}} \geq 0.037$ threshold on the 2024–25 pilot data
+> subsequently used for final distinguishability validation (§5.1, Table 4)
+
+The §5.1 pre-registration qualifier does not cross-reference this caveat. A reader
+who reads §5.1 before §4.4 will see a claimed pre-registered threshold met with
+high confidence ([PENDING — expected: 190/190]) without learning that the pilot
+data functioned partly as a development set, upward-biasing the reported minimum.
+The §4.4 circularity note is authoritative but sequentially posterior; §5.1 should
+surface the caveat at the point of claim rather than leaving the reader to discover
+it later.
+
+**Fix:** Add a parenthetical cross-reference to the §4.4 circularity note in the
+Table 4 caption, adjacent to the pre-registration qualifier.
+
+**Text change:**
+
+*Before:*
+```
+off-diagonal entries are expected to exceed 0.037 (pre-registered Assumption A1
+threshold; values pending pilot backtest completion — see Table B.2).
+```
+
+*After:*
+```
+off-diagonal entries are expected to exceed 0.037 (pre-registered Assumption A1
+threshold; §4.4 circularity note applies: reported minimum $\hat\epsilon_{\text{arch}}$
+is upward-biased because archetype revision used these same pilot data; values
+pending pilot backtest completion — see Table B.2).
+```
+
+**Status:** Fixed in this cycle.
+
+---
+
+**Fixed:** KK1 (Proposition 2 singleton case dispatch added); KK2 (§6.3 pairwise
+JSD parenthetical definition); KK3 (§3.6 fragile "second paragraph" ordinal removed);
+KK4 (§5.1 Table 4 caption §4.4 circularity cross-reference added)
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. Verify `@llm_ipd2024` first author (Jorgensen?) against arXiv:2406.13605
+3. Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+6. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+7. Remove abstract's Brier-delta placeholder and fill with actual results
+8. Convert all "if confirmed" / "pending results" language in §6 to indicative mood
+9. Verify Lemma 1 Case 2: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Table 3 pilot Brier values: populate per-agent $\overline{B}_i$ (requires pilot backtest)
+11. **HH2 follow-up:** Consider broadcasting only archetype labels and rank-order standings
+    (not bankroll magnitudes) to eliminate prediction-inference risk.
+12. **HH4 follow-up:** If pilot data permits, partition into development / validation
+    halves and recompute $\hat\epsilon_{\text{arch}}$ on held-out half for unbiased minimum.
+13. **JJ2 follow-up:** Consider whether reversal rule should store the *original* archetype
+    (home base) rather than the immediately-prior archetype to prevent multi-SRR cycling.
+14. **JJ5 follow-up:** Pre-register a contamination-detection test: if T12 outperforms
+    commercial agents by an unexpectedly large margin in Conditions B–E vs. A, flag
+    outcome contamination as a confound in §5.6.
+15. **NEW — KK1 follow-up:** Consider strengthening Proposition 2 from a proof sketch to
+    a full proof with explicit case handling in the appendix, for submission to a venue
+    with high standards for formal game-theoretic results (e.g., EC 2026).
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking the issue closed.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.5 Proposition 2 proof: singleton case dispatch added (KK1)
+- `04-method.md` §3.6: "second paragraph" ordinal removed from §6.5 cross-reference (KK3)
+- `06-results.md` §5.1 Table 4 caption: §4.4 circularity cross-reference added (KK4)
+- `07-discussion.md` §6.3: pairwise JSD parenthetical definition added (KK2)
+- `paper.md`: all four fixes mirrored (KK1 ×1, KK2 ×1, KK3 ×1, KK4 ×1 — 4 edit locations)

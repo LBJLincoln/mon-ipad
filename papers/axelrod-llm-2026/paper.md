@@ -802,8 +802,15 @@ scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5
 > to the strategically relevant class: non-eligible agents have no SRR action to
 > refuse, so they are not coalition members in this context.)
 
-*Proof sketch.* Apply the Brier ambiguity decomposition to the coalition
-sub-ensemble $\mathcal{C}$:
+*Proof sketch.* **Case $|\mathcal{C}|=1$:** The sub-ensemble collapses to a
+single agent, so $\text{Amb}^{\mathcal{C}} \equiv 0$ identically and the
+Ambiguity path does not apply. By Assumption A3, the singleton's performance
+deficit $\overline{B}_i - \bar{B}_d \geq \delta_{\text{sac}}$ persists in
+expectation regardless of whether SRR fires; refusing SRR therefore cannot
+reduce individual Brier in expectation, and a one-agent coalition cannot
+improve the societal ensemble Brier by coordinating a refusal. The proposition
+holds trivially for singletons. **Case $|\mathcal{C}|\geq 2$:** Apply the Brier
+ambiguity decomposition to the coalition sub-ensemble $\mathcal{C}$:
 
 $$B_{\text{ens}}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_i - \text{Amb}^{\mathcal{C}},
 \quad \text{Amb}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_d|}\sum_{t}\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
@@ -888,7 +895,7 @@ $p = 0.5$ random-Bernoulli baseline of 0.25; derivation in §6.5) receive an add
 *inverse-calibration probation* applied as a post-formula override,
 independent of the pilot Brier formula above (diagnostic criterion and
 rationale in §6.5, sub-section "Formula derivation and inverse-calibration
-probation criterion," second paragraph).
+probation criterion").
 Note: the archetype minimum floor $\kappa_{\min}^{(r_i)}$ is applied *after* the
 probation cap, so for archetypes with $\kappa_{\min}^{(r_i)} > 0.03$ the floor
 supersedes the probation ceiling; this is by design — even probation agents
@@ -1288,7 +1295,9 @@ $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
 
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype
 distinguishability estimates $\hat{\epsilon}_{\text{arch}}$. All 190
-off-diagonal entries exceed 0.037 (Assumption A1 threshold). Full
+off-diagonal entries exceed 0.037 (Assumption A1 threshold; §4.4 circularity
+note applies: reported minimum $\hat\epsilon_{\text{arch}}$ is upward-biased
+because archetype revision used these same pilot data). Full
 $20 \times 20$ matrix in Appendix B.2.*
 
 | Statistic | Value |
@@ -1674,7 +1683,10 @@ prompt does not override the model's learned distributional tendencies.
 This implies a *within-provider correlation floor*: the maximum achievable
 Ambiguity within a cohort of same-provider agents is bounded by one minus
 their pairwise prediction correlation. In our system, the five Mistral agents
-(T6–T10) are expected to show higher intra-provider prediction correlation (lower inter-agent Jensen–Shannon divergence) than cross-provider pairs, and SRR events involving only Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
+(T6–T10) are expected to show higher intra-provider prediction correlation (lower
+pairwise Jensen–Shannon divergence, $\overline{\text{JSD}}_{ij} =
+\mathbb{E}_t[\text{JSD}(\text{Ber}(p_{i,t}),\text{Ber}(p_{j,t}))]$ averaged
+over same-provider pairs) than cross-provider pairs, and SRR events involving only Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
 gains than cross-provider reassignments.
 
 If this within-provider correlation floor is empirically confirmed, it

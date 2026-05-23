@@ -318,8 +318,15 @@ testable via the Sham-SRR control (§4.3).
 > to the strategically relevant class: non-eligible agents have no SRR action to
 > refuse, so they are not coalition members in this context.)
 
-*Proof sketch.* Apply the Brier ambiguity decomposition to the coalition
-sub-ensemble $\mathcal{C}$:
+*Proof sketch.* **Case $|\mathcal{C}|=1$:** The sub-ensemble collapses to a
+single agent, so $\text{Amb}^{\mathcal{C}} \equiv 0$ identically and the
+Ambiguity path does not apply. By Assumption A3, the singleton's performance
+deficit $\overline{B}_i - \bar{B}_d \geq \delta_{\text{sac}}$ persists in
+expectation regardless of whether SRR fires; refusing SRR therefore cannot
+reduce individual Brier in expectation, and a one-agent coalition cannot
+improve the societal ensemble Brier by coordinating a refusal. The proposition
+holds trivially for singletons. **Case $|\mathcal{C}|\geq 2$:** Apply the Brier
+ambiguity decomposition to the coalition sub-ensemble $\mathcal{C}$:
 
 $$B_{\text{ens}}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_i - \text{Amb}^{\mathcal{C}},
 \quad \text{Amb}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_d|}\sum_{t}\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
@@ -404,7 +411,7 @@ $p = 0.5$ random-Bernoulli baseline of 0.25; derivation in §6.5) receive an add
 *inverse-calibration probation* applied as a post-formula override,
 independent of the pilot Brier formula above (diagnostic criterion and
 rationale in §6.5, sub-section "Formula derivation and inverse-calibration
-probation criterion," second paragraph).
+probation criterion").
 Note: the archetype minimum floor $\kappa_{\min}^{(r_i)}$ is applied *after* the
 probation cap, so for archetypes with $\kappa_{\min}^{(r_i)} > 0.03$ the floor
 supersedes the probation ceiling; this is by design — even probation agents

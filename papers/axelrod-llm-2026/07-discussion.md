@@ -183,7 +183,10 @@ prompt does not override the model's learned distributional tendencies.
 This implies a *within-provider correlation floor*: the maximum achievable
 Ambiguity within a cohort of same-provider agents is bounded by one minus
 their pairwise prediction correlation. In our system, the five Mistral agents
-(T6–T10) are expected to show higher intra-provider prediction correlation (lower inter-agent Jensen–Shannon divergence) than cross-provider pairs, and SRR events involving only Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
+(T6–T10) are expected to show higher intra-provider prediction correlation (lower
+pairwise Jensen–Shannon divergence, $\overline{\text{JSD}}_{ij} =
+\mathbb{E}_t[\text{JSD}(\text{Ber}(p_{i,t}),\text{Ber}(p_{j,t}))]$ averaged
+over same-provider pairs) than cross-provider pairs, and SRR events involving only Mistral-to-Mistral archetype reassignments may produce smaller JSD diversity
 gains than cross-provider reassignments.
 
 If this within-provider correlation floor is empirically confirmed, it

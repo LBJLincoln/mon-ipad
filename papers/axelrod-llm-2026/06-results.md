@@ -31,7 +31,9 @@ $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype
 distinguishability estimates $\hat{\epsilon}_{\text{arch}}$. All 190
 off-diagonal entries are expected to exceed 0.037 (pre-registered Assumption A1
-threshold; values pending pilot backtest completion — see Table B.2). Full
+threshold; §4.4 circularity note applies: reported minimum $\hat\epsilon_{\text{arch}}$
+is upward-biased because archetype revision used these same pilot data; values
+pending pilot backtest completion — see Table B.2). Full
 $20 \times 20$ matrix in Appendix B.2.*
 
 | Statistic | Value |
