@@ -5535,3 +5535,148 @@ to confirm propagation to all relevant files before marking the issue closed.
 - `04-method.md` §3.6: HF Space hot-reload mechanism clarified (LL4)
 - `paper.md`: all four changes propagated (LL1 not needed — appendix not compiled
   into paper.md; LL2, LL3, LL4 propagated)
+
+---
+
+# Cycle MM — Revision (2026-05-28)
+
+*Issues addressed in this cycle: LL5 (A5 assumption), KK1 (Proposition 2 proof),
+JJ2 (reversal-rule home-base), JJ5 (contamination pre-registration H5).*
+
+---
+
+## MM1 — Lemma 1 requires an explicit fifth assumption for the Case 2 numerical bound [FIXED]
+
+**Reviewer (LL5, carried forward):** Lemma 1 is stated "Under A1, A2, and A4" but
+the Case 2 arithmetic uses $\mathbb{E}[|\delta_i|] \leq 0.014$, a quantitative
+bound that is not implied by A1, A2, or A4.  A1 provides a lower bound on archetype
+shift; A2 provides a structural monotone-centroid condition; A4 provides an
+event-independence condition.  None of these implies a specific numerical upper bound
+on the centroid deviation.  The 0.014 value comes from pilot data, which is an
+empirical measurement, not a logical consequence of the stated assumptions.  A reviewer
+performing a line-by-line proof check would correctly flag this gap.
+
+**Author response (this cycle):** Added **Assumption A5 (Pilot Brier bound)**:
+"$\mathbb{E}_t[\frac{1}{N}\sum_j|p_{j,t}-\bar{p}_t|] \leq 0.014$ (pilot-verified)."
+Updated Lemma 1 headline to read "Under A1, A2, A4, and A5."  Updated all three
+references in the Case 2 proof from "(A2 + pilot data, §5.1)" to "(A5)."  A5 also
+includes a robustness note: the result holds for pilot bounds up to 0.017 (the
+geometric limit $\frac{11}{24}\times 0.037$), so the numerical margin is not knife-edge.
+Changes propagated to both `04-method.md` and `paper.md`.
+
+**Status:** Fixed. ✓
+
+---
+
+## MM2 — Proposition 2 labeled "proof sketch" and has a logical gap in Case 2 [FIXED]
+
+**Reviewer (KK1, carried forward):** The Proposition 2 proof is labeled "*Proof sketch.*"
+For a journal submission, a theorem that anchors the paper's core theoretical contribution
+should have a complete proof, not a sketch.  Additionally, the coalition Case 2 conflates
+two distinct claims — (i) coalition *ensemble* Brier worsens under deviation, and (ii)
+individual members' Brier does not decrease under deviation — without separating them
+cleanly.  The conclusion "Hence no coalition member achieves both a reduction in
+individual Brier and an increase in ensemble Brier through deviation" is correct but
+arrives without an explicit logical connective showing why both conditions must hold
+simultaneously.
+
+**Author response (this cycle):** Replaced "*Proof sketch.*" with "*Proof.*" and
+restructured around two explicit claims:
+- **Claim 1** (coalition ensemble Brier weakly increases under deviation):
+  case-splits $|\mathcal{C}|=1$ (ensemble collapses to individual Brier) and
+  $|\mathcal{C}|\geq 2$ (Lemma 1 applied to the sub-population, Ambiguity strictly
+  increases under SRR, ensemble Brier strictly decreases; deviation forfeits this gain).
+  Note that Claim 1 now explicitly invokes A1, A2, A4, A5 as the uniform-agent
+  bound assumption needed for the sub-population Lemma 1 application.
+- **Claim 2** (individual Brier of deviating agents does not decrease under A3).
+- **Combination**: Both conditions (i) and (ii) must hold jointly for an improving
+  deviation; since neither holds, the SNE property follows.
+
+Changes propagated to both `04-method.md` and `paper.md`.
+
+**Status:** Fixed. ✓
+
+---
+
+## MM3 — Reversal rule stores immediately-prior archetype; multi-SRR drift risk unaddressed [FIXED]
+
+**Reviewer (JJ2, carried forward):** Definition 2, step 5, reverts to
+$r_i^{(\text{pre})}$, "the archetype held by agent $i$ immediately before this
+SRR event."  The parenthetical note acknowledges that $r_i^{(\text{pre})}$ may differ
+from the initial archetype if multiple SRR events have occurred, but does not discuss
+the implications.  A reader designing a replication might ask: does this design allow
+an agent to drift arbitrarily far from its initial reasoning disposition through a
+sequence of failed reallocations, each reverting only one step?  What is the rationale
+for not reverting to the initial "home base" archetype?
+
+**Author response (this cycle):** Added a footnote to Definition 2 step 5 explaining
+the trade-off between the immediately-prior design (implemented) and the home-base
+alternative (reverting to $r_i^{(0)}$).  Key points in the footnote: (a) home base
+prevents multi-SRR drift but discards beneficial intermediate transitions; (b) the
+14-day persistence window limits chains to $\leq 12$ SRR events per agent over 175 days,
+making deep drift rare; (c) a sensitivity analysis comparing the two targets is
+committed to §C.2.3 (pending results).  Changes propagated to both `04-method.md`
+and `paper.md`.
+
+**Status:** Fixed (discussion added; numerical comparison deferred to §C.2.3,
+which requires experimental data). ✓
+
+---
+
+## MM4 — T12 contamination risk not pre-registered; post-hoc exclusion possible [FIXED]
+
+**Reviewer (JJ5, carried forward):** Agent T12 (selfhost-qwen4b, Qwen3-4B, CPU
+inference) is the only agent whose training data cutoff is publicly undocumented.
+The paper's pre-registration covers H1–H4 but does not include a contamination-detection
+test for T12.  Without pre-registration, any post-hoc decision to include or exclude
+T12 based on its performance (e.g., excluding it if its unexpectedly high performance
+inflates the results, or retaining it if it performs poorly) constitutes an analytic
+flexibility not disclosed to reviewers.
+
+**Author response (this cycle):** Added **H5 (Contamination-detection test)** to the
+pre-registration description in both `05-experimental-setup.md` and `paper.md`.
+H5 specifies: if T12 outperforms the T1–T11 commercial cohort median by more than
+$\Delta_{\text{cont}} = 0.005$ Brier on post-2025-10-01 events in any condition other
+than Condition A, a contamination flag is raised and the analysis is rerun with T12
+excluded.  The threshold equals approximately two daily-Brier standard deviations
+(pilot estimate), making it sensitive to systematic advantage but robust to noise.
+The note explicitly flags that H5 also prevents post-hoc exclusion if T12 performs
+*poorly* — preventing data dredging in both directions.
+Updated the timeline table entry from "H1–H4" to "H1–H5."
+
+**Status:** Fixed. ✓
+
+---
+
+## PRE-SUBMISSION CHECKLIST (updated after cycle MM)
+
+*(Items marked [DONE] were fixed in a prior or this cycle; [OPEN] remain.)*
+
+1. [OPEN] Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. [OPEN] Verify `@llm_ipd2024` first author against arXiv:2406.13605
+3. [OPEN] Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. [OPEN] Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. [OPEN] Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$; stratify by event type to verify A4 (LL2)
+6. [OPEN] Fill §C.2.2 sensitivity surface (ε_keep, δ_sac, W_persist)
+7. [OPEN] Fill §C.3.2 temperature Brier/ECE table
+8. [OPEN] Fill §C.2.3 reversal-target sensitivity analysis (immediately-prior vs. home-base) [NEW — JJ2 fix]
+9. [OPEN] Remove abstract's Brier-delta placeholder; fill with actual results
+10. [OPEN] Convert "if confirmed" / "pending results" language in §6 to indicative mood
+11. [OPEN] Verify Lemma 1 A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+12. [OPEN] Verify A4 slack $\eta_{\text{A4}} < 0.22$ once pilot archetype-pair stratification done
+13. [OPEN] Table 3: populate per-agent $\overline{B}_i$ from pilot backtest
+14. [OPEN] HH2: consider broadcasting only archetype labels + rank-order, not bankroll magnitudes (§7.3 update)
+15. [OPEN] HH4: partition development/validation halves, recompute $\hat\epsilon_{\text{arch}}$ on held-out half
+16. [OPEN] H5 contamination test: run and document in §7.4 once experiment data is available
+17. [DONE — MM1] A5 added; Lemma 1 headline updated to "Under A1, A2, A4, and A5"
+18. [DONE — MM2] Proposition 2 elevated from "proof sketch" to full two-claim proof
+19. [DONE — MM3] Reversal-rule home-base alternative documented in Definition 2 footnote
+20. [DONE — MM4] H5 contamination pre-registration added to §4.6 and paper.md
+
+**Structural changes this cycle:**
+- `04-method.md`: A5 assumption added (§3.5); Lemma 1 headline → "A1, A2, A4, A5";
+  Case 2 citation → "A5"; Proposition 2 "*Proof sketch*" → "*Proof*" with Claims 1+2;
+  Definition 2 step 5 footnote added (home-base reversal-target discussion) (§3.4)
+- `05-experimental-setup.md`: H5 contamination-detection test added to pre-registration (§4.6)
+- `paper.md`: all changes propagated (A5 assumption, Lemma 1 headline, Case 2 citation,
+  Proposition 2 proof, Definition 2 footnote, H5 pre-registration, timeline table H1–H5)

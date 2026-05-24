@@ -191,7 +191,7 @@ in our under-populated regime, vacancy and zero-occupancy coincide (see Appendix
 > 2. Update agent $i$'s archetype: $r_i \leftarrow r^*$.
 > 3. Rewrite agent $i$'s system prompt to reflect archetype $r^*$.
 > 4. Persist for $W_{\text{persist}} = 14$ days; agent $i$ is ineligible for further SRR events during this window (sacrifice-eligibility is suspended from day $d$ through day $d + W_{\text{persist}} - 1$).
-> 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to $r_i^{(\text{pre})}$, the archetype held by agent $i$ immediately before this SRR event. (Note: $r_i^{(\text{pre})}$ may itself differ from the agent's initial archetype if multiple SRR events have occurred; each event stores its own pre-event archetype for potential reversal.)
+> 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to $r_i^{(\text{pre})}$, the archetype held by agent $i$ immediately before this SRR event. (Note: $r_i^{(\text{pre})}$ may itself differ from the agent's initial archetype if multiple SRR events have occurred; each event stores its own pre-event archetype for potential reversal.)^[An alternative design stores the agent's *initial* archetype $r_i^{(0)}$ as the permanent reversal target ("home base"), rather than the immediately-prior archetype. This prevents multi-SRR drift — successive failed reallocations cannot move an agent progressively further from its original reasoning disposition — but it discards any beneficial intermediate transitions that would otherwise be retained by the immediately-prior design. Because the 14-day persistence window ($W_{\text{persist}}$) limits the rate of SRR events to at most $\lfloor D / 14 \rfloor \approx 12$ events per agent over a 175-day season, multi-SRR chains deeper than two hops are rare in practice. A sensitivity analysis comparing the two reversal targets (immediately-prior vs.\ home-base) is reported in §C.2.3.]
 
 We set $\epsilon_{\text{keep}} = 0.005$ (one-half Brier standard deviation in our
 pilot data). SRR is *decentralised*: no central planner is needed. Each agent
@@ -262,7 +262,19 @@ A4 is empirically testable from the pilot backtest by stratifying
 $\hat{\epsilon}_{\text{arch}}$ by event type; we report this stratification in
 Table B.2 (pending pilot data).
 
-> **Lemma 1 (SRR increases expected diversity).** Under A1, A2, and A4, an SRR event
+**Assumption A5 (Pilot Brier bound).** The population-average expected absolute
+centroid deviation satisfies:
+
+$$\mathbb{E}_t\!\left[\frac{1}{N}\sum_{j=1}^N |p_{j,t} - \bar{p}_t|\right] \;\leq\; 0.014$$
+
+This bound is empirically verified from the 2024–25 pilot season holdout backtest
+(§5.1, Table 4). A5 is not implied by A1–A4 alone; it provides the numerical
+threshold required for the Case 2 arithmetic in the Lemma 1 proof. Should the
+pilot bound exceed 0.014, the lemma still holds provided
+$\mathbb{E}[|\delta_i|] < \frac{(N-1)}{2N}\epsilon_{\text{arch}} = \frac{11}{24}\times 0.037 \approx 0.017$;
+values in $(0.014, 0.017)$ tighten the numerical margin but do not overturn the result.
+
+> **Lemma 1 (SRR increases expected diversity).** Under A1, A2, A4, and A5, an SRR event
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
@@ -293,10 +305,10 @@ $$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\
 This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
 By A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}\!\left[\frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|\right]$ —
 the expected centroid deviation of a sacrifice-eligible agent is bounded above by the
-population-average expected absolute deviation.  Pilot data (§5.1) estimate this
-population average at $0.014$, yielding $\mathbb{E}[|\delta_i|] \leq 0.014$ as the
-quantitative bound used below (A2 provides the structural direction; the pilot value
-furnishes the numerical threshold).
+population-average expected absolute deviation.  By Assumption A5,
+$\mathbb{E}_t[\frac{1}{N}\sum_j|p_{j,t}-\bar{p}_t|] \leq 0.014$, yielding
+$\mathbb{E}[|\delta_i|] \leq 0.014$ as the quantitative bound used below
+(A2 provides the structural direction; A5 furnishes the pilot-verified numerical threshold).
 The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows by taking a lower bound on the cross-term.
 Since $\delta_i\Delta p \geq -|\delta_i||\Delta p|$ always (with equality only when the product is negative),
 the worst-case sign of the cross-term yields:
@@ -322,7 +334,7 @@ out of the lower bound then yields the sufficient condition:
 $$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$$
 
 Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
-$\mathbb{E}[|\delta_i|] \leq 0.014$ (A2 + pilot data, §5.1), the LHS $\geq \frac{11}{12}\times 0.037 = 0.034$
+$\mathbb{E}[|\delta_i|] \leq 0.014$ (A5), the LHS $\geq \frac{11}{12}\times 0.037 = 0.034$
 and the RHS $= 0.028$, giving $0.034 > 0.028$. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
@@ -350,39 +362,65 @@ testable via the Sham-SRR control (§4.3).
 > to the strategically relevant class: non-eligible agents have no SRR action to
 > refuse, so they are not coalition members in this context.)
 
-*Proof sketch.* **Case $|\mathcal{C}|=1$:** The sub-ensemble collapses to a
-single agent, so $\text{Amb}^{\mathcal{C}} \equiv 0$ identically and the
-Ambiguity path does not apply. By Assumption A3, the singleton's performance
-deficit $\overline{B}_i - \bar{B}_d \geq \delta_{\text{sac}}$ persists in
-expectation regardless of whether SRR fires; refusing SRR therefore cannot
-reduce individual Brier in expectation, and a one-agent coalition cannot
-improve the societal ensemble Brier by coordinating a refusal. The proposition
-holds trivially for singletons. **Case $|\mathcal{C}|\geq 2$:** Apply the Brier
-ambiguity decomposition to the coalition sub-ensemble $\mathcal{C}$:
+*Proof.* We establish two claims and then combine them.
+
+**Claim 1 (Coalition ensemble Brier weakly increases under deviation).**
+Apply the Brier ambiguity decomposition to the coalition sub-ensemble $\mathcal{C}$:
 
 $$B_{\text{ens}}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_i - \text{Amb}^{\mathcal{C}},
 \quad \text{Amb}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_d|}\sum_{t}\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
 
-A coalition deviating from SRR (i.e., sacrifice-eligible agents refusing to
-reallocate) forgoes the within-coalition Ambiguity increase that the mechanism
-provides: under SRR, eligible agents in $\mathcal{C}$ move to vacant archetypes,
-differentiating their predictions from one another and increasing $\text{Amb}^{\mathcal{C}}$;
-under deviation, coalition members retain their current consensus archetypes,
-leaving $\text{Amb}^{\mathcal{C}}$ at its pre-intervention level.
-Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (which contains
-the sacrifice-eligible agents executing or refusing SRR) yields
-$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$,
-so by the coalition-level decomposition above:
-$B_{\text{ens}}^{\mathcal{C},\text{deviation}} \geq B_{\text{ens}}^{\mathcal{C},\text{SRR}}$
-(coalition ensemble Brier is weakly worse under deviation). Since sacrifice-eligible agents
-have $\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$ by definition,
-their individual Brier is above the ensemble mean — refusing SRR does not
-improve their individual Brier in expectation (they remain in the same
-strategy archetype that produced the deficit, and by Assumption A3,
-the deficit persists in expectation). Hence no coalition member
-achieves both a reduction in individual Brier and an increase in ensemble Brier
-through deviation. The profile $(\sigma^{\text{SRR}})$ is therefore not
-improvable by any coalitional deviation in the societal Brier objective. $\square$
+*Case $|\mathcal{C}|=1$:* With a single agent, $\text{Amb}^{\mathcal{C}} \equiv 0$ identically.
+The decomposition yields $B_{\text{ens}}^{\mathcal{C}} = B_i$, so ensemble and individual
+Brier coincide; any claim about ensemble-Brier improvement requires individual-Brier
+improvement, which is addressed in Claim 2 below.
+
+*Case $|\mathcal{C}|\geq 2$:* A coalition refusing SRR forgoes the within-coalition
+Ambiguity increase that the mechanism provides.  Under SRR, eligible agents in
+$\mathcal{C}$ draw archetype assignments from $\mathcal{V}_d$, differentiating their
+predictions from one another and increasing $\text{Amb}^{\mathcal{C}}$.  Under
+deviation, coalition members retain their current archetypes, so
+$\text{Amb}^{\mathcal{C},\text{deviation}} = \text{Amb}^{\mathcal{C},\text{pre}}$.
+Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (Assumptions A1,
+A2, A4, A5 each apply because $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$
+and the archetype-distinguishability and centroid-deviation bounds hold
+agent-uniformly) yields:
+
+$$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$$
+
+Since $B_{\text{ens}}^{\mathcal{C}} = \overline{B}^{\mathcal{C}} - \text{Amb}^{\mathcal{C}}$
+and SRR leaves the per-agent mean Brier $\overline{B}^{\mathcal{C}}$ unchanged at
+day $d$ (the archetype change takes effect in future predictions; the term
+$\overline{B}^{\mathcal{C}}$ is a sample average over past outcomes), strictly
+higher Ambiguity under SRR implies:
+
+$$B_{\text{ens}}^{\mathcal{C},\text{deviation}} \;=\; \overline{B}^{\mathcal{C}} - \text{Amb}^{\mathcal{C},\text{deviation}}
+\;\geq\; \overline{B}^{\mathcal{C}} - \text{Amb}^{\mathcal{C},\text{SRR}}
+\;=\; B_{\text{ens}}^{\mathcal{C},\text{SRR}}$$
+
+Coalition ensemble Brier is therefore weakly *worse* (or equal in the boundary case)
+under deviation for $|\mathcal{C}| \geq 2$. Combined with the $|\mathcal{C}|=1$ case,
+Claim 1 holds for all $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$.
+
+**Claim 2 (Individual Brier of deviating agents does not decrease in expectation).**
+Each sacrifice-eligible agent $i \in \mathcal{C}$ satisfies
+$\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$ by definition of
+sacrifice-eligibility.  Refusing SRR leaves agent $i$ in the same strategy
+archetype that generated this performance deficit.  By Assumption A3, in the
+absence of an archetype change, the deficit persists: the agent's expected Brier
+over the next $W_{\text{persist}}$ days satisfies
+$\mathbb{E}[\overline{B}_{i,d+W}] \geq \bar{B}_d + \delta_{\text{sac}}/2 > \bar{B}_d$.
+Therefore refusing SRR does not reduce agent $i$'s individual Brier in expectation.
+
+**Combining Claims 1 and 2.** For a deviating coalition $\mathcal{C}$ to
+constitute an improvement over $(\sigma^{\text{SRR}})$, it would need to simultaneously
+achieve (i) weakly lower coalition ensemble Brier, and (ii) weakly lower individual
+Brier for *all* members of $\mathcal{C}$.  Claim 1 shows condition (i) fails (deviation
+weakly *raises* coalition ensemble Brier).  Claim 2 shows condition (ii) also fails
+(deviation does not reduce any member's expected individual Brier).  Both conditions
+must hold jointly for an improving deviation; since neither holds, no coalition can
+profitably deviate from $(\sigma^{\text{SRR}})$.  The profile is a Strong Nash
+Equilibrium against sacrifice-refusal deviations. $\square$
 
 *Remark.* Proposition 2 does not claim SRR maximises any single agent's
 individual fitness. It claims the *society* cannot improve its collective

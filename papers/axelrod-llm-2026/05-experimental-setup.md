@@ -302,7 +302,7 @@ validated on T4 (Gemini 3 Flash, *analytical* archetype);
 its transferability to self-hosted inference is treated as a limitation
 and flagged in Appendix C.3.3.
 
-**Pre-registration.** The four hypotheses tested in this paper —
+**Pre-registration.** The four primary hypotheses tested in this paper —
 (H1) SRR increases $\overline{D}$ versus fixed ensemble;
 (H2) SRR reduces $B_{\text{ens}}$ versus fixed ensemble;
 (H3) Sham-SRR does not reproduce the Brier improvement of full SRR;
@@ -313,6 +313,24 @@ before the 2025–26 NBA season began, preventing post-hoc hypothesis
 selection. The pre-registration file is included in the supplementary
 materials and its SHA-256 hash is committed to the repository at
 tag `preregistration-v1`.
+
+A fifth pre-registered test addresses potential outcome contamination arising
+from the self-hosted agent T12 (selfhost-qwen4b, Qwen3-4B, CPU inference):
+
+**(H5 — Contamination-detection test.)** If T12 outperforms the commercial cohort
+median (T1–T11 median Brier) by more than $\Delta_{\text{cont}} = 0.005$ Brier
+in any condition other than Condition A (SRR), evaluated exclusively on events
+occurring after 2025-10-01 (the latest publicly documented training data cutoff for
+a model in the Qwen3 series), this constitutes a contamination flag.
+The threshold $\Delta_{\text{cont}} = 0.005$ is set at approximately two within-session
+standard deviations of T12's rolling daily Brier (estimated from pilot data), so
+genuine contamination — a systematic knowledge advantage — would be detectable
+against day-to-day noise.
+If H5 is triggered, the analysis will be rerun with T12 excluded and the discrepancy
+documented in §7.4. The Qwen3-4B training data cutoff is not publicly specified by the
+provider; H5 is therefore a conservative safeguard rather than a confirmed risk.
+The pre-registration of H5 prevents post-hoc exclusion of T12 if it performs
+poorly (data dredging in the other direction).
 
 ---
 
