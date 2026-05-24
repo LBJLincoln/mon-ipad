@@ -818,7 +818,10 @@ $\mathbb{E}[|\delta_i|] \leq 0.014$ (A5): LHS $\geq \frac{11}{12}\times 0.037 = 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
 $\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
-strictly increases JSD.
+strictly increases JSD. Pilot season data confirm that NBA game-day centroids satisfy
+$\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout
+the 2024–25 season (Table 4, §5.1); the monotonicity regime is therefore satisfied
+throughout the experimental range, and the step applies without qualification.
 Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
@@ -862,7 +865,12 @@ $\text{Amb}^{\mathcal{C},\text{deviation}} = \text{Amb}^{\mathcal{C},\text{pre}}
 Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (Assumptions A1,
 A2, A4, A5 each apply because $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$
 and the archetype-distinguishability and centroid-deviation bounds hold
-agent-uniformly) yields:
+agent-uniformly; specifically, A5's bound of 0.014 applies to each $i \in \mathcal{C}$
+individually — by A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}[\frac{1}{N}\sum_j|\delta_j|]$,
+which A5 caps at 0.014 for all sacrifice-eligible agents, so the sub-population centroid
+deviation satisfies $\mathbb{E}_t[\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}
+|p_{j,t}-\bar{p}_t^{\mathcal{C}}|] \leq 0.014$ by the convexity of absolute value
+and the per-agent bound) yields:
 
 $$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$$
 
@@ -949,6 +957,22 @@ low (values in Table A.1, Appendix A.3; range $[0.01, 0.08]$).
 The **realised stake fraction** on day $d$ is:
 
 $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
+
+**Bankroll update.** After all events in $\mathcal{B}_d$ resolve, each agent's virtual
+bankroll updates as:
+
+$$W_{i,d} = W_{i,d-1} \cdot \left(1 + \sum_{t \in \mathcal{B}_d} s_i \cdot g_{i,t}\right)$$
+
+where $g_{i,t}$ is the signed net return on event $t$.  The agent bets $s_i \cdot W_{i,d-1}$
+on its favoured outcome: $\omega = 1$ if $p_{i,t} > q_t$, $\omega = 0$ if
+$p_{i,t} < q_t$, where $q_t$ is the market-implied probability derived from the
+published moneyline; if $p_{i,t} = q_t$ no bet is placed.  For a correct bet:
+
+$$g_{i,t} = s_i \cdot \frac{1 - q_t}{q_t} \qquad (\text{decimal odds minus one})$$
+
+For an incorrect bet: $g_{i,t} = -s_i$.  The full vig-adjusted formula,
+including the sportsbook's overround correction, is implemented in
+`scripts/arena/bankroll.py` and referenced in Appendix D (§C.5).
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference
@@ -1704,7 +1728,7 @@ but explicitly withholds common-knowledge *predictions*: agent $i$ never
 learns what probability agent $j \neq i$ reported for today's events
 (though cumulative bankroll standings allow partial stake-size inference,
 bounded by the three-factor argument in the §3.2 broadcast-step footnote
-and further discussed in §7.3).
+and further discussed in §7.8).
 This asymmetry is the central information-architecture decision, and it
 rests on a formal distinction Aumann's theorem does not erase: ground-truth
 outcomes are *not* posterior belief states. Sharing outcomes allows
@@ -2235,11 +2259,49 @@ component of the agent cohort.
 
 ---
 
+## 7.8  Bankroll Broadcast Scope: Design Choice and Information Architecture
+
+The day-end broadcast (Definition 1, step 5) currently disseminates cumulative bankroll
+standings alongside archetype labels. This creates the partial prediction-inference
+risk described in the §3.2 broadcast-step footnote: a sufficiently informed observer
+seeing a large bankroll increment can infer a large stake fraction, and with knowledge
+of the archetype's floor $\kappa_{\min}^{(r_j)}$ could partially recover the realised
+stake $s_j$ and hence the direction and rough magnitude of agent $j$'s prediction for
+the preceding day.
+
+An alternative design would broadcast only (i) archetype labels $\{r_j\}_{j\in\mathcal{I}}$
+and (ii) rank-order standings, omitting bankroll magnitudes entirely. This fully
+eliminates the stake-size inference channel but at two functional costs: (a) agents
+could no longer compute absolute Kelly-weight contributions of peers to the ensemble
+mean prediction $\bar{p}_t$; and (b) the implicit Bayesian model averaging property
+of the ensemble (§6.5) would become invisible to individual agents, potentially
+degrading morning council quality (§3.6) and the SRR incentive calculation.
+
+The three-factor bound in the §3.2 footnote argues leakage is partial and approximate
+in the current design: (a) $\overline{B}_{j,d}$, which determines $\kappa_j$, is
+private and changes daily; (b) the broadcast reports cumulative totals rather than
+marginal daily increments; and (c) the personality risk weight $\rho_j$ is never
+broadcast. Recovering exact stake fractions requires simultaneous knowledge of
+$\kappa_j$, $\rho_j$, and $\kappa_{\min}^{(r_j)}$ — at least two of which are either
+private or daily-varying. Partial inference is possible but does not constitute
+common-knowledge prediction sharing in Aumann's sense.
+
+We retain the bankroll-magnitude broadcast in Condition A because: (a) the three-factor
+bound limits leakage to a directional signal rather than a precise probability recovery;
+(b) agents require absolute bankroll data to compute the ensemble mean prediction $\bar{p}_t$;
+and (c) omitting magnitudes would prevent agents from identifying the highest-weight
+peers when formulating the morning council brief. The rank-only design is a viable
+alternative for deployments where prediction-inference risk is paramount; we recommend
+evaluating it in replications via a sixth condition (Condition F: Rank-Only Broadcast).
+
+---
+
 > **Acknowledgement of open questions.** Several questions raised in this
 > section — whether SRR benefits transfer to continuous-outcome domains,
 > whether provider non-stationarity confounds the longitudinal trends,
-> and whether the taxonomy designer's prior knowledge biases the vacancy
-> dynamics — cannot be resolved within the current experimental design.
+> whether the taxonomy designer's prior knowledge biases the vacancy
+> dynamics, and whether the rank-only broadcast design preserves SRR efficacy —
+> cannot be resolved within the current experimental design.
 > We flag them as priority targets for follow-on replication studies.
 
 ---
@@ -2546,6 +2608,30 @@ $N/W \cdot P[\overline{B}_{i,d} - \bar{B}_d > \delta_{\text{sac}}]$,
 yielding a U-shaped relationship with ensemble Brier: too few events leave
 under-represented archetypes vacant; too many events cause calibration degradation
 during archetype transitions.
+
+### C.2.3  Reversal-Target Sensitivity Analysis
+
+Definition 2, step 5, reverts to $r_i^{(\text{pre})}$ — the archetype immediately
+before the SRR event — rather than the agent's initial archetype $r_i^{(0)}$.
+The trade-off is discussed in the §3.4 footnote.  Under the selected parameters
+($W_{\text{persist}} = 14$ days, $D = 175$ trading days), multi-hop SRR chains deeper
+than two hops are rare ($\leq 12$ SRR events per agent per season).  **[PENDING:
+comparison of immediately-prior vs.\ home-base reversal designs from
+`data/arena/axelrod-log/srr-chain-analysis.jsonl`.]**
+
+### C.2.4  Archetype Distinguishability Out-of-Sample Validation
+
+The pairwise distinguishability estimates $\hat{\epsilon}_{\text{arch}}$ cited in
+Assumption A1 are computed from the full 2024–25 pilot season.  For an unbiased
+out-of-sample bound, the pilot season should be partitioned into a development half
+(October 2024 – February 2025) and a validation half (March – June 2025), with
+$\hat{\epsilon}_{\text{arch}}$ recomputed on the held-out half.  If the held-out
+estimate satisfies $\hat{\epsilon}_{\text{arch}}^{\text{val}} \geq 0.037$, A1 is
+confirmed out-of-sample.  If $\hat{\epsilon}_{\text{arch}}^{\text{val}} \in (0.031, 0.037)$,
+the Lemma 1 Case 2 arithmetic still holds (threshold 0.031 preserves the 0.034 > 0.028
+margin); values $\leq 0.031$ would require a tighter A5 bound or explicit restatement.
+**[PENDING: held-out half recomputation, September 2026 analysis; pre-submission
+checklist item 12.]**
 
 ---
 

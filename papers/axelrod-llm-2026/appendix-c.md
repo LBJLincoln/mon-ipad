@@ -71,7 +71,42 @@ transient slumps as sacrifice-eligible; (c) $W_{\text{persist}} = 28$ delays
 recovery; confirmed selection $\delta_{\text{sac}} = 0.02$, $W = 7$,
 $W_{\text{persist}} = 14$ should be Pareto-optimal in the pilot grid.]**
 
-### C.2.3  Interaction Effects
+### C.2.3  Reversal-Target Sensitivity Analysis
+
+Definition 2, step 5, reverts to $r_i^{(\text{pre})}$ — the archetype immediately
+before the SRR event — rather than the agent's initial archetype $r_i^{(0)}$.
+The trade-off between these two designs is discussed in the §3.4 footnote.
+Empirical comparison requires tracking multi-hop SRR chains, defined as an agent
+experiencing $\geq 2$ SRR events within one season. Under the selected parameters
+($W_{\text{persist}} = 14$ days, $D = 175$ trading days), an agent can undergo at
+most $\lfloor 175/14 \rfloor = 12$ SRR events; multi-hop chains deeper than two
+are therefore possible but rare. **[PENDING: comparison of immediately-prior vs.\
+home-base reversal designs from pilot data, to be populated from
+`data/arena/axelrod-log/srr-chain-analysis.jsonl`.]**
+
+### C.2.4  Archetype Distinguishability Out-of-Sample Validation (HH4)
+
+The pairwise distinguishability estimates $\hat{\epsilon}_{\text{arch}}$ reported in
+Table B.2 and cited in Assumption A1 are computed from the full 2024–25 pilot season.
+To provide an unbiased bound for A1's numerical constant, the pilot season should be
+partitioned into a *development half* (October 2024 – February 2025) and a *validation
+half* (March – June 2025), with $\hat{\epsilon}_{\text{arch}}$ recomputed on the
+held-out validation half.
+
+If the held-out estimate satisfies $\hat{\epsilon}_{\text{arch}}^{\text{val}} \geq 0.037$,
+Assumption A1 is confirmed out-of-sample and the Lemma 1 / Proposition 2 arithmetic
+carries through unchanged. If $\hat{\epsilon}_{\text{arch}}^{\text{val}} < 0.037$,
+the A1 bound should be revised downward to $\hat{\epsilon}_{\text{arch}}^{\text{val}}$
+and the Lemma 1 Case 2 sufficient condition re-verified: the condition requires
+$\frac{N-1}{N}\hat{\epsilon}_{\text{arch}} > 2 \times 0.014$, i.e., a threshold of
+$\hat{\epsilon}_{\text{arch}} > \frac{12}{11} \times 0.028 \approx 0.031$.  The
+current estimate (0.037) carries a slack of 0.006 above this threshold, so values in
+$(0.031, 0.037)$ would tighten but not break the result; values $\leq 0.031$ would
+require either a tighter A5 bound or an explicit restatement.
+**[PENDING: held-out half recomputation, scheduled for September 2026 analysis;
+listed in pre-submission checklist as item 12.]**
+
+### C.2.5  Interaction Effects
 
 Because $\delta_{\text{sac}}$ and $W$ jointly determine sacrifice eligibility,
 we also evaluate the full $4 \times 5 = 20$-point $(\delta_{\text{sac}}, W)$

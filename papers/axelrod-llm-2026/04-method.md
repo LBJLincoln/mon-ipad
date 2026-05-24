@@ -340,7 +340,10 @@ and the RHS $= 0.028$, giving $0.034 > 0.028$. $\checkmark$
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
 $\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
-strictly increases JSD.
+strictly increases JSD. Pilot season data confirm that NBA game-day centroids satisfy
+$\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout
+the 2024–25 season (Table 4, §5.1); the monotonicity regime is therefore satisfied
+throughout the experimental range, and the step applies without qualification.
 Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
@@ -384,7 +387,12 @@ $\text{Amb}^{\mathcal{C},\text{deviation}} = \text{Amb}^{\mathcal{C},\text{pre}}
 Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (Assumptions A1,
 A2, A4, A5 each apply because $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$
 and the archetype-distinguishability and centroid-deviation bounds hold
-agent-uniformly) yields:
+agent-uniformly; specifically, A5's bound of 0.014 applies to each $i \in \mathcal{C}$
+individually — by A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}[\frac{1}{N}\sum_j|\delta_j|]$,
+which A5 caps at 0.014 for all sacrifice-eligible agents, so the sub-population centroid
+deviation satisfies $\mathbb{E}_t[\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}
+|p_{j,t}-\bar{p}_t^{\mathcal{C}}|] \leq 0.014$ by the convexity of absolute value
+and the per-agent bound) yields:
 
 $$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$$
 
@@ -471,6 +479,22 @@ low (values in Table A.1, Appendix A.3; range $[0.01, 0.08]$).
 The **realised stake fraction** on day $d$ is:
 
 $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
+
+**Bankroll update.** After all events in $\mathcal{B}_d$ resolve, each agent's virtual
+bankroll updates as:
+
+$$W_{i,d} = W_{i,d-1} \cdot \left(1 + \sum_{t \in \mathcal{B}_d} s_i \cdot g_{i,t}\right)$$
+
+where $g_{i,t}$ is the signed net return on event $t$.  The agent bets $s_i \cdot W_{i,d-1}$
+on its favoured outcome: $\omega = 1$ if $p_{i,t} > q_t$, $\omega = 0$ if
+$p_{i,t} < q_t$, where $q_t$ is the market-implied probability derived from the
+published moneyline; if $p_{i,t} = q_t$ no bet is placed.  For a correct bet:
+
+$$g_{i,t} = s_i \cdot \frac{1 - q_t}{q_t} \qquad (\text{decimal odds minus one})$$
+
+For an incorrect bet: $g_{i,t} = -s_i$.  The full vig-adjusted formula,
+including the sportsbook's overround correction, is implemented in
+`scripts/arena/bankroll.py` and referenced in Appendix D (§C.5).
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference

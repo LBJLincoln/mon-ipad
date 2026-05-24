@@ -116,7 +116,7 @@ but explicitly withholds common-knowledge *predictions*: agent $i$ never
 learns what probability agent $j \neq i$ reported for today's events
 (though cumulative bankroll standings allow partial stake-size inference,
 bounded by the three-factor argument in the §3.2 broadcast-step footnote
-and further discussed in §7.3).
+and further discussed in §7.8).
 This asymmetry is the central information-architecture decision, and it
 rests on a formal distinction Aumann's theorem does not erase: ground-truth
 outcomes are *not* posterior belief states. Sharing outcomes allows

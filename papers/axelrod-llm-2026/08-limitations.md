@@ -289,9 +289,56 @@ component of the agent cohort.
 
 ---
 
+## 7.8  Bankroll Broadcast Scope: Design Choice and Information Architecture
+
+The day-end broadcast (Definition 1, step 5) currently disseminates cumulative bankroll
+standings alongside archetype labels. This creates the partial prediction-inference
+risk described in the §3.2 broadcast-step footnote: a sufficiently informed observer
+seeing a large bankroll increment can infer a large stake fraction, and with knowledge
+of the archetype's floor $\kappa_{\min}^{(r_j)}$ could partially recover the realised
+stake $s_j$ and hence the direction and rough magnitude of agent $j$'s prediction for
+the preceding day.
+
+An alternative design would broadcast only (i) archetype labels $\{r_j\}_{j\in\mathcal{I}}$
+and (ii) rank-order standings, omitting bankroll magnitudes entirely. This fully
+eliminates the stake-size inference channel but at two functional costs: (a) agents
+could no longer compute absolute Kelly-weight contributions of peers to the ensemble
+mean prediction $\bar{p}_t$; and (b) the implicit Bayesian model averaging property
+of the ensemble (§6.5) would become invisible to individual agents, potentially
+degrading the quality of morning council summaries (§3.6) and the SRR incentive
+calculation (the sacrifice-eligibility check requires comparing $\overline{B}_{i,d}$
+to the society mean $\bar{B}_d$, which does not require bankroll magnitudes, but
+the Kelly-weighting framing of §6.5 assumes agents observe the bankroll distribution
+to identify dominant contributors).
+
+The three-factor bound in the §3.2 footnote argues leakage is partial and approximate
+in the current design: (a) $\overline{B}_{j,d}$, which determines $\kappa_j$, is
+private and changes daily; (b) the broadcast reports cumulative totals rather than
+marginal daily increments; and (c) the personality risk weight $\rho_j$ is never
+broadcast. Recovering exact stake fractions requires simultaneous knowledge of
+$\kappa_j$, $\rho_j$, and $\kappa_{\min}^{(r_j)}$ — at least two of which are either
+private or daily-varying. Partial inference (e.g., inferring whether an agent bet
+*heavily* on a game without recovering the exact probability) is possible for an
+adversarially informed agent but does not constitute common-knowledge prediction
+sharing in Aumann's sense.
+
+We retain the bankroll-magnitude broadcast in Condition A because: (a) the three-factor
+bound limits leakage to a one-sided direction signal rather than a precise probability
+recovery; (b) agents require absolute bankroll data to compute the ensemble mean
+prediction $\bar{p}_t$ used in the morning council brief; and (c) omitting magnitudes
+would prevent agents from identifying the highest-weight peers when formulating
+the council brief, weakening the collaborative council-discussion quality.
+The rank-only design is a viable alternative for deployments where prediction-inference
+risk is a primary constraint; we recommend evaluating it in follow-on replications
+via a sixth condition (Condition F: Rank-Only Broadcast) and report this as a
+pre-submission recommendation.
+
+---
+
 > **Acknowledgement of open questions.** Several questions raised in this
 > section — whether SRR benefits transfer to continuous-outcome domains,
 > whether provider non-stationarity confounds the longitudinal trends,
-> and whether the taxonomy designer's prior knowledge biases the vacancy
-> dynamics — cannot be resolved within the current experimental design.
+> whether the taxonomy designer's prior knowledge biases the vacancy
+> dynamics, and whether the rank-only broadcast design preserves SRR efficacy —
+> cannot be resolved within the current experimental design.
 > We flag them as priority targets for follow-on replication studies.
