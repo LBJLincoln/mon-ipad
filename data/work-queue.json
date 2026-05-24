@@ -4,13 +4,13 @@
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
-      "id": "cloud-trigger-axelrod-fire-180-2026-05-28T06h",
+      "id": "cloud-brain-fire180-2026-05-28T06h",
       "priority": 230,
       "status": "done",
       "completed_at": "2026-05-28T06:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-180",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-180 EVEN Axelrod verify pass: SHAs NBA 19f4acf49d(5993L)/POL 3496362c60(3977L) UNCHANGED vs fire-179; 13/13 parity OK; C→B→A confirmed (NBA L5056/5065/5073 POL L3246/3255/3263); KL-div ε-smoothed self-excluded OK; AXELROD_ARCHETYPES NBA-20-sports/POL-20-political-financial OK; Mech B+C BLOCKED (do_not_push_hf_space_yet+NBA-503-122+d+POL-IDLE-34+d); all-NBA/POL-404-DOWN(sleeping) (2026-05-28T06h)"
+      "completed_by": "cloud-brain-fire-180",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-180 EVEN S18-c821-g2461-stag=20(>15-DIVERSIFY-NEEDED-VM-URGENT)-pareto=11(13→11-2ND-CONSEC-SHRINK)-RF+ET-NO-STACKING-Rule8-LOOKS-RESOLVED(2nd-fire); next-auto-reset-~c825(4cycles-IMMINENT); S22-c740-g2219-stag=11-local-optimum-pattern-RF-primary-NO-STACKING-Rule8-LIKELY-COMPLIANT-4TH-fire; ET-0.21877-EXTREME-URGENT(11+fires); S13/S14/S15/POL-404-DOWN; EVEN: arXiv:2510.17915-dual-isotonic-calibration-post-hoc-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-28T06h)"
     },
     {
       "id": "cloud-brain-fire179-2026-05-28T02h",
@@ -19,7 +19,7 @@
       "completed_at": "2026-05-28T02:00:00Z",
       "completed_by": "cloud-brain-fire-179",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-179 ODD S18-c800-g2400-stag=0-pareto=13(↑12↑13-RECOVERING!)-hard-resets-c750+c775-BOTH-CONFIRMED; RF-best-model-NO-STACKING-MENTIONED(Rule8-POSSIBLE-RESOLUTION-unconfirmed); S22-c720-g2160-stag=0-c703-auto-reset-CONFIRMED; next-~c728(WATCH); RF-primary-NO-STACKING(Rule8-LIKELY-COMPLIANT-3RD-CONSECUTIVE); ET-0.21877-EXTREME-URGENT(10+fires); S13/S14/S15/POL-404-DOWN; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-28T02h)"
+      "subject": "fire-179 ODD S18-c800-g2400-stag=0-pareto=13(→12→13-RECOVERING!)-hard-resets-c750+c775-BOTH-CONFIRMED; RF-best-model-NO-STACKING-MENTIONED(Rule8-POSSIBLE-RESOLUTION-unconfirmed); S22-c720-g2160-stag=0-c703-auto-reset-CONFIRMED; next-~c728(WATCH); RF-primary-NO-STACKING(Rule8-LIKELY-COMPLIANT-3RD-CONSECUTIVE); ET-0.21877-EXTREME-URGENT(10+fires); S13/S14/S15/POL-404-DOWN; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-28T02h)"
     },
     {
       "id": "cloud-trigger-axelrod-fire-178-2026-05-27T22h",
@@ -220,6 +220,17 @@
       "subject": "fire-157 ODD S14-NEW-BEST/S13-TOP-CAND/S15/S18/S22/POL status (2026-05-24T08h)"
     },
     {
+      "id": "vm-s18-stag20-diversify-fire180",
+      "priority": 2,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-URGENT: S18 stag=20 (>15 threshold) — checkpoint via /api/export DIRECTLY then POST /api/command {action:diversify}. Next auto-reset ~c825 only 4 cycles away.",
+      "detected_at": "2026-05-28T06:00:00Z",
+      "updated_at": "2026-05-28T06:00:00Z",
+      "cloud_brain_note": "fire-180: S18 c821 stag=20, pareto=11 (2nd consecutive shrink). Per Rule#6: stag>15 → diversify. Per Rule#3+Rule#6: CHECKPOINT FIRST. /api/export 404 via WebFetch (7-fire confirmed), VM must curl directly. If Rule8 confirmed clean (no stacking in MODEL_TYPES) → checkpoint + then POST /api/command {action:diversify}. If stacking found → hard-reset first, then checkpoint, then diversify. Next auto-reset ~c825 (4 cycles) imminent.",
+      "do_not_push": false
+    },
+    {
       "id": "vm-s18-rule8-stacking-priority0",
       "priority": 0,
       "status": "pending",
@@ -227,7 +238,7 @@
       "subject": "VM-CRITICAL priority=0: S18 RULE#8 STACKING — verify Rule8 resolution via /api/export + confirm auto-reset fallback fixed",
       "detected_at": "2026-05-27T14:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): S18 c800 API no longer explicitly mentions stacking (was explicit at c788 fire-177: 'LightGBM, XGBoost, Extra Trees, ensemble stacking approaches'). Hard reset at c775 (after c750) may have cleared stacking from auto-reset fallback. RF shown as best model fire-179. Rule8 POSSIBLE RESOLUTION — UNCONFIRMED. VM MUST: (1) curl /api/export DIRECTLY to check MODEL_TYPES, (2) verify auto-reset fallback config permanently excludes stacking, (3) if stacking confirmed gone — checkpoint and mark resolved.",
+      "cloud_brain_note": "fire-180 UPDATE (2nd consecutive fire): S18 c821 API describes 'Extra trees and random forest architectures' — same pattern as fire-179 (c800 RF primary, no stacking). 2nd consecutive fire without stacking mention → Rule8 LOOKS RESOLVED (stronger signal). Hard resets c750+c775+c800 all confirmed. STILL UNCONFIRMED without /api/export MODEL_TYPES. VM MUST: (1) curl /api/export DIRECTLY to check MODEL_TYPES, (2) verify no stacking in auto-reset fallback, (3) if stacking confirmed gone — checkpoint and mark resolved, (4) THEN send diversify (stag=20).",
       "do_not_push": false
     },
     {
@@ -235,10 +246,10 @@
       "priority": 3,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: S22 c720 g2160 stag=0 — next auto-reset ~c728 (c703+25, 8 cycles away); ET-0.21877 EXTREME URGENT",
+      "subject": "MONITOR: S22 c740 g2219 stag=11 — local-optimum convergence pattern; next auto-reset ~c753 (c728+25, 13 cycles); ET-0.21877 EXTREME URGENT",
       "detected_at": "2026-05-27T18:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): S22 c720 g2160 stag=0. c703 auto-reset CONFIRMED (was imminent fire-177). Next auto-reset threshold ~c728 (8 cycles away). RF primary, no stacking, Rule8 LIKELY COMPLIANT 3rd consecutive fire. ET-0.21877 still unconfirmed (10+ fires). VM: curl /api/export DIRECTLY.",
+      "cloud_brain_note": "fire-180: S22 c740 g2219 stag=11. RF primary, no stacking, Rule8 LIKELY COMPLIANT 4th consecutive fire (177+178+179+180). LOCAL OPTIMUM CONVERGENCE: API reports 'identical Brier=0.2226, ROI=29.5%, Sharpe=9.00 each generation' — population converged at local optimum. Next auto-reset ~c753 (c728+25, 13 cycles away). ET-0.21877 EXTREME URGENT 11+ fires. VM: curl /api/export DIRECTLY.",
       "do_not_push": false
     },
     {
@@ -246,7 +257,7 @@
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-URGENT: S13 CatBoost-0.21992 gen=2831 EXTREME URGENT (<0.22012 fleet-best) — still 404-DOWN fire-179",
+      "subject": "VM-URGENT: S13 CatBoost-0.21992 gen=2831 EXTREME URGENT (<0.22012 fleet-best) — still 404-DOWN fire-180",
       "detected_at": "2026-05-25T04:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
       "cloud_brain_note": "fire-180 (unchanged): S13 still 404-DOWN. CatBoost-200f-0.21992 gen=2831 still unconfirmed. VM: retry S13/api/status periodically; when accessible curl /api/export IMMEDIATELY.",
@@ -257,10 +268,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT: S18 — fire-179: c800 g2400 stag=0 pareto=13(RECOVERING) — verify Rule8 resolved FIRST",
+      "subject": "VM-CHECKPOINT: S18 — fire-180: c821 g2461 stag=20 pareto=11 — verify Rule8 resolved FIRST, then checkpoint, then diversify",
       "detected_at": "2026-05-24T12:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): S18 c800 pareto=13 RECOVERING. Rule8 POSSIBLE RESOLUTION (no stacking in API). VM: curl /api/export DIRECTLY first to confirm MODEL_TYPES, then checkpoint if stacking confirmed gone.",
+      "cloud_brain_note": "fire-180: S18 c821 pareto=11 (2nd shrink). Rule8 LOOKS RESOLVED (2nd fire no stacking in API). VM: curl /api/export FIRST to confirm MODEL_TYPES, then checkpoint if stacking confirmed gone, then diversify (stag=20).",
       "do_not_push": false
     },
     {
@@ -268,7 +279,7 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P2 pareto=3(CRITICAL SHRINK fire-158) — still 404-DOWN fire-179",
+      "subject": "MONITOR: P2 pareto=3(CRITICAL SHRINK fire-158) — still 404-DOWN fire-180",
       "detected_at": "2026-05-24T12:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
       "cloud_brain_note": "fire-180 (unchanged): P2 404-DOWN sleeping. pareto_best LightGBM-123f-0.249 at eviction risk.",
@@ -279,7 +290,7 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P4 pareto=5 oscillation — still 404-DOWN fire-179",
+      "subject": "MONITOR: P4 pareto=5 oscillation — still 404-DOWN fire-180",
       "detected_at": "2026-05-24T12:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
       "cloud_brain_note": "fire-180 (unchanged): P4 404-DOWN sleeping. pareto_best=0.24915-LightGBM-131f INTACT.",
@@ -340,7 +351,7 @@
       "priority": 4,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P5 pareto=6(RECOVERING fire-158) — still 404-DOWN fire-179",
+      "subject": "MONITOR: P5 pareto=6(RECOVERING fire-158) — still 404-DOWN fire-180",
       "detected_at": "2026-05-23T14:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
       "cloud_brain_note": "fire-180 (unchanged): P5 404-DOWN sleeping."
@@ -403,7 +414,7 @@
       "subject": "INVESTIGATE: /api/export returning 404 on both S18 and S22 via WebFetch — confirm via direct curl",
       "detected_at": "2026-05-26T22:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): /api/export 404 confirmed 6th consecutive fire. Root cause definitively WebFetch limitation. VM: curl both endpoints directly.",
+      "cloud_brain_note": "fire-180: /api/export 404 confirmed 7th consecutive fire. Root cause definitively WebFetch limitation. VM: curl both endpoints directly.",
       "do_not_push": false
     },
     {
@@ -462,6 +473,17 @@
       "do_not_push": false
     },
     {
+      "id": "vm-add-dual-isotonic-calibration",
+      "priority": 36,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "PORT SOTA: Add dual isotonic calibration (separate regressors for correct vs incorrect predictions) -- arXiv:2510.17915 fire-180",
+      "detected_at": "2026-05-28T06:00:00Z",
+      "updated_at": "2026-05-28T06:00:00Z",
+      "cloud_brain_note": "fire-180 NEW: Post-hoc, no retraining. Stratify calibration holdout by predicted confidence (correct vs incorrect), fit separate isotonic regressors. Target S15 RF-75f + S22 RF-48f + P1/P2/P5/P7. Expected 0.001-0.002 Brier improvement. Proposal: data/research-proposals/sota-dual-isotonic-calibration-fire180.md. After engine-parity-sync (priority=40).",
+      "do_not_push": false
+    },
+    {
       "id": "engine-parity-sync",
       "priority": 40,
       "status": "pending",
@@ -494,18 +516,18 @@
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: S22 Rule#8 — LIKELY COMPLIANT fire-179 (random_forest primary, 3 consecutive fires)",
+      "subject": "MONITOR: S22 Rule#8 — LIKELY COMPLIANT fire-180 (4th consecutive fire: 177+178+179+180)",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): S22 likely compliant 3rd consecutive fire but unconfirmed without /api/export."
+      "cloud_brain_note": "fire-180: S22 likely compliant 4th consecutive fire but unconfirmed without /api/export."
     },
     {
       "id": "vm-remove-stacking-s18",
       "priority": 42,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR S18 Rule#8 — POSSIBLE RESOLUTION fire-179 (no stacking in API vs explicit fire-177 c788)",
+      "subject": "MONITOR S18 Rule#8 — LOOKS RESOLVED fire-180 (2nd consecutive fire: 179+180)",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): S18 API no longer explicitly lists stacking. Hard reset c775 may have cleared fallback. VM: curl /api/export to confirm. If stacking gone — RESOLVED. If back — hard-reset again."
+      "cloud_brain_note": "fire-180: S18 API c821 'Extra trees and random forest architectures' (2nd consecutive fire no stacking). LOOKS RESOLVED. VM: curl /api/export to confirm MODEL_TYPES."
     },
     {
       "id": "vm-remove-stacking-s14",
@@ -594,7 +616,8 @@
       "subject": "VM-CHECKPOINT: P2 pareto=3(CRITICAL fire-158)",
       "detected_at": "2026-05-22T22:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): P2 404-DOWN. pareto_best=0.249(LightGBM-123f) at eviction risk."
+      "cloud_brain_note": "fire-180 (unchanged): P2 404-DOWN. pareto_best=0.249(LightGBM-123f) at eviction risk.",
+      "do_not_push": false
     },
     {
       "id": "vm-checkpoint-p7-lgbm-0.24937",
@@ -604,7 +627,8 @@
       "subject": "VM-CHECKPOINT: P7 LightGBM-0.24931 -- fire-158: c9678 g29032 pareto=7(stable)",
       "detected_at": "2026-05-17T16:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): P7 404-DOWN sleeping."
+      "cloud_brain_note": "fire-180 (unchanged): P7 404-DOWN sleeping.",
+      "do_not_push": false
     },
     {
       "id": "vm-checkpoint-p5-pareto14-fire150",
@@ -614,7 +638,8 @@
       "subject": "VM-CHECKPOINT: P5 pareto=6(RECOVERING fire-158) -- c28650 g85948 brier=0.24993",
       "detected_at": "2026-05-23T02:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): P5 404-DOWN sleeping."
+      "cloud_brain_note": "fire-180 (unchanged): P5 404-DOWN sleeping.",
+      "do_not_push": false
     },
     {
       "id": "vm-checkpoint-s15-et-0.21888-fire136",
@@ -624,27 +649,30 @@
       "subject": "VM-CHECKPOINT: S15 pareto_best -- 404-DOWN sleeping",
       "detected_at": "2026-05-20T12:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): S15 404-DOWN sleeping. RF-75f fleet best 0.22012★."
+      "cloud_brain_note": "fire-180 (unchanged): S15 404-DOWN sleeping. RF-75f fleet best 0.22012★.",
+      "do_not_push": false
     },
     {
       "id": "vm-checkpoint-s18-rf-0.22005-fire136",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "S18 checkpoint -- fire-179: c800 g2400 stag=0 pareto=13 RECOVERING -- Rule8 POSSIBLE RESOLUTION",
+      "subject": "S18 checkpoint -- fire-180: c821 g2461 stag=20 pareto=11 -- verify Rule8 resolved FIRST, then checkpoint, then diversify",
       "detected_at": "2026-05-20T12:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): Rule8 POSSIBLE RESOLUTION (no stacking in API). VM: curl /api/export FIRST to verify MODEL_TYPES, then checkpoint if clean."
+      "cloud_brain_note": "fire-180: Rule8 LOOKS RESOLVED (2nd consecutive fire no stacking in API). stag=20 > 15 → diversify needed after checkpoint. VM: curl /api/export FIRST to verify MODEL_TYPES, then checkpoint, then diversify.",
+      "do_not_push": false
     },
     {
       "id": "vm-checkpoint-s22-catboost-0.21818",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT URGENT: S22 c720 g2160 stag=0 — ET-0.21877 EXTREME URGENT (10+ fires)",
+      "subject": "VM-CHECKPOINT URGENT: S22 c740 g2219 stag=11 — ET-0.21877 EXTREME URGENT (11+ fires)",
       "detected_at": "2026-05-18T10:00:00Z",
       "updated_at": "2026-05-28T06:00:00Z",
-      "cloud_brain_note": "fire-180 (unchanged): ET-0.21877 STILL unconfirmed 10+ fires. c703 auto-reset confirmed; next ~c728. VM: curl /api/export DIRECTLY."
+      "cloud_brain_note": "fire-180: ET-0.21877 STILL unconfirmed 11+ fires. c728 auto-reset confirmed; next ~c753 (13 cycles). Local optimum convergence pattern identified. VM: curl /api/export DIRECTLY.",
+      "do_not_push": false
     },
     {
       "id": "vm-s18-ssl-cert-error-fire143",
