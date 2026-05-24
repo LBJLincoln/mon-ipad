@@ -1,21 +1,21 @@
 {
-  "fire": 181,
-  "timestamp": "2026-05-28T10:00:00Z",
+  "fire": 183,
+  "timestamp": "2026-05-28T18:00:00Z",
   "parity": "ODD",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181). 17+ fires sleeping.",
+      "note": "sleeping (consistent fire-183). 19+ fires sleeping.",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "last_known_stag": 0,
       "last_known_pareto": 12,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST <0.22012)",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 < fleet-best 0.22012 still unconfirmed fire-181. VM: retry S13/api/status + export immediately when accessible."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 < fleet-best 0.22012 still unconfirmed fire-183. VM: retry S13/api/status + export immediately when accessible."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181)",
+      "note": "sleeping (consistent fire-183)",
       "last_known_cycle": 495,
       "last_known_gen": 1483,
       "last_known_stag": 0,
@@ -25,7 +25,7 @@
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181)",
+      "note": "sleeping (consistent fire-183)",
       "last_known_cycle": 2224,
       "last_known_gen": 6672,
       "last_known_stag": 0,
@@ -39,62 +39,68 @@
     },
     "S18": {
       "status": "UP",
-      "cycle": 837,
-      "generation": 2509,
+      "cycle": 859,
+      "generation": 2575,
       "best_brier": 0.22236,
-      "best_brier_note": "FIELD LAG — actual top performer CatBoost-200f-0.21995 gen=2505 (island 1)",
-      "top_performer": {
-        "model": "CatBoost",
-        "features": 200,
-        "brier": 0.21995,
-        "roi": 0.3256,
-        "sharpe": 12.30,
-        "generation": 2505,
-        "island": 1,
-        "alert": "EXTREME URGENT: 0.21995 < 0.22012 fleet-best threshold. VM: checkpoint NOW (after Rule8 export check)."
+      "best_brier_note": "FIELD LAG — unchanged 5+ fires. CatBoost-0.21995 from fire-181 POSSIBLY LOST in c850 reset.",
+      "top_performers": {
+        "primary": {
+          "model": "LightGBM",
+          "features": 38,
+          "brier": 0.24729,
+          "roi": 0.18,
+          "sharpe": 1.28,
+          "note": "Pareto member via ROI/Sharpe, NOT Brier"
+        },
+        "secondary": {
+          "model": "RF/ET",
+          "features": 200,
+          "brier_range": "0.2206-0.2207",
+          "sharpe_range": "7.9-9.9",
+          "note": "Best Brier performers in Pareto front"
+        }
       },
-      "best_roi": 0.2978,
-      "best_sharpe": 7.9499,
-      "best_features": 44,
-      "best_model_type": "random_forest (primary, API top-level)",
-      "stagnation": 11,
-      "pareto_front_size": 19,
-      "delta_cycle_from_fire180": "+16 (821→837)",
-      "delta_gen_from_fire180": "+48 (2461→2509)",
-      "delta_pareto_from_fire180": "11→19 (MAJOR SURGE — 8 solutions gained)",
-      "delta_stag_from_fire180": "20→11 (c825 auto-reset cleared stag, 11 new cycles accumulated)",
-      "hard_resets_confirmed": "c750 AND c775 AND c800 AND c825 ALL CONFIRMED",
-      "next_auto_reset_estimate": "~c850 (c825+25) — 13 cycles from c837",
-      "rule8_status": "4TH VIOLATION CONFIRMED fire-181: c825 auto-reset description states 'reseeding model type distributions with XGBoost, LightGBM variants, CatBoost, and stacking ensembles'. Pattern: EVERY auto-reset reintroduces stacking. VM must fix auto-reset fallback code in app.py. Note: CatBoost-0.21995 top performer may itself be clean — verify via /api/export MODEL_TYPES of that individual before checkpoint.",
-      "export_endpoint": "404 via WebFetch (confirmed fire-172+173+175+176+177+179+180+181 — 8-fire pattern, WebFetch limitation)",
-      "alert": "EXTREME URGENT: CatBoost-200f-0.21995 gen=2505 potential new fleet best (<0.22012). VM: (1) curl /api/export DIRECTLY to check MODEL_TYPES of CatBoost-0.21995 individual, (2) if clean → checkpoint, (3) fix auto-reset fallback to exclude stacking permanently. stag=11 (below diversify threshold — no diversify needed this cycle)."
+      "previous_top_performer": "CatBoost-200f-0.21995 gen=2505 (fire-181) — POSSIBLY LOST in c850 hard reset",
+      "stagnation": 0,
+      "pareto_front_size": 15,
+      "delta_cycle_from_fire181": "+22 (837→859)",
+      "delta_gen_from_fire181": "+66 (2509→2575)",
+      "delta_pareto_from_fire181": "19→15 (1st shrink post-c850)",
+      "hard_resets_confirmed": "c750 AND c775 AND c800 AND c825 AND c850 ALL CONFIRMED",
+      "c850_reset_details": "c850 description: 'introducing xgboost, lightgbm_brier, catboost, random_forest, and stacking variants' — stacking REINTRODUCED AGAIN (5TH VIOLATION)",
+      "next_auto_reset_estimate": "~c875 (c850+25) — 16 cycles from c859",
+      "rule8_status": "5TH VIOLATION CONFIRMED fire-183: c850 auto-reset explicitly includes 'stacking variants'. Pattern: ALL 5 auto-resets (c750/c775/c800/c825/c850) reintroduce stacking via broken fallback in app.py. VM must fix PERMANENTLY. CatBoost-0.21995 POSSIBLY LOST in c850 reset.",
+      "export_endpoint": "404 via WebFetch (confirmed 9-fire pattern: fire-172+173+175+176+177+179+180+181+183)",
+      "alert": "5TH Rule8 violation at c850. CatBoost-0.21995 possibly lost. Top Brier performers now RF/ET ~0.2206-0.2207. VM: (1) fix auto-reset fallback PERMANENTLY to exclude stacking, (2) curl /api/export to verify, (3) stag=0 — no diversify needed."
     },
     "S22": {
       "status": "UP",
-      "cycle": 757,
-      "generation": 2269,
+      "cycle": 776,
+      "generation": 2328,
       "best_brier": 0.22124,
       "best_roi": 0.3107,
       "best_sharpe": 8.8946,
       "best_features": 48,
-      "best_model_type": "random_forest (primary, 5th consecutive fire 177+178+179+180+181)",
+      "best_model_type": "random_forest",
       "stagnation": 0,
-      "pareto_front_size_range": "6-22 (varying per cycle)",
-      "delta_cycle_from_fire180": "+17 (740→757)",
-      "delta_gen_from_fire180": "+50 (2219→2269)",
-      "hard_resets_confirmed": "c728 AND c753 BOTH CONFIRMED (fire-181 API: 'hard resets at cycles 728 and 753')",
-      "next_auto_reset_estimate": "~c778 (c753+25) — 21 cycles from c757",
-      "convergence_pattern": "LOCAL OPTIMUM: API reports 'performance plateau around Brier=0.2226, ROI=29.5%, Sharpe=9.00'",
-      "et_candidate": "ET-0.21877 EXTREME URGENT still unconfirmed (12+ fires). /api/export 404 blocks confirmation.",
-      "rule8_status": "LIKELY COMPLIANT — 5th consecutive fire (177+178+179+180+181): primary=random_forest, no stacking mention in API. Unconfirmed without /api/export MODEL_TYPES.",
-      "export_endpoint": "404 via WebFetch (8-fire confirmed pattern — WebFetch limitation)",
-      "alert": "stag=0 (cleared). Local optimum convergence. ET-0.21877 EXTREME URGENT 12+ fires. Next auto-reset ~c778 (21 cycles). VM: curl /api/export DIRECTLY to confirm Rule8 + check ET candidate."
+      "pareto_front_size": 13,
+      "delta_cycle_from_fire181": "+19 (757→776)",
+      "delta_gen_from_fire181": "+59 (2269→2328)",
+      "delta_pareto_from_fire181": "7→13 (RECOVERING!)",
+      "hard_resets_confirmed": "c728 AND c753 BOTH CONFIRMED (NO stacking in either: c728=XGBoost/LightGBM/CatBoost; c753=XGBoost/XGBoost_Brier/LightGBM/RF)",
+      "next_auto_reset_estimate": "~c778 (c753+25) — IMMINENT: only 2 cycles from c776!",
+      "new_finding_fire183": "LR (logistic regression) dominating recent generations — new development",
+      "et_status": "ET confirmed 'strong Pareto performers' (fire-183 API) — specific Brier unconfirmed; ET-0.21877 still unconfirmed (13+ fires)",
+      "convergence_pattern": "Recovering. Pareto growing 7→13. LR emerging dominant.",
+      "rule8_status": "LIKELY COMPLIANT — 6th consecutive fire (177+178+179+180+181+183): no stacking in API or hard reset descriptions. c728: XGBoost/LightGBM/CatBoost. c753: XGBoost/XGBoost_Brier/LightGBM/RF. Unconfirmed without /api/export.",
+      "export_endpoint": "404 via WebFetch (9-fire confirmed pattern)",
+      "alert": "IMMINENT auto-reset ~c778 (2 cycles!). LR dominating recent gens — NEW. Pareto recovering 7→13. ET strong but Brier unconfirmed. Rule8 LIKELY COMPLIANT 6th fire. VM: curl /api/export IMMEDIATELY before c778 auto-reset — checkpoint ET candidate + confirm Rule8."
     }
   },
   "pol_islands": {
     "P1": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181). 17+ fires sleeping.",
+      "note": "sleeping (consistent fire-183). 19+ fires sleeping.",
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24902,
       "pareto_best_model": "LightGBM-105f gen=17750",
@@ -102,7 +108,7 @@
     },
     "P2": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181)",
+      "note": "sleeping (consistent fire-183)",
       "last_known_pareto": 3,
       "last_known_pareto_best": 0.249,
       "pareto_best_model": "LightGBM-123f",
@@ -110,7 +116,7 @@
     },
     "P4": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181)",
+      "note": "sleeping (consistent fire-183)",
       "last_known_best_brier": 0.2497,
       "last_known_pareto": 5,
       "last_known_pareto_best": 0.24915,
@@ -119,7 +125,7 @@
     },
     "P5": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181)",
+      "note": "sleeping (consistent fire-183)",
       "last_known_pareto": 6,
       "last_known_best_brier": 0.24993,
       "trend": "RECOVERING (3→6 fire-158)",
@@ -127,7 +133,7 @@
     },
     "P7": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-181)",
+      "note": "sleeping (consistent fire-183)",
       "last_known_pareto": 7,
       "last_known_best_brier": 0.24931,
       "pareto_best_model": "LightGBM-112f",
@@ -138,9 +144,9 @@
     "nba": 0.22012,
     "nba_source": "S15 RF-75f (confirmed, sleeping)",
     "nba_pareto_candidates": [
-      "S18 CatBoost-200f-0.21995 gen=2505 (fire-181 top performer — EXTREME URGENT, verify Rule8 + checkpoint via VM)",
-      "S13 CatBoost-0.21992 (UNCONFIRMED — 404-DOWN, EXTREME URGENT 17+ fires)",
-      "S22 ET-0.21877 (EXTREME URGENT — fire-169 discovery; /api/export 404; 12+ fires unconfirmed)"
+      "S18 CatBoost-200f-0.21995 gen=2505 (fire-181) — POSSIBLY LOST in c850 reset fire-183. VM: /api/export to verify.",
+      "S13 CatBoost-0.21992 (UNCONFIRMED — 404-DOWN, EXTREME URGENT 19+ fires)",
+      "S22 ET-0.21877 (EXTREME URGENT — fire-169 discovery; /api/export 404; 13+ fires unconfirmed; auto-reset ~c778 IMMINENT)"
     ],
     "pol": 0.2497,
     "pol_source": "P4 LightGBM-131f (confirmed, sleeping)"
@@ -148,17 +154,17 @@
   "export_endpoint_alert": {
     "affected": ["S18", "S22"],
     "symptom": "/api/export returns HTTP 404 via WebFetch on both active islands",
-    "fires_confirmed": ["fire-172", "fire-173", "fire-175", "fire-176", "fire-177", "fire-179", "fire-180", "fire-181"],
-    "root_cause": "WebFetch authentication/redirect limitation — 8-fire confirmed pattern (not app.py regression)",
+    "fires_confirmed": ["fire-172", "fire-173", "fire-175", "fire-176", "fire-177", "fire-179", "fire-180", "fire-181", "fire-183"],
+    "root_cause": "WebFetch authentication/redirect limitation — 9-fire confirmed pattern",
     "action": "VM must curl /api/export directly on S18 and S22",
-    "impact": "Rule#3 checkpoint blocked; ET-0.21877 validation blocked; Rule#8 MODEL_TYPES verification blocked; CatBoost-0.21995 checkpoint requires /api/export confirmation"
+    "impact": "CRITICAL: S22 auto-reset ~c778 IMMINENT (2 cycles!) — /api/export needed NOW to preserve ET candidate before reset."
   },
   "stagnation_summary": {
     "S13": "0 (last known, 404-DOWN sleeping)",
     "S14": "0 (last known, sleeping)",
     "S15": "0 (last known, sleeping)",
-    "S18": "11 (LIVE, c837; below >15 diversify threshold — no diversify needed; CatBoost-0.21995 checkpoint is priority)",
-    "S22": "0 (live, c757; cleared post-c753 reset; local-optimum-convergence-pattern; next-auto-reset-~c778-21cycles)",
+    "S18": "0 (LIVE, c859; c850 auto-reset cleared; no diversify needed; next auto-reset ~c875)",
+    "S22": "0 (live, c776; next auto-reset ~c778 IMMINENT in 2 cycles)",
     "P1": "0 (last known, sleeping)",
     "P2": "0 (last known, sleeping)",
     "P4": "0 (last known, sleeping)",
@@ -166,22 +172,22 @@
     "P7": "0 (last known, sleeping)"
   },
   "odd_fire_analysis": {
-    "note": "fire-181 ODD — no WebSearch",
-    "key_finding": "S18 CatBoost-200f-0.21995 gen=2505 is the biggest finding this cycle — potential new NBA fleet best. Rule8 4th violation confirmed at c825. S22 stag cleared to 0 post-c753 reset."
+    "note": "fire-183 ODD — no WebSearch",
+    "key_finding_1": "S18 c850 auto-reset CONFIRMED — 5th consecutive Rule8 stacking violation. CatBoost-0.21995 POSSIBLY LOST. Best current Brier performers RF/ET ~0.2206-0.2207.",
+    "key_finding_2": "S22 pareto RECOVERING (7→13). LR dominating recent generations (NEW fire-183). ET strong Pareto performers. Next auto-reset ~c778 IMMINENT (2 cycles from c776).",
+    "key_finding_3": "S22 Rule8 LIKELY COMPLIANT 6th consecutive fire — c728/c753 resets did NOT include stacking."
   },
-  "actions_taken_fire181": [
-    "S18: c837 g2509 stag=11 (down from 20 — c825 auto-reset cleared it). pareto=19 (↑11→19 MAJOR SURGE). Top performer: CatBoost-200f-0.21995 gen=2505 (POTENTIAL NEW FLEET BEST <0.22012). Hard reset c825 CONFIRMED but stacking REINTRODUCED AGAIN (Rule8 4th violation — auto-reset fallback broken). stag=11 < 15 threshold — no diversify triggered. VM must checkpoint (after /api/export Rule8 check).",
-    "S22: c757 g2269 stag=0 (cleared post-c753 reset). Hard resets c728+c753 BOTH CONFIRMED. Next auto-reset ~c778 (21 cycles). RF primary, no stacking (Rule8 LIKELY COMPLIANT 5th fire). ET-0.21877 still unconfirmed (12+ fires). Local optimum convergence.",
-    "/api/export: 404 confirmed 8th consecutive fire — WebFetch limitation",
-    "S13/S14/S15: 404-DOWN confirmed (17+ fires sleeping)",
-    "All POL (P1/P2/P4/P5/P7): 404-DOWN confirmed (17+ fires sleeping)",
+  "actions_taken_fire183": [
+    "S18: c859 g2575 stag=0 (c850 auto-reset cleared) pareto=15 (19→15 1st shrink post-c850). c850 CONFIRMED (Rule8 5th violation: stacking in reseeding). CatBoost-0.21995 POSSIBLY LOST. Top performers now LightGBM-38f (poor Brier, high ROI) + RF/ET-200f (~0.2206-0.2207). Next auto-reset ~c875 (16 cycles).",
+    "S22: c776 g2328 stag=0 pareto=13 (RECOVERING from 7). LR dominating recent gens (NEW). ET strong Pareto performers. Next auto-reset ~c778 IMMINENT (2 cycles!). Rule8 LIKELY COMPLIANT 6th fire. best_brier=0.22124 unchanged.",
+    "S13/S14/S15: 404-DOWN confirmed (19+ fires sleeping)",
+    "All POL (P1/P2/P4/P5/P7): 404-DOWN confirmed (19+ fires sleeping)",
     "ODD fire: no WebSearch (Rule#10)",
-    "Concrete improvement: escalated S18 CatBoost-0.21995 potential new fleet best as priority-0 work-queue item",
-    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-181)"
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-183)"
   ],
   "vm_priority_queue": [
-    "0. S18: curl /api/export DIRECTLY — verify CatBoost-0.21995 gen=2505 MODEL_TYPES (Rule8 check), checkpoint if clean, fix auto-reset fallback to exclude stacking PERMANENTLY.",
-    "1. S22: curl /api/export DIRECTLY — ET-0.21877 EXTREME URGENT 12+ fires unconfirmed; Rule8 confirm.",
+    "0. S22: curl /api/export IMMEDIATELY before c778 auto-reset (IMMINENT — 2 cycles from c776!) — checkpoint ET candidate + confirm Rule8.",
+    "1. S18: fix auto-reset fallback in app.py PERMANENTLY to exclude stacking (5th violation at c850). curl /api/export to verify CatBoost-0.21995 status.",
     "2. S13 — CatBoost-0.21992 EXTREME URGENT. Retry api/status + export when accessible.",
     "3. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD EXTREME URGENT.",
     "4. Wake S14 + checkpoint — RF-0.22054 below threshold.",
