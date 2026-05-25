@@ -81,8 +81,8 @@ societal diversity remains unasked, let alone answered.
 This paper makes four contributions:
 
 1. **Axelrod-LLM formalization.** We define the *LLM Prediction Society Game* (LPSG) as a
-   Bayesian population game over a continuous-action prediction market with common-knowledge
-   day-end broadcasts, generalizing the IPD to the LLM agent setting (§3).
+   population game with type heterogeneity (§3.2) over a continuous-action prediction market
+   with common-knowledge day-end broadcasts, generalizing the IPD to the LLM agent setting (§3).
 
 2. **Sacrificial Role Reallocation (SRR).** We introduce SRR, a novel mechanism wherein
    an agent with persistent above-mean Brier for $W$ consecutive days

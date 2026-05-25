@@ -278,7 +278,15 @@ values in $(0.014, 0.017)$ tighten the numerical margin but do not overturn the 
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
-and $\delta_i = p_{i,t} - \bar{p}_t$.
+and $\delta_i = p_{i,t} - \bar{p}_t$ (deviation from the **full-population** centroid
+$\bar{p}_t = \frac{1}{N}\sum_j p_{j,t}$).
+*Centroid note:* $\delta_i$ here is always the full-population deviation, not the
+sub-population deviation $p_{i,t} - \bar{p}_t^{\mathcal{C}}$ used in Proposition 2's
+Claim 1 Ambiguity decomposition.  The two quantities are distinct: the vacancy set
+$\mathcal{V}_d$ and the archetype shift $\Delta p$ are defined with respect to the full
+population, so the Lemma 1 arithmetic (including the Case 2 bound) consistently uses
+$\bar{p}_t$ (full-population) throughout — even when the lemma is applied to the
+coalition sub-population $\mathcal{C}$ in Proposition 2.
 By A1, $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}}$ and hence
 $\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2 > 0$.
 
@@ -490,9 +498,9 @@ on its favoured outcome: $\omega = 1$ if $p_{i,t} > q_t$, $\omega = 0$ if
 $p_{i,t} < q_t$, where $q_t$ is the market-implied probability derived from the
 published moneyline; if $p_{i,t} = q_t$ no bet is placed.  For a correct bet:
 
-$$g_{i,t} = s_i \cdot \frac{1 - q_t}{q_t} \qquad (\text{decimal odds minus one})$$
+$$g_{i,t} = \frac{1 - q_t}{q_t} \qquad (\text{net return per unit staked; decimal odds minus 1})$$
 
-For an incorrect bet: $g_{i,t} = -s_i$.  The full vig-adjusted formula,
+For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i W_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
 `scripts/arena/bankroll.py` and referenced in Appendix D (§C.5).
 

@@ -30,8 +30,8 @@ political events with exogenous binary ground truth; (iii) day-end common-knowle
 broadcast enables calibration while preserving belief diversity; and (iv) *sacrificial
 role reallocation* (SRR) allows underperforming agents to adopt under-represented
 strategy archetypes, provably increasing Jensen–Shannon population diversity.
-We formalise the system as the *LLM Prediction Society Game* (LPSG) — a Bayesian
-population game — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
+We formalise the system as the *LLM Prediction Society Game* (LPSG) — a population
+game with type heterogeneity — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
 refinement (Lemma 1, Proposition 2). Results across 12 NBA agents from five provider ecosystems (175 trading days)
 and 10 political agents from three provider ecosystems (Cerebras, Google, Mistral; 90 trading days) are pending full seasonal resolution
 (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
@@ -122,8 +122,8 @@ societal diversity remains unasked, let alone answered.
 This paper makes four contributions:
 
 1. **Axelrod-LLM formalization.** We define the *LLM Prediction Society Game* (LPSG) as a
-   Bayesian population game over a continuous-action prediction market with common-knowledge
-   day-end broadcasts, generalizing the IPD to the LLM agent setting (§3).
+   population game with type heterogeneity (§3.2) over a continuous-action prediction market
+   with common-knowledge day-end broadcasts, generalizing the IPD to the LLM agent setting (§3).
 
 2. **Sacrificial Role Reallocation (SRR).** We introduce SRR, a novel mechanism wherein
    an agent with persistent above-mean Brier for $W$ consecutive days
@@ -763,7 +763,14 @@ values in $(0.014, 0.017)$ tighten the numerical margin but do not overturn the 
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
-and $\delta_i = p_{i,t} - \bar{p}_t$.
+and $\delta_i = p_{i,t} - \bar{p}_t$ (deviation from the **full-population** centroid
+$\bar{p}_t = \frac{1}{N}\sum_j p_{j,t}$).
+*Centroid note:* $\delta_i$ here is always the full-population deviation, not the
+sub-population deviation $p_{i,t} - \bar{p}_t^{\mathcal{C}}$ used in Proposition 2's
+Claim 1 Ambiguity decomposition.  The two quantities are distinct: the vacancy set
+$\mathcal{V}_d$ and the archetype shift $\Delta p$ are defined with respect to the full
+population, so the Lemma 1 arithmetic consistently uses $\bar{p}_t$ (full-population)
+throughout — even when applied to the coalition sub-population $\mathcal{C}$ in Proposition 2.
 By A1, $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}}$ and hence
 $\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2 > 0$.
 
@@ -968,9 +975,9 @@ on its favoured outcome: $\omega = 1$ if $p_{i,t} > q_t$, $\omega = 0$ if
 $p_{i,t} < q_t$, where $q_t$ is the market-implied probability derived from the
 published moneyline; if $p_{i,t} = q_t$ no bet is placed.  For a correct bet:
 
-$$g_{i,t} = s_i \cdot \frac{1 - q_t}{q_t} \qquad (\text{decimal odds minus one})$$
+$$g_{i,t} = \frac{1 - q_t}{q_t} \qquad (\text{net return per unit staked; decimal odds minus 1})$$
 
-For an incorrect bet: $g_{i,t} = -s_i$.  The full vig-adjusted formula,
+For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i W_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
 `scripts/arena/bankroll.py` and referenced in Appendix D (§C.5).
 
@@ -1682,7 +1689,8 @@ under which prediction diversity is instrumentally valuable by the Brier
 ambiguity decomposition.
 
 We propose the name **epistemic role sacrifice** for this mechanism. It is
-evolutionarily stable, as Proposition 2 shows, precisely because the
+*stable against sacrifice-refusal deviations* (Strong Nash Equilibrium,
+Proposition 2), precisely because the
 sacrifice-eligible agent is already paying the individual fitness cost:
 it has persistently above-mean Brier and there is no better individual
 strategy available in its current archetype. Defection from SRR — refusing

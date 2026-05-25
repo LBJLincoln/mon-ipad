@@ -5870,3 +5870,249 @@ threshold).
   old §C.2.3 Interaction Effects renumbered to §C.2.5
 - `paper.md`: all changes propagated (NN1 §7.8, §6.2 ref fix, NN2 A5 parenthetical,
   NN3 bankroll equation, NN4 monotonicity sentence, §C.2.3 reversal stub, §C.2.4)
+
+---
+
+# Cycle OO — Revision (2026-05-29)
+
+*Issues addressed this cycle: OO0 (carried-forward Lemma 1 centroid scope clarification),
+OO1 (bankroll g_{i,t} double-s_i error), OO2 (abstract + introduction "Bayesian population
+game" → "population game with type heterogeneity"), OO3 (§6.1 "evolutionarily stable"
+→ SNE framing). Two new issues logged as OPEN: OO4 (A1 per-agent vs. cross-agent average)
+and OO5 (moderator rotation scope).*
+
+---
+
+## OO0 — Lemma 1 §3.5: δ_i centroid scope not stated; creates ambiguity with Proposition 2 sub-population centroid [FIXED]
+
+**Reviewer (carried forward from checklist item 16 — NN2 follow-up):**
+The Lemma 1 proof defines $\delta_i = p_{i,t} - \bar{p}_t$ without specifying which
+centroid $\bar{p}_t$ refers to.  When Lemma 1 is applied to the coalition sub-population
+$\mathcal{C}$ in Proposition 2 Claim 1, the Ambiguity decomposition uses the
+sub-population centroid $\bar{p}_t^{\mathcal{C}}$, while the SRR vacancy set $\mathcal{V}_d$
+and archetype shift $\Delta p$ are defined with respect to the full population.  A reader
+following the proof derivation in both §3.5 Lemma 1 and §3.5 Proposition 2 Claim 1 must
+infer which centroid applies where — a gap that creates potential misreading of the
+Case 2 bound and the $\delta_i$ arithmetic.
+
+**Fix applied (`04-method.md` §3.5 and `paper.md` §3.5):**
+Added a parenthetical after the definition of $\delta_i$ in the Lemma 1 proof:
+"deviation from the **full-population** centroid $\bar{p}_t = \frac{1}{N}\sum_j p_{j,t}$,"
+followed by a *Centroid note* making explicit that:
+(a) $\delta_i$ is always the full-population deviation throughout Lemma 1 and Proposition 2 Claim 2;
+(b) this is distinct from $p_{i,t} - \bar{p}_t^{\mathcal{C}}$, which appears only in
+Proposition 2 Claim 1's Ambiguity decomposition;
+(c) consistency holds because vacancy and archetype shift are full-population concepts. ✓
+
+*Post-fix verification:*
+`grep -n "Centroid note" 04-method.md paper.md` → present in both files. ✓
+
+---
+
+## OO1 — §3.6 Bankroll update: $g_{i,t}$ defined with $s_i$ inside, causing double-counting in $s_i \cdot g_{i,t}$ [FIXED]
+
+**Reviewer:** The bankroll update equation is:
+
+$$W_{i,d} = W_{i,d-1} \cdot \left(1 + \sum_{t \in \mathcal{B}_d} s_i \cdot g_{i,t}\right)$$
+
+The per-event return $g_{i,t}$ was defined (§3.6, NN3 fix) as:
+- Correct bet: $g_{i,t} = s_i \cdot \frac{1-q_t}{q_t}$
+- Incorrect bet: $g_{i,t} = -s_i$
+
+The product $s_i \cdot g_{i,t}$ therefore becomes:
+- Correct bet: $s_i \cdot s_i \cdot \frac{1-q_t}{q_t} = s_i^2 \cdot \frac{1-q_t}{q_t}$
+- Incorrect bet: $s_i \cdot (-s_i) = -s_i^2$
+
+Both are wrong: $s_i$ appears twice.  The correct return on a winning bet is
+$s_i \cdot W_{i,d-1} \cdot \frac{1-q_t}{q_t}$ (stake times net odds), which corresponds
+to the fractional bankroll change $s_i \cdot \frac{1-q_t}{q_t}$ — i.e., $g_{i,t}$
+should be the *unit return per fraction staked*, not the stake-scaled return.
+
+**Fix applied (`04-method.md` §3.6 and `paper.md` §3.6):**
+- Correct bet: $g_{i,t} = s_i \cdot \frac{1-q_t}{q_t}$ → $g_{i,t} = \frac{1-q_t}{q_t}$
+  (label updated to "net return per unit staked; decimal odds minus 1")
+- Incorrect bet: $g_{i,t} = -s_i$ → $g_{i,t} = -1$
+  (label updated to "unit loss on the staked amount $s_i W_{i,d-1}$")
+
+With the fix, $s_i \cdot g_{i,t}$ gives the correct fractional bankroll changes
+$s_i (1-q_t)/q_t$ (win) and $-s_i$ (loss). ✓
+
+*Post-fix verification:*
+`grep -n "g_{i,t} = s_i" 04-method.md paper.md` → zero hits. ✓
+`grep -n "net return per unit" 04-method.md paper.md` → present in both files. ✓
+
+---
+
+## OO2 — Abstract and Introduction Contribution 1 still use "Bayesian population game" without LL3 qualification [FIXED]
+
+**Reviewer:** Cycle LL (LL3) fixed §3.2 from "Bayesian population games" to "population
+games with type heterogeneity — specifically Sandholm's (2010) *Bayesian population game*
+framework," adding a footnote distinguishing Harsanyi incomplete-information Bayesian
+structure (not our setting) from Sandholm's type-heterogeneity framework (our setting).
+However, two other locations retained the unqualified "Bayesian population game":
+
+1. `01-abstract.md` line 13: "We formalise the system as the *LLM Prediction Society
+   Game* (LPSG) — **a Bayesian population game** —"
+2. `02-introduction.md` §1 Contribution 1: "We define the LPSG as a **Bayesian population
+   game** over a continuous-action prediction market..."
+
+Footnotes cannot appear in abstracts; Contribution lists in §1 should match the §3.2
+language.  A game-theory reviewer who reads the abstract or §1 contributions before
+reaching §3.2 encounters the unqualified "Bayesian" label without the footnote caveat,
+creating a false impression that a Harsanyi-type incomplete-information structure is claimed.
+
+**Fix applied:**
+- `01-abstract.md`: "a Bayesian population game" →
+  "a population game with type heterogeneity" ✓
+- `02-introduction.md` §1 Contribution 1: "a Bayesian population game over" →
+  "a population game with type heterogeneity (§3.2) over" ✓
+- `paper.md` abstract (line 33–34) and §1 Contribution 1 (line 124–125):
+  both updated identically. ✓
+
+*Post-fix verification:*
+`grep -n "Bayesian population game" 01-abstract.md 02-introduction.md paper.md` →
+zero hits in abstract and introduction files; the only remaining occurrence is in
+§3.2 of `paper.md` (line ~593) where it appears correctly qualified in the compound
+phrase "specifically Sandholm's (2010) *Bayesian population game* framework." ✓
+
+---
+
+## OO3 — §6.1 "evolutionarily stable, as Proposition 2 shows" overclaims: SNE ≠ ESS [FIXED]
+
+**Reviewer:** `07-discussion.md` §6.1:
+"It is **evolutionarily stable**, as Proposition 2 shows, precisely because the
+sacrifice-eligible agent is already paying the individual fitness cost."
+
+"Evolutionarily stable" is a technical term — the Evolutionarily Stable Strategy (ESS)
+of Maynard Smith & Price (1973) — denoting a strategy profile that resists invasion
+by mutants in an infinite well-mixed population under replicator dynamics.  Proposition 2
+proves a **Strong Nash Equilibrium** result: no *coalition* of eligible agents can
+profitably deviate by refusing SRR.  These are distinct concepts:
+
+- ESS applies to infinite populations, involves monomorphic stability against rare
+  mutants, and uses replicator dynamics as the selection process.
+- SNE applies to finite strategic-form games, involves coalition stability, and makes
+  no assumption about population dynamics.
+
+A reviewer in evolutionary game theory would immediately challenge "evolutionarily stable,
+as Proposition 2 shows" as a category error: the proposition proves SNE, not ESS.
+The LL3/R19 revision already corrected later in the same paragraph ("in the vocabulary
+of evolutionary dynamics, epistemic role sacrifice is *individually incentive-compatible
+under Assumption A3*"), but the opening sentence contradiction remained.
+
+**Fix applied (`07-discussion.md` §6.1 and `paper.md` §6.1):**
+"It is **evolutionarily stable**, as Proposition 2 shows" →
+"It is ***stable against sacrifice-refusal deviations* (Strong Nash Equilibrium,
+Proposition 2)**"
+
+This language matches the Proposition 2 statement exactly ("stable against
+sacrifice-refusal deviations" is the literal qualifier in the SNE claim) and does not
+overclaim ESS properties. ✓
+
+*Post-fix verification:*
+`grep -n "evolutionarily stable, as Proposition" 07-discussion.md paper.md` → zero hits. ✓
+`grep -n "stable against sacrifice-refusal" 07-discussion.md paper.md` →
+present in both files (two hits each). ✓
+
+---
+
+## OO4 — A1 is stated per-agent ("for any agent i") but §5.1 estimator is cross-agent average [OPEN]
+
+**Reviewer:** Assumption A1 states "For any agent $i$ and any pair of distinct archetypes
+$(r^{(a)}, r^{(b)})$, the expected absolute prediction shift satisfies
+$\mathbb{E}[|p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}}|] \geq \epsilon_{\text{arch}}$."
+This is a **per-agent** uniform bound.
+
+The §5.1 empirical estimator is:
+$$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
+\frac{1}{N \cdot T_{\text{pilot}}} \sum_{i=1}^{N}\sum_{t=1}^{T_{\text{pilot}}}
+\left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
+
+This estimates the **cross-agent average** expected shift, not the per-agent minimum.
+If any single agent $i^*$ satisfies
+$\frac{1}{T_{\text{pilot}}}\sum_t|p_{i^*,t}^{r^{(a)}} - p_{i^*,t}^{r^{(b)}}|
+< \epsilon_{\text{arch}}$ (even if the cross-agent average $\geq \epsilon_{\text{arch}}$),
+then A1 fails for that agent, but §5.1 would not detect it.  The self-hosted T12 (Qwen3-4B)
+is the likeliest candidate for a per-agent failure given its limited capacity.
+
+**Proposed fix (deferred — coordinated change across three locations):**
+Option A: Change A1 to require only the agent-average bound (weaker assumption but
+sufficient for Lemma 1, which invokes A1 for the specific sacrifice-eligible agent $i$;
+requires checking whether the Lemma 1 proof works with an average rather than uniform bound).
+Option B: Keep A1 per-agent and add a sentence to §5.1 stating that the *minimum*
+$\min_i \frac{1}{T}\sum_t|p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}}|$ is also reported
+(changing Table 4 to report per-agent minimum, not cross-agent average).
+Option B is preferable for proof validity; it requires updating the §5.1 estimator
+definition and the Table 4 caption to distinguish average from minimum. *(Open — data-blocked until pilot backtest)*
+
+---
+
+## OO5 — §3.6 moderator rotation over "all agents" is ambiguous for cross-domain participants [OPEN]
+
+**Reviewer:** Section 3.6 states "The moderator role rotates weekly (Axelrod-style
+round-robin) **across all agents**." The preceding sentence establishes that "All 12
+NBA agents and 10 political agents receive this brief" — a total of 22 agents
+(T1–T12 for NBA; T1–T10 for POL). With a single combined brief received by all 22,
+the moderator rotation could be either:
+(a) A single 22-agent rotation (each of T1–T12 plus a hypothetical "T13–T22" for
+political-only agents — but there is no T13–T22), or
+(b) A 12-agent NBA rotation and a separate 10-agent POL rotation.
+
+The text says "beginning with T1 (Qwen 3 235B-A22B) in Week 1" and "moderating
+capacity therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B)."
+T12 is NBA-only; if T12 moderates, it produces a brief for the political agents
+(T1–T10) for whom T12 has no political prediction role.  This is architecturally
+inconsistent: a model that makes no political predictions should not moderate
+the political morning council.  The intended design almost certainly has separate
+per-domain councils with separate moderator rotations — but the text does not state this.
+
+**Proposed fix (deferred — design clarification needed):**
+Clarify §3.6 to state that the moderator rotation is per-domain: "The moderator
+rotates across the 12-agent NBA cohort for the NBA morning brief (T1–T12, capacity
+235B–4B) and independently across the 10-agent political cohort for the POL morning
+brief (T1–T10, capacity 235B–undisclosed Mistral), both beginning with T1 in Week 1."
+This is a factual clarification, not a structural change.  *(Open — verify against
+`scripts/arena/hf-llm-trading-floor/app.py` before committing)*
+
+---
+
+## PRE-SUBMISSION CHECKLIST (updated after Cycle OO)
+
+*(Items marked [DONE] were fixed in a prior or this cycle; [OPEN] remain.)*
+
+1. [OPEN] Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. [OPEN] Verify `@llm_ipd2024` first author against arXiv:2406.13605
+3. [OPEN] Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. [OPEN] Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. [OPEN] Populate Table B.2; stratify by event type to verify A4 (LL2); include per-agent minimum for A1 verification (OO4)
+6. [OPEN] Fill §C.2.2 sensitivity surface ($\varepsilon_{\text{keep}}, \delta_{\text{sac}}, W_{\text{persist}}$)
+7. [OPEN] Fill §C.3.2 temperature Brier/ECE table
+8. [OPEN] Fill §C.2.3 reversal-target sensitivity analysis (immediately-prior vs. home-base) [MM3]
+9. [OPEN] Remove abstract's Brier-delta placeholder; fill with actual results
+10. [OPEN] Convert "if confirmed" / "pending results" language in §6 to indicative mood
+11. [OPEN] Verify Lemma 1 A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$; update Table 4 centroid/Amb bounds in §5.1
+12. [OPEN] Verify A4 slack $\eta_{\text{A4}} < 0.22$ once pilot archetype-pair stratification done; run §C.2.4 out-of-sample ε_arch partition [HH4/NN5]
+13. [OPEN] Table 3: populate per-agent $\overline{B}_i$ from pilot backtest
+14. [OPEN] HH4/NN5: run dev/val partition for $\hat{\epsilon}_{\text{arch}}$, confirm $\geq 0.031$ [NN5]
+15. [OPEN] H5 contamination test: run and document in §5.6 once experiment data is available
+16. [DONE — OO0] Lemma 1 $\delta_i$ full-population centroid scope clarified; *Centroid note* added
+17. [DONE — OO1] Bankroll $g_{i,t}$ double-$s_i$ error corrected ($g_{i,t} = (1-q_t)/q_t$ for win; $g_{i,t} = -1$ for loss)
+18. [DONE — OO2] Abstract + Introduction Contribution 1: "Bayesian population game" → "population game with type heterogeneity"
+19. [DONE — OO3] §6.1 "evolutionarily stable" → "stable against sacrifice-refusal deviations (SNE, Proposition 2)"
+20. [OPEN — OO4] A1 per-agent vs. cross-agent average: §5.1 estimator should report per-agent minimum, not average (verify against pilot data; Option B fix)
+21. [OPEN — OO5] §3.6 moderator rotation scope: clarify per-domain rotation (verify against `app.py`)
+22. [DONE — MM1] A5 added; Lemma 1 headline updated to "Under A1, A2, A4, and A5"
+23. [DONE — MM2] Proposition 2 elevated from "proof sketch" to full two-claim proof
+24. [DONE — NN2] Proposition 2 A5 sub-population applicability made explicit
+25. [DONE — NN3] Bankroll update equation $W_{i,d}$ added to §3.6 and paper.md
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed.
+
+**Structural changes this cycle:**
+- `01-abstract.md`: "Bayesian population game" → "population game with type heterogeneity" (OO2)
+- `02-introduction.md` §1 Contribution 1: same correction + "(§3.2)" cross-reference added (OO2)
+- `04-method.md` §3.5 Lemma 1 proof: $\delta_i$ centroid note added (OO0); §3.6: $g_{i,t}$ formula corrected (OO1)
+- `07-discussion.md` §6.1: "evolutionarily stable" → "stable against sacrifice-refusal deviations (SNE, Proposition 2)" (OO3)
+- `paper.md`: all four fixes propagated (OO0 ×1, OO1 ×1, OO2 ×2, OO3 ×1 — 5 edit locations)

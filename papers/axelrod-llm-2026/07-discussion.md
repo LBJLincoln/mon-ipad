@@ -70,7 +70,8 @@ under which prediction diversity is instrumentally valuable by the Brier
 ambiguity decomposition.
 
 We propose the name **epistemic role sacrifice** for this mechanism. It is
-evolutionarily stable, as Proposition 2 shows, precisely because the
+*stable against sacrifice-refusal deviations* (Strong Nash Equilibrium,
+Proposition 2), precisely because the
 sacrifice-eligible agent is already paying the individual fitness cost:
 it has persistently above-mean Brier and there is no better individual
 strategy available in its current archetype. Defection from SRR — refusing
