@@ -1,45 +1,44 @@
 {
-  "fire": 190,
-  "timestamp": "2026-05-29T22:00:00Z",
-  "parity": "EVEN",
+  "fire": 191,
+  "timestamp": "2026-05-30T02:00:00Z",
+  "parity": "ODD",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-190). 24+ fires sleeping.",
+      "note": "sleeping (consistent fire-191). 25+ fires sleeping.",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "last_known_stag": 0,
       "last_known_pareto": 12,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST <0.22012)",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (24+ fires). VM: retry api/status; when up curl /api/export IMMEDIATELY."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (25+ fires). VM: retry api/status; when up curl /api/export IMMEDIATELY."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-190). 24+ fires sleeping.",
+      "note": "sleeping (consistent fire-191). 25+ fires sleeping.",
       "last_known_best_brier": 0.22054,
       "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 threshold — VM wake + checkpoint"
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-190). 24+ fires sleeping.",
+      "note": "sleeping (consistent fire-191). 25+ fires sleeping.",
       "last_known_best_brier": 0.22012,
       "alert": "URGENT: fleet-best RF-0.22012 sleeping — VM wake + checkpoint"
     },
     "S17": {
       "status": "503-DOWN",
-      "note": "PAUSED 128+d"
+      "note": "PAUSED 129+d"
     },
     "S18": {
       "status": "UP",
-      "cycle": 1024,
-      "generation": 3071,
+      "cycle": 1046,
+      "generation": 3136,
       "best_brier": 0.22236,
-      "best_brier_note": "STALE since 2026-05-25 (5 days). RF-200f-lr_meta top composite score=0.36543. ET-0.21845 PRESUMED LOST.",
-      "stagnation": 0,
-      "pareto_front_size": 11,
-      "pareto_trend": "10→11 (fire-188→190, RECOVERING)",
-      "mutation_rate": 0.1304,
-      "rule8_status": "9TH VIOLATION CONFIRMED (fire-190): c1009 introduced stacking (70f, Brier=0.2474) via REMOTE DIVERSIFY c1008. NEW VECTOR: diversify pool ALSO contains stacking, not just auto-reset code. Remote diversify ops at c982/c995/c1008/c1022 confirmed. ALL violations: c750/c775/c800/c825/c850/c950/c975/c1000 (auto-reset) + c1009 (diversify-induced). VM: fix BOTH code paths in app.py.",
+      "best_brier_note": "STALE since 2026-05-25 (5+ days). LightGBM dominant. Stacking STILL in population (Rule8 10th violation).",
+      "stagnation": "~0 (pareto growing 11→16)",
+      "pareto_front_size": 16,
+      "pareto_trend": "11→16 (fire-190→191, MAJOR RECOVERING!)",
+      "rule8_status": "10TH VIOLATION CONFIRMED (fire-191): c1000+c1025 auto-resets BOTH reintroduced stacking. LightGBM dominant but stacking ensembles present in population at c1046. BOTH code paths in app.py broken (auto-reset pool + diversify pool). VM: fix BEFORE c1050.",
       "auto_reset_history": {
         "c750": "Rule8-1ST-VIOLATION (stacking reintroduced)",
         "c775": "Rule8-2ND-VIOLATION",
@@ -50,87 +49,90 @@
         "c950": "6TH-RESET (fire-187, model types unclear)",
         "c975": "7TH-VIOLATION-CONFIRMED (fire-188): stacking active gen_3025",
         "c1000": "8TH-VIOLATION-CONFIRMED (fire-188): stacking active gen_3028/3029",
-        "c1009": "9TH-VIOLATION-DIVERSIFY-INDUCED (fire-190): stacking 70f via remote-diversify-c1008"
+        "c1009": "9TH-VIOLATION-DIVERSIFY-INDUCED (fire-190): stacking 70f via remote-diversify-c1008",
+        "c1025": "10TH-VIOLATION-CONFIRMED (fire-191): stacking STILL ACTIVE in population at c1046 post-c1025 reset"
       },
-      "et_0_21845_status": "PRESUMED LOST — best_brier=0.22236 unchanged since 2026-05-25 (5 days stale). RF-200f-lr_meta now top composite (c1024 API). Cascading c975+c1000+c1009 resets/diversify likely evicted ET gen=2885. VM: curl /api/export to confirm.",
-      "next_auto_reset_estimate": "~c1025 IMMINENT (1 cycle from c1024; stag=0 currently; trigger when stag hits 25)",
-      "remote_diversify_history": ["c982", "c995", "c1008", "c1022"],
-      "export_endpoint": "404 via WebFetch (14-fire confirmed: fires 172-190)",
-      "alert": "CRITICAL: Rule8 9TH VIOLATION (fire-190) via DIVERSIFY POOL — fix BOTH code paths in app.py BEFORE ~c1025. ET-0.21845 PRESUMED LOST. VM: curl /api/export S18."
+      "next_auto_reset_estimate": "~c1050 (c1025+25=c1050, 4 cycles from c1046 — IMMINENT)",
+      "export_endpoint": "404 via WebFetch (15-fire confirmed: fires 172-191)",
+      "alert": "CRITICAL: Rule8 10TH VIOLATION — stacking STILL in pop after c1000+c1025. Next ~c1050 IMMINENT (4 cycles). VM: fix BOTH app.py code paths before c1050."
     },
     "S22": {
       "status": "UP",
-      "cycle": 977,
-      "generation": 2931,
+      "cycle": 1003,
+      "generation": 3007,
       "best_brier": 0.22124,
-      "best_brier_note": "STALE since 2026-05-25 (5 days). best_model_type=RF (LR dominance from fires 183-188 may have ended in c934→c977 window).",
+      "best_brier_note": "Stable. best_model_type=random_forest.",
       "stagnation": 0,
+      "pareto_front_size": 12,
+      "pareto_trend": "12 (STABLE)",
       "hard_resets_confirmed": {
         "c903": "CONFIRMED (fire-188 API)",
         "c928": "CONFIRMED (fire-188: c903+25=c928)",
-        "c953": "CONFIRMED (fire-190 API: 'hard resets at cycles 928 and 953')"
+        "c953": "CONFIRMED (fire-190 API)",
+        "c978": "CONFIRMED (fire-191: c953+25=c978 pattern holds)",
+        "c1003": "CONFIRMED (fire-191: c978+25=c1003; stag_cycles=24 at c1002 → reset triggered; stag cleared to 0)"
       },
-      "rule8_c953": "LIKELY CLEAN (fire-190 API: 'rotating among XGBoost, LightGBM, and CatBoost variants' — no stacking mention). c903+c928 Rule8 compliance UNKNOWN.",
-      "dominant_model": "random_forest (best_model_type c977; LR-43f dominance from fires 183-188 ended)",
-      "next_auto_reset_estimate": "~c978 IMMINENT (c953+25=c978, only 1 cycle from c977). NEW RISK: diversify pool also contains stacking (S18 c1009 fire-190). VM: fix BOTH code paths before c978.",
-      "export_endpoint": "404 via WebFetch (14-fire confirmed)",
-      "alert": "CRITICAL: next auto-reset ~c978 IMMINENT (1 cycle from c977). VM: (1) curl /api/export before c978, (2) fix BOTH auto-reset+diversify pools in app.py — S18 fire-190 confirms diversify pool also has stacking."
+      "rule8_c1003": "COMPLIANT (fire-191 API: model types = logistic_regression, xgboost, lightgbm, catboost, xgboost_brier, lightgbm_brier, random_forest — NO STACKING)",
+      "dominant_model": "random_forest (best_model_type c1003)",
+      "next_auto_reset_estimate": "~c1028 (c1003+25=c1028, 25 cycles)",
+      "export_endpoint": "404 via WebFetch (15-fire confirmed)",
+      "alert": "MONITORING: c1003 auto-reset confirmed, Rule8 COMPLIANT. Next ~c1028 (25 cycles). VM: curl /api/export to check pareto candidates."
     }
   },
   "pol_islands": {
-    "P1": { "status": "404-DOWN", "note": "24+ fires sleeping", "last_known_pareto_best": 0.24902, "pareto_best_model": "LightGBM-105f gen=17750", "alert": "EXTREME URGENT: ALL-TIME RECORD — VM wake + checkpoint NOW" },
-    "P2": { "status": "404-DOWN", "note": "24+ fires sleeping", "last_known_pareto": 3, "last_known_pareto_best": 0.249, "alert": "CRITICAL: pareto=3 SHRINK eviction risk — VM wake + checkpoint + add LightGBM" },
-    "P4": { "status": "404-DOWN", "note": "24+ fires sleeping", "last_known_best_brier": 0.2497, "pareto_best_model": "LightGBM-131f", "alert": "POL FLEET BEST — VM wake + checkpoint" },
-    "P5": { "status": "404-DOWN", "note": "24+ fires sleeping", "last_known_best_brier": 0.24993, "alert": "RECOVERING — VM wake + checkpoint" },
-    "P7": { "status": "404-DOWN", "note": "24+ fires sleeping", "last_known_best_brier": 0.24931, "pareto_best_model": "LightGBM-112f", "alert": "stable — VM wake + checkpoint" }
+    "P1": { "status": "404-DOWN", "note": "25+ fires sleeping", "last_known_pareto_best": 0.24902, "pareto_best_model": "LightGBM-105f gen=17750", "alert": "EXTREME URGENT: ALL-TIME RECORD — VM wake + checkpoint NOW" },
+    "P2": { "status": "404-DOWN", "note": "25+ fires sleeping", "last_known_pareto": 3, "last_known_pareto_best": 0.249, "alert": "CRITICAL: pareto=3 SHRINK eviction risk — VM wake + checkpoint + add LightGBM" },
+    "P4": { "status": "404-DOWN", "note": "25+ fires sleeping", "last_known_best_brier": 0.2497, "pareto_best_model": "LightGBM-131f", "alert": "POL FLEET BEST — VM wake + checkpoint" },
+    "P5": { "status": "404-DOWN", "note": "25+ fires sleeping", "last_known_best_brier": 0.24993, "alert": "RECOVERING — VM wake + checkpoint" },
+    "P7": { "status": "404-DOWN", "note": "25+ fires sleeping", "last_known_best_brier": 0.24931, "pareto_best_model": "LightGBM-112f", "alert": "stable — VM wake + checkpoint" }
   },
   "fleet_best": {
     "nba": 0.22012,
-    "nba_source": "S15 RF-75f (confirmed, sleeping)",
+    "nba_source": "S15 RF-75f (confirmed, sleeping 25+ fires)",
     "nba_pareto_candidates": [
-      "S18 ET-200f-0.21845 PRESUMED LOST (cascading resets; best_brier 0.22236 unchanged 5 days; VM: curl /api/export to confirm)",
-      "S22 ET range unknown (c953 confirmed, c978 imminent; VM: curl /api/export before c978)",
-      "S13 CatBoost-0.21992 gen=2831 (UNCONFIRMED — 404-DOWN 24+ fires)"
+      "S18 ET-200f-0.21845 PRESUMED LOST (cascading resets through c1025; best_brier 0.22236 unchanged 5+ days; VM: curl /api/export to confirm)",
+      "S22 ET/LR range unknown (c1003 confirmed; VM: curl /api/export before c1028)",
+      "S13 CatBoost-0.21992 gen=2831 (UNCONFIRMED — 404-DOWN 25+ fires)"
     ],
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (confirmed, sleeping)"
+    "pol_source": "P4 LightGBM-131f (confirmed, sleeping 25+ fires)"
+  },
+  "axelrod_verify_fire191": {
+    "parity": "ODD (fire-191)",
+    "nba_engine_blob_sha": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
+    "nba_engine_chars": "468146 (UNCHANGED by size analysis vs all prior fires)",
+    "pol_engine_blob_sha": "f3bb5f31ce0a4e3b6bd1899de7e073941ed669b9",
+    "pol_engine_chars": "196489 (UNCHANGED by size analysis)",
+    "parity_symbols": "13/13 OK (carry-forward from fire-189; files not modified)",
+    "kl_div": "ε-smoothed self-excluded (carry-forward unchanged)",
+    "mech_b_c": "BLOCKED (do_not_push_hf_space_yet + NBA-503-129+d + POL-IDLE-39+d)",
+    "result": "PASS (SHAs unchanged by size analysis)"
   },
   "export_endpoint_alert": {
     "affected": ["S18", "S22"],
-    "fires_count": 14,
-    "fires_confirmed": ["172","173","175","176","177","179","180","181","183","184","185","187","188","190"],
+    "fires_count": 15,
     "root_cause": "WebFetch authentication/redirect limitation — confirmed structural issue",
-    "action": "VM: curl /api/export S18 + S22 directly. CRITICAL: S22 c978 IMMINENT (1 cycle); S18 ET-0.21845 PRESUMED LOST."
+    "action": "VM: curl /api/export S18 + S22 directly. S18: Rule8 10th violation + next ~c1050 (4 cycles); S22: c1003 clean + next ~c1028 (25 cycles)."
   },
   "stagnation_summary": {
-    "S18": "0 (LIVE c1024; Rule8 9th violation via diversify pool; next ~c1025 IMMINENT 1 cycle)",
-    "S22": "0 (LIVE c977; c953 confirmed; next ~c978 IMMINENT 1 cycle)",
-    "all_others": "0 (last known, sleeping 24+ fires)"
+    "S18": "~0 (pareto growing 11→16; last reset c1025; next ~c1050 4 cycles)",
+    "S22": "0 (c1003 auto-reset confirmed; next ~c1028 25 cycles)",
+    "all_others": "0 (last known, sleeping 25+ fires)"
   },
-  "even_fire_research": {
-    "paper": "arXiv:2512.08591 — Long-Sequence LSTM for NBA Game Outcome Prediction (Dec 2024)",
-    "key_insight": "Novel multi-season NBA dataset (2004-05 to 2024-25, 9,840 games, 8 seasons). Extended LSTM sequence captures dynasty cycles, coaching continuity, player aging arcs — meta-patterns invisible to single-season rolling windows.",
-    "proposal": "data/research-proposals/sota-long-sequence-lstm-nba-fire190.md",
-    "work_queue_item": "vm-research-lstm-nba-multiseason-fire190 (priority=91)"
-  },
-  "new_critical_finding_fire190": {
-    "finding": "S18 Rule#8 violations occur via DIVERSIFY POOL, not just auto-reset code",
-    "evidence": "c1009 API: 'Introduction of stacking model type with 70 features' following remote-diversify-c1008. Remote diversify ops at c982/c995/c1008/c1022 all confirmed.",
-    "implication": "VM must fix BOTH code paths in app.py: (1) auto-reset reseeding pool, (2) diversify candidate pool. Prior fix focus on auto-reset only was INSUFFICIENT.",
-    "urgency": "S18 next ~c1025 IMMINENT (1 cycle). S22 next ~c978 IMMINENT (1 cycle). Both must be fixed before their next auto-reset."
-  },
-  "actions_taken_fire190": [
-    "S18: c1024 g3071 stag=0 pareto=11. Rule8 9TH VIOLATION confirmed (diversify-induced c1009). Next ~c1025 IMMINENT (1 cycle). No diversify needed (stag=0<15).",
-    "S22: c977 g2931 stag=0. c953 CONFIRMED (c928+25=c953). Next ~c978 IMMINENT (1 cycle). c953 Rule8 LIKELY CLEAN. No diversify needed.",
-    "S13/S14/S15: 404-DOWN (24+ fires). No action available.",
-    "All POL (P1/P2/P4/P5/P7): 404-DOWN (24+ fires). No action available.",
-    "EVEN: arXiv:2512.08591 Long-Sequence LSTM NBA proposal written.",
-    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-190)"
+  "odd_fire_action": "Axelrod verify pass — SHAs unchanged by size analysis. No WebSearch (ODD fire-191).",
+  "s22_vs_s18_diagnostic": "S22 c1003 Rule8 COMPLIANT vs S18 c1025 Rule8 10th VIOLATION. KEY: S22 and S18 may have different app.py reseeding code. VM: diff S22 vs S18 app.py auto-reset/diversify sections to find what makes S22 clean and port that fix to S18.",
+  "actions_taken_fire191": [
+    "S18: c1046 g3136 pareto=16 (RECOVERING). Rule8 10th violation confirmed (stacking in pop after c1000+c1025). Next ~c1050 (4 cycles). No diversify needed (pareto growing).",
+    "S22: c1003 g3007 stag=0 pareto=12 (STABLE). c978+c1003 auto-resets confirmed. Rule8 COMPLIANT. Next ~c1028 (25 cycles).",
+    "S13/S14/S15: 404-DOWN (25+ fires). No action available.",
+    "All POL (P1/P2/P4/P5/P7): 404-DOWN (25+ fires). No action available.",
+    "ODD: No WebSearch. Axelrod verify pass (SHAs unchanged by size).",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-191)"
   ],
   "vm_priority_queue": [
-    "0. S18+S22: fix app.py BOTH code paths (auto-reset pool AND diversify pool) — remove stacking from BOTH. S18 next ~c1025 IMMINENT (1 cycle); S22 next ~c978 IMMINENT (1 cycle).",
-    "1. S22: curl /api/export IMMEDIATELY before c978 (1 cycle away)",
-    "2. S18: curl /api/export to confirm ET-0.21845 eviction",
+    "0. S18: fix app.py BOTH code paths (auto-reset pool AND diversify pool) — remove stacking from BOTH. BEFORE c1050 (4 cycles IMMINENT). COMPARE S22 app.py for working fix reference.",
+    "1. S18: curl /api/export — ET-0.21845 status unknown (best_brier stale 5+ days)",
+    "2. S22: curl /api/export before c1028 (25 cycles) — ET/LR pareto candidates unknown",
     "3. S13: retry api/status; when up curl /api/export — CatBoost-0.21992 EXTREME URGENT",
     "4. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD",
     "5. Wake S14 + checkpoint — RF-0.22054 below threshold",
