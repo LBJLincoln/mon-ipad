@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-05-30T02:00:00Z",
+  "updated_at": "2026-05-30T06:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-trigger-fire-192-2026-05-30T06h",
+      "priority": 242,
+      "status": "done",
+      "completed_at": "2026-05-30T06:00:00Z",
+      "completed_by": "cloud-trigger-fire-192",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-192 EVEN Axelrod verify pass: SHAs-NBA-19f4acf49d(UNCHANGED)/POL-3496362c60(UNCHANGED); 13/13-parity-OK; Mech-B+C-BLOCKED(do_not_push_hf_space_yet+NBA-503-130+d+POL-IDLE-40+d); EVEN: arXiv:2406.04062-Online-Learning-Betting-Markets-Profit-vs-Prediction(ICML2024)-profit≠accuracy-KL-div-consensus-validated; vm-research-online-learning-betting-markets-fire192 added (2026-05-30T06h)"
+    },
     {
       "id": "cloud-trigger-axelrod-fire-191-2026-05-30T02h",
       "priority": 241,
@@ -39,6 +48,16 @@
       "subject": "VM-CRITICAL priority=0: S22 c953 CONFIRMED (fire-190 API: hard resets at c928 and c953). Next auto-reset ~c978 IMMINENT (c953+25=c978, only 1 cycle from c977 as of fire-190). curl /api/export S22 BEFORE c978 evicts ET candidates. Fix app.py diversify pool AND auto-reset pool (both can introduce stacking — confirmed in S18 fire-190). c953 Rule8 compliance: LIKELY CLEAN (no stacking mentioned in API; XGB/LightGBM/CatBoost rotation).",
       "detected_at": "2026-05-29T22:00:00Z",
       "updated_at": "2026-05-29T22:00:00Z",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-research-online-learning-betting-markets-fire192",
+      "priority": 92,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "RESEARCH: Implement TF market-maker module using online price-setting (O(sqrt-T) regret) — arXiv:2406.04062 (ICML 2024 fire-192 EVEN WebSearch). Profit maximization != prediction accuracy; profit hinges on deviation between bettor and true beliefs. Online pricing algorithms guide market odds updates upon each bet. Relevance: validates TF multi-agent bankroll vs Brier score dual optimization; KL-div consensus distance in compute_consensus_distance aligns with paper's profit driver. Proposal: data/research-proposals/sota-online-learning-betting-markets-fire192.md.",
+      "detected_at": "2026-05-30T06:00:00Z",
+      "updated_at": "2026-05-30T06:00:00Z",
       "do_not_push": false
     },
     {
@@ -702,8 +721,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B — sacrificial role reallocation runtime verify",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-30T02:00:00Z",
-      "cloud_trigger_note": "fire-191 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(128+d)+POL-IDLE(39+d)."
+      "updated_at": "2026-05-30T06:00:00Z",
+      "cloud_trigger_note": "fire-192 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(130+d)+POL-IDLE(40+d)."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -712,8 +731,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C — post-mortem log schema verify HF Hub push",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-30T02:00:00Z",
-      "cloud_trigger_note": "fire-191 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(128+d)+POL-IDLE(39+d)."
+      "updated_at": "2026-05-30T06:00:00Z",
+      "cloud_trigger_note": "fire-192 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(130+d)+POL-IDLE(40+d)."
     },
     {
       "id": "vm-add-adaboost-naive-bayes-model-pool",
