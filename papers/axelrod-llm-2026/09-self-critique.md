@@ -6116,3 +6116,202 @@ to confirm propagation to all relevant files before marking closed.
 - `04-method.md` §3.5 Lemma 1 proof: $\delta_i$ centroid note added (OO0); §3.6: $g_{i,t}$ formula corrected (OO1)
 - `07-discussion.md` §6.1: "evolutionarily stable" → "stable against sacrifice-refusal deviations (SNE, Proposition 2)" (OO3)
 - `paper.md`: all four fixes propagated (OO0 ×1, OO1 ×1, OO2 ×2, OO3 ×1 — 5 edit locations)
+
+---
+
+# Peer-Review Self-Critique — Cycle PP (2026-05-30)
+
+*Audit of the two structural issues left open after Cycle OO, plus new issues
+surfaced by a fresh reading of the compiled manuscript.*
+
+---
+
+## STATUS: CYCLE OO OPEN ISSUES
+
+### OO4 — A1 per-agent bound vs. cross-agent average estimator in §5.1 [FIXED]
+
+**What was open:** §5.1 reported only the cross-agent average
+$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)})$ as the primary distinguishability
+estimator, but Assumption A1 is a *per-agent* uniform bound: A1 requires
+$\mathbb{E}[|p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}}|] \geq \epsilon_{\text{arch}}$
+for *every* agent $i$.  If T12 (Qwen3-4B, CPU, 4B parameters) falls below the
+threshold while the average passes, A1 is violated for T12 but the single-number
+summary would not detect it.
+
+**Fix applied in Cycle PP:**
+1. Added the per-agent minimum estimator to `06-results.md` §5.1 and `paper.md` §5.1:
+
+$$\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)}) =
+\min_{i \in \{1,\ldots,N\}} \frac{1}{T_{\text{pilot}}}
+\sum_{t=1}^{T_{\text{pilot}}} \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
+
+2. Added explanatory paragraph stating A1 is confirmed for a pair iff
+   $\hat{\epsilon}_{\text{arch}}^{\min} \geq 0.037$; cross-agent average is
+   descriptive only.
+3. Updated Table 4 to include rows for per-agent minimum and the agent
+   expected to achieve it (T12).
+4. Updated `appendix-b.md` Table B.2 caption and pending note to require both
+   average and per-agent minimum columns in the final table.
+5. Propagated all changes to `paper.md`.
+
+*Post-fix verification:*
+`grep -n "per-agent.*uniform\|hat{\\epsilon.*min\|operative A1" 06-results.md paper.md appendix-b.md`
+→ present in all three files. ✓
+`grep -n "cross-agent average" 06-results.md paper.md`
+→ present with correct characterisation as "descriptive only" in both. ✓
+
+---
+
+### OO5 — §3.6 moderator rotation scope ambiguous for cross-domain participants [FIXED]
+
+**What was open:** §3.6 stated the moderator rotates "across all agents," which
+is architecturally inconsistent: T12 (selfhost-qwen4b, Qwen3-4B) is NBA-only
+(§4.1) and should never produce a political morning brief.  The intended design
+is per-domain rotation, but the text did not state this.
+
+**Fix applied in Cycle PP (`04-method.md` §3.6 and `paper.md` §3.6):**
+
+Changed "The moderator role rotates weekly (Axelrod-style round-robin) across all
+agents, beginning with T1..." to:
+
+"The moderator role rotates weekly (Axelrod-style round-robin) **within each
+domain separately**: the 12-agent NBA cohort (T1–T12) rotates independently of
+the 10-agent political cohort (T1–T10), both sequences beginning with T1 (Qwen 3
+235B-A22B) in Week 1. This per-domain design ensures that T12 (selfhost-qwen4b,
+Qwen3-4B, NBA-only; §4.1) never moderates a political morning council for which
+it generates no predictions..."
+
+*Post-fix verification:*
+`grep -n "domain separately" 04-method.md paper.md` → present in both files. ✓
+`grep -n "across all agents" 04-method.md paper.md` → zero hits. ✓
+
+---
+
+## NEW ISSUES — CYCLE PP
+
+### PP1 — §4.2.1 market category count arithmetic: 249 stated, breakdown sums to 235 [OPEN]
+
+**Reviewer:** §4.2.1 states:
+"`data/full-odds-2025-26.json`, which contains **249 market categories** per game
+(162 alternative spread/total lines, 28 team-total, 22 player-prop, 20 halves
+and quarters, 3 primary game-level markets)."
+
+The sum of the enumerated breakdown is:
+
+$$162 + 28 + 22 + 20 + 3 = 235 \neq 249$$
+
+There is a 14-category discrepancy.  The same figure "249" appears in
+`appendix-a.md` (line ~330): "making it more informative for categories from
+the 249-category context block."  Both occurrences of 249 are internally
+consistent with each other but inconsistent with the stated breakdown.
+
+Two interpretations: (a) The total 249 is correct (derived from the actual JSON
+schema) and the parenthetical breakdown is incomplete, omitting 14 categories.
+(b) The total contains a transcription error and should read 235.
+
+**Author response:** Interpretation (a) is more likely — the JSON schema was
+enumerated directly, the breakdown was written from memory and missed 14 categories.
+The most plausible missing category is "futures/season-outcome" lines, cross-game
+parlay-related lines, or a finer split of halves (1H/2H separately from full-game
+lines).
+
+**Proposed fix:**  Change the parenthetical to read:
+"(162 alternative spread/total lines, 28 team-total, 22 player-prop, 20 halves
+and quarters, 3 primary game-level markets, **14 futures, parlay-component, and
+cross-game derivative categories**)"
+
+This makes the arithmetic $162 + 28 + 22 + 20 + 3 + 14 = 249$ consistent.
+The fix requires verifying the 14 additional categories against
+`data/full-odds-2025-26.json`.  *(Data-blocked until verification against JSON schema.
+Provisionally flagged; do not change the number 249 without confirming against the
+actual data file.)*
+
+---
+
+### PP2 — §7.7 (Ethics) API call count remains inflated from Cycle 8 m3 [OPEN]
+
+**Status:** This issue was first raised in Cycle 8 (m3) and remained open through
+Cycle OO.  The concern: "approximately 4,000–6,000 LLM API calls per day" cannot
+be reconstructed from the described architecture.
+
+A tight accounting: 12 NBA × ~10 games/day × 1 prediction call = 120 calls/day;
+10 POL × ~10 events/day × 1 call = 100; morning-council brief (1 moderator
+generation × 2 domains) = 2; end-of-day broadcast processing = 0 (passive);
+any internal council deliberation rounds not described in the paper ≈ 20–40.
+Upper bound ≈ 262–280 calls/day (both domains running simultaneously), roughly
+one order of magnitude below the stated range.
+
+**Author response (deferred):** The stated 4,000–6,000 range was likely computed
+under the assumption that each prediction involves multiple clarification
+sub-calls (oracle context fetch, feature summary generation, strategy retrieval),
+each counting as a separate API call.  If the gateway routes include $n_{\text{sub}}$
+sub-calls per prediction (e.g., $n_{\text{sub}} = 8$: feature summary, archetype
+retrieval, persona context, prior-day history, 2 reflection passes, final
+prediction, callback confirmation), the realistic daily total would be
+$(120 + 100) \times 8 + 44 \approx 1,804$ — still below 4,000 without
+additional council rounds.  The range should either be corrected to a documented
+figure or the sub-call accounting should be made explicit. *(Open — requires
+auditing `scripts/arena/hf-llm-trading-floor/app.py` call stack.)*
+
+---
+
+### PP3 — Appendix B.2 Table B.2 now partially misaligned with §5.1 estimator
+definition in compiled paper.md [FIXED in this cycle]
+
+**What was open (implicit):** The OO4 fix added a per-agent minimum estimator to
+§5.1, but `appendix-b.md` Table B.2 caption still described each entry as "averaged
+over $T_{\text{pilot}}$ held-out events" — implying only the cross-agent average,
+not the per-agent minimum.  This created internal inconsistency between §5.1 (which
+now calls per-agent minimum the operative A1 test) and Table B.2 (which did not
+mention it).
+
+**Fix applied in Cycle PP:**  Updated `appendix-b.md` Table B.2 caption and
+PENDING placeholder to require both cross-agent average and per-agent minimum
+columns in the final table, with T12 expected to produce the minimum per-agent
+entry.  Propagated to `paper.md`. ✓
+
+---
+
+## PRE-SUBMISSION CHECKLIST (updated after Cycle PP)
+
+*(Items marked [DONE] were fixed in a prior or this cycle; [OPEN] remain.)*
+
+1. [OPEN] Verify `@ouyang2022training` full author list against arXiv:2203.02155
+2. [OPEN] Verify `@llm_ipd2024` first author against arXiv:2406.13605
+3. [OPEN] Verify `@polyswarm2026` author list against arXiv:2604.03888
+4. [OPEN] Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` is complete
+5. [OPEN] Populate Table B.2 with both cross-agent average AND per-agent minimum per pair; stratify by event type to verify A4 (LL2); confirm per-agent minimum $\geq 0.037$ for T12 across all 190 pairs (OO4/PP3)
+6. [OPEN] Fill §C.2.2 sensitivity surface ($\varepsilon_{\text{keep}}, \delta_{\text{sac}}, W_{\text{persist}}$)
+7. [OPEN] Fill §C.3.2 temperature Brier/ECE table
+8. [OPEN] Fill §C.2.3 reversal-target sensitivity analysis (immediately-prior vs. home-base) [MM3]
+9. [OPEN] Remove abstract's Brier-delta placeholder; fill with actual results
+10. [OPEN] Convert "if confirmed" / "pending results" language in §6 to indicative mood
+11. [OPEN] Verify Lemma 1 A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$; update Table 4 centroid/Amb bounds in §5.1
+12. [OPEN] Verify A4 slack $\eta_{\text{A4}} < 0.22$ once pilot archetype-pair stratification done; run §C.2.4 out-of-sample $\epsilon_{\text{arch}}$ partition [HH4/NN5]
+13. [OPEN] Table 3: populate per-agent $\overline{B}_i$ from pilot backtest
+14. [OPEN] HH4/NN5: run dev/val partition for $\hat{\epsilon}_{\text{arch}}$, confirm $\geq 0.031$ [NN5]
+15. [OPEN] H5 contamination test: run and document in §5.6 once experiment data is available
+16. [OPEN — PP1] §4.2.1 market count: verify 249 vs. 235 arithmetic against actual JSON schema; add 14 missing category descriptors to parenthetical or correct total to 235
+17. [OPEN — PP2] §7.7 API call count: audit `app.py` call stack; correct 4,000–6,000 to documented figure or add sub-call accounting paragraph
+18. [OPEN — m2] QuantAgents citation: confirm arXiv:2510.04643 is the intended paper; remove BibTeX VERIFY note
+19. [DONE — OO0] Lemma 1 $\delta_i$ full-population centroid scope clarified; *Centroid note* added
+20. [DONE — OO1] Bankroll $g_{i,t}$ double-$s_i$ error corrected
+21. [DONE — OO2] Abstract + §1 Contribution 1: "Bayesian population game" → "population game with type heterogeneity"
+22. [DONE — OO3] §6.1: "evolutionarily stable" → "stable against sacrifice-refusal deviations (SNE, Proposition 2)"
+23. [DONE — OO4/PP] §5.1: per-agent minimum estimator added; Table 4 updated; Table B.2 updated
+24. [DONE — OO5/PP] §3.6: moderator rotation clarified to per-domain separate rotations
+25. [DONE — MM1] A5 added; Lemma 1 headline updated
+26. [DONE — MM2] Proposition 2 elevated to full two-claim proof
+27. [DONE — NN2] Proposition 2 A5 sub-population applicability explicit
+28. [DONE — NN3] Bankroll update equation $W_{i,d}$ added
+29. [DONE — PP3] Appendix B.2 Table B.2 caption updated for per-agent minimum requirement
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files before marking closed.
+
+**Structural changes this cycle:**
+- `06-results.md` §5.1: per-agent minimum estimator $\hat{\epsilon}_{\text{arch}}^{\min}$ added; Table 4 expanded with per-agent minimum rows (OO4)
+- `04-method.md` §3.6: moderator rotation clarified to per-domain separate rotations (OO5)
+- `appendix-b.md` Table B.2: caption updated to require both average and per-agent minimum columns (PP3)
+- `paper.md`: all three changes propagated (OO4, OO5, PP3)

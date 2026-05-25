@@ -97,14 +97,25 @@ is highly accurate.
 ## B.2  Pairwise Archetype Distinguishability Matrix
 
 *Table B.2: Full $20 \times 20$ matrix of pairwise archetype distinguishability
-estimates $\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)})$ from the 2024–25 pilot
-season. Each entry is the mean absolute prediction difference between an agent
-running archetype $r^{(a)}$ and an agent running archetype $r^{(b)}$ on the same
-event context, averaged over $T_{\text{pilot}}$ held-out events.*
+estimates from the 2024–25 pilot season. For each pair $(r^{(a)}, r^{(b)})$,
+two values are reported: (i) the cross-agent average
+$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)})$ — the mean absolute prediction
+difference averaged over all $N = 12$ agents and $T_{\text{pilot}}$ events;
+(ii) the per-agent minimum
+$\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)})$ — the minimum over agents
+of each agent's individual mean absolute difference. **The per-agent minimum is the
+operative Assumption A1 test** (§3.5, §5.1): A1 is confirmed for this pair if and
+only if $\hat{\epsilon}_{\text{arch}}^{\min} \geq 0.037$. The cross-agent average
+is provided for descriptive comparison. Both values are derived from the same
+$20 \times 12 \times T_{\text{pilot}}$ prediction matrix; no additional API calls
+are required beyond the 295,200-call pilot batch (§5.1 footnote).*
 
 **[PENDING: experimental run required. Table to be populated from
 `data/arena/axelrod-log/pilot-archetype-pairs.jsonl` once the 2024–25 pilot
-backtest completes. Expected minimum entry $\geq 0.037$ (Assumption A1
+backtest completes. Each cell will report both
+$\hat{\epsilon}_{\text{arch}}$ (avg) and $\hat{\epsilon}_{\text{arch}}^{\min}$
+(per-agent min). Expected minimum per-agent-min entry $\geq 0.037$ (Assumption A1
 threshold); pre-registered expectation is that the (`wide-coverage`, `diversified`)
 pair yields the minimum and the (`contrarian`, `quantitative`) pair yields the
-maximum.]**
+maximum. The agent expected to produce the minimum per-agent entry across all pairs
+is T12 (selfhost-qwen4b, Qwen3-4B).]**

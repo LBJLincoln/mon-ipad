@@ -933,13 +933,20 @@ The LPSG is instantiated in a *Day-Bucket v3* pipeline
 structured morning brief: yesterday's outcomes, current bankroll standings,
 and any flagged anomalies. All 12 NBA agents and 10 political agents receive
 this brief as a shared prefix before generating independent predictions.
-The moderator role rotates weekly (Axelrod-style round-robin) across all
-agents, beginning with T1 (Qwen 3 235B-A22B) in Week 1; moderating capacity
-therefore varies from 235B (T1–T2) to 4B parameters (T12: Qwen3-4B); the
-full size breakdown is in §4.1 (T3: Llama 3.1 8B; Mistral T6–T10 sizes are
-undisclosed by the provider). This is a minor confound: all agents receive an identical
-structured morning brief template regardless of moderator identity, so the
-confound is bounded to the quality of free-text synthesis in the brief body.
+The moderator role rotates weekly (Axelrod-style round-robin) **within each
+domain separately**: the 12-agent NBA cohort (T1–T12) rotates independently of
+the 10-agent political cohort (T1–T10), both sequences beginning with T1 (Qwen 3
+235B-A22B) in Week 1. This per-domain design ensures that T12 (selfhost-qwen4b,
+Qwen3-4B, NBA-only; §4.1) never moderates a political morning council for which
+it generates no predictions — preventing an architecturally inconsistent brief
+produced by a model outside the political prediction cohort. For the NBA council,
+moderating capacity varies from 235B (T1–T2) to 4B parameters (T12); the full
+size breakdown is in §4.1 (T3: Llama 3.1 8B; Mistral T6–T10 sizes undisclosed
+by provider). For the political council, moderating capacity spans T1–T10 (235B
+down to the smallest Mistral commercial variant; sizes undisclosed). This is a
+minor confound: all agents receive an identical structured morning brief template
+regardless of moderator identity, so the confound is bounded to the quality of
+free-text synthesis in the brief body.
 
 **Prediction window.** Each agent generates predictions independently
 and asynchronously over a 15-minute window. Predictions are sealed;
@@ -1412,21 +1419,39 @@ $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
 \frac{1}{N \cdot T_{\text{pilot}}} \sum_{i=1}^{N}\sum_{t=1}^{T_{\text{pilot}}}
 \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
 
+Since Assumption A1 is a *per-agent* uniform bound — it must hold for *every* agent
+$i$, not merely in expectation across the cohort — we additionally report the per-agent
+minimum, which is the operative test of A1:
+
+$$\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)}) =
+\min_{i \in \{1,\ldots,N\}} \frac{1}{T_{\text{pilot}}}
+\sum_{t=1}^{T_{\text{pilot}}} \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
+
+A1 is confirmed for pair $(r^{(a)}, r^{(b)})$ if and only if
+$\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)}) \geq 0.037$.
+The cross-agent average $\hat{\epsilon}_{\text{arch}}$ is reported for descriptive
+comparison but is not the operative A1 test: if a single agent (most plausibly
+T12, selfhost-qwen4b, Qwen3-4B, whose limited capacity may compress its
+prediction range) fails the per-agent threshold even while the cross-agent average
+passes, A1 is violated for that agent.
+
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype
-distinguishability estimates $\hat{\epsilon}_{\text{arch}}$. All 190
-off-diagonal entries exceed 0.037 (Assumption A1 threshold; §4.4 circularity
-note applies: reported minimum $\hat\epsilon_{\text{arch}}$ is upward-biased
-because archetype revision used these same pilot data). Full
-$20 \times 20$ matrix in Appendix B.2.*
+distinguishability estimates. The **operative A1 test** is the per-agent minimum
+$\hat{\epsilon}_{\text{arch}}^{\min}$; the cross-agent average is reported for
+descriptive purposes. §4.4 circularity note applies: reported minimum is
+upward-biased because archetype revision used these pilot data.
+Full $20 \times 20$ matrix in Appendix B.2.*
 
 | Statistic | Value |
 |-----------|-------|
-| Minimum $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
-| Minimum archetype pair | **[PENDING]** |
-| Maximum $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
+| Minimum cross-agent average $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
+| Minimum archetype pair (by average) | **[PENDING]** |
+| **Minimum per-agent minimum $\hat{\epsilon}_{\text{arch}}^{\min}$** | **[PENDING — A1 operative test]** |
+| Agent achieving minimum $\hat{\epsilon}_{\text{arch}}^{\min}$ | **[PENDING — expected: T12]** |
+| Maximum cross-agent average $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
 | Maximum archetype pair | **[PENDING]** |
-| Mean $\hat{\epsilon}_{\text{arch}}$ (all 190 pairs) | **[PENDING]** |
-| Fraction of pairs $\geq 0.037$ | **[PENDING — expected: 190/190]** |
+| Mean $\hat{\epsilon}_{\text{arch}}$ (all 190 pairs, cross-agent avg) | **[PENDING]** |
+| Fraction of pairs with $\hat{\epsilon}_{\text{arch}}^{\min} \geq 0.037$ | **[PENDING — expected: 190/190]** |
 
 Based on pilot analysis, the minimum pairwise $\hat{\epsilon}_{\text{arch}}$
 is expected between the *wide-coverage* and *diversified* archetypes, which
@@ -2558,13 +2583,20 @@ the remainder is an order of magnitude smaller than the leading term.
 ## B.2  Pairwise Archetype Distinguishability Matrix
 
 *Table B.2: Full $20 \times 20$ matrix of pairwise archetype distinguishability
-estimates $\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)})$ from the 2024–25 pilot season.*
+estimates from the 2024–25 pilot season. For each pair $(r^{(a)}, r^{(b)})$,
+two values are reported: (i) the cross-agent average
+$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)})$; (ii) the per-agent minimum
+$\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)})$.
+**The per-agent minimum is the operative Assumption A1 test** (§3.5, §5.1).*
 
 **[PENDING: table to be populated from
 `data/arena/axelrod-log/pilot-archetype-pairs.jsonl` once the 2024–25 pilot
-backtest completes. Expected minimum entry $\geq 0.037$; pre-registered expectation
-is that the (`wide-coverage`, `diversified`) pair yields the minimum and
-(`contrarian`, `quantitative`) the maximum.]**
+backtest completes. Each cell will report both average and per-agent minimum.
+Expected minimum per-agent-min entry $\geq 0.037$ (Assumption A1 threshold);
+pre-registered expectation is that the (`wide-coverage`, `diversified`) pair
+yields the minimum and (`contrarian`, `quantitative`) the maximum.
+Agent expected to achieve minimum per-agent entry: T12 (selfhost-qwen4b,
+Qwen3-4B).]**
 
 ---
 

@@ -28,22 +28,39 @@ $$\hat{\epsilon}_{\text{arch}}(r^{(a)}, r^{(b)}) =
 \frac{1}{N \cdot T_{\text{pilot}}} \sum_{i=1}^{N}\sum_{t=1}^{T_{\text{pilot}}}
 \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
 
+Since Assumption A1 is a *per-agent* uniform bound — it must hold for *every* agent
+$i$, not merely in expectation across the cohort — we additionally report the per-agent
+minimum, which is the operative test of A1:
+
+$$\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)}) =
+\min_{i \in \{1,\ldots,N\}} \frac{1}{T_{\text{pilot}}}
+\sum_{t=1}^{T_{\text{pilot}}} \left| p_{i,t}^{r^{(a)}} - p_{i,t}^{r^{(b)}} \right|$$
+
+A1 is confirmed for pair $(r^{(a)}, r^{(b)})$ if and only if
+$\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)}) \geq 0.037$.
+The cross-agent average $\hat{\epsilon}_{\text{arch}}$ is reported for descriptive
+comparison but is not the operative A1 test: if a single agent (most plausibly
+T12, selfhost-qwen4b, Qwen3-4B, whose limited capacity may compress its
+prediction range) fails the per-agent threshold even while the cross-agent average
+passes, A1 is violated for that agent.
+
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype
-distinguishability estimates $\hat{\epsilon}_{\text{arch}}$. All 190
-off-diagonal entries are expected to exceed 0.037 (pre-registered Assumption A1
-threshold; §4.4 circularity note applies: reported minimum $\hat\epsilon_{\text{arch}}$
-is upward-biased because archetype revision used these same pilot data; values
-pending pilot backtest completion — see Table B.2). Full
-$20 \times 20$ matrix in Appendix B.2.*
+distinguishability estimates. The **operative A1 test** is the per-agent minimum
+$\hat{\epsilon}_{\text{arch}}^{\min}$; the cross-agent average is reported for
+descriptive purposes. §4.4 circularity note applies: reported minimum is
+upward-biased because archetype revision used these pilot data.
+Full $20 \times 20$ matrix in Appendix B.2.*
 
 | Statistic | Value |
 |-----------|-------|
-| Minimum $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
-| Minimum archetype pair | **[PENDING]** |
-| Maximum $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
+| Minimum cross-agent average $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
+| Minimum archetype pair (by average) | **[PENDING]** |
+| **Minimum per-agent minimum $\hat{\epsilon}_{\text{arch}}^{\min}$** | **[PENDING — A1 operative test]** |
+| Agent achieving minimum $\hat{\epsilon}_{\text{arch}}^{\min}$ | **[PENDING — expected: T12]** |
+| Maximum cross-agent average $\hat{\epsilon}_{\text{arch}}$ | **[PENDING]** |
 | Maximum archetype pair | **[PENDING]** |
-| Mean $\hat{\epsilon}_{\text{arch}}$ (all 190 pairs) | **[PENDING]** |
-| Fraction of pairs $\geq 0.037$ | **[PENDING — expected: 190/190]** |
+| Mean $\hat{\epsilon}_{\text{arch}}$ (all 190 pairs, cross-agent avg) | **[PENDING]** |
+| Fraction of pairs with $\hat{\epsilon}_{\text{arch}}^{\min} \geq 0.037$ | **[PENDING — expected: 190/190]** |
 
 Based on pilot analysis, the minimum pairwise $\hat{\epsilon}_{\text{arch}}$
 is expected between the *wide-coverage* and *diversified* archetypes, which
