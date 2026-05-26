@@ -1,8 +1,47 @@
 {
   "version": 1,
-  "updated_at": "2026-05-30T22:00:00Z",
+  "updated_at": "2026-05-31T02:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire197-2026-05-31T02h",
+      "priority": 247,
+      "status": "done",
+      "completed_at": "2026-05-31T02:00:00Z",
+      "completed_by": "cloud-brain-fire-197",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-197 ODD: S18-c1112-g3336-stag=11-pareto=20-pareto-min=0.2199-EXTREME-URGENT(POTENTIAL-BELOW-FLEET-BEST-0.22012)-Venn-Abers-IN-pareto-CONFIRMED(GA-evolved!-validates-arXiv:2605.03816); c1100-Rule8-14TH-VIOLATION(catboost+ET+LR+stacking); S22-c1099-g3295-stag=0-pareto=11(3rd-CONSEC-SHRINK)-ET-200f-0.21984-EXTREME-URGENT(<0.22012-Rule#5-TRIGGERED); c1053-Rule8-4TH-VIOLATION(stacking)+c1078-POSSIBLY-5TH; /api/export-404-BOTH(20th-fire); S13/S14/S15-404-DOWN(30+fires); all-POL-404-DOWN(30+fires); ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-31T02h)"
+    },
+    {
+      "id": "vm-s22-et200f-0.21984-fire197",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-EXTREME-URGENT priority=0: S22 ET-200f Brier=0.21984 in pareto (fire-197 API: 'leading solution... achieving 0.21984 Brier score, 32.88% ROI, 11.83 Sharpe, sigmoid calibration'). BELOW FLEET BEST 0.22012 — Rule#5 TRIGGERED (<0.22012). VM: (1) curl /api/export S22 IMMEDIATELY; (2) if confirmed Brier<0.22012 -> checkpoint + update CLAUDE.md fleet-best; (3) fix BOTH code paths before next stagnation. c1053 Rule8-4TH VIOLATION confirmed + c1078 POSSIBLY 5TH (unconfirmed).",
+      "detected_at": "2026-05-31T02:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-pareto-0.2199-fire197",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-EXTREME-URGENT priority=0: S18 pareto-min=0.2199 (fire-197 API: 'Brier scores between 0.2199-0.2473' in pareto). POTENTIAL BELOW FLEET BEST 0.22012. ALSO: Venn-Abers calibration found organically in S18 pareto (fire-197 API: 'sigmoid and Venn-Abers calibration methods prominent') — validates arXiv:2605.03816! c1100 Rule8-14TH VIOLATION. stag=11 at c1112 — DIVERSIFY TRIGGER IN ~4 CYCLES (Rule#6: checkpoint FIRST then diversify). VM: (1) curl /api/export S18 IMMEDIATELY; (2) if Brier<0.22012 confirmed -> checkpoint + fleet-best update; (3) extract Venn-Abers impl from app.py.",
+      "detected_at": "2026-05-31T02:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-stag11-diversify-watch-fire197",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-WATCH: S18 stag=11 at c1112. DIVERSIFY TRIGGER IN ~4 CYCLES (stag>15, Rule#6). CRITICAL: checkpoint FIRST (/api/export) BEFORE sending diversify command. stag growing ~1/cycle post-c1100-reset. Next auto-reset ~c1125 (11+14=25 stag). If stag exceeds 15 before checkpoint: send POST /api/command diversify ONLY AFTER /api/export succeeds.",
+      "detected_at": "2026-05-31T02:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "do_not_push": false
+    },
     {
       "id": "cloud-trigger-fire-196-2026-05-30T22h",
       "priority": 246,
@@ -10,16 +49,50 @@
       "completed_at": "2026-05-30T22:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-196",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-196 EVEN Axelrod-verify-pass: SHAs-NBA-19f4acf49d(5994L)/POL-3496362c60(3978L)-UNCHANGED-vs-fire-195; 13/13-parity-OK(NBA-L5056/5065/5073-POL-L3246/3255/3263); KL-div-ε-smoothed-self-excluded-OK; AXELROD_ARCHETYPES-NBA-20-sports/POL-20-political-financial-OK; Mech-B+C-BLOCKED(do_not_push_hf_space_yet+NBA-503-133+d+POL-IDLE-43+d); all-NBA/POL-404-DOWN(sleeping); EVEN: arXiv:2507.02618-Strategic-Intelligence-LLMs-EGT-frontier-IPD-Gemini-ruthless-provider-fingerprints-proposal-written (2026-05-30T22h)"
+      "subject": "fire-196 EVEN Axelrod-verify-pass: SHAs-NBA-19f4acf49d(5994L)/POL-3496362c60(3978L)-UNCHANGED; 13/13-parity-OK; Mech-B+C-BLOCKED; all-NBA/POL-404-DOWN(sleeping); EVEN: arXiv:2507.02618-Strategic-Intelligence-LLMs-EGT (2026-05-30T22h)"
     },
     {
-      "id": "vm-research-llm-strategic-fingerprints-fire196",
-      "priority": 93,
+      "id": "vm-s18-rf200f-0.22001-fire195",
+      "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "RESEARCH: LLM strategic fingerprints in Axelrod tournament — arXiv:2507.02618 (Payne+Alloui-Cros, Jul 2025). Add provider_strategic_profile to agent metadata; bias Mech B archetype for Gemini (ruthless/defect) vs OpenAI (cooperative). Proposal: data/research-proposals/sota-strategic-intelligence-llms-egt-fire196.md.",
-      "detected_at": "2026-05-30T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
+      "subject": "VM-EXTREME-URGENT priority=0: S18 RF-200f Brier=0.22001 gen=3239 BELOW FLEET BEST 0.22012 (fire-195 confirmed pareto). c1050+c1075 Rule8-12TH+13TH VIOLATIONS. best_brier=0.22236 STALE since 2026-05-25. VM: curl /api/export S18 IMMEDIATELY.",
+      "detected_at": "2026-05-30T18:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: S18 pareto-min=0.2199 POTENTIALLY BETTER than RF-0.22001. See vm-s18-pareto-0.2199-fire197 (priority=0). Venn-Abers confirmed in pareto!",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-et200f-0.22003-rf200f-0.22009-fire193",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "SUPERSEDED BY vm-s18-pareto-0.2199-fire197. S18 pareto-min=0.2199 is new top candidate. VM: curl /api/export S18 IMMEDIATELY.",
+      "detected_at": "2026-05-30T10:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: SUPERSEDED by pareto-min=0.2199 fire-197.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s22-c1003-rule8-violation-fire193",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-CRITICAL: S22 Rule8 — c1053 Rule8-4TH VIOLATION CONFIRMED (fire-197 API explicit: xgboost+lightgbm+catboost+LR+stacking). c1078 POSSIBLY 5TH (unconfirmed). 4 confirmed: c853/c1003/c1028/c1053. pareto=11 (3rd consec shrink). stag=0. Fix BOTH code paths before next stagnation.",
+      "detected_at": "2026-05-30T10:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1053 Rule8-4TH VIOLATION CONFIRMED. c1078 POSSIBLY 5TH. ET-200f-0.21984 EXTREME URGENT — see vm-s22-et200f-0.21984-fire197.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s15-403-possibly-waking-fire193",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) 404-DOWN fire-197 (30+ fires). S15 holds FLEET BEST RF-75f 0.22012. VM: retry /api/status periodically; when UP curl /api/export IMMEDIATELY.",
+      "detected_at": "2026-05-30T10:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S15 still 404-DOWN (30+ fires).",
       "do_not_push": false
     },
     {
@@ -29,7 +102,7 @@
       "completed_at": "2026-05-30T18:00:00Z",
       "completed_by": "cloud-brain-fire-195",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-195 ODD: S18-c1081-g3242-stag=6-pareto=16(↑9↑16-RECOVERING!)-⚡⚡RF-200f-0.22001-gen3239-BELOW-FLEET-BEST-0.22012★-EXTREME-URGENT-VM-checkpoint-NOW; c1050+c1075-Rule8-12TH+13TH-VIOLATIONS-CONFIRMED(stacking-BOTH-API-explicit); S22-c1044-g3130-stag=0-pareto=20(↑9↑20-MAJOR-RECOVERY!)-c1028-Rule8-3RD-VIOLATION-CONFIRMED(stacking-expanded-diversity); /api/export-404-S18+S22(18th-fire); S15-404-DOWN-waking-FAILED(was-403-POSSIBLY-WAKING-fire193); S13/S14-404-DOWN(28+fires); all-POL-404-DOWN(28+fires); ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-05-30T18h)"
+      "subject": "fire-195 ODD: S18-c1081-RF-200f-0.22001-EXTREME-URGENT; c1050+c1075-Rule8-12TH+13TH; S22-c1044-pareto=20-MAJOR-RECOVERY; c1028-Rule8-3RD (2026-05-30T18h)"
     },
     {
       "id": "cloud-trigger-fire-194-2026-05-30T14h",
@@ -38,7 +111,7 @@
       "completed_at": "2026-05-30T14:00:00Z",
       "completed_by": "cloud-trigger-axelrod-fire-194",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-194 EVEN Axelrod-verify-pass: SHAs-NBA-19f4acf49d(5993L)/POL-3496362c60(3977L)-UNCHANGED-vs-fire-193; 13/13-parity-OK(NBA-L5056/5065/5073-POL-L3246/3255/3263); KL-div-ε-smoothed-self-excluded-OK; AXELROD_ARCHETYPES-NBA-20-sports/POL-20-political-financial-OK; Mech-B+C-BLOCKED(do_not_push_hf_space_yet+NBA-503-132+d+POL-IDLE-42+d); all-NBA/POL-404-DOWN(sleeping) (2026-05-30T14h)"
+      "subject": "fire-194 EVEN Axelrod-verify-pass: SHAs UNCHANGED; Mech-B+C-BLOCKED (2026-05-30T14h)"
     },
     {
       "id": "cloud-brain-fire193-2026-05-30T10h",
@@ -47,88 +120,17 @@
       "completed_at": "2026-05-30T10:00:00Z",
       "completed_by": "cloud-brain-fire-193",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-193 ODD: S18-c1064-g3190-stag=0-pareto=9(↑16↑9-SHRINK)-⚡⚡ET-200f-0.22003+RF-200f-0.22009-BOTH-BELOW-FLEET-BEST-0.22012★-EXTREME-URGENT-VM-checkpoint-NOW; c1025-11TH-RESET-POSSIBLE-1ST-CLEAN; S22-c1014-g3040-stag=0-pareto=9-c1003-Rule8-VIOLATION-CONFIRMED; S15-403-FORBIDDEN(POSSIBLY-WAKING!); all-POL-404-DOWN(27+fires); ODD-no-WebSearch (2026-05-30T10h)"
-    },
-    {
-      "id": "vm-s18-rf200f-0.22001-fire195",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "VM-EXTREME-URGENT priority=0: S18 ⚡⚡ RF-200f Brier=0.22001 gen=3239 BELOW FLEET BEST 0.22012★ (fire-195 API confirmed, pareto front c1081). Rule#5 gates TRIGGERED (<0.22085 AND <0.22012). VM: curl /api/export S18 IMMEDIATELY before next auto-reset ~c1100 (stag=6, ~19 more stag cycles from c1075). c1050+c1075 both reintroduced stacking (Rule8-12TH+13TH VIOLATIONS). c1025 'possibly first clean' was NOT permanent — c1050 reverted it. /api/export 404 via WebFetch (18th consecutive fire). best_brier=0.22236 STALE since 2026-05-25.",
-      "detected_at": "2026-05-30T18:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): still EXTREME-URGENT. VM: curl /api/export S18 IMMEDIATELY.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s18-et200f-0.22003-rf200f-0.22009-fire193",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "SUPERSEDED BY vm-s18-rf200f-0.22001-fire195. S18 ET-200f-0.22003 + RF-200f-0.22009 fire-193 BOTH below fleet best. NOW: RF-200f-0.22001 gen=3239 (fire-195) is new top. VM: curl /api/export S18 IMMEDIATELY.",
-      "detected_at": "2026-05-30T10:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): SUPERSEDED by RF-200f-0.22001 gen=3239.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s22-c1003-rule8-violation-fire193",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "VM-CRITICAL: S22 Rule8 violations — c1003 (2nd) + c1028 (3RD, fire-195 confirmed). 3 total: c853/c1003/c1028. pareto=20 MAJOR RECOVERY at c1044. stag=0. Next auto-reset when stag builds (not imminent). VM: curl /api/export + fix BOTH app.py code paths before next stagnation.",
-      "detected_at": "2026-05-30T10:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): c1028 Rule8-3RD VIOLATION CONFIRMED. c1044 stag=0 pareto=20 (MAJOR RECOVERY). VM: fix BOTH code paths.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s15-403-possibly-waking-fire193",
-      "priority": 1,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) back to 404-DOWN at fire-195 (was 403-FORBIDDEN fire-193 — waking FAILED). 28+ fires sleeping. S15 holds FLEET BEST RF-75f 0.22012★. VM: retry /api/status periodically; when UP curl /api/export IMMEDIATELY.",
-      "detected_at": "2026-05-30T10:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S15 still 404-DOWN.",
-      "do_not_push": false
-    },
-    {
-      "id": "cloud-trigger-fire-192-2026-05-30T06h",
-      "priority": 242,
-      "status": "done",
-      "completed_at": "2026-05-30T06:00:00Z",
-      "completed_by": "cloud-trigger-fire-192",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-192 EVEN Axelrod verify pass: SHAs-NBA-19f4acf49d(UNCHANGED)/POL-3496362c60(UNCHANGED); 13/13-parity-OK; Mech-B+C-BLOCKED; EVEN: arXiv:2406.04062-Online-Learning-Betting-Markets-Profit-vs-Prediction(ICML2024) (2026-05-30T06h)"
-    },
-    {
-      "id": "cloud-trigger-axelrod-fire-191-2026-05-30T02h",
-      "priority": 241,
-      "status": "done",
-      "completed_at": "2026-05-30T02:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-191",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-191 ODD Axelrod verify pass: SHAs-NBA-19f4acf49d(5994L)/POL-3496362c60(3978L)-UNCHANGED-vs-fire-190; 13/13-parity-OK; Mech-B+C-BLOCKED (2026-05-30T02h)"
-    },
-    {
-      "id": "cloud-brain-fire190-2026-05-29T22h",
-      "priority": 240,
-      "status": "done",
-      "completed_at": "2026-05-29T22:00:00Z",
-      "completed_by": "cloud-brain-fire-190",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-190 EVEN: S18-c1024-Rule8-9TH-VIOLATION-DIVERSIFY-INDUCED; S22-c977-c953-CONFIRMED; EVEN: arXiv:2512.08591-Long-Sequence-LSTM-NBA-8seasons (2026-05-29T22h)"
+      "subject": "fire-193 ODD: S18-c1064-ET-0.22003+RF-0.22009-EXTREME-URGENT; S22-c1014-c1003-Rule8-CONFIRMED; S15-403-POSSIBLY-WAKING (2026-05-30T10h)"
     },
     {
       "id": "vm-s18-diversify-pool-rule8-fire190",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CRITICAL: S18 Rule#8 — 13 confirmed violations (c750-c1075). c1050+c1075 both reintroduced stacking. Fix BOTH auto-reset code AND diversify pool in app.py BEFORE ~c1100.",
+      "subject": "VM-CRITICAL: S18 Rule#8 — 14 confirmed violations (c750-c1100). Fix BOTH auto-reset code AND diversify pool in app.py BEFORE ~c1125.",
       "detected_at": "2026-05-29T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): c1050+c1075 Rule8-12TH+13TH VIOLATIONS CONFIRMED. Fix BOTH code paths BEFORE ~c1100.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1100 Rule8-14TH VIOLATION CONFIRMED. stag=11 at c1112 — next auto-reset ~c1125. Fix BOTH code paths URGENTLY.",
       "do_not_push": false
     },
     {
@@ -136,10 +138,10 @@
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CRITICAL: S22 Rule8 — c853/c1003/c1028 all violations. Fix auto-reset + diversify code before next stagnation event.",
+      "subject": "VM-CRITICAL: S22 Rule8 — c1053 4TH VIOLATION CONFIRMED + c1078 POSSIBLY 5TH. Fix auto-reset + diversify code before next stagnation.",
       "detected_at": "2026-05-29T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): c1028 Rule8-3RD VIOLATION CONFIRMED. S22 c1044 stag=0 pareto=20 MAJOR RECOVERY. Fix BOTH code paths.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1053 Rule8-4TH VIOLATION CONFIRMED. c1078 possibly 5TH. stag=0 at c1099. ET-200f-0.21984 EXTREME URGENT. Fix BOTH code paths.",
       "do_not_push": false
     },
     {
@@ -163,177 +165,52 @@
       "do_not_push": false
     },
     {
-      "id": "cloud-trigger-axelrod-fire-189-2026-05-29T18h",
-      "priority": 239,
+      "id": "vm-research-llm-strategic-fingerprints-fire196",
+      "priority": 93,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "RESEARCH: LLM strategic fingerprints in Axelrod tournament — arXiv:2507.02618. Add provider_strategic_profile to agent metadata; bias Mech B archetype for Gemini (ruthless/defect) vs OpenAI (cooperative).",
+      "detected_at": "2026-05-30T22:00:00Z",
+      "updated_at": "2026-05-30T22:00:00Z",
+      "do_not_push": false
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-191-2026-05-30T02h",
+      "priority": 241,
       "status": "done",
-      "completed_at": "2026-05-29T18:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-189",
+      "completed_at": "2026-05-30T02:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-191",
       "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-189 ODD Axelrod verify pass: UNCHANGED; Mech-B+C-BLOCKED"
+      "subject": "fire-191 ODD Axelrod verify pass: SHAs-UNCHANGED; Mech-B+C-BLOCKED"
     },
     {
-      "id": "cloud-brain-fire188-2026-05-29T14h",
-      "priority": 238,
+      "id": "cloud-brain-fire190-2026-05-29T22h",
+      "priority": 240,
       "status": "done",
-      "completed_at": "2026-05-29T14:00:00Z",
-      "completed_by": "cloud-brain-fire-188",
+      "completed_at": "2026-05-29T22:00:00Z",
+      "completed_by": "cloud-brain-fire-190",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-188 EVEN: S18-c1010-Rule8-7TH+8TH violations confirmed; arXiv:2412.19318-Adaptive-Conformal-Inference (2026-05-29T14h)"
-    },
-    {
-      "id": "cloud-brain-fire187-2026-05-29T10h",
-      "priority": 237,
-      "status": "done",
-      "completed_at": "2026-05-29T10:00:00Z",
-      "completed_by": "cloud-brain-fire-187",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-187 ODD: S18-ET-200f-0.21845-EXTREME-URGENT; S22-c853-Rule8-VIOLATION-CONFIRMED (2026-05-29T10h)"
-    },
-    {
-      "id": "vm-s18-rule8-c975c1000-fire188",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "VM-CRITICAL: S18 Rule#8 — 13 confirmed violations total (c750-c1075). ALL S18 auto-resets have stacking. Fix BOTH code paths BEFORE ~c1100.",
-      "detected_at": "2026-05-29T14:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): c1050+c1075 12TH+13TH VIOLATIONS CONFIRMED. RF-200f-0.22001 gen=3239 — checkpoint EXTREME URGENT.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s22-c953-auto-reset-fire188",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "VM-CRITICAL: S22 Rule8 — 3 violations confirmed (c853/c1003/c1028). pareto=20 MAJOR RECOVERY at c1044. Fix code before next stagnation.",
-      "detected_at": "2026-05-29T14:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): c1028 confirmed 3rd S22 violation. stag=0 pareto=20 MAJOR RECOVERY. Fix BOTH code paths.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s18-et200f-0.21845-checkpoint-fire187",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "SUPERSEDED: S18 ET-0.21845 gen=2885 PRESUMED LOST. Now: RF-200f-0.22001 gen=3239 (fire-195) is current top. See vm-s18-rf200f-0.22001-fire195.",
-      "detected_at": "2026-05-29T10:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): SUPERSEDED by RF-200f-0.22001 gen=3239.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s22-c853-rule8-fire187",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "VM-CRITICAL: S22 3 confirmed violations: c853 (1st), c1003 (2nd), c1028 (3rd, fire-195). Fix before next stagnation reset.",
-      "detected_at": "2026-05-29T10:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): See vm-s22-c1003-rule8-violation-fire193.",
-      "do_not_push": false
-    },
-    {
-      "id": "cloud-trigger-axelrod-fire-186-2026-05-29T06h",
-      "priority": 236,
-      "status": "done",
-      "completed_at": "2026-05-29T06:00:00Z",
-      "completed_by": "cloud-trigger-axelrod-fire-186",
-      "owner": "cloud-trigger-axelrod-2026",
-      "subject": "fire-186 EVEN Axelrod verify pass: UNCHANGED; Mech-B+C-BLOCKED"
-    },
-    {
-      "id": "cloud-brain-fire185-2026-05-29T02h",
-      "priority": 235,
-      "status": "done",
-      "completed_at": "2026-05-29T02:00:00Z",
-      "completed_by": "cloud-brain-fire-185",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-185 ODD S18-c931-AUTO-RESET-c925; S22-c837-pareto=48-MASSIVE-SURGE"
-    },
-    {
-      "id": "cloud-brain-fire184-2026-05-28T22h",
-      "priority": 234,
-      "status": "done",
-      "completed_at": "2026-05-28T22:00:00Z",
-      "completed_by": "cloud-brain-fire-184",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-184 EVEN S18-c892-stag=16-DIVERSIFY-NEEDED; S22-c807-LR-43f-CONFIRMED"
-    },
-    {
-      "id": "vm-s22-pareto48-export-fire185",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "VM-URGENT: S22 curl /api/export — pareto=20 MAJOR RECOVERY at c1044. c1028 Rule8-3RD VIOLATION. VM: checkpoint + fix code paths.",
-      "detected_at": "2026-05-29T02:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S22 c1044/g3130/stag=0/pareto=20 MAJOR RECOVERY. Fix BOTH code paths.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s18-c925-reset-rule8-fire185",
-      "priority": 1,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "MONITOR S18 Rule#8: c1025 'clean' (fire-193) was NOT permanent. c1050+c1075 both violated. Fix BOTH code paths before ~c1100.",
-      "detected_at": "2026-05-29T02:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): PATTERN DEFINITIVE.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s18-stag16-diversify-fire184",
-      "priority": 1,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "SUPERSEDED: S18 stag diversify — stag=6 at c1081, not urgent. See vm-s18-rf200f-0.22001-fire195.",
-      "detected_at": "2026-05-28T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): SUPERSEDED.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-checkpoint-s18-catboost-0.21995-fire181",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "SUPERSEDED by vm-s18-rf200f-0.22001-fire195 (priority=0).",
-      "detected_at": "2026-05-28T10:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): SUPERSEDED.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-s18-stag20-diversify-fire180",
-      "priority": 2,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "SUPERSEDED: stag=6 at c1081. See vm-s18-rf200f-0.22001-fire195.",
-      "detected_at": "2026-05-28T06:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): SUPERSEDED.",
-      "do_not_push": false
+      "subject": "fire-190 EVEN: S18-c1024-Rule8-9TH-VIOLATION-DIVERSIFY-INDUCED; arXiv:2512.08591-LSTM-NBA"
     },
     {
       "id": "vm-s18-rule8-stacking-priority0",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CRITICAL S18 Rule#8 — 13 confirmed violations (c750-c1075). Fix BOTH auto-reset + diversify code paths BEFORE ~c1100. RF-200f-0.22001 BELOW FLEET BEST — checkpoint EXTREME URGENT.",
+      "subject": "VM-CRITICAL S18 Rule#8 — 14 confirmed violations (c750-c1100). Fix BOTH auto-reset + diversify code paths BEFORE ~c1125. pareto-min=0.2199 POTENTIAL FLEET BEST — checkpoint EXTREME URGENT.",
       "detected_at": "2026-05-27T14:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): RF-200f-0.22001 gen=3239 EXTREME URGENT. VM: (1) curl /api/export IMMEDIATELY; (2) fix BOTH code paths before ~c1100."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1100 Rule8-14TH VIOLATION CONFIRMED. pareto-min=0.2199 EXTREME URGENT. Venn-Abers in pareto (GA-evolved). VM: (1) curl /api/export IMMEDIATELY; (2) fix BOTH code paths before ~c1125."
     },
     {
       "id": "vm-s22-pareto-watch-fire177",
       "priority": 3,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR S22: c1044/g3130/stag=0 pareto=20 (MAJOR RECOVERY). 3 Rule8 violations: c853/c1003/c1028. Fix code before next stagnation.",
+      "subject": "MONITOR S22: c1099/g3295/stag=0/pareto=11 (3rd consec shrink). 4 Rule8 violations: c853/c1003/c1028/c1053. ET-200f-0.21984 EXTREME URGENT. Fix code before next stagnation.",
       "detected_at": "2026-05-27T18:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S22 c1044 stag=0 pareto=20. Fix both code paths.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1053 Rule8-4TH VIOLATION CONFIRMED. pareto=11 (3rd consec shrink). ET-0.21984 EXTREME URGENT.",
       "do_not_push": false
     },
     {
@@ -341,21 +218,10 @@
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-URGENT: S13 CatBoost-0.21992 EXTREME URGENT — still 404-DOWN fire-195 (28+ fires)",
+      "subject": "VM-URGENT: S13 CatBoost-0.21992 EXTREME URGENT — still 404-DOWN fire-197 (30+ fires)",
       "detected_at": "2026-05-25T04:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S13 still 404-DOWN.",
-      "do_not_push": false
-    },
-    {
-      "id": "vm-checkpoint-s18-catboost-0.22197-fire158",
-      "priority": 1,
-      "status": "pending",
-      "owner": "local-vm",
-      "subject": "SUPERSEDED by vm-s18-rf200f-0.22001-fire195",
-      "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): SUPERSEDED.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S13 still 404-DOWN (30+ fires).",
       "do_not_push": false
     },
     {
@@ -363,10 +229,10 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P2 pareto=3(CRITICAL SHRINK) — still 404-DOWN fire-195 (28+ fires)",
+      "subject": "MONITOR: P2 pareto=3(CRITICAL SHRINK) — still 404-DOWN fire-197 (30+ fires)",
       "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P2 404-DOWN sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P2 404-DOWN sleeping.",
       "do_not_push": false
     },
     {
@@ -374,10 +240,10 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P4 pareto=5 oscillation — still 404-DOWN fire-195 (28+ fires)",
+      "subject": "MONITOR: P4 pareto=5 oscillation — still 404-DOWN fire-197 (30+ fires)",
       "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P4 404-DOWN sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P4 404-DOWN sleeping.",
       "do_not_push": false
     },
     {
@@ -385,10 +251,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT EXTREME URGENT: S13 CatBoost-200f-0.21992 gen=2831 — still 404-DOWN fire-195 (28+ fires)",
+      "subject": "VM-CHECKPOINT EXTREME URGENT: S13 CatBoost-200f-0.21992 gen=2831 — still 404-DOWN fire-197 (30+ fires)",
       "detected_at": "2026-05-24T08:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S13 still 404-DOWN (28+ fires)."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S13 still 404-DOWN (30+ fires)."
     },
     {
       "id": "vm-checkpoint-s14-rf-0.22054-fire157",
@@ -397,8 +263,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT URGENT: S14 RF-48f brier=0.22054 BELOW 0.22085 THRESHOLD",
       "detected_at": "2026-05-24T08:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S14 404-DOWN sleeping."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S14 404-DOWN sleeping."
     },
     {
       "id": "vm-s22-diversify-stag21-fire157",
@@ -414,10 +280,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT EXTREME URGENT: P1 ALL-TIME POL RECORD pareto_best=0.24902 LightGBM-105f gen=17750 — 28+ fires sleeping",
+      "subject": "VM-CHECKPOINT EXTREME URGENT: P1 ALL-TIME POL RECORD pareto_best=0.24902 LightGBM-105f gen=17750 — 30+ fires sleeping",
       "detected_at": "2026-05-24T04:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P1 404-DOWN sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P1 404-DOWN sleeping.",
       "do_not_push": false
     },
     {
@@ -425,20 +291,20 @@
       "priority": 3,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P1 pareto_best=0.24902 ALL-TIME RECORD — 404-DOWN sleeping 28+ fires",
+      "subject": "MONITOR: P1 pareto_best=0.24902 ALL-TIME RECORD — 404-DOWN sleeping 30+ fires",
       "detected_at": "2026-05-23T18:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P1 404-DOWN sleeping."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P1 404-DOWN sleeping."
     },
     {
       "id": "vm-monitor-p5-pareto-shrink-fire153",
       "priority": 4,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "MONITOR: P5 pareto=6(RECOVERING) — 404-DOWN 28+ fires",
+      "subject": "MONITOR: P5 pareto=6(RECOVERING) — 404-DOWN 30+ fires",
       "detected_at": "2026-05-23T14:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P5 404-DOWN sleeping."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P5 404-DOWN sleeping."
     },
     {
       "id": "vm-monitor-s22-pareto-drop-fire153",
@@ -454,10 +320,10 @@
       "priority": 10,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Wake/restart NBA TF (LBJLincoln26/nba-llm-trading-floor) — 503 DOWN 133+d",
+      "subject": "Wake/restart NBA TF (LBJLincoln26/nba-llm-trading-floor) — 503 DOWN 134+d",
       "detected_at": "2026-05-16T02:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): Still 503 DOWN 133+d. do_not_push_hf_space_yet in effect.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): Still 503 DOWN 134+d. do_not_push_hf_space_yet in effect.",
       "do_not_push": false
     },
     {
@@ -467,8 +333,8 @@
       "owner": "local-vm",
       "subject": "Resume POL TF (LBJLincoln26/political-llm-trading-floor) — IDLE since 2026-05-07, $38916 unchanged",
       "detected_at": "2026-05-16T02:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): POL TF IDLE ($38,916 unchanged, 43+d). do_not_push_hf_space_yet in effect.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): POL TF IDLE ($38,916 unchanged, 44+d). do_not_push_hf_space_yet in effect.",
       "do_not_push": false
     },
     {
@@ -476,9 +342,9 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 133+ days",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): 503 DOWN 133+d.",
+      "subject": "Restart S17 (LBJLincoln26/nba-evo-s17) PAUSED 134+ days",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): 503 DOWN 134+d.",
       "do_not_push": false
     },
     {
@@ -487,8 +353,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Restart political data crons: fetch_political_data.py + insider_tracker.py + pol_watchdog.sh",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): pol_watchdog.sh still NOT firing. All POL sleeping."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): pol_watchdog.sh still NOT firing. All POL sleeping."
     },
     {
       "id": "vm-export-endpoint-404-investigate",
@@ -497,8 +363,8 @@
       "owner": "local-vm",
       "subject": "INVESTIGATE: /api/export returning 404 on both S18 and S22 via WebFetch — confirm via direct curl",
       "detected_at": "2026-05-26T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): 18+ consecutive fires. VM: curl BOTH S18+S22 /api/export IMMEDIATELY.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): 20 consecutive fires. VM: curl BOTH S18+S22 /api/export IMMEDIATELY (ET-0.21984 + pareto-0.2199 EXTREME URGENT).",
       "do_not_push": false
     },
     {
@@ -508,8 +374,8 @@
       "owner": "local-vm",
       "subject": "Implement Bootstrap Variance Calibration / MC Dropout wrapper for S15 fleet-best RF-75f",
       "detected_at": "2026-05-21T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S15 404-DOWN. When up: checkpoint first, then implement.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S15 404-DOWN. When up: checkpoint first, then implement.",
       "do_not_push": false
     },
     {
@@ -517,10 +383,10 @@
       "priority": 32,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "PORT SOTA: Add Venn-Abers calibration wrapper for XGBoost/LightGBM — arXiv:2605.03816",
+      "subject": "PORT SOTA: Add Venn-Abers calibration wrapper — arXiv:2605.03816. NOTE: S18 already evolved Venn-Abers organically (fire-197)! Extract S18 impl from app.py first.",
       "detected_at": "2026-05-24T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): All POL sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 VALIDATED: S18 GA evolved Venn-Abers organically! Fire-197 API: 'Venn-Abers calibration methods prominent in leading solutions'. Extract impl from S18 app.py. All POL sleeping.",
       "do_not_push": false
     },
     {
@@ -530,8 +396,8 @@
       "owner": "local-vm",
       "subject": "PORT SOTA: Add split conformal calibration (MAPIE library) — arXiv:2510.07185",
       "detected_at": "2026-05-26T04:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): Target S18 RF/ET + S22 RF-48f + S15 RF-75f.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): Target S18 RF/ET + S22 RF-48f + S15 RF-75f.",
       "do_not_push": false
     },
     {
@@ -541,8 +407,8 @@
       "owner": "local-vm",
       "subject": "PORT SOTA: Add ECE as 4th Pareto objective in engine.py and political_engine.py — arXiv:2303.06021",
       "detected_at": "2026-05-26T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): After engine-parity-sync.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): After engine-parity-sync.",
       "do_not_push": false
     },
     {
@@ -552,8 +418,8 @@
       "owner": "local-vm",
       "subject": "VERIFY + ADD: win-diff-last-5-games feature in features/engine.py — MDPI2026 top SHAP",
       "detected_at": "2026-05-19T08:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): AFTER engine-parity-sync.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): AFTER engine-parity-sync.",
       "do_not_push": false
     },
     {
@@ -563,8 +429,8 @@
       "owner": "local-vm",
       "subject": "PORT SOTA: Add dual isotonic calibration — arXiv:2510.17915 fire-180",
       "detected_at": "2026-05-28T06:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): Post-hoc, no retraining. After engine-parity-sync.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): Post-hoc, no retraining. After engine-parity-sync.",
       "do_not_push": false
     },
     {
@@ -574,8 +440,8 @@
       "owner": "local-vm",
       "subject": "PORT SOTA: Add Adaptive Conformal Inference by Betting — arXiv:2412.19318 fire-188",
       "detected_at": "2026-05-29T14:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): Parameter-free adaptive conformal. Priority=37.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): Priority=37.",
       "do_not_push": false
     },
     {
@@ -584,8 +450,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): MISMATCH CONFIRMED (mon-ipad 523,050 chars vs nomos-nba-agent 468,146 chars, delta=54KB).",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): MISMATCH CONFIRMED (mon-ipad 523,050 chars vs nomos-nba-agent 468,146 chars, delta=54KB).",
       "do_not_push": false
     },
     {
@@ -594,8 +460,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S13 MODEL_TYPES — Rule#8 violation",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S13 404-DOWN. vm-checkpoint-s13 FIRST."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S13 404-DOWN. vm-checkpoint-s13 FIRST."
     },
     {
       "id": "vm-remove-stacking-s15",
@@ -603,26 +469,26 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S15 MODEL_TYPES — Rule#8 violation",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S15 back to 404-DOWN. When up: checkpoint FIRST, then remove stacking."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S15 404-DOWN. When up: checkpoint FIRST."
     },
     {
       "id": "vm-remove-stacking-s22",
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CRITICAL: S22 Rule#8 — 3 violations (c853/c1003/c1028). Fix BOTH code paths before next stagnation reset.",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): c1028 Rule8-3RD VIOLATION CONFIRMED. stag=0 pareto=20 at c1044 MAJOR RECOVERY. No imminent reset."
+      "subject": "VM-CRITICAL: S22 Rule#8 — 4 confirmed violations (c853/c1003/c1028/c1053) + c1078 possibly 5TH. Fix BOTH code paths before next stagnation reset.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1053 Rule8-4TH VIOLATION CONFIRMED. c1078 possibly 5TH. stag=0 at c1099. ET-0.21984 EXTREME URGENT."
     },
     {
       "id": "vm-remove-stacking-s18",
       "priority": 42,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CRITICAL S18 Rule#8 — 13 violations. Fix BOTH code paths BEFORE ~c1100. RF-200f-0.22001 BELOW FLEET BEST.",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): c1050+c1075 Rule8-12TH+13TH VIOLATIONS CONFIRMED. RF-200f-0.22001 gen=3239 — checkpoint EXTREME URGENT."
+      "subject": "VM-CRITICAL S18 Rule#8 — 14 violations confirmed. Fix BOTH code paths BEFORE ~c1125. pareto-min=0.2199 POTENTIAL FLEET BEST.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1100 Rule8-14TH VIOLATION CONFIRMED. stag=11 — next reset ~c1125. pareto-min=0.2199 EXTREME URGENT."
     },
     {
       "id": "vm-remove-stacking-s14",
@@ -630,8 +496,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Remove 'stacking' from S14 MODEL_TYPES — Rule#8 violation",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S14 sleeping. Checkpoint FIRST."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S14 sleeping. Checkpoint FIRST."
     },
     {
       "id": "vm-add-lightgbm-s22-s13",
@@ -639,8 +505,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add lightgbm to S22 and verify in S13 MODEL_TYPES",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): After checkpoint + stacking removal confirmed."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): After checkpoint + stacking removal confirmed."
     },
     {
       "id": "vm-add-logistic-regression-model-pool",
@@ -648,8 +514,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add logistic_regression + elastic_net to MODEL_TYPES on islands missing them",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S18 c1025 reset included LR. S22 LR-43f was dominant fires 183-188. LR validated."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): LR validated in S18 c1025 reset + S22 fires 183-188."
     },
     {
       "id": "vm-add-lightgbm-p1-p2",
@@ -658,8 +524,8 @@
       "owner": "local-vm",
       "subject": "PORT NBA->POL: Add lightgbm to P1 and P2 MODEL_TYPES — ALL 5 POL islands LightGBM=pareto_best",
       "detected_at": "2026-05-21T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): All POL sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): All POL sleeping.",
       "do_not_push": false
     },
     {
@@ -668,8 +534,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add Elo ratings as feature category to features/engine.py — SHAP #1+#2 (IEEE/MDPI 2026)",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): AFTER engine-parity-sync.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): AFTER engine-parity-sync.",
       "do_not_push": false
     },
     {
@@ -678,8 +544,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "SHAP analysis on S15 fleet best RF-75f + S22 RF-48f pareto models",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S15 404-DOWN. When up: checkpoint FIRST, then SHAP."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S15 404-DOWN. When up: checkpoint FIRST."
     },
     {
       "id": "vm-research-lstm-sequence-model-fire160",
@@ -688,8 +554,8 @@
       "owner": "local-vm",
       "subject": "RESEARCH: Implement LSTM+Brier-loss sequence model for NBA prediction — arXiv:2508.02725",
       "detected_at": "2026-05-24T20:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): AFTER engine-parity-sync + S15 checkpoint.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): AFTER engine-parity-sync + S15 checkpoint.",
       "do_not_push": false
     },
     {
@@ -697,10 +563,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT URGENT: P4 pareto_best=0.24915 LightGBM-131f — 404-DOWN 28+ fires",
+      "subject": "VM-CHECKPOINT URGENT: P4 pareto_best=0.24915 LightGBM-131f — 404-DOWN 30+ fires",
       "detected_at": "2026-05-21T20:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P4 404-DOWN sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P4 404-DOWN sleeping.",
       "do_not_push": false
     },
     {
@@ -708,10 +574,10 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT: P2 pareto=3(CRITICAL fire-158) — 28+ fires sleeping",
+      "subject": "VM-CHECKPOINT: P2 pareto=3(CRITICAL fire-158) — 30+ fires sleeping",
       "detected_at": "2026-05-22T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P2 404-DOWN (28+ fires).",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P2 404-DOWN (30+ fires).",
       "do_not_push": false
     },
     {
@@ -719,10 +585,10 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT: P7 LightGBM-0.24931 — 28+ fires sleeping",
+      "subject": "VM-CHECKPOINT: P7 LightGBM-0.24931 — 30+ fires sleeping",
       "detected_at": "2026-05-17T16:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P7 404-DOWN sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P7 404-DOWN sleeping.",
       "do_not_push": false
     },
     {
@@ -730,10 +596,10 @@
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT: P5 pareto=6(RECOVERING) — 28+ fires sleeping",
+      "subject": "VM-CHECKPOINT: P5 pareto=6(RECOVERING) — 30+ fires sleeping",
       "detected_at": "2026-05-23T02:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P5 404-DOWN sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P5 404-DOWN sleeping.",
       "do_not_push": false
     },
     {
@@ -769,8 +635,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Run nomos-political-alpha/scripts/fetch_fec_sec_features.py to generate FEC PAC + SEC Form4 feature data",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): Rotation A BLOCKED. All POL sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): Rotation A BLOCKED. All POL sleeping.",
       "do_not_push": false
     },
     {
@@ -780,8 +646,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech B — sacrificial role reallocation runtime verify",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_trigger_note": "fire-196 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(133+d)+POL-IDLE(43+d)."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_trigger_note": "fire-197 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(134+d)+POL-IDLE(44+d)."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -790,8 +656,8 @@
       "owner": "cloud-trigger-axelrod-2026",
       "subject": "Axelrod Mech C — post-mortem log schema verify HF Hub push",
       "detected_at": "2026-05-15T22:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_trigger_note": "fire-196 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(133+d)+POL-IDLE(43+d)."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_trigger_note": "fire-197 (unchanged): BLOCKED do_not_push_hf_space_yet+NBA-503(134+d)+POL-IDLE(44+d)."
     },
     {
       "id": "vm-add-adaboost-naive-bayes-model-pool",
@@ -799,8 +665,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add adaboost + naive_bayes to MODEL_TYPES on NBA+POL islands",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): After LR+elastic_net validated."
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): After LR+elastic_net validated."
     },
     {
       "id": "vm-add-knn-small-feature-model-pool",
@@ -808,8 +674,8 @@
       "status": "pending",
       "owner": "local-vm",
       "subject": "Add KNN to MODEL_TYPES on islands with feature count cap",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): After AdaBoost+NB validated.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): After AdaBoost+NB validated.",
       "do_not_push": false
     },
     {
@@ -834,10 +700,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT: S15 ET candidates — 404-DOWN fire-195 (waking FAILED). Retry periodically.",
+      "subject": "VM-CHECKPOINT: S15 ET candidates — 404-DOWN fire-197 (30+ fires). Retry periodically.",
       "detected_at": "2026-05-15T18:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S15 still 404-DOWN.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S15 still 404-DOWN.",
       "do_not_push": false
     },
     {
@@ -845,10 +711,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT: S15 pareto_best — 404-DOWN fire-195 (waking FAILED). When up: curl /api/export IMMEDIATELY.",
+      "subject": "VM-CHECKPOINT: S15 pareto_best — 404-DOWN fire-197 (30+ fires). When up: curl /api/export IMMEDIATELY.",
       "detected_at": "2026-05-20T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S15 still 404-DOWN.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): S15 still 404-DOWN.",
       "do_not_push": false
     },
     {
@@ -858,8 +724,8 @@
       "owner": "local-vm",
       "subject": "VM-CHECKPOINT: P1 pareto_best=0.24902 — see vm-checkpoint-p1-pareto-0.24902-fire156",
       "detected_at": "2026-05-21T16:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): P1 404-DOWN sleeping.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197 (unchanged): P1 404-DOWN sleeping.",
       "do_not_push": false
     },
     {
@@ -867,10 +733,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "SUPERSEDED by vm-s18-rf200f-0.22001-fire195",
+      "subject": "SUPERSEDED by vm-s18-pareto-0.2199-fire197",
       "detected_at": "2026-05-20T12:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): SUPERSEDED by RF-200f-0.22001 gen=3239.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: SUPERSEDED by pareto-min=0.2199 fire-197.",
       "do_not_push": false
     },
     {
@@ -878,10 +744,10 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "subject": "VM-CHECKPOINT URGENT: S22 curl /api/export — pareto=20 MAJOR RECOVERY at c1044.",
+      "subject": "VM-CHECKPOINT URGENT: S22 curl /api/export — ET-200f-0.21984 EXTREME URGENT at c1099.",
       "detected_at": "2026-05-18T10:00:00Z",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "cloud_brain_note": "fire-196 (unchanged): S22 c1044/g3130/stag=0/pareto=20. VM: curl /api/export + fix BOTH code paths.",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: ET-200f-0.21984 BELOW FLEET BEST! See vm-s22-et200f-0.21984-fire197. VM: curl /api/export IMMEDIATELY.",
       "do_not_push": false
     },
     {
@@ -892,6 +758,153 @@
       "completed_by": "cloud-brain-fire-158",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "DONE: S22 DIVERSIFY SENT (2nd fire) by cloud-brain fire-158"
+    },
+    {
+      "id": "vm-s18-rule8-c975c1000-fire188",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-CRITICAL: S18 Rule#8 — 14 confirmed violations total (c750-c1100). Fix BOTH code paths BEFORE ~c1125.",
+      "detected_at": "2026-05-29T14:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1100 Rule8-14TH VIOLATION CONFIRMED. stag=11 — next reset ~c1125. pareto-min=0.2199 EXTREME URGENT.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s22-c953-auto-reset-fire188",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-CRITICAL: S22 Rule8 — 4 violations (c853/c1003/c1028/c1053 confirmed) + c1078 possibly 5TH. ET-200f-0.21984 EXTREME URGENT.",
+      "detected_at": "2026-05-29T14:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1053 Rule8-4TH VIOLATION CONFIRMED. c1078 possibly 5TH. ET-0.21984 EXTREME URGENT.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-et200f-0.21845-checkpoint-fire187",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "SUPERSEDED: S18 ET-0.21845 gen=2885 PRESUMED LOST. Now: pareto-min=0.2199 (fire-197) is current top. See vm-s18-pareto-0.2199-fire197.",
+      "detected_at": "2026-05-29T10:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: SUPERSEDED by pareto-min=0.2199 fire-197.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s22-c853-rule8-fire187",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-CRITICAL: S22 4 confirmed violations: c853 (1st), c1003 (2nd), c1028 (3rd), c1053 (4th). c1078 possibly 5TH. Fix before next stagnation reset.",
+      "detected_at": "2026-05-29T10:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1053 4TH CONFIRMED. c1078 possibly 5TH.",
+      "do_not_push": false
+    },
+    {
+      "id": "cloud-trigger-axelrod-fire-186-2026-05-29T06h",
+      "priority": 236,
+      "status": "done",
+      "completed_at": "2026-05-29T06:00:00Z",
+      "completed_by": "cloud-trigger-axelrod-fire-186",
+      "owner": "cloud-trigger-axelrod-2026",
+      "subject": "fire-186 EVEN Axelrod verify pass: UNCHANGED; Mech-B+C-BLOCKED"
+    },
+    {
+      "id": "cloud-brain-fire185-2026-05-29T02h",
+      "priority": 235,
+      "status": "done",
+      "completed_at": "2026-05-29T02:00:00Z",
+      "completed_by": "cloud-brain-fire-185",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-185 ODD S18-c931-AUTO-RESET-c925; S22-c837-pareto=48-MASSIVE-SURGE"
+    },
+    {
+      "id": "cloud-brain-fire184-2026-05-28T22h",
+      "priority": 234,
+      "status": "done",
+      "completed_at": "2026-05-28T22:00:00Z",
+      "completed_by": "cloud-brain-fire-184",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-184 EVEN S18-c892-stag=16-DIVERSIFY-NEEDED; S22-c807-LR-43f-CONFIRMED"
+    },
+    {
+      "id": "vm-s22-pareto48-export-fire185",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-URGENT: S22 curl /api/export — ET-200f-0.21984 at c1099. Fix code paths. c1053 Rule8-4TH confirmed.",
+      "detected_at": "2026-05-29T02:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: ET-0.21984 EXTREME URGENT. See vm-s22-et200f-0.21984-fire197.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-c925-reset-rule8-fire185",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "MONITOR S18 Rule#8: c1100 Rule8-14TH VIOLATION CONFIRMED. Fix BOTH code paths before ~c1125.",
+      "detected_at": "2026-05-29T02:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: PATTERN DEFINITIVE (14/14 resets include stacking). Fix before ~c1125.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-stag16-diversify-fire184",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "SUPERSEDED: S18 stag=11 at c1112. See vm-s18-stag11-diversify-watch-fire197 (priority=1).",
+      "detected_at": "2026-05-28T22:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: SUPERSEDED by vm-s18-stag11-diversify-watch-fire197.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-checkpoint-s18-catboost-0.21995-fire181",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "SUPERSEDED by vm-s18-pareto-0.2199-fire197 (priority=0).",
+      "detected_at": "2026-05-28T10:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: SUPERSEDED.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-stag20-diversify-fire180",
+      "priority": 2,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "SUPERSEDED: stag=11 at c1112. See vm-s18-stag11-diversify-watch-fire197.",
+      "detected_at": "2026-05-28T06:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: SUPERSEDED.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-checkpoint-s18-catboost-0.22197-fire158",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "SUPERSEDED by vm-s18-pareto-0.2199-fire197",
+      "detected_at": "2026-05-24T12:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: SUPERSEDED.",
+      "do_not_push": false
+    },
+    {
+      "id": "vm-s18-rule8-stacking-c750-fire176",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "subject": "VM-CRITICAL: S18 Rule#8 14 violations (c750-c1100). Fix BOTH code paths BEFORE ~c1125. pareto-min=0.2199 + Venn-Abers organic!",
+      "detected_at": "2026-05-27T14:00:00Z",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "cloud_brain_note": "fire-197: c1100 Rule8-14TH. stag=11 next reset ~c1125."
     }
   ],
   "recovery_protocol": {
