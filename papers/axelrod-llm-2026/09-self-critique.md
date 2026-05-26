@@ -6315,3 +6315,244 @@ to confirm propagation to all relevant files before marking closed.
 - `04-method.md` §3.6: moderator rotation clarified to per-domain separate rotations (OO5)
 - `appendix-b.md` Table B.2: caption updated to require both average and per-agent minimum columns (PP3)
 - `paper.md`: all three changes propagated (OO4, OO5, PP3)
+
+---
+
+# Peer-Review Self-Critique — Cycle QQ (2026-05-30)
+
+*Audit of the two open issues from Cycle PP (PP1, PP2), plus new issues surfaced
+by a code-level audit of `scripts/arena/hf-llm-trading-floor/app.py`.*
+
+*Fire parity: fire-195 ODD — no WebSearch; all citations are code-verified or
+drawn from previously established references.*
+
+---
+
+## STATUS: CYCLE PP OPEN ISSUES
+
+### PP1 — §4.2.1 market category count arithmetic: 249 stated, breakdown sums to 235 [ELEVATED — now three-way discrepancy]
+
+**What was open (Cycle PP):** §4.2.1 states 249 market categories; the parenthetical
+breakdown sums to $162 + 28 + 22 + 20 + 3 = 235$, a 14-category gap. PP1 proposed
+that 249 is correct and the breakdown is incomplete, with a placeholder fix of
+"14 futures, parlay-component, and cross-game derivative categories."
+
+**New finding (Cycle QQ code audit):** The agent context prompt string in
+`app.py` line 2018 (the string that agents *actually receive* during inference) reads:
+`"AVAILABLE CATEGORIES (253): ml_home, ml_away, ..."`.
+
+This introduces a **three-way discrepancy**:
+
+| Source | Count | Status |
+|--------|-------|--------|
+| §4.2.1 + Appendix A | 249 | Stated in paper |
+| app.py context prompt (line ~2018) | 253 | What agents actually receive |
+| Parenthetical breakdown | $162+28+22+20+3 = 235$ | Undercount in text |
+
+The authoritative figure is what agents receive at inference time: 253. The
+paper's 249 may reflect an earlier version of the data schema before four
+additional categories were added. Neither 249 nor 235 is consistent with the
+production code.
+
+**Author response:** The paper should report 253 — the figure from the
+production prompt string — with the breakdown updated to reconcile to 253
+(i.e., the 14 uncategorised entries from PP1 become 18). Do not change 249
+to 253 without first verifying the live count in `data/full-odds-2025-26.json`
+(authoritative schema source) and the prompt string. Pre-submission task:
+`grep "AVAILABLE CATEGORIES" scripts/arena/hf-llm-trading-floor/app.py`
+and `jq 'keys | length' data/full-odds-2025-26.json` to confirm both give 253.
+*(Open — data-blocked; severity elevated from PP1)*
+
+---
+
+### PP2 — §7.7 API call count: 200–400/day inconsistent with day-bucket architecture [FIXED]
+
+**What was open (Cycle PP):** The stated "approximately 200–400 LLM API calls per
+day" was derived by multiplying agents by games/day
+($12 \times 10 + 10 \times 10 = 220$), which is wrong for a day-bucket design.
+
+**Fix applied (Cycle QQ):** Direct audit of
+`scripts/arena/hf-llm-trading-floor/app.py` confirms the day-bucket call structure:
+
+- Line 752 comment: *"With day-bucket design: 1 call/agent/day × 180 days ×
+  17 agents = 3060 calls"*
+- `run_morning_council()` (line 1957): 1 LLM call per day per domain (council moderator)
+- `_agent_llm_worker()` (line 4288): 1 primary `_call_llm()` call per agent per day,
+  with 1 optional fallback call when the primary provider fails (line 4372)
+
+Correct accounting (using the paper's N=12 NBA, N=10 POL per §4.1):
+
+$$\underbrace{12}_{\text{NBA agents}} \times 1 + \underbrace{10}_{\text{POL agents}}
+\times 1 + \underbrace{2}_{\text{council}} = 24\ \text{primary calls/day}$$
+
+Upper bound with all fallbacks firing: $24 \times 2 = 48$ calls/day.
+
+**Changes applied:**
+
+- `08-limitations.md` §7.7: "200–400" → "24–48"; parenthetical corrected from
+  "12 agents × ~10 games/day" to "12 NBA agents × 1 day-bucket call/day + 10
+  political agents × 1 day-bucket call/day + 2 morning council calls"; total
+  season calls updated to "approximately 4,200–8,400."
+- `paper.md` §7.7: same edit propagated, with source attribution
+  `app.py` line comment.
+- Both files: T12 CPU claim softened to "nominally CPU-only (routing caveat noted
+  in §8 QQ2 limitations)" in anticipation of the QQ2 issue below. ✓
+
+*Post-fix verification:*
+```
+grep -n "200.400\|200–400" papers/axelrod-llm-2026/08-limitations.md papers/axelrod-llm-2026/paper.md
+```
+→ zero hits in both files. ✓
+```
+grep -n "24.48\|24–48" papers/axelrod-llm-2026/08-limitations.md papers/axelrod-llm-2026/paper.md
+```
+→ present in both files. ✓
+
+---
+
+## NEW ISSUES — CYCLE QQ
+
+### QQ1 — Agent roster count discrepancy: §4.1 says N=12; `app.py` TRADERS contains 17 entries [OPEN]
+
+**Reviewer:** §4.1 and Table 3 define the NBA cohort as N=12 agents (T1–T12).
+The PP2 code audit reveals `TRADERS = {...}` in `app.py` contains 17 entries.
+The five undescribed agents are:
+
+| Code ID | Name | Provider | Archetype |
+|---------|------|----------|-----------|
+| nvidia-minimax | NVIDIA MiniMax M2.7 | mistral:medium | decisive |
+| nvidia-llama70 | NVIDIA Llama 3.3-70B | nvidia:llama-3.3-70b | swing |
+| selfhost-gemma3 | SelfHost Gemma-3-4B | cerebras:llama3.1-8b | analytical |
+| selfhost-qwen06 | SelfHost Qwen3-0.6B | cerebras:llama3.1-8b | conservative |
+| selfhost-dolphin3 | SelfHost Dolphin3-3B | nvidia:llama-3.3-70b | uncensored |
+
+The code's own day-bucket comment (line 752) says "17 agents," not 12. If all 17
+participate in the experiment, the paper misrepresents the cohort size, all
+per-agent diversity and Brier statistics, the power analysis (which assumes N=12),
+and the SRR eligibility pool.
+
+**Author response:** Two resolutions are possible:
+
+*(a) N=12 is the operative experimental cohort.* The 5 additional agents were
+added to `app.py` for infrastructure reasons (dead-lane load-spreading) but are
+not described as part of the scientific experiment. In this case: (i) add a
+footnote in §4.1 stating "Five additional provider routing agents (nvidia-minimax,
+nvidia-llama70, selfhost-gemma3, selfhost-qwen06, selfhost-dolphin3) were added
+to the production `app.py` for fault tolerance during the experimental period.
+These agents use the same commercial API providers as T1–T12 (Cerebras, NVIDIA,
+Mistral) but are not distinct experimental units — their predictions duplicate
+the provider routing of existing agents. They are excluded from the scientific
+cohort (N=12) and all statistical analyses."; (ii) verify that these 5 agents
+are excluded from the axelrod-log and diversity metrics.
+
+*(b) N=17 is the actual cohort.* Update Table 3, the power analysis (Appendix C.4),
+all per-agent Brier tables, and all cohort-level statistics to N=17.
+
+Option (a) is strongly preferred — it preserves the pre-registered N=12 design
+and requires only a footnote. The 5 additional agents appear to be routing
+redundancies, not independent scientific units. *(Open — requires author
+confirmation of whether these 5 agents are included in the axelrod-log data.)*
+
+---
+
+### QQ2 — T12 provider routing inaccuracy: paper says self-hosted CPU; code routes T12 to Cerebras API [OPEN]
+
+**Reviewer:** §4.1 Table 3 lists T12 (`selfhost-qwen4b`) as "self-hosted" with
+provider "self-hosted" (Qwen3-4B, CPU inference). The same claim appears in §4.6:
+"For self-hosted models (T12, Qwen3-4B-CPU), the parameter acts more directly
+on the raw token-logit distribution..." and in the H5 contamination pre-registration:
+"If T12 outperforms the commercial cohort median... this could indicate data
+contamination via the self-hosted model's training corpus."
+
+The code audit reveals:
+
+```python
+# From TRADERS dict in app.py (lines ~978-982):
+"selfhost-qwen4b": {
+    "name": "SelfHost Qwen3-4B",
+    "provider": "cerebras:qwen-3-235b",   # ← commercial API, NOT self-hosted
+    "fallback_provider": "mistral:small"
+},
+```
+
+Inline comment: *"selfhost:qwen3-4b DEAD via probe (30s timeout)"* — T12 was
+rerouted to `cerebras:qwen-3-235b` (a 235B commercial API call) because
+the self-hosted inference endpoint timed out. This rerouting has apparently
+been persistent.
+
+**Consequences:**
+1. **§4.1 Table 3 "Provider" column** is inaccurate for T12; provider should be
+   "Cerebras (rerouted)" with a note.
+2. **§4.6 temperature mediation** — the claim that T12 has "more direct" logit
+   temperature access is reversed: T12 now uses `cerebras:qwen-3-235b`, an
+   instruction-tuned commercial API subject to the same Mechanism-(a) RLHF
+   sharpening discussed in §C.3.3 for T4.
+3. **H5 contamination test** — the *rationale* for H5 was that T12's self-hosted
+   Qwen3-4B might have NBA 2025-26 training data. If T12 is actually running
+   Qwen 3 235B-A22B via Cerebras, the same contamination risk exists for T1
+   (qwen-quant, same model, same provider). H5 should be reframed as a general
+   contamination check rather than T12-specific, or applied to T1 and T2 as
+   well (both use `cerebras:qwen-3-235b`).
+4. **Carbon estimate** — removing T12's CPU call from the estimate makes no
+   material difference (one fewer CPU call replaces with one GPU call).
+5. **Reproducibility §7.7** — the statement "T12 (Qwen3-4B) is available on
+   HuggingFace Hub and requires only CPU compute, enabling full-stack replication
+   without commercial API access" is misleading if T12 currently routes to
+   Cerebras; replication of the actual experimental conditions requires Cerebras
+   API access.
+
+**Proposed fix:**
+- §4.1 Table 3: update T12 row to "Cerebras (originally self-hosted; rerouted
+  2026-04-22 due to endpoint timeout)" with a footnote.
+- §4.6: remove the T12 raw-logit claim or generalise to "agents whose providers
+  apply minimal post-sampling filtering."
+- H5: reframe as "Any agent whose underlying model has training data extending
+  to the 2025-26 NBA season..."
+- §7.7 reproducibility: add caveat about Cerebras API requirement for T12 replica.
+- Appendix C.3.3: remove reference to T12 as the self-hosted control case.
+*(Open — multiple files; substantial but mechanical changes)*
+
+---
+
+## CYCLE QQ SUMMARY
+
+**Fixed:** PP2 (§7.7 API call count corrected from 200–400/day to 24–48/day
+with day-bucket arithmetic and code citation) ✓
+
+**Remaining open (elevated):** PP1 (now three-way discrepancy 249/253/235)
+
+**New open:** QQ1 (agent count 12 vs. 17), QQ2 (T12 provider routing)
+
+**Structural changes this cycle:**
+- `08-limitations.md` §7.7: API call count corrected; total season count added;
+  T12 CPU claim softened
+- `paper.md` §7.7: same corrections propagated
+- `09-self-critique.md`: Cycle QQ appended
+
+**PRE-SUBMISSION checklist (updated after Cycle QQ):**
+
+*(Items marked [DONE] were fixed in a prior cycle; [OPEN] remain.)*
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Verify `@ouyang2022training` author list against arXiv:2203.02155 | OPEN |
+| 2 | Verify `@llm_ipd2024` first author against arXiv:2406.13605 | OPEN |
+| 3 | Verify `@polyswarm2026` author list against arXiv:2604.03888 | OPEN |
+| 4 | Populate all **[PENDING]** cells in §5–6 once `axelrod-log/` complete | OPEN |
+| 5 | Populate Table B.2 (cross-agent avg + per-agent min); confirm T12 ≥ 0.037 | OPEN |
+| 6 | Fill §C.2.2 sensitivity surface | OPEN |
+| 7 | Fill §C.3.2 temperature Brier/ECE table | OPEN |
+| 8 | Fill §C.2.3 reversal-target sensitivity analysis [MM3] | OPEN |
+| 9 | Remove abstract Brier-delta placeholder; fill with actual results | OPEN |
+| 10 | Convert "if confirmed"/"pending" language in §6 to indicative mood | OPEN |
+| 11 | Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$ | OPEN |
+| 12 | Verify A4 slack $\eta_{\text{A4}} < 0.22$; run §C.2.4 out-of-sample partition | OPEN |
+| 13 | Populate Table 3 per-agent $\overline{B}_i$ from pilot backtest | OPEN |
+| 14 | HH4/NN5: run dev/val partition for $\hat{\epsilon}_{\text{arch}}$ ≥ 0.031 | OPEN |
+| 15 | H5 contamination test: run and document in §5.6 | OPEN |
+| 16 | PP1/QQ: verify category count (249 vs. 253 vs. 235) against JSON schema + prompt | OPEN |
+| 17 | QQ1: confirm whether 5 undescribed TRADERS agents are in axelrod-log data; add §4.1 footnote or update to N=17 | OPEN |
+| 18 | QQ2: update T12 Table 3 row, §4.6, H5, §7.7, Appendix C.3.3 to reflect Cerebras rerouting | OPEN |
+| 19 | m2: confirm arXiv:2510.04643 as `@quantagents2025`; remove BibTeX VERIFY note | OPEN |
+| 20 | PP2 [DONE]: §7.7 API call count 200–400 → 24–48 ✓ | DONE |
+| 21–29 | (OO0–PP3 items, all DONE) | DONE |

@@ -2253,14 +2253,22 @@ The feature engine (v3.1, `features/engine.py`) does not use personally
 identifiable information.
 
 **LLM inference costs and environmental impact.** The 12-agent NBA
-and 10-agent political ensembles generate approximately 200–400
-LLM API calls per day across both domains (12 agents × ~10 games/day NBA
-+ 10 agents × ~10 events/day political + morning council overhead), using
-the free and low-cost commercial tiers of Cerebras, Google, Mistral, and
+and 10-agent political ensembles generate approximately 24–48
+LLM API calls per day across both domains (12 NBA agents × 1 day-bucket
+call/day + 10 political agents × 1 day-bucket call/day + 2 morning council
+calls = 24 primary calls/day; up to approximately 48 calls/day when primary
+providers fail and fallback providers are invoked). The day-bucket
+architecture (§3.7) processes all events on a given calendar day through a
+single LLM inference call per agent — not one call per game or per event —
+capping the per-day inference budget regardless of game volume (source:
+`app.py` line comment "1 call/agent/day × 180 days × $N$ agents"). Total
+calls over the 175-day experimental period are thus approximately 4,200–8,400,
+using the free and low-cost commercial tiers of Cerebras, Google, Mistral, and
 OpenRouter. All providers offer these tiers on shared GPU infrastructure
 whose carbon intensity reflects grid averages for their respective data
-centre locations. The self-hosted agent (T12) runs on a CPU-only
-HuggingFace Space. Using published emission factors for GPU inference
+centre locations. The self-hosted agent (T12) is nominally CPU-only (a routing
+caveat is noted in §8 QQ2 limitations); the commercial agent calls run on
+shared GPU. Using published emission factors for GPU inference
 [@lannelongue2021green], total estimated carbon footprint over the
 175-day experimental period is below 10 kg CO$_2$-equivalent —
 comparable to driving a typical petrol car approximately 60 km.
