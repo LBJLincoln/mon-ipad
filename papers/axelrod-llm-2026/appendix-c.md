@@ -182,23 +182,26 @@ distribution beyond what $\tau$ alone specifies. Gemini 3 Flash applies
 such a filtering step; the exact cutoffs are undisclosed, making the
 effective generation entropy provider-dependent at identical $\tau$ values.
 
-The self-hosted agent T12 (Qwen3-4B-CPU, served via llama.cpp) is
-subject to neither effect in the same way: Qwen3-4B uses a lighter
-alignment procedure than frontier instruction-tuned models, and llama.cpp
-applies temperature directly to raw model logits with no implicit top-$k$
-filtering unless explicitly configured. As a result, $\tau = 0.7$ may
-correspond to substantially higher effective generation entropy for T12
-than for T4, potentially *over*-exploring the prediction space for the
-*disciplined* archetype relative to design intent.
+The original experimental design intended T12 as a self-hosted agent
+(Qwen3-4B via llama.cpp, CPU inference) that would be subject to neither
+Mechanism (a) nor Mechanism (b) in the same way: Qwen3-4B uses a lighter
+alignment procedure than frontier 235B models, and llama.cpp applies
+temperature directly to raw logits with no implicit top-$k$ filtering.
+This design intent was not realised: T12's self-hosted endpoint timed out
+and was rerouted to `cerebras:qwen-3-235b` — the same 235B instruction-tuned
+model as T1–T2 (§4.1 Table 3 note$^\dagger$). As deployed, T12 is subject to
+both Mechanism (a) (235B RLHF-induced sharpening) and Mechanism (b)
+(Cerebras API sampling pipeline) at a level structurally identical to T1–T2.
 
-**Planned follow-up** (deferred to future work, outside the pre-registered
-protocol): a matching temperature sweep on T12 across
-$\tau \in \{0.30, 0.50, 0.70, 0.90, 1.10\}$ on the same 20-game
-held-out subset, with results compared to T4. If a substantially different
-optimal $\tau$ is identified for T12, the self-hosted agent will be
-assigned a distinct temperature in the retrospective replay conditions
-(B–E), with a sensitivity analysis testing whether the $\tau$ choice
-materially affects the SRR vs.\ Fixed Ensemble comparison.
+The comparison between a self-hosted 4B model and managed-inference T4
+that this section was originally designed to motivate is therefore no longer
+feasible in the current experimental configuration. The planned T12
+temperature sweep (self-hosted vs.\ managed comparison) is deferred to future
+work contingent on restoring a working self-hosted inference endpoint.
+Under the actual rerouted configuration, all 12 agents are governed by
+mechanisms (a) and (b) with provider-specific parameters; the $\tau = 0.7$
+selection from the T4 validation is applied uniformly, with Mechanism (a) and (b)
+magnitudes varying by provider as discussed in C.3.1–C.3.2.
 
 ---
 

@@ -13,7 +13,7 @@ on responsible deployment of the techniques we describe.
 The fundamental attribution problem in our experimental design is that agents
 differ simultaneously along at least three dimensions: (i) underlying language
 model and provider (T1–T2: Cerebras 235B; T4–T5: Google Gemini 3 Flash;
-T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: self-hosted Qwen3-4B);
+T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras 235B (originally self-hosted; see §4.1 Table 3 note$^\dagger$));
 (ii) initial strategy archetype; and (iii) SRR history accumulated over the
 175-day experimental period.
 
@@ -70,10 +70,12 @@ simulation and archiving the hash).  Hash stability across conditions serves
 as circumstantial evidence that model weights did not change; a hash change
 triggers a notation in the experimental log and a sensitivity analysis
 excluding the affected agent.  As with provider non-stationarity generally
-(§7.4), the self-hosted agent T12 (frozen model version in
-`LBJLincoln26/llm-gateway`) is immune to this confound, and systematic
-T12-vs-commercial discrepancies in the per-agent analysis (§5.6) would
-flag drift as a contributing factor.
+(§7.4), no agent in the actual experimental configuration is fully immune
+to this confound: T12's self-hosted endpoint was rerouted to Cerebras
+(§4.1 Table 3 note$^\dagger$), removing the only fully isolated reference
+agent. Systematic model-family-correlated discrepancies (e.g., all three
+Qwen 235B agents T1, T2, T12 diverging jointly) in the per-agent analysis
+(§5.6) serve as circumstantial evidence of drift.
 
 A distinct and potentially more severe risk is **outcome contamination**.
 Conditions B–E are simulated after the 2025–26 NBA season concludes;
@@ -85,8 +87,8 @@ reasoning behaviour: it is the model having partial access to the answers
 in its parametric memory.  Three factors bound this risk: (a) the context
 block is feature-grounded (engineered statistics via the island GA oracle),
 giving the model's parametric recall less traction than a raw game-narrative
-prompt; (b) the self-hosted T12 agent uses a frozen model snapshot and is
-fully immune; and (c) the hash-probe protocol detects endpoint weight
+prompt; (b) the feature-grounded context block is consistent across all conditions,
+reducing parametric-recall traction regardless of training cutoff; and (c) the hash-probe protocol detects endpoint weight
 changes, enabling post-hoc flagging.  A strong signal of contamination
 would be an anomalously large T12-vs-commercial Brier gap in Conditions
 B–E relative to Condition A; we report this comparison explicitly in §5.6.
@@ -145,12 +147,14 @@ drift. However, a model update could produce identical probe responses
 for this simple query while altering predictions for complex game contexts
 in ways our probe does not detect.
 
-The self-hosted agent T12 (Qwen3-4B, frozen at a specific model version in
-`LBJLincoln26/llm-gateway`) is the only agent fully immune to provider
-non-stationarity. If T12 shows systematically different SRR-response patterns
-than T1–T11, this difference is consistent with — though not exclusively
-explained by — provider drift confounding the commercial agent results.
-We flag this as a factor for inspection in the per-agent analysis (§5.6).
+No agent in the actual experimental configuration is fully immune to provider
+non-stationarity: T12's self-hosted endpoint was rerouted to the Cerebras API
+(§4.1 Table 3 note$^\dagger$), so T12 is subject to the same provider
+model-drift risk as T1–T2. Systematic deviations from expected per-agent
+SRR-response patterns — particularly if model-family-correlated (e.g., all
+Qwen 235B agents T1, T2, T12 showing joint divergence) — are flagged in the
+per-agent analysis (§5.6) as consistent with, though not exclusively explained
+by, provider drift across the Cerebras endpoint.
 
 ---
 
@@ -254,7 +258,7 @@ LLM API calls per day across both domains (12 NBA agents × 1 day-bucket
 call/day + 10 political agents × 1 day-bucket call/day + 2 morning council
 calls = 24 primary calls/day; up to approximately 48 calls/day when primary
 providers fail and fallback providers are invoked). The day-bucket
-architecture (§3.7) processes all events on a given calendar day through a
+architecture (§3.6) processes all events on a given calendar day through a
 single LLM inference call per agent — not one call per game or per event —
 capping the per-day inference budget regardless of how many games are
 scheduled (source: `app.py` line comment "1 call/agent/day × 180 days ×
@@ -264,8 +268,8 @@ the free and low-cost commercial tiers of Cerebras, Google, Mistral, and
 OpenRouter. All
 providers offer these tiers on shared GPU infrastructure whose carbon
 intensity reflects grid averages for their respective data centre locations.
-The self-hosted agent (T12) is nominally CPU-only (see QQ2 in §8 for a
-routing caveat); the commercial agent calls run on shared GPU.
+T12 routes through the Cerebras API (see §4.1 Table 3 note$^\dagger$);
+all twelve agents' inference calls run on shared GPU infrastructure.
 Using published emission factors for GPU inference
 [@lannelongue2021green], total estimated carbon footprint over the
 175-day experimental period is below 10 kg CO$_2$-equivalent —
@@ -291,10 +295,11 @@ MIT), data (`data/arena/axelrod-log/` in newline-delimited JSON), agent
 prompts (`data/arena/archetypes/`), and the pre-registration document
 will be made publicly available at `github.com/LBJLincoln/mon-ipad`.
 LLM provider API keys are not published; researchers wishing to replicate
-must supply their own credentials. The self-hosted model (T12, Qwen3-4B)
-is available on HuggingFace Hub and requires only CPU compute, enabling
-full-stack replication without commercial API access for the open-weights
-component of the agent cohort.
+must supply their own credentials. T12 currently routes through the Cerebras
+API (§4.1 Table 3 note$^\dagger$); replicating T12's actual experimental
+behaviour requires Cerebras API access. The original self-hosted Qwen3-4B
+reference build is available on HuggingFace Hub for researchers who wish to
+validate the intended self-hosted configuration independently.
 
 ---
 

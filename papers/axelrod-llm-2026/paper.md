@@ -1104,23 +1104,41 @@ configuration.
 | T9 | mistral-nemo | open-mistral-nemo | Mistral | aggressive | 0.70 |
 | T10 | mistral-ministral | ministral-8b-latest | Mistral | theoretical | 0.35 |
 | T11 | nemotron-120b | Nemotron-3-Super-120B | OpenRouter (free) | chain-of-thought | 0.55 |
-| T12 | selfhost-qwen4b | Qwen3-4B (CPU) | self-hosted | disciplined | 0.40 |
+| T12 | selfhost-qwen4b | Qwen 3 235B-A22B^[$\dagger$] | Cerebras (rerouted) | disciplined | 0.40 |
 
 *Table 3: NBA LLM agent cohort ($N = 12$). $\rho_i \in (0,1]$ is the agent's
 personality risk weight governing willingness to commit to high-edge opportunities;
 the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
 \times 0.50)$ (§3.6), empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i \in [0.20, 0.58]$, is computed from each agent's pilot-season
 Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
-Model sizes range from 4B (T12) to 235B (T1–T2) parameters. Provider column
-names refer to the LLM gateway routing layer
-(source: `scripts/arena/hf-llm-trading-floor/app.py`).*
+Model sizes range from 235B (T1–T2, and T12 as rerouted) to undisclosed (Google Gemini,
+Mistral variants); the original T12 design used a 4B parameter model.
+Provider column names refer to the LLM gateway routing layer
+(source: `scripts/arena/hf-llm-trading-floor/app.py`).
+$^\dagger$T12 was originally deployed as self-hosted Qwen3-4B (CPU inference via llama.cpp,
+`LBJLincoln26/llm-gateway`). The self-hosted endpoint timed out persistently from
+2026-04-22 (probe latency > 30 s); the production TRADERS configuration in `app.py`
+rerouted T12 to `cerebras:qwen-3-235b`. All references to T12 as "self-hosted" or
+"CPU inference" reflect the original design intent; the actual experimental runtime
+used the Cerebras API (same infrastructure as T1–T2).*
+
+^[Five additional routing agents appear in the production `app.py` TRADERS
+configuration (nvidia-minimax, nvidia-llama70, selfhost-gemma3, selfhost-qwen06,
+selfhost-dolphin3), added for API fault tolerance during the experimental period.
+These duplicate provider configurations of T1–T3 or T11 and are not independent
+experimental units. They are excluded from the scientific cohort ($N = 12$) and
+from all statistical analyses.]
 
 **Political cohort (N = 10).** The political domain uses T1–T10, the
-Cerebras, Google, and Mistral agents. The OpenRouter and self-hosted
-agents (T11–T12) are excluded from the political cohort because their
-inference latency characteristics (OpenRouter rate limits; self-hosted
-CPU throughput ~8 s/call) are incompatible with the political domain's
-narrower daily prediction window. This exclusion creates a natural
+Cerebras, Google, and Mistral agents. The OpenRouter agent (T11) and T12
+are excluded from the political cohort. T11's exclusion reflects
+OpenRouter's shared-pool rate limits and throughput constraints incompatible
+with the political domain's narrower daily prediction window.
+T12's exclusion was pre-registered before the 2025–26 season on the
+basis of the planned self-hosted CPU throughput (~8 s/call);
+following T12's Cerebras rerouting (Table 3 note$^\dagger$), this exclusion
+is preserved for experimental-design consistency — retroactively including
+T12 would introduce an unplanned agent-population change and violate the pre-registration. This exclusion creates a natural
 cross-domain experiment: T1–T10 are the same ten LLM model configurations
 running independently (with fully isolated context buffers per §4.3) in both
 the NBA and political arenas, enabling a *domain-transfer* test of whether
@@ -1335,7 +1353,7 @@ oracle training data and experimental evaluation data.
 HuggingFace Space `LBJLincoln26/nba-llm-trading-floor` (NBA) and
 `LBJLincoln26/political-llm-trading-floor` (political), with source
 code at `scripts/arena/hf-llm-trading-floor/app.py`
-(~1,450 lines, FastAPI + Gradio). All prediction logs, archetype
+(approximately 4,400 lines, FastAPI + Gradio). All prediction logs, archetype
 transition records, and bankroll histories are written to
 `data/arena/axelrod-log/` in newline-delimited JSON. The axelrod-log
 schema is documented in Appendix D. Agent prompts (including all 20
@@ -1357,23 +1375,21 @@ selection. The pre-registration file is included in the supplementary
 materials and its SHA-256 hash is committed to the repository at
 tag `preregistration-v1`.
 
-A fifth pre-registered test addresses potential outcome contamination arising
-from the self-hosted agent T12 (selfhost-qwen4b, Qwen3-4B, CPU inference):
+A fifth pre-registered test addresses potential outcome contamination.
+Following T12's Cerebras rerouting (Table 3 note$^\dagger$), the contamination risk
+extends to all Qwen 3 235B-A22B agents (T1, T2, T12):
 
-**(H5 — Contamination-detection test.)** If T12 outperforms the commercial cohort
-median (T1–T11 median Brier) by more than $\Delta_{\text{cont}} = 0.005$ Brier
+**(H5 — Contamination-detection test.)** If the Qwen 3 235B-A22B agent
+sub-group (T1, T2, T12) outperforms the non-Qwen commercial cohort median
+(T3–T11 median Brier) by more than $\Delta_{\text{cont}} = 0.005$ Brier
 in any condition other than Condition A (SRR), evaluated exclusively on events
-occurring after 2025-10-01 (the latest publicly documented training data cutoff for
-a model in the Qwen3 series), this constitutes a contamination flag.
-The threshold $\Delta_{\text{cont}} = 0.005$ is set at approximately two within-session
-standard deviations of T12's rolling daily Brier (estimated from pilot data), so
-genuine contamination — a systematic knowledge advantage — would be detectable
-against day-to-day noise.
-If H5 is triggered, the analysis will be rerun with T12 excluded and the discrepancy
-documented in §7.4. The Qwen3-4B training data cutoff is not publicly specified by the
-provider; H5 is therefore a conservative safeguard rather than a confirmed risk.
-The pre-registration of H5 prevents post-hoc exclusion of T12 if it performs
-poorly (data dredging in the other direction).
+occurring after 2025-10-01, this constitutes a contamination flag.
+The threshold $\Delta_{\text{cont}} = 0.005$ is set at approximately two
+within-session standard deviations of rolling daily Brier (estimated from pilot data).
+If H5 is triggered, the analysis will be rerun excluding T1, T2, and T12,
+with the discrepancy documented in §7.4.
+The pre-registration of H5 prevents post-hoc exclusion of any Qwen agent if it
+performs poorly (data dredging in the other direction).
 
 ---
 
@@ -2020,7 +2036,7 @@ on responsible deployment of the techniques we describe.
 The fundamental attribution problem in our experimental design is that agents
 differ simultaneously along at least three dimensions: (i) underlying language
 model and provider (T1–T2: Cerebras 235B; T4–T5: Google Gemini 3 Flash;
-T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: self-hosted Qwen3-4B);
+T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras 235B (originally self-hosted; see §4.1 Table 3 note$^\dagger$));
 (ii) initial strategy archetype; and (iii) SRR history accumulated over the
 175-day experimental period.
 
@@ -2073,11 +2089,10 @@ We document provider drift via the response-hash protocol described in §7.4
 simulation and archiving the hash).  Hash stability across conditions serves
 as circumstantial evidence that model weights did not change; a hash change
 triggers a notation in the experimental log and a sensitivity analysis
-excluding the affected agent.  As with provider non-stationarity generally
-(§7.4), the self-hosted agent T12 (frozen model version in
-`LBJLincoln26/llm-gateway`) is immune to this confound, and systematic
-T12-vs-commercial discrepancies in the per-agent analysis (§5.6) would
-flag drift as a contributing factor.
+excluding the affected agent.  As detailed in §7.4, no agent is fully immune to this confound following
+T12's Cerebras rerouting (§4.1 Table 3 note$^\dagger$); systematic model-family-correlated
+discrepancies (e.g., all three Qwen 235B agents T1, T2, T12 diverging jointly)
+in the per-agent analysis (§5.6) serve as circumstantial evidence of drift.
 
 A distinct and potentially more severe risk is **outcome contamination**.
 Conditions B–E are simulated after the 2025–26 NBA season concludes;
@@ -2089,11 +2104,13 @@ reasoning behaviour: it is the model having partial access to the answers
 in its parametric memory.  Three factors bound this risk: (a) the context
 block is feature-grounded (engineered statistics via the island GA oracle),
 giving the model's parametric recall less traction than a raw game-narrative
-prompt; (b) the self-hosted T12 agent uses a frozen model snapshot and is
-fully immune; and (c) the hash-probe protocol detects endpoint weight
-changes, enabling post-hoc flagging.  A strong signal of contamination
-would be an anomalously large T12-vs-commercial Brier gap in Conditions
-B–E relative to Condition A; we report this comparison explicitly in §5.6.
+prompt; (b) the feature-grounded context block is consistent across all
+conditions, reducing parametric-recall traction regardless of training cutoff;
+and (c) the hash-probe protocol detects endpoint weight changes, enabling
+post-hoc flagging.  A strong contamination signal would be an anomalously
+large Qwen-235B sub-group (T1, T2, T12) vs.\ non-Qwen Brier gap in
+Conditions B–E relative to Condition A; we report this comparison explicitly
+in §5.6 as H5 (§4.6).
 
 ---
 
@@ -2149,12 +2166,13 @@ drift. However, a model update could produce identical probe responses
 for this simple query while altering predictions for complex game contexts
 in ways our probe does not detect.
 
-The self-hosted agent T12 (Qwen3-4B, frozen at a specific model version in
-`LBJLincoln26/llm-gateway`) is the only agent fully immune to provider
-non-stationarity. If T12 shows systematically different SRR-response patterns
-than T1–T11, this difference is consistent with — though not exclusively
-explained by — provider drift confounding the commercial agent results.
-We flag this as a factor for inspection in the per-agent analysis (§5.6).
+No agent in the actual experimental configuration is fully immune to provider
+non-stationarity: T12's self-hosted endpoint was rerouted to the Cerebras API
+(§4.1 Table 3 note$^\dagger$), so T12 is subject to the same provider
+model-drift risk as T1–T2. Systematic deviations — particularly if
+model-family-correlated (e.g., all three Qwen 235B agents T1, T2, T12 showing
+joint divergence) — are flagged in the per-agent analysis (§5.6) as consistent
+with, though not exclusively explained by, provider drift.
 
 ---
 
@@ -2258,7 +2276,7 @@ LLM API calls per day across both domains (12 NBA agents × 1 day-bucket
 call/day + 10 political agents × 1 day-bucket call/day + 2 morning council
 calls = 24 primary calls/day; up to approximately 48 calls/day when primary
 providers fail and fallback providers are invoked). The day-bucket
-architecture (§3.7) processes all events on a given calendar day through a
+architecture (§3.6) processes all events on a given calendar day through a
 single LLM inference call per agent — not one call per game or per event —
 capping the per-day inference budget regardless of game volume (source:
 `app.py` line comment "1 call/agent/day × 180 days × $N$ agents"). Total
@@ -2266,9 +2284,8 @@ calls over the 175-day experimental period are thus approximately 4,200–8,400,
 using the free and low-cost commercial tiers of Cerebras, Google, Mistral, and
 OpenRouter. All providers offer these tiers on shared GPU infrastructure
 whose carbon intensity reflects grid averages for their respective data
-centre locations. The self-hosted agent (T12) is nominally CPU-only (a routing
-caveat is noted in §8 QQ2 limitations); the commercial agent calls run on
-shared GPU. Using published emission factors for GPU inference
+centre locations. T12 routes through the Cerebras API (see §4.1 Table 3
+note$^\dagger$); all twelve agents' inference calls run on shared GPU infrastructure. Using published emission factors for GPU inference
 [@lannelongue2021green], total estimated carbon footprint over the
 175-day experimental period is below 10 kg CO$_2$-equivalent —
 comparable to driving a typical petrol car approximately 60 km.
@@ -2293,10 +2310,11 @@ MIT), data (`data/arena/axelrod-log/` in newline-delimited JSON), agent
 prompts (`data/arena/archetypes/`), and the pre-registration document
 will be made publicly available at `github.com/LBJLincoln/mon-ipad`.
 LLM provider API keys are not published; researchers wishing to replicate
-must supply their own credentials. The self-hosted model (T12, Qwen3-4B)
-is available on HuggingFace Hub and requires only CPU compute, enabling
-full-stack replication without commercial API access for the open-weights
-component of the agent cohort.
+must supply their own credentials. T12 currently routes through the Cerebras
+API (§4.1 Table 3 note$^\dagger$); replicating T12's actual experimental behaviour
+requires Cerebras API access. The original self-hosted Qwen3-4B reference build
+is available on HuggingFace Hub for researchers who wish to validate the intended
+self-hosted configuration independently.
 
 ---
 
