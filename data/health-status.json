@@ -1,141 +1,168 @@
 {
-  "fire": 203,
-  "timestamp": "2026-06-01T04:00:00Z",
-  "parity": "ODD",
+  "fire": 204,
+  "timestamp": "2026-06-01T08:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-203). 35+ fires sleeping.",
+      "note": "sleeping (consistent fire-204). 36+ fires sleeping.",
       "last_known_cycle": 974,
       "last_known_gen": 2921,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL NEW FLEET BEST <0.22012)",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (35+ fires). VM: retry /api/status; when up curl /api/export IMMEDIATELY."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (36+ fires). VM: retry /api/status; when up curl /api/export IMMEDIATELY."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping (consistent fire-203). 35+ fires sleeping.",
+      "note": "sleeping (consistent fire-204). 36+ fires sleeping.",
       "last_known_best_brier": 0.22054,
       "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 threshold — VM wake + checkpoint"
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "404-DOWN fire-203. 35+ fires sleeping total.",
+      "note": "404-DOWN fire-204. 36+ fires sleeping total.",
       "last_known_best_brier": 0.22012,
-      "alert": "URGENT: fleet-best RF-0.22012 sleeping 35+ fires — VM retry /api/status periodically."
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping 36+ fires — VM retry /api/status periodically."
     },
     "S17": {
       "status": "503-DOWN",
-      "note": "PAUSED 135+d"
+      "note": "PAUSED 136+d"
     },
     "S18": {
       "status": "UP",
-      "cycle": 1197,
-      "generation": 3589,
+      "cycle": 1231,
+      "generation": 3691,
       "best_brier": 0.22236,
-      "best_brier_note": "STALE since 2026-05-26 (9+ days). Field lag confirmed.",
+      "best_brier_note": "STALE since 2026-05-26 (10+ days). Field lag confirmed.",
       "stagnation": 0,
-      "pareto_front_size": 12,
-      "pareto_trend": "10 (fire-201 c1177) -> 12 (fire-203 c1197): RECOVERING!",
-      "c1175_reset": {
-        "reset_number": 17,
-        "trigger": "25 consecutive stagnant cycles (c1150+25=c1175)",
-        "post_reset_model_types_in_pop": "LightGBM dominant, XGBoost variants, CatBoost, Extra Trees, Logistic Regression — NO STACKING (fire-203 API consistent)",
-        "stacking_mentioned": false,
-        "rule8_status": "UNCONFIRMED via /api/export BUT 2nd consecutive no-stacking population (c1150+c1175). c1200 reset in 3 cycles = 3rd consecutive test."
+      "pareto_front_size": 8,
+      "pareto_trend": "12 (fire-203 c1197) -> 8 (fire-204 c1231): 1ST SHRINK post-c1225 reset",
+      "top_performer": "RF-200f Brier=0.2208 ROI=31.74% Sharpe=7.73",
+      "c1200_reset": {
+        "reset_number": 18,
+        "trigger": "25 consecutive stagnant cycles (c1175+25=c1200)",
+        "api_description": "model type distribution reseeded with mutation boosted to 0.15",
+        "explicit_model_types": false,
+        "rule8_status": "UNCONFIRMED — no explicit model types listed in API (unlike previous resets)"
       },
-      "next_auto_reset_estimate": "~c1200 (c1175+25 = IMMINENT — only 3 cycles from c1197!)",
+      "c1225_reset": {
+        "reset_number": 19,
+        "trigger": "25 consecutive stagnant cycles (c1200+25=c1225)",
+        "api_description": "LightGBM, Random Forest, Logistic Regression, and Stacking models",
+        "explicit_model_types": true,
+        "stacking_mentioned": true,
+        "rule8_status": "Rule8 19TH RESET VIOLATION CONFIRMED (fire-204 API explicit: Stacking in reseeding list)"
+      },
+      "diversification_events": ["c1195", "c1208", "c1222"],
+      "next_auto_reset_estimate": "~c1250 (c1225+25=c1250, currently c1231, 19 cycles)",
       "calibration_in_pareto": {
-        "venn_abers": "STILL IN POP (fire-203 API: LightGBM dominant, calibration methods present)",
-        "beta_calibration": "STILL IN POP",
-        "survival_count": "5+ CONSECUTIVE fires confirmed (c1100, c1125, c1150, c1175, fire-203)!",
-        "implication": "Extract BOTH from S18 app.py — extremely robust signal. Port to all islands."
+        "venn_abers": "STATUS UNKNOWN post-c1225 reset — possible eviction",
+        "beta_calibration": "STATUS UNKNOWN post-c1225 reset — possible eviction",
+        "prior_survival_count": "6 consecutive fires confirmed (c1100, c1125, c1150, c1175, fire-203, fire-203-consistent)",
+        "fire204_status": "Not confirmed in fire-204 API — c1225 reset may have evicted both"
       },
-      "export_endpoint": "404 via WebFetch (24th consecutive fire: fires 172-203)",
-      "alert": "CRITICAL: (1) next ~c1200 IMMINENT (3 cycles!) — curl /api/export BEFORE reset; (2) c1200 = 3rd consecutive no-stacking test; (3) extract Venn-Abers + beta from app.py URGENTLY"
+      "export_endpoint": "404 via WebFetch (25th consecutive fire: fires 172-204)",
+      "alert": "CRITICAL: (1) c1225 Rule8 19TH VIOLATION — VM fix BOTH code paths before ~c1250; (2) Venn-Abers/Beta eviction risk — export to verify; (3) RF-200f-0.2208 still best in pareto (below threshold but above fleet best)"
     },
     "S22": {
       "status": "UP",
-      "cycle": 1180,
-      "generation": 3539,
+      "cycle": 1198,
+      "generation": 3592,
       "best_brier": 0.22124,
-      "best_brier_note": "STALE since 2026-05-26 (9+ days). Field lag.",
+      "best_brier_note": "STALE — field lag confirmed AGAIN fire-204. top_pareto_solutions.best_brier=0.21873 (BELOW FLEET BEST!)",
       "stagnation": 0,
-      "pareto_front_size": 15,
-      "pareto_trend": "8 (fire-201 c1169) -> 15 (fire-203 c1180): MASSIVE RECOVERY!",
+      "pareto_front_size": 10,
+      "pareto_trend": "15 (fire-203 c1180) -> 10 (fire-204 c1198): SHRINKING (pareto losing solutions)",
+      "TOP_PARETO_ALERT": "⚡⚡ top_pareto_solutions.best_brier=0.21873 (ET+lightgbm_brier) BELOW FLEET BEST 0.22012★! Rule#5 TRIGGERED! EXTREME URGENT!",
+      "top_pareto_solutions": {
+        "best_brier": 0.21873,
+        "best_sharpe": 9.2077,
+        "best_roi": 0.3421,
+        "dominant_model_types": ["extra_trees", "lightgbm_brier"],
+        "feature_range": "38-200 features"
+      },
+      "c1153_reset": {
+        "reset_number": 8,
+        "rule8_status": "Rule8 COMPLIANT (xgboost_brier, lightgbm, logistic_regression — no stacking)"
+      },
       "c1178_reset": {
         "reset_number": 9,
         "trigger": "25 consecutive stagnant cycles (c1153+25=c1178)",
         "post_reset_reseeding": "xgboost_brier, lightgbm, catboost, logistic_regression, stacking — STACKING EXPLICIT",
-        "stacking_mentioned": true,
-        "rule8_status": "Rule8 9TH VIOLATION CONFIRMED (fire-203 API explicit)",
-        "current_dominant": "lightgbm_brier"
+        "rule8_status": "Rule8 9TH VIOLATION CONFIRMED",
+        "current_dominant": "extra_trees, lightgbm_brier"
       },
-      "c1153_reset": {
-        "reset_number": 8,
-        "rule8_status": "Rule8 COMPLIANT (fire-203 API: xgboost_brier, lightgbm, logistic_regression — no stacking)"
+      "diversification_events": ["c1154", "c1167", "c1180", "c1194"],
+      "next_auto_reset_estimate": "~c1203 (c1178+25=c1203, currently c1198, IMMINENT — only 5 cycles!)",
+      "performance_cliff": {
+        "status": "ONGOING — all recent gens Brier=0.28, ROI=0",
+        "pareto_status": "PRESERVED despite cliff — ET-0.21873 STILL IN PARETO",
+        "gen_of_peak": 3010
       },
-      "next_auto_reset_estimate": "~c1203 (c1178+25=c1203, currently c1180, 23 cycles)",
-      "performance_recovery": {
-        "status": "MAJOR RECOVERY: pareto=15 from pareto=8 (fire-201)",
-        "evidence": "fire-203: pareto=15 (↑8↑15). lightgbm_brier dominant. Pareto fronts 5-20 per gen.",
-        "cliff_status": "Performance cliff may be resolving — pareto=15 strongest since pre-cliff"
-      },
-      "export_endpoint": "404 via WebFetch (24th consecutive fire)",
-      "alert": "CRITICAL: (1) c1178 Rule8 9TH VIOLATION CONFIRMED — VM fix BOTH code paths before ~c1203; (2) curl /api/export — ET-200f-0.21984 still unknown; (3) pareto=15 MAJOR RECOVERY — checkpoint URGENTLY"
+      "export_endpoint": "404 via WebFetch (25th consecutive fire)",
+      "alert": "EXTREME URGENT: (1) VM curl /api/export S22 IMMEDIATELY — ET-0.21873 below fleet best (0.22012★), field lag confirmed; (2) fix BOTH code paths before ~c1203 (IMMINENT 5 cycles); (3) c1203 likely 10th S22 violation without fix"
     }
   },
   "pol_islands": {
-    "P1": {"status": "404-DOWN", "note": "35+ fires sleeping", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f — VM wake + checkpoint NOW"},
-    "P2": {"status": "404-DOWN", "note": "35+ fires sleeping", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk — VM wake + checkpoint + add LightGBM"},
-    "P4": {"status": "404-DOWN", "note": "35+ fires sleeping", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM wake + checkpoint"},
-    "P5": {"status": "404-DOWN", "note": "35+ fires sleeping", "last_known_best_brier": 0.24993, "alert": "RECOVERING — VM wake + checkpoint"},
-    "P7": {"status": "404-DOWN", "note": "35+ fires sleeping", "last_known_best_brier": 0.24931, "alert": "stable — VM wake + checkpoint"}
+    "P1": {"status": "404-DOWN", "note": "36+ fires sleeping", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f — VM wake + checkpoint NOW"},
+    "P2": {"status": "404-DOWN", "note": "36+ fires sleeping", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk — VM wake + checkpoint + add LightGBM"},
+    "P4": {"status": "404-DOWN", "note": "36+ fires sleeping", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM wake + checkpoint"},
+    "P5": {"status": "404-DOWN", "note": "36+ fires sleeping", "last_known_best_brier": 0.24993, "alert": "RECOVERING — VM wake + checkpoint"},
+    "P7": {"status": "404-DOWN", "note": "36+ fires sleeping", "last_known_best_brier": 0.24931, "alert": "stable — VM wake + checkpoint"}
   },
   "fleet_best": {
     "nba": 0.22012,
-    "nba_source": "S15 RF-75f (sleeping 35+ fires)",
+    "nba_source": "S15 RF-75f (sleeping 36+ fires)",
     "nba_pareto_candidates": [
-      "S22 ET-200f-0.21984 (STATUS UNKNOWN — pareto=15 MASSIVE RECOVERY, /api/export 24 fires blocked)",
-      "S18 calibration models (status unknown — pareto=12 recovering, /api/export blocked 24 fires)",
-      "S13 CatBoost-0.21992 gen=2831 (UNCONFIRMED — 404-DOWN 35+ fires)"
+      "S22 ET-0.21873 CONFIRMED IN PARETO (fire-204 top_pareto_solutions — BELOW FLEET BEST! EXTREME URGENT checkpoint)",
+      "S18 RF-200f-0.2208 in pareto (above fleet best but below 0.22085 threshold)",
+      "S13 CatBoost-0.21992 gen=2831 (UNCONFIRMED — 404-DOWN 36+ fires)"
     ],
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (confirmed, sleeping 35+ fires)"
+    "pol_source": "P4 LightGBM-131f (confirmed, sleeping 36+ fires)"
   },
   "export_endpoint_alert": {
     "affected": ["S18", "S22"],
-    "fires_count": 24,
-    "root_cause": "WebFetch authentication/redirect limitation — confirmed structural issue (fires 172-203)",
-    "action": "VM: curl BOTH S18+S22 /api/export IMMEDIATELY"
+    "fires_count": 25,
+    "root_cause": "WebFetch authentication/redirect limitation — confirmed structural issue (fires 172-204)",
+    "action": "VM: curl BOTH S18+S22 /api/export IMMEDIATELY — S22 ET-0.21873 BELOW FLEET BEST"
   },
   "s18_calibration_discovery": {
-    "venn_abers_survival_count": "5+ CONSECUTIVE fires in pop (c1100, c1125, c1150, c1175, fire-203)!",
-    "beta_calibration_survival_count": "4+ consecutive fires survived",
-    "implication": "Extract BOTH from S18 app.py and port to all islands",
+    "venn_abers_prior_survival_count": "6 consecutive fires in pop (c1100-fire-203)",
+    "fire204_status": "STATUS UNKNOWN post-c1225 reset — Stacking reintroduced may have disrupted calibration pool",
+    "action": "VM: curl /api/export S18 to verify Venn-Abers/Beta survival; extract impls from app.py regardless",
     "libraries": "sklearn.calibration.CalibratedClassifierCV (beta), crepes or nonconformist (Venn-Abers)"
   },
   "s22_rule8_status": {
     "total_violations": 9,
-    "latest": "c1178 Rule8 9TH VIOLATION CONFIRMED fire-203 (API explicit: xgboost_brier, lightgbm, catboost, logistic_regression, stacking)",
-    "next_reset": "~c1203 (c1178+25). VM: fix BOTH code paths before c1203."
+    "latest": "c1178 Rule8 9TH VIOLATION CONFIRMED (stacking explicit in reseeding)",
+    "next_reset": "~c1203 (c1178+25). IMMINENT — 5 cycles. VM: fix BOTH code paths NOW.",
+    "projected_violation": "c1203 likely 10TH S22 VIOLATION unless app.py is fixed before c1203"
   },
-  "actions_taken_fire203": [
-    "S18: c1197 g3589 stag=0 pareto=12 (RECOVERING ↑10↑12). c1175 17TH RESET NO-STACKING confirmed consistent (API fire-203: LightGBM dominant, no stacking). Next ~c1200 IMMINENT (3 cycles).",
-    "S22: c1180 g3539 stag=0 pareto=15 (MASSIVE RECOVERY ↑8↑15). c1178 Rule8 9TH VIOLATION CONFIRMED (fire-203 API explicit: stacking in reseeding). c1153 COMPLIANT. Next ~c1203 (23 cycles).",
-    "S13/S14/S15: 404-DOWN (35+ fires). No action available.",
-    "All POL (P1/P2/P4/P5/P7): 404-DOWN (35+ fires). No action available.",
-    "ODD fire: no WebSearch.",
-    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-203 2026-06-01T04h)"
-  ],
-  "vm_priority_queue": [
-    "0. S18: curl /api/export BEFORE ~c1200 (IMMINENT 3 cycles!) — checkpoint pareto; c1200 = 3rd consecutive no-stacking test",
-    "1. S22: fix BOTH code paths before ~c1203 (23 cycles) — 9th violation just confirmed at c1178",
-    "2. S22: curl /api/export — ET-200f-0.21984 still unknown; pareto=15 MAJOR RECOVERY",
-    "3. S18: extract Venn-Abers + beta calibration impls from app.py — 5+ consecutive fires",
-    "4. S13: retry /api/status; when up curl /api/export — CatBoost-0.21992 (35+ fires)",
-    "5. S15: retry /api/status — 35+ fires sleeping (fleet best RF-75f 0.22012)",
-    "6. Wake P1 + checkpoint — pareto_best=0.24902 ALL-TIME RECORD",
-    "7. Wake all POL (P2 pareto=3 eviction risk)",
-    "8. Restart political data crons"
+  "s18_rule8_status": {
+    "total_resets": 19,
+    "latest_violation": "c1225 19TH RESET VIOLATION CONFIRMED (LightGBM+RF+LR+Stacking explicit)",
+    "c1200_status": "Rule8 UNCONFIRMED (no explicit model types in API description)",
+    "pattern_note": "c1150+c1175 appeared clean (2 consecutive) but c1225 broke streak — app.py fix NOT permanent"
+  },
+  "research_pipeline_fire204": {
+    "new_fire204_EVEN": "arXiv:2603.20934 — MOELIGA: crowding-based fitness sharing for MOEA feature selection (Mar 2026). Smaller feature subsets, superior classification on 14 datasets. Directly applicable to our Pareto front diversity management.",
+    "venn_abers_VALIDATED": "arXiv:2605.03816 — VALIDATED fire-197 + IN POP fires 203 (6 consec). Status unknown fire-204 post-c1225.",
+    "priority_queue": [
+      "0. S22: VM curl /api/export IMMEDIATELY — ET-0.21873 BELOW FLEET BEST 0.22012★ (25th failed fire)",
+      "1. S22: fix BOTH code paths in app.py before ~c1203 (IMMINENT 5 cycles)",
+      "2. S18: fix BOTH code paths before ~c1250 (19 cycles) — c1225 19TH VIOLATION",
+      "3. S18: curl /api/export — verify Venn-Abers/Beta survived c1225 reset",
+      "4. S13: retry /api/status — CatBoost-0.21992 EXTREME URGENT (36+ fires)",
+      "5. S15: retry /api/status — fleet best RF-75f 0.22012 (36+ fires)",
+      "6. Wake all POL spaces (P1 EXTREME URGENT pareto_best=0.24902 ALL-TIME RECORD)"
+    ]
+  },
+  "actions_taken_fire204": [
+    "S18: c1231 g3691 stag=0 pareto=8 (1ST SHRINK post-c1225). c1200 18TH RESET Rule8 UNCONFIRMED. c1225 19TH RESET VIOLATION CONFIRMED (LightGBM+RF+LR+Stacking explicit). Diversify c1195/c1208/c1222. RF-200f-0.2208 top pareto. Venn-Abers status UNKNOWN. Next ~c1250.",
+    "S22: c1198 g3592 stag=0 pareto=10 (SHRINKING from 15). top_pareto_best=0.21873 (ET+lightgbm_brier) BELOW FLEET BEST 0.22012★ — EXTREME URGENT. best_brier field still shows 0.22124 (field lag confirmed). Next ~c1203 IMMINENT (5 cycles).",
+    "S13/S14/S15: 404-DOWN (36+ fires). No action available.",
+    "All POL (P1/P2/P4/P5/P7): 404-DOWN (36+ fires). No action available.",
+    "EVEN fire: WebSearch arXiv. Found arXiv:2603.20934 MOELIGA (Mar 2026) — crowding-based fitness sharing for MOEA. Research proposal written.",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md + research proposal updated (fire-204 2026-06-01T08h)"
   ]
 }
