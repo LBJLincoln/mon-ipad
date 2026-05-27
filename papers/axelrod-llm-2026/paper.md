@@ -733,7 +733,7 @@ are those whose predictions are most similar to the prevailing consensus —
 they add the least diversity and hence the least Ambiguity to the ensemble.
 This is consistent with the empirical finding that poorly calibrated agents
 in correlated prediction markets tend to mirror the favourite rather than
-take differentiated positions [@surowiecki2004wisdom].
+take differentiated positions [@zhang2026arena].
 
 **Assumption A4 (Archetype-shift event-independence).** The expected absolute
 prediction shift induced by drawing a vacant archetype uniformly at random is
@@ -1089,7 +1089,7 @@ archetypes were assigned to reflect natural provider tendencies (e.g., T12 was
 originally assigned the *disciplined* archetype for its planned 4B self-hosted
 configuration — a lower-certainty prediction mode appropriate for smaller models;
 this assignment is preserved post-rerouting for pre-registration consistency,
-while large reasoning-capable models receive *analytical* or *quantitative*). This conservatism ensures that any diversity improvement
+while large reasoning-capable models receive *analytical* or *quantitative* archetypes). This conservatism ensures that any diversity improvement
 observed in the SRR condition cannot be attributed to a favourable starting
 configuration.
 
@@ -1116,7 +1116,7 @@ Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
 Model sizes range from 235B (T1–T2, and T12 as rerouted) to undisclosed (Google Gemini,
 Mistral variants); the original T12 design used a 4B parameter model.
 Provider column names refer to the LLM gateway routing layer
-(source: `scripts/arena/hf-llm-trading-floor/app.py`).
+(`LBJLincoln26/llm-gateway`).
 $^\dagger$T12 was originally deployed as self-hosted Qwen3-4B (CPU inference via llama.cpp,
 `LBJLincoln26/llm-gateway`). The self-hosted endpoint timed out persistently from
 2026-04-22 (probe latency > 30 s); the production TRADERS configuration in `app.py`
@@ -1867,8 +1867,8 @@ carries an important design implication: provider heterogeneity is a
 An LLM prediction ensemble built from a single provider's model family —
 however large the models, however diverse the prompts — faces a structural
 diversity ceiling that SRR can only partially circumvent. This motivates
-the five-provider design of our agent cohort (Cerebras, Google, Mistral,
-OpenRouter, self-hosted) as a principled diversity requirement, not merely
+the four-provider design of our agent cohort (Cerebras, Google, Mistral,
+OpenRouter) as a principled diversity requirement, not merely
 a pragmatic constraint imposed by cost or rate limits.
 
 The parallel problem in deep learning — ensemble diversity degrading as
@@ -2289,8 +2289,7 @@ calls = 24 primary calls/day; up to approximately 48 calls/day when primary
 providers fail and fallback providers are invoked). The day-bucket
 architecture (§3.6) processes all events on a given calendar day through a
 single LLM inference call per agent — not one call per game or per event —
-capping the per-day inference budget regardless of game volume (source:
-`app.py` line comment "1 call/agent/day × 180 days × $N$ agents"). Total
+capping the per-day inference budget regardless of game volume (§3.6). Total
 calls over the 175-day experimental period are thus approximately 4,200–8,400,
 using the free and low-cost commercial tiers of Cerebras, Google, Mistral, and
 OpenRouter. All providers offer these tiers on shared GPU infrastructure

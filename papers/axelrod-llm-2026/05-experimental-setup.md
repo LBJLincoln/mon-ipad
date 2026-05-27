@@ -25,7 +25,7 @@ archetypes were assigned to reflect natural provider tendencies (e.g., T12 was
 originally assigned the *disciplined* archetype for its planned 4B self-hosted
 configuration — a lower-certainty prediction mode appropriate for smaller models;
 this assignment is preserved post-rerouting for pre-registration consistency,
-while large reasoning-capable models receive *analytical* or *quantitative*). This conservatism ensures that any diversity improvement
+while large reasoning-capable models receive *analytical* or *quantitative* archetypes). This conservatism ensures that any diversity improvement
 observed in the SRR condition cannot be attributed to a favourable starting
 configuration.
 
@@ -52,7 +52,7 @@ Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
 Model sizes range from 235B (T1–T2, and T12 as rerouted) to undisclosed (Google Gemini,
 Mistral variants); the original T12 design used a 4B parameter model.
 Provider column names refer to the LLM gateway routing layer
-(source: `scripts/arena/hf-llm-trading-floor/app.py`).
+(`LBJLincoln26/llm-gateway`).
 $^\dagger$T12 was originally deployed as self-hosted Qwen3-4B (CPU inference
 via llama.cpp, `LBJLincoln26/llm-gateway`). The self-hosted endpoint timed out
 persistently from 2026-04-22 (probe latency > 30 s); the production TRADERS

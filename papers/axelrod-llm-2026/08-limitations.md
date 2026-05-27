@@ -261,8 +261,7 @@ providers fail and fallback providers are invoked). The day-bucket
 architecture (§3.6) processes all events on a given calendar day through a
 single LLM inference call per agent — not one call per game or per event —
 capping the per-day inference budget regardless of how many games are
-scheduled (source: `app.py` line comment "1 call/agent/day × 180 days ×
-$N$ agents"). Total calls over the 175-day experimental period are thus
+scheduled (§3.6). Total calls over the 175-day experimental period are thus
 approximately 4,200–8,400, using
 the free and low-cost commercial tiers of Cerebras, Google, Mistral, and
 OpenRouter. All

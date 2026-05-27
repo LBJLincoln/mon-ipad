@@ -7147,3 +7147,170 @@ data-blocked; three-way 249/253/235 discrepancy).
 - `05-experimental-setup.md` §4.1: five→four ecosystems, four→three scale classes, self-hosted archetype rationale (SS3); "self-hosted HuggingFace Space" → gateway (SS6)
 - `paper.md`: all six SS changes propagated (SS1–SS6); C.3 subsections added (SS5);
   §4.6 temperature note propagated (SS4)
+
+---
+
+## Cycle TT — Citation Precision, Provider-Count Residual, and Code-Reference Cleanup
+
+**Reviewer 2 simulation — five issues.**
+
+---
+
+### TT1 — §3.5 Assumption A2: citation misattribution
+
+**Issue.** The closing sentence of Assumption A2 reads:
+
+> "This is consistent with the empirical finding that poorly calibrated agents
+> in correlated prediction markets tend to mirror the favourite rather than
+> take differentiated positions [@surowiecki2004wisdom]."
+
+`[@surowiecki2004wisdom]` is *The Wisdom of Crowds* (2004), a popular-science
+book about how diverse independent crowds outperform individuals.  Surowiecki's
+thesis is that crowd wisdom *emerges from* independent, disaggregated predictions
+— he says nothing about poorly-calibrated agents mirroring betting-market
+favourites, and his empirical examples are drawn from guessing-jar weights,
+ox-weight contests, and financial markets in passing.  Citing him for a specific
+claim about prediction-market herding by LLM agents is a category error that a
+referee familiar with the book would catch immediately.
+
+The correct citation is `[@zhang2026arena]`, which directly documents LLM agents
+losing 16–30.8% on Kalshi despite sophisticated reasoning, with the mechanism
+being convergence on market-consensus predictions.  That paper is already cited
+in §6.5 ("The Prediction Arena findings [@zhang2026arena] … are consistent with
+a failure of calibration at the agent level that is not corrected by the
+market-feedback signal alone"), confirming that it captures exactly the
+phenomenon A2 formalises.
+
+**Fix.** `04-method.md` §3.5 A2, final sentence; `paper.md` §3.5 same location:
+replace `[@surowiecki2004wisdom]` → `[@zhang2026arena]`.
+
+Note: `[@surowiecki2004wisdom]` is still cited correctly later in §6.2 ("Like
+Axelrod's tit-for-tat, SRR succeeds not through superior individual agents but
+through the collective property of diversity [@axelrod1984evolution; @surowiecki2004wisdom]")
+where it supports the crowd-wisdom framing — that citation is valid and should
+not be changed.
+
+---
+
+### TT2 — §4.1: dangling closing parenthesis in archetype-assignment sentence
+
+**Issue.** The archetype-assignment rationale sentence ends:
+
+> "…while large reasoning-capable models receive *analytical* or
+> *quantitative*). This conservatism ensures…"
+
+The closing `)` follows an incomplete nominal phrase: "*analytical* or
+*quantitative*" needs a head noun.  The parenthetical opened with "(e.g., T12
+was originally assigned…" and the contrasting clause "while large
+reasoning-capable models receive…" is the tail of that parenthetical, but the
+noun completing the ellipsis was dropped, leaving a parse error:
+"receive *analytical* or *quantitative* what?"
+
+**Fix.** `05-experimental-setup.md` §4.1; `paper.md` §4.1: insert "archetypes"
+before the closing parenthesis:
+→ "while large reasoning-capable models receive *analytical* or *quantitative*
+archetypes). This conservatism ensures…"
+
+---
+
+### TT3 — §7.7: internal code-comment source attribution + day-count inconsistency
+
+**Issue.** The inference-cost paragraph in §7.7 contains:
+
+> "…capping the per-day inference budget regardless of how many games are
+> scheduled (source: `app.py` line comment "1 call/agent/day × 180 days ×
+> $N$ agents"). Total calls over the 175-day experimental period are thus…"
+
+Two defects:
+
+(a) **Code-comment reference.** The parenthetical "(source: `app.py` line
+comment…)" is an internal developer annotation — it reads as a comment
+ported from a code file rather than from a citable source.  This pattern
+was flagged and fixed in Q5, V5, CC2, and SS6; §7.7 is a fourth residual.
+Published papers do not cite comments in their own source files.
+
+(b) **Day-count inconsistency.** The code comment quotes "180 days" but the
+paper consistently states "175-day experimental period" everywhere else —
+§4.3, §5.2, §5.6, §6.5, Table 7, and the §7.7 sentence *immediately following*
+("Total calls over the 175-day experimental period").  The "180 days" figure
+was evidently a planning estimate in the code that predates the finalised
+season schedule.
+
+**Fix.** `08-limitations.md` §7.7; `paper.md` §7.7: replace the parenthetical
+"(source: `app.py` line comment "1 call/agent/day × 180 days × $N$ agents")"
+with a cross-reference to the Day-Bucket architecture section that establishes
+this property:
+→ "(§3.6)"
+
+---
+
+### TT4 — §6.3: residual "five-provider" text after SS provider-count fix
+
+**Issue.** The concluding sentence of §6.3 reads:
+
+> "This motivates the five-provider design of our agent cohort (Cerebras,
+> Google, Mistral, OpenRouter, self-hosted) as a principled diversity
+> requirement, not merely a pragmatic constraint imposed by cost or rate limits."
+
+Cycle SS (SS2+SS3) corrected all provider-count references in the abstract,
+§1, §4 preamble, and §4.1 to read "four commercial provider ecosystems" following
+T12's rerouting from self-hosted to Cerebras API.  §6.3 was not in the SS search
+scope ("five provider\|five.*ecosystem\|self-hosted model" in §4-§5 files) and
+was missed.  The sentence now contradicts the corrected §4.1 Table 3, which lists
+Cerebras, Google, Mistral, and OpenRouter — four providers, with T12 in the
+Cerebras row.  Listing "self-hosted" as a fifth provider is both numerically wrong
+(the self-hosted endpoint is defunct) and factually wrong (T12 routes through
+Cerebras at runtime).
+
+**Fix.** `07-discussion.md` §6.3; `paper.md` §6.3: replace
+"five-provider design of our agent cohort (Cerebras, Google, Mistral, OpenRouter,
+self-hosted)"
+→ "four-provider design of our agent cohort (Cerebras, Google, Mistral,
+OpenRouter)"
+
+**Protocol addition:** The SS-cycle grep command should be extended to include
+§6 files:
+```
+grep -rn "five.provider\|five.*ecosystem\|self-hosted" \
+  papers/axelrod-llm-2026/*.md
+```
+
+---
+
+### TT5 — §4.1 Table 3 caption: internal file-path source attribution
+
+**Issue.** The Table 3 caption sentence reads:
+
+> "Provider column names refer to the LLM gateway routing layer (source:
+> `scripts/arena/hf-llm-trading-floor/app.py`)."
+
+This follows the identical anti-pattern removed in Q5/V5/CC2/SS6: an internal
+script path embedded as a parenthetical source attribution.  In a published paper
+the routing infrastructure is identified by its accessible repository reference,
+not by its local filesystem path.  The gateway is already identified as
+`LBJLincoln26/llm-gateway` in the T12 footnote of the same table, so the correct
+reference is already present in the caption apparatus; the code-path form is
+redundant and unprofessional.
+
+**Fix.** `05-experimental-setup.md` §4.1 Table 3 caption; `paper.md` §4.1 same
+location: replace "(source: `scripts/arena/hf-llm-trading-floor/app.py`)"
+→ "(`LBJLincoln26/llm-gateway`)"
+
+---
+
+**Root cause pattern across TT1–TT5:** Three of the five issues (TT3, TT5, and
+the partially-analogous TT1) involve source attributions that belong in developer
+notes but not in a publishable manuscript.  TT4 is a missed search scope from
+the SS cycle.  TT2 is a noun-phrase ellipsis introduced when the parenthetical
+was extended to include the T12 rerouting note without updating the contrasting
+clause.
+
+**No open items from prior cycles** change status this cycle; pre-submission
+checklist items 1–18 remain as documented after Cycle SS.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.5 A2: `[@surowiecki2004wisdom]` → `[@zhang2026arena]` (TT1)
+- `05-experimental-setup.md` §4.1: "…receive *analytical* or *quantitative*)" → "…receive *analytical* or *quantitative* archetypes)" (TT2); Table 3 caption: code path → `LBJLincoln26/llm-gateway` (TT5)
+- `07-discussion.md` §6.3: "five-provider…(Cerebras, Google, Mistral, OpenRouter, self-hosted)" → "four-provider…(Cerebras, Google, Mistral, OpenRouter)" (TT4)
+- `08-limitations.md` §7.7: code-comment parenthetical removed, replaced with "(§3.6)" (TT3)
+- `paper.md`: all five TT changes propagated

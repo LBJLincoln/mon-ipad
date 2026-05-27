@@ -245,7 +245,7 @@ are those whose predictions are most similar to the prevailing consensus —
 they add the least diversity and hence the least Ambiguity to the ensemble.
 This is consistent with the empirical finding that poorly calibrated agents
 in correlated prediction markets tend to mirror the favourite rather than
-take differentiated positions [@surowiecki2004wisdom].
+take differentiated positions [@zhang2026arena].
 
 **Assumption A4 (Archetype-shift event-independence).** The expected absolute
 prediction shift induced by drawing a vacant archetype uniformly at random is

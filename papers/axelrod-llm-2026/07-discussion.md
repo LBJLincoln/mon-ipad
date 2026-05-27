@@ -196,8 +196,8 @@ carries an important design implication: provider heterogeneity is a
 An LLM prediction ensemble built from a single provider's model family —
 however large the models, however diverse the prompts — faces a structural
 diversity ceiling that SRR can only partially circumvent. This motivates
-the five-provider design of our agent cohort (Cerebras, Google, Mistral,
-OpenRouter, self-hosted) as a principled diversity requirement, not merely
+the four-provider design of our agent cohort (Cerebras, Google, Mistral,
+OpenRouter) as a principled diversity requirement, not merely
 a pragmatic constraint imposed by cost or rate limits.
 
 The parallel problem in deep learning — ensemble diversity degrading as
