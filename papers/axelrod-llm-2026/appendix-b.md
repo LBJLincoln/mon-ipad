@@ -118,4 +118,5 @@ $\hat{\epsilon}_{\text{arch}}$ (avg) and $\hat{\epsilon}_{\text{arch}}^{\min}$
 threshold); pre-registered expectation is that the (`wide-coverage`, `diversified`)
 pair yields the minimum and the (`contrarian`, `quantitative`) pair yields the
 maximum. The agent expected to produce the minimum per-agent entry across all pairs
-is T12 (selfhost-qwen4b, Qwen3-4B).]**
+is T12 (selfhost-qwen4b), whose *disciplined* archetype may constrain its
+prediction range even at 235B scale post-rerouting (§4.1 Table 3 note$^\dagger$).]**

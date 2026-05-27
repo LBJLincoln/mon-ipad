@@ -460,12 +460,12 @@ The moderator role rotates weekly (Axelrod-style round-robin) **within each
 domain separately**: the 12-agent NBA cohort (T1–T12) rotates independently of
 the 10-agent political cohort (T1–T10), both sequences beginning with T1 (Qwen 3
 235B-A22B) in Week 1. This per-domain design ensures that T12 (selfhost-qwen4b,
-Qwen3-4B, NBA-only; §4.1) never moderates a political morning council for which
+Qwen 3 235B-A22B as rerouted; §4.1 Table 3 note$^\dagger$) never moderates a political morning council for which
 it generates no predictions — preventing an architecturally inconsistent brief
 produced by a model outside the political prediction cohort. For the NBA council,
-moderating capacity varies from 235B (T1–T2) to 4B parameters (T12); the full
-size breakdown is in §4.1 (T3: Llama 3.1 8B; Mistral T6–T10 sizes undisclosed
-by provider). For the political council, moderating capacity spans T1–T10 (235B
+moderating capacity spans 235B (T1, T2, and T12 as rerouted), 120B (T11),
+and 8B (T3); Mistral T6–T10 and Google Gemini sizes are undisclosed
+by provider (see §4.1). For the political council, moderating capacity spans T1–T10 (235B
 down to the smallest Mistral commercial variant; sizes undisclosed). This is a
 minor confound: all agents receive an identical structured morning brief template
 regardless of moderator identity, so the confound is bounded to the quality of

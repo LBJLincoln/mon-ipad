@@ -93,8 +93,8 @@ This paper makes four contributions:
    collectively refuse SRR and simultaneously (weakly) improve ensemble Brier for the
    coalition while (weakly) reducing individual Brier for each coalition member.
 
-3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (five provider
-   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B)
+3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (four provider
+   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter)
    on the full 2025–26 NBA season (1,257 games) and 10 agents (three provider
    ecosystems: Cerebras, Google, Mistral) on 1,120 US political events,
    constituting — to our knowledge — the largest *controlled*

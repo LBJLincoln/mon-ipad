@@ -1,7 +1,7 @@
 # Experimental Setup
 
 We instantiate the LPSG on two real-world prediction domains over the 2025–26
-temporal period, using heterogeneous LLM agents drawn from five commercial and self-hosted
+temporal period, using heterogeneous LLM agents drawn from four commercial
 provider ecosystems for the NBA cohort and three for the political cohort
 (§4.1). All experimental conditions share the same
 Day-Bucket v3 pipeline (§3.6); conditions differ only in whether SRR is active,
@@ -14,16 +14,18 @@ reallocation. The full experiment log is archived at
 ## 4.1  Agent Population
 
 **NBA cohort (N = 12).** Table 3 describes the twelve LLM agents fielded in
-the NBA prediction domain. The cohort spans five provider ecosystems, four
-identified model scale classes (4B to 235B parameters for providers with publicly
-disclosed sizes; Google Gemini 3 Flash and Mistral commercial variants have
+the NBA prediction domain. The cohort spans four provider ecosystems, three
+identified model scale classes (8B to 235B parameters for providers with publicly
+disclosed sizes: Cerebras Qwen 3 235B-A22B, Cerebras Llama 3.1 8B, and OpenRouter
+Nemotron-3-Super-120B; Google Gemini 3 Flash and Mistral commercial variants have
 undisclosed parameter counts), and twelve distinct initial strategy
 archetypes drawn from the 20-archetype taxonomy (Appendix A). The initial
 archetype assignment was *not* optimised to maximise initial diversity; rather,
-archetypes were assigned to reflect natural provider tendencies (e.g., smaller
-self-hosted models receive the *disciplined* archetype to limit over-confident
-predictions, while large reasoning-capable models receive *analytical* or
-*quantitative*). This conservatism ensures that any diversity improvement
+archetypes were assigned to reflect natural provider tendencies (e.g., T12 was
+originally assigned the *disciplined* archetype for its planned 4B self-hosted
+configuration — a lower-certainty prediction mode appropriate for smaller models;
+this assignment is preserved post-rerouting for pre-registration consistency,
+while large reasoning-capable models receive *analytical* or *quantitative*). This conservatism ensures that any diversity improvement
 observed in the SRR condition cannot be attributed to a favourable starting
 configuration.
 
@@ -295,9 +297,8 @@ to produce bootstrap 95% confidence intervals (2,000 resamples).
 ## 4.6  Infrastructure and Reproducibility
 
 **Compute.** All LLM inference is performed via remote API calls to
-commercial providers (Cerebras, Google, Mistral, OpenRouter) or a
-self-hosted HuggingFace Space (`LBJLincoln26/llm-gateway`) acting as
-a centralised proxy. No GPU training occurs in this experiment; the
+commercial providers (Cerebras, Google, Mistral, OpenRouter) proxied through
+a centralised LLM gateway HuggingFace Space (`LBJLincoln26/llm-gateway`). No GPU training occurs in this experiment; the
 feature-engine oracle that generates context summaries was pre-trained
 on data through the 2024–25 NBA season and frozen before the 2025–26
 season began. This ensures a complete temporal separation between

@@ -40,9 +40,10 @@ A1 is confirmed for pair $(r^{(a)}, r^{(b)})$ if and only if
 $\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)}) \geq 0.037$.
 The cross-agent average $\hat{\epsilon}_{\text{arch}}$ is reported for descriptive
 comparison but is not the operative A1 test: if a single agent (most plausibly
-T12, selfhost-qwen4b, Qwen3-4B, whose limited capacity may compress its
-prediction range) fails the per-agent threshold even while the cross-agent average
-passes, A1 is violated for that agent.
+T12 (selfhost-qwen4b), whose *disciplined* archetype is designed to limit
+prediction extremism and may compress its prediction range even at 235B scale
+post-rerouting (§4.1 Table 3 note$^\dagger$)) fails the per-agent threshold
+even while the cross-agent average passes, A1 is violated for that agent.
 
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype
 distinguishability estimates. The **operative A1 test** is the per-agent minimum

@@ -32,7 +32,7 @@ role reallocation* (SRR) allows underperforming agents to adopt under-represente
 strategy archetypes, provably increasing Jensen–Shannon population diversity.
 We formalise the system as the *LLM Prediction Society Game* (LPSG) — a population
 game with type heterogeneity — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
-refinement (Lemma 1, Proposition 2). Results across 12 NBA agents from five provider ecosystems (175 trading days)
+refinement (Lemma 1, Proposition 2). Results across 12 NBA agents from four provider ecosystems (175 trading days)
 and 10 political agents from three provider ecosystems (Cerebras, Google, Mistral; 90 trading days) are pending full seasonal resolution
 (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
 principled design of diverse, calibrated LLM prediction ensembles.
@@ -134,8 +134,8 @@ This paper makes four contributions:
    collectively refuse SRR and simultaneously (weakly) improve ensemble Brier for the
    coalition while (weakly) reducing individual Brier for each coalition member.
 
-3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (five provider
-   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B)
+3. **Real-world LLM trading experiment.** We deploy 12 LLM agents (four provider
+   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter)
    on the full 2025–26 NBA season (1,257 games) and 10 agents (three provider
    ecosystems: Cerebras, Google, Mistral) on 1,120 US political events,
    constituting — to our knowledge — the largest *controlled*
@@ -937,12 +937,12 @@ The moderator role rotates weekly (Axelrod-style round-robin) **within each
 domain separately**: the 12-agent NBA cohort (T1–T12) rotates independently of
 the 10-agent political cohort (T1–T10), both sequences beginning with T1 (Qwen 3
 235B-A22B) in Week 1. This per-domain design ensures that T12 (selfhost-qwen4b,
-Qwen3-4B, NBA-only; §4.1) never moderates a political morning council for which
+Qwen 3 235B-A22B as rerouted; §4.1 Table 3 note$^\dagger$) never moderates a political morning council for which
 it generates no predictions — preventing an architecturally inconsistent brief
 produced by a model outside the political prediction cohort. For the NBA council,
-moderating capacity varies from 235B (T1–T2) to 4B parameters (T12); the full
-size breakdown is in §4.1 (T3: Llama 3.1 8B; Mistral T6–T10 sizes undisclosed
-by provider). For the political council, moderating capacity spans T1–T10 (235B
+moderating capacity spans 235B (T1, T2, and T12 as rerouted), 120B (T11),
+and 8B (T3); Mistral T6–T10 and Google Gemini sizes are undisclosed
+by provider (see §4.1). For the political council, moderating capacity spans T1–T10 (235B
 down to the smallest Mistral commercial variant; sizes undisclosed). This is a
 minor confound: all agents receive an identical structured morning brief template
 regardless of moderator identity, so the confound is bounded to the quality of
@@ -1065,7 +1065,7 @@ see Appendix C.2 for sensitivity analysis.*
 # 4. Experimental Setup
 
 We instantiate the LPSG on two real-world prediction domains over the 2025–26
-temporal period, using heterogeneous LLM agents drawn from five commercial and self-hosted
+temporal period, using heterogeneous LLM agents drawn from four commercial
 provider ecosystems for the NBA cohort and three for the political cohort
 (§4.1). All experimental conditions share the same
 Day-Bucket v3 pipeline (§3.6); conditions differ only in whether SRR is active,
@@ -1078,16 +1078,18 @@ reallocation. The full experiment log is archived at
 ## 4.1  Agent Population
 
 **NBA cohort (N = 12).** Table 3 describes the twelve LLM agents fielded in
-the NBA prediction domain. The cohort spans five provider ecosystems, four
-identified model scale classes (4B to 235B parameters for providers with publicly
-disclosed sizes; Google Gemini 3 Flash and Mistral commercial variants have
+the NBA prediction domain. The cohort spans four provider ecosystems, three
+identified model scale classes (8B to 235B parameters for providers with publicly
+disclosed sizes: Cerebras Qwen 3 235B-A22B, Cerebras Llama 3.1 8B, and OpenRouter
+Nemotron-3-Super-120B; Google Gemini 3 Flash and Mistral commercial variants have
 undisclosed parameter counts), and twelve distinct initial strategy
 archetypes drawn from the 20-archetype taxonomy (Appendix A). The initial
 archetype assignment was *not* optimised to maximise initial diversity; rather,
-archetypes were assigned to reflect natural provider tendencies (e.g., smaller
-self-hosted models receive the *disciplined* archetype to limit over-confident
-predictions, while large reasoning-capable models receive *analytical* or
-*quantitative*). This conservatism ensures that any diversity improvement
+archetypes were assigned to reflect natural provider tendencies (e.g., T12 was
+originally assigned the *disciplined* archetype for its planned 4B self-hosted
+configuration — a lower-certainty prediction mode appropriate for smaller models;
+this assignment is preserved post-rerouting for pre-registration consistency,
+while large reasoning-capable models receive *analytical* or *quantitative*). This conservatism ensures that any diversity improvement
 observed in the SRR condition cannot be attributed to a favourable starting
 configuration.
 
@@ -1341,9 +1343,8 @@ to produce bootstrap 95% confidence intervals (2,000 resamples).
 ## 4.6  Infrastructure and Reproducibility
 
 **Compute.** All LLM inference is performed via remote API calls to
-commercial providers (Cerebras, Google, Mistral, OpenRouter) or a
-self-hosted HuggingFace Space (`LBJLincoln26/llm-gateway`) acting as
-a centralised proxy. No GPU training occurs in this experiment; the
+commercial providers (Cerebras, Google, Mistral, OpenRouter) proxied through
+a centralised LLM gateway HuggingFace Space (`LBJLincoln26/llm-gateway`). No GPU training occurs in this experiment; the
 feature-engine oracle that generates context summaries was pre-trained
 on data through the 2024–25 NBA season and frozen before the 2025–26
 season began. This ensures a complete temporal separation between
@@ -1361,7 +1362,16 @@ archetype modules and the shared mission preamble) are archived in
 `data/arena/archetypes/`. LLM temperature is fixed at
 $\tau = 0.7$ for all agents across all conditions to balance
 expressiveness with reproducibility; sensitivity to $\tau$ is tested
-in Appendix C.3.
+in Appendix C.3. We note that for managed-inference APIs (T1–T12 as actually deployed;
+see Table 3 note$^\dagger$), the provider's instruction-following fine-tuning
+mediates the relationship between the API temperature parameter and
+token-logit variance, so the effective stochasticity at $\tau = 0.7$ is
+provider-dependent across all twelve agents.
+The $\tau = 0.7$ selection was validated on T4 (Gemini 3 Flash,
+*analytical* archetype); Appendix C.3.3 discusses the two mechanisms
+(RLHF-induced distribution sharpening and provider-specific sampling pipelines)
+that cause managed-inference models to respond to `temperature` differently
+from base models.
 
 **Pre-registration.** The four primary hypotheses tested in this paper —
 (H1) SRR increases $\overline{D}$ versus fixed ensemble;
@@ -1447,9 +1457,10 @@ A1 is confirmed for pair $(r^{(a)}, r^{(b)})$ if and only if
 $\hat{\epsilon}_{\text{arch}}^{\min}(r^{(a)}, r^{(b)}) \geq 0.037$.
 The cross-agent average $\hat{\epsilon}_{\text{arch}}$ is reported for descriptive
 comparison but is not the operative A1 test: if a single agent (most plausibly
-T12, selfhost-qwen4b, Qwen3-4B, whose limited capacity may compress its
-prediction range) fails the per-agent threshold even while the cross-agent average
-passes, A1 is violated for that agent.
+T12 (selfhost-qwen4b), whose *disciplined* archetype is designed to limit
+prediction extremism and may compress its prediction range even at 235B scale
+post-rerouting (§4.1 Table 3 note$^\dagger$)) fails the per-agent threshold
+even while the cross-agent average passes, A1 is violated for that agent.
 
 *Table 4: Summary statistics for the $\binom{20}{2} = 190$ pairwise archetype
 distinguishability estimates. The **operative A1 test** is the per-agent minimum
@@ -2621,8 +2632,9 @@ backtest completes. Each cell will report both average and per-agent minimum.
 Expected minimum per-agent-min entry $\geq 0.037$ (Assumption A1 threshold);
 pre-registered expectation is that the (`wide-coverage`, `diversified`) pair
 yields the minimum and (`contrarian`, `quantitative`) the maximum.
-Agent expected to achieve minimum per-agent entry: T12 (selfhost-qwen4b,
-Qwen3-4B).]**
+Agent expected to achieve minimum per-agent entry: T12 (selfhost-qwen4b),
+whose *disciplined* archetype may constrain its prediction range even at
+235B scale post-rerouting (§4.1 Table 3 note$^\dagger$).]**
 
 ---
 
@@ -2703,15 +2715,80 @@ checklist item 12.]**
 
 ## C.3  Temperature Sensitivity Analysis
 
-All agents use a fixed generation temperature $\tau = 0.7$ (§4.6). A sensitivity
-sweep over $\tau \in \{0.30, 0.50, 0.70, 0.90, 1.10\}$ is conducted on a
-20-game held-out pilot subset using T4 (*analytical* archetype) as the
-representative agent.
+All agents use a fixed generation temperature $\tau = 0.7$ (§4.6).
+Temperature controls the stochasticity of LLM outputs: lower $\tau$ yields
+more deterministic (potentially overconfident) predictions; higher $\tau$
+introduces noise that may improve diversity but degrade calibration.
 
-**[PENDING: per-$\tau$ Brier and ECE from `data/arena/axelrod-log/temp-sensitivity.jsonl`.
-Pre-registered expectation: $\tau = 0.7$ is near-optimal for *analytical*;
-*conservative* may prefer $\tau \leq 0.5$; *devil's-advocate* may benefit from
-$\tau \geq 0.9$. Per-archetype temperature sweep deferred to future work.]**
+### C.3.1  Grid
+
+We evaluate five temperature values on a 20-game held-out subset of the
+2024–25 pilot using T4 (Gemini 3 Flash, *analytical* archetype) as the
+representative agent:
+
+| $\tau$ | Expected effect |
+|--------|----------------|
+| 0.30 | Near-deterministic; predictions cluster near modal estimate |
+| 0.50 | Low variance; good calibration in well-specified settings |
+| **0.70** | **Selected; balances expressiveness and reproducibility** |
+| 0.90 | Moderate variance; may improve diversity at cost of calibration |
+| 1.10 | High variance; risk of prediction extremism for overconfident models |
+
+### C.3.2  Results
+
+**[PENDING: per-$\tau$ Brier scores and ECE values to be populated from
+`data/arena/axelrod-log/temp-sensitivity.jsonl`. Expected finding:
+$\tau = 0.7$ is near-optimal for the *analytical* archetype; archetypes
+with explicit probability-shrinkage directives (e.g., *conservative*)
+may prefer $\tau \leq 0.5$, while archetypes designed for high divergence
+(e.g., *devil's-advocate*) may benefit from $\tau \geq 0.9$. A
+per-archetype temperature sweep is deferred to future work.]**
+
+### C.3.3  Limitation: Self-Hosted Model Temperature
+
+The temperature sweep in C.3.1–C.3.2 uses T4 (Gemini 3 Flash Preview,
+managed inference via Google API) as the representative agent.
+Two structurally distinct mechanisms cause managed-inference models to
+respond to the `temperature` parameter differently from self-hosted models:
+
+**(a) RLHF-induced distribution sharpening.** Instruction-following
+fine-tuning via reinforcement learning from human feedback (RLHF)
+concentrates logit probability mass on tokens consistent with alignment
+objectives [@ouyang2022training]. Because the pre-softmax logit spread
+narrows during RLHF, the *effective* sample entropy at a given $\tau$
+is lower for an instruction-tuned model than for a base model of the
+same scale — not because temperature is applied differently, but because
+the input logit distribution is already sharper. This effect is
+model-scale- and training-recipe-dependent and cannot be characterised
+from the API alone.
+
+**(b) Provider-specific sampling pipeline.** Several managed-inference
+APIs apply top-$k$ or nucleus top-$p$ sampling *after* temperature
+scaling but before token emission, further constraining the output
+distribution beyond what $\tau$ alone specifies. Gemini 3 Flash applies
+such a filtering step; the exact cutoffs are undisclosed, making the
+effective generation entropy provider-dependent at identical $\tau$ values.
+
+The original experimental design intended T12 as a self-hosted agent
+(Qwen3-4B via llama.cpp, CPU inference) that would be subject to neither
+Mechanism (a) nor Mechanism (b) in the same way: Qwen3-4B uses a lighter
+alignment procedure than frontier 235B models, and llama.cpp applies
+temperature directly to raw logits with no implicit top-$k$ filtering.
+This design intent was not realised: T12's self-hosted endpoint timed out
+and was rerouted to `cerebras:qwen-3-235b` — the same 235B instruction-tuned
+model as T1–T2 (§4.1 Table 3 note$^\dagger$). As deployed, T12 is subject to
+both Mechanism (a) (235B RLHF-induced sharpening) and Mechanism (b)
+(Cerebras API sampling pipeline) at a level structurally identical to T1–T2.
+
+The comparison between a self-hosted 4B model and managed-inference T4
+that this section was originally designed to motivate is therefore no longer
+feasible in the current experimental configuration. The planned T12
+temperature sweep (self-hosted vs.\ managed comparison) is deferred to future
+work contingent on restoring a working self-hosted inference endpoint.
+Under the actual rerouted configuration, all 12 agents are governed by
+mechanisms (a) and (b) with provider-specific parameters; the $\tau = 0.7$
+selection from the T4 validation is applied uniformly, with Mechanism (a) and (b)
+magnitudes varying by provider as discussed in C.3.1–C.3.2.
 
 ---
 

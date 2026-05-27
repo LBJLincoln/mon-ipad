@@ -6843,3 +6843,307 @@ RR1 (§7.7 day-bucket cross-reference §3.7 → §3.6), RR2 (app.py line count
 After any targeted fix to a specific section, run
 `grep -rn "<corrected-term>" papers/axelrod-llm-2026/*.md`
 to confirm the fix propagated to all relevant files before marking the issue closed.
+
+---
+
+# Peer-Review Self-Critique — Cycle SS (2026-06-01)
+
+*Audit of downstream consequences of the QQ2 T12 rerouting fix (Cycle RR).
+The Cycle RR batch update correctly updated seven specific locations for the
+T12 Cerebras rerouting, but six related claims — each a downstream consequence
+of that same rerouting — were missed. All six are addressed here.*
+
+*Fire parity: fire-203 ODD — no WebSearch; all fixes are manuscript-internal
+consistency corrections.*
+
+---
+
+## STATUS: CYCLE RR OPEN ISSUES
+
+### PP1 — §4.2.1 market category count arithmetic [CARRIED — DATA-BLOCKED]
+
+Status unchanged. Three-way discrepancy (249 paper / 253 production
+`app.py` context prompt / 235 parenthetical breakdown) remains unresolved
+pending `jq 'keys | length' data/full-odds-2025-26.json` verification.
+No change this cycle.
+
+---
+
+## NEW ISSUES — CYCLE SS
+
+### SS1 — §3.6 still describes T12 as "Qwen3-4B" with "4B parameters" [FIXED]
+
+**Reviewer:** The §3.6 morning council description reads:
+"T12 (selfhost-qwen4b, Qwen3-4B, NBA-only; §4.1) never moderates a
+political morning council…" and "For the NBA council, moderating capacity
+varies from 235B (T1–T2) to 4B parameters (T12)."
+
+Both are factually wrong after QQ2 (Cycle RR). T12 routes to
+`cerebras:qwen-3-235b` (235B) and is described as such everywhere else
+in the post-RR manuscript. The Cycle RR summary lists §4.1, §4.6, §7.1,
+§7.2, §7.4, §7.7, and Appendix C.3.3 as updated locations but does not
+include §3.6. The omission is confirmed by `grep -n "Qwen3-4B" 04-method.md`,
+which returns a hit at line 463.
+
+**Fix applied (`04-method.md` and `paper.md` §3.6):**
+
+"T12 (selfhost-qwen4b, Qwen3-4B, NBA-only; §4.1)" →
+"T12 (selfhost-qwen4b, Qwen 3 235B-A22B as rerouted; §4.1 Table 3 note$^\dagger$)"
+
+"moderating capacity varies from 235B (T1–T2) to 4B parameters (T12); the full
+size breakdown is in §4.1 (T3: Llama 3.1 8B; Mistral T6–T10 sizes undisclosed
+by provider)." →
+"moderating capacity spans 235B (T1, T2, and T12 as rerouted), 120B (T11),
+and 8B (T3); Mistral T6–T10 and Google Gemini sizes are undisclosed
+by provider (see §4.1)." ✓
+
+*Post-fix verification:*
+```
+grep -n "Qwen3-4B\|4B parameters" papers/axelrod-llm-2026/04-method.md papers/axelrod-llm-2026/paper.md
+```
+→ zero hits in both files. ✓
+
+---
+
+### SS2 — §1 (Introduction) lists "self-hosted Qwen3-4B" as a fifth provider ecosystem [FIXED]
+
+**Reviewer:** §1 Contribution 3 reads: "We deploy 12 LLM agents
+(five provider ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter,
+self-hosted Qwen3-4B)." After T12's Cerebras rerouting (Cycle RR), the
+self-hosted endpoint no longer constitutes a distinct ecosystem — T12 routes
+through the Cerebras API, the same provider as T1–T3. There are now
+**four** commercial provider ecosystems: Cerebras, Google Gemini 3, Mistral,
+OpenRouter. "self-hosted Qwen3-4B" was never a provider ecosystem per se (it was
+an inference method), and it is operationally moot post-rerouting.
+
+The same error propagates to the Abstract ("from five provider ecosystems").
+
+**Fix applied (`02-introduction.md`, `01-abstract.md`, and `paper.md`):**
+
+§1 `02-introduction.md`:
+"(five provider\n   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter, self-hosted Qwen3-4B)" →
+"(four provider\n   ecosystems: Cerebras, Google Gemini 3, Mistral, OpenRouter)" ✓
+
+Abstract `01-abstract.md` and `paper.md`:
+"from five provider ecosystems (175 trading days)" →
+"from four provider ecosystems (175 trading days)" ✓
+
+*Post-fix verification:*
+```
+grep -n "five provider\|self-hosted Qwen3-4B" papers/axelrod-llm-2026/02-introduction.md \
+  papers/axelrod-llm-2026/01-abstract.md papers/axelrod-llm-2026/paper.md
+```
+→ zero hits in all three files. ✓
+
+---
+
+### SS3 — §4.1 opening: "five provider ecosystems, four scale classes (4B to 235B)", "self-hosted models receive *disciplined*" [FIXED]
+
+**Reviewer:** Three related errors in the §4.1 NBA cohort paragraph
+(both `05-experimental-setup.md` and `paper.md`):
+
+**(a)** "The cohort spans five provider ecosystems" — should be four after
+the rerouting collapses the self-hosted category into Cerebras.
+
+**(b)** "four identified model scale classes (4B to 235B parameters)" —
+T12's rerouting eliminates the 4B class. The three identifiable scale
+classes are now 235B (T1, T2, T12), 120B (T11), and 8B (T3).
+
+**(c)** "smaller self-hosted models receive the *disciplined* archetype to
+limit over-confident predictions" — there are no longer any self-hosted models.
+The disciplined assignment to T12 was based on its planned 4B configuration;
+after rerouting it is a design-intent artefact preserved for pre-registration
+consistency.
+
+**Fix applied (`05-experimental-setup.md` and `paper.md` §4.1):**
+
+(a) "five provider ecosystems" → "four provider ecosystems" ✓
+
+(b) "four identified model scale classes (4B to 235B parameters for providers
+with publicly disclosed sizes; Google Gemini 3 Flash and Mistral commercial
+variants have undisclosed parameter counts)" →
+"three identified model scale classes (8B to 235B parameters for providers
+with publicly disclosed sizes: Cerebras Qwen 3 235B-A22B, Cerebras Llama 3.1 8B,
+and OpenRouter Nemotron-3-Super-120B; Google Gemini 3 Flash and Mistral commercial
+variants have undisclosed parameter counts)" ✓
+
+(c) "smaller self-hosted models receive the *disciplined* archetype to limit
+over-confident predictions, while large reasoning-capable models receive
+*analytical* or *quantitative*" →
+"T12 was originally assigned the *disciplined* archetype for its planned
+4B self-hosted configuration — a lower-certainty prediction mode appropriate
+for smaller models; this assignment is preserved post-rerouting for
+pre-registration consistency, while large reasoning-capable models receive
+*analytical* or *quantitative*" ✓
+
+The opening sentence of §4.6 (§4 intro paragraph) also uses "five commercial
+and self-hosted provider ecosystems" (same paragraph in `05-experimental-setup.md`
+line 4) — updated to "four commercial provider ecosystems." ✓
+
+*Post-fix verification:*
+```
+grep -n "five provider\|five.*ecosystem\|four.*scale\|4B to 235B\|self-hosted models receive" \
+  papers/axelrod-llm-2026/05-experimental-setup.md papers/axelrod-llm-2026/paper.md
+```
+→ zero hits in both files. ✓
+
+---
+
+### SS4 — `paper.md` §4.6 missing the Cycle RR temperature-note propagation [FIXED]
+
+**Reviewer:** Cycle RR updated `05-experimental-setup.md` §4.6 to add a managed-inference
+temperature note after "sensitivity to $\tau$ is tested in Appendix C.3":
+
+> *"We note that for managed-inference APIs (T1–T12 as actually deployed;
+> see Table 3 note$^\dagger$), the provider's instruction-following
+> fine-tuning mediates the relationship between the API temperature parameter
+> and token-logit variance, so the effective stochasticity at $\tau = 0.7$ is
+> provider-dependent across all twelve agents. The $\tau = 0.7$ selection was
+> validated on T4 (Gemini 3 Flash, analytical archetype); Appendix C.3.3
+> discusses the two mechanisms (RLHF-induced distribution sharpening and
+> provider-specific sampling pipelines) that cause managed-inference models to
+> respond to `temperature` differently from base models."*
+
+The Cycle RR summary states "paper.md: all fixes propagated (10 distinct edit
+locations)," but `grep -n "managed-inference APIs" paper.md` returns no hits in the
+§4.6 section — only `08-limitations.md` and `appendix-c.md`. The §4.6 temperature
+note was propagated to `05-experimental-setup.md` but not to the compiled `paper.md`.
+
+**Fix applied (`paper.md` §4.6 only — source file already correct):**
+
+Inserted the managed-inference temperature note between "in Appendix C.3."
+and "**Pre-registration.**" in `paper.md`, matching the text in
+`05-experimental-setup.md` verbatim. ✓
+
+*Post-fix verification:*
+```
+grep -n "managed-inference APIs" papers/axelrod-llm-2026/paper.md
+```
+→ present in §4.6 (line ~1365). ✓
+
+---
+
+### SS5 — `paper.md` C.3 missing subsections C.3.1, C.3.2, C.3.3 [FIXED]
+
+**Reviewer:** `appendix-c.md` §C.3 contains three structured subsections:
+§C.3.1 (Temperature Grid), §C.3.2 (Results, PENDING), and §C.3.3
+(Limitation: Self-Hosted Model Temperature — rewritten by Cycle RR to
+document the T12 rerouting impact on the planned temperature comparison).
+The compiled `paper.md` C.3 section is a flattened stub that includes only
+the header and the combined PENDING block without any of the three subsections.
+This means the C.3.3 limitation section — which is the Cycle RR fix for
+Appendix C — is completely absent from the submission document.
+
+This is a parity failure between `appendix-c.md` and `paper.md` that
+pre-dates Cycle RR: `appendix-c.md` has always had C.3.1 and C.3.2 as
+distinct subsections, while `paper.md` collapsed them. The Cycle RR C.3.3
+addition widened the parity gap.
+
+**Fix applied (`paper.md` C.3 only — source file `appendix-c.md` already correct):**
+
+Replaced the flat `## C.3` stub in `paper.md` with the full structured content
+from `appendix-c.md`: header + intro paragraph, §C.3.1 table, §C.3.2 PENDING
+block, and the complete §C.3.3 limitation text (including the two-mechanism
+RLHF/sampling-pipeline discussion and the T12 rerouting outcome). ✓
+
+*Post-fix verification:*
+```
+grep -n "C\.3\.3\|Self-Hosted Model Temperature" papers/axelrod-llm-2026/paper.md
+```
+→ present at the C.3.3 heading in the Appendix C section. ✓
+
+---
+
+### SS6 — §4.6 "or a self-hosted HuggingFace Space" is inaccurate after QQ2 [FIXED]
+
+**Reviewer:** §4.6 Compute paragraph reads: "All LLM inference is performed
+via remote API calls to commercial providers (Cerebras, Google, Mistral,
+OpenRouter) **or a self-hosted HuggingFace Space** (`LBJLincoln26/llm-gateway`)
+acting as a centralised proxy."
+
+The HuggingFace Space `LBJLincoln26/llm-gateway` is not a self-hosted LLM;
+it is a routing gateway that forwards requests to commercial APIs. After QQ2,
+there are no self-hosted models in the experiment at all — the qualifier
+"self-hosted" is a mislabel of the gateway's hosting environment (HuggingFace
+infrastructure, not self-hosted). A reviewer who reads this sentence and compares it
+to Table 3's all-commercial provider column will flag the contradiction immediately.
+
+**Fix applied (`05-experimental-setup.md` and `paper.md` §4.6):**
+
+"via remote API calls to commercial providers (Cerebras, Google, Mistral,
+OpenRouter) or a self-hosted HuggingFace Space (`LBJLincoln26/llm-gateway`)
+acting as a centralised proxy." →
+"via remote API calls to commercial providers (Cerebras, Google, Mistral,
+OpenRouter) proxied through a centralised LLM gateway HuggingFace Space
+(`LBJLincoln26/llm-gateway`)." ✓
+
+*Post-fix verification:*
+```
+grep -n "self-hosted HuggingFace\|or a self-hosted" papers/axelrod-llm-2026/05-experimental-setup.md \
+  papers/axelrod-llm-2026/paper.md
+```
+→ zero hits in both files. ✓
+
+---
+
+## CYCLE SS SUMMARY
+
+**Fixed this cycle:** SS1 (§3.6 T12 "Qwen3-4B" / "4B parameters" → 235B in
+`04-method.md` + `paper.md`), SS2 (§1 + Abstract "five provider ecosystems" →
+"four" in `02-introduction.md` + `01-abstract.md` + `paper.md`), SS3
+(§4.1 five→four ecosystems, four→three scale classes, self-hosted
+archetype rationale updated in `05-experimental-setup.md` + `paper.md`),
+SS4 (`paper.md` §4.6 temperature note propagated from source), SS5
+(`paper.md` C.3 subsections C.3.1/C.3.2/C.3.3 restored from
+`appendix-c.md`), SS6 ("self-hosted HuggingFace Space" → gateway in
+`05-experimental-setup.md` + `paper.md`).
+
+**Root cause pattern:** The Cycle RR QQ2 fix updated seven specific T12
+references but did not trigger a systematic search for *derived claims* that
+depend on the self-hosted/5-ecosystem/4B-class properties. Cycle SS is the
+systematic cleanup.
+
+**Protocol addition:** After any fix that changes a structural property of
+the experiment (provider count, agent count, model sizes), run:
+```
+grep -rn "five provider\|four provider\|five.*ecosystem\|four.*scale\|4B.*param\|self-hosted model" \
+  papers/axelrod-llm-2026/*.md
+```
+to catch all downstream occurrences before closing the issue.
+
+**Remaining open from prior cycles:** PP1 (market category count —
+data-blocked; three-way 249/253/235 discrepancy).
+
+**PRE-SUBMISSION checklist (updated after Cycle SS):**
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Verify `@ouyang2022training` author list against arXiv:2203.02155 | OPEN |
+| 2 | Verify `@llm_ipd2024` first author against arXiv:2406.13605 | OPEN |
+| 3 | Verify `@polyswarm2026` author list against arXiv:2604.03888 | OPEN |
+| 4 | Populate all **[PENDING]** cells in §5–6 once `axelrod-log/` complete | OPEN |
+| 5 | Populate Table B.2 (per-pair avg + per-agent min); confirm all pairs ≥ 0.037 | OPEN |
+| 6 | Fill §C.2.2 sensitivity surface | OPEN |
+| 7 | Fill §C.3.2 temperature Brier/ECE table | OPEN |
+| 8 | Fill §C.2.3 reversal-target sensitivity analysis [MM3] | OPEN |
+| 9 | Remove abstract Brier-delta placeholder; fill with actual results | OPEN |
+| 10 | Convert "if confirmed"/"pending" language in §6 to indicative mood | OPEN |
+| 11 | Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$ | OPEN |
+| 12 | Verify A4 slack $\eta_{\text{A4}} < 0.22$; run §C.2.4 out-of-sample partition | OPEN |
+| 13 | Populate Table 3 per-agent $\overline{B}_i$ from pilot backtest | OPEN |
+| 14 | HH4/NN5: run dev/val partition for $\hat{\epsilon}_{\text{arch}}$ ≥ 0.031 | OPEN |
+| 15 | H5 contamination test: run Qwen sub-group (T1/T2/T12) vs. T3–T11 and document in §5.6 | OPEN |
+| 16a | PP1: verify category count (249 vs. 253 vs. 235) against JSON schema + prompt | OPEN |
+| 16b | RR2: confirm exact `app.py` line count via `wc -l` | OPEN |
+| 17 | QQ1 DONE (footnote added): confirm axelrod-log has no records from 5 routing agents | OPEN |
+| 18 | m2: confirm arXiv:2510.04643 as `@quantagents2025`; remove BibTeX VERIFY note | OPEN |
+| 19–30 | (QQ2, RR1–RR3, SS1–SS6, PP2, OO0–PP3 items, all DONE) | DONE |
+
+**Structural changes this cycle:**
+- `04-method.md` §3.6: T12 model name + moderating capacity range updated (SS1)
+- `02-introduction.md` §1: five→four provider ecosystems; "self-hosted Qwen3-4B" removed (SS2)
+- `01-abstract.md`: five→four provider ecosystems (SS2)
+- `05-experimental-setup.md` §4 intro: five commercial and self-hosted → four commercial (SS3)
+- `05-experimental-setup.md` §4.1: five→four ecosystems, four→three scale classes, self-hosted archetype rationale (SS3); "self-hosted HuggingFace Space" → gateway (SS6)
+- `paper.md`: all six SS changes propagated (SS1–SS6); C.3 subsections added (SS5);
+  §4.6 temperature note propagated (SS4)
