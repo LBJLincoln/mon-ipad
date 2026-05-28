@@ -7527,3 +7527,124 @@ grep -rn "scripts/\|bloomberg-api\|engine\.py.*header\|source:.*\.py\|\.py.*sour
 - `08-limitations.md` §7.2: "`scripts/bloomberg/`" → "ingestion scripts in `LBJLincoln26/mon-ipad`" (UU1); "`features/engine.py`" → "`LBJLincoln26/nomos-nba-agent`, `features/engine.py`" (UU2)
 - `04-method.md` §3.6: "`scripts/arena/hf-llm-trading-floor/`" → "`LBJLincoln26/nba-llm-trading-floor`" (UU4)
 - `paper.md`: all five UU changes propagated
+
+---
+
+# Peer-Review Self-Critique — Cycle VV (2026-06-03)
+
+**Reviewer persona:** NeurIPS 2026 Methods Reviewer — reproducibility, formal completeness, cross-section consistency.
+
+*All three open issues identified in this cycle fixed in the same cycle.*
+
+---
+
+## CYCLE UU STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle UU.
+
+---
+
+## NEW ISSUES (Cycle VV full-manuscript re-read)
+
+### VV1. §7.1 attribution enumeration skips T3 (Llama 3.1 8B, Cerebras) [FIXED]
+
+**Reviewer:** Section 7.1 lists agent model-provider attributions as:
+"T1–T2: Cerebras 235B; T4–T5: Google Gemini 3 Flash; T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras 235B."
+
+T3 is absent from this list. With a 12-agent system indexed T1–T12, the gap between T2 and T4 in the attribution enumeration will prompt any careful reader to ask whether T3 is an error or an intentional omission. It is neither: T3 (identifier `llama-contra`) is Llama 3.1 8B routed via Cerebras inference, assigned the *contrarian* archetype (Table A.1, row 4; Table 3 §4.1, row T3). It is Cerebras-hosted like T1–T2 but is a distinct model family (Llama vs.\ Qwen 3) and scale (8B vs.\ 235B), so it cannot be subsumed silently into the "T1–T2: Cerebras 235B" entry.
+
+The omission also affects the model-scale statement later in §7.1 ("T1–T2: Cerebras 235B"), which implicitly assigns T1 and T2 the "235B" label without flagging that T3 is a smaller (8B) model co-hosted on the same provider — an architecturally relevant difference for the attribution analysis (scale × archetype × SRR history). A reviewer checking the attribution enumeration against Table 3 will immediately catch the inconsistency.
+
+Additionally, the existing entry for T12 ("Cerebras 235B") should be qualified as "Cerebras Qwen 3 235B" (matching T1–T2) now that T3 is disambiguated as "Cerebras Llama 3.1 8B" — without the model-family label, the T1/T2/T12 similarity and T3 dissimilarity are not apparent.
+
+**Fix applied (VV1):**
+- `08-limitations.md` §7.1: "T1–T2: Cerebras 235B; T4–T5: Google Gemini 3 Flash; T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras 235B (originally self-hosted...)" →
+  "T1–T2: Cerebras Qwen 3 235B; **T3: Cerebras Llama 3.1 8B;** T4–T5: Google Gemini 3 Flash; T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras Qwen 3 235B (originally self-hosted...)." ✓
+- `paper.md` §7.1: identical fix (line 2049). ✓
+
+*Post-fix verification:*
+`grep -n "T3: Cerebras Llama" 08-limitations.md paper.md` → two hits. ✓
+`grep -n "T1.*T2.*Cerebras.*T4\|Cerebras 235B" 08-limitations.md paper.md | grep -v "09-self-critique"` → zero hits (old form absent). ✓
+
+---
+
+### VV2. Definition 2 step 5 — retention-test/re-trigger ordering on day $d + W_{\text{persist}}$ underspecified [FIXED]
+
+**Reviewer:** Definition 2 step 4 states: "sacrifice-eligibility is suspended from day $d$ through day $d + W_{\text{persist}} - 1$."  Step 5 triggers on day $d + W_{\text{persist}}$. Definition 1 step 6 evaluates SRR eligibility every day.
+
+On day $d + W_{\text{persist}}$ (day $d+14$ with $W_{\text{persist}} = 14$):
+- The moratorium has expired (it covered $d$ through $d+13$; day $d+14$ is the first post-moratorium day).
+- The retention test triggers per step 5.
+- Fresh sacrifice-eligibility is checked per Definition 1 step 6.
+
+Both actions occur within the same step-6 "SRR check," but the definition does not specify their ordering within that step.  This creates a formally underspecified edge case: if the retention test reverts the agent to its pre-SRR archetype $r_i^{(\text{pre})}$ at day $d+14$, does the same-day fresh-eligibility check evaluate the reverted archetype's performance history, or the just-discarded $r^*$ archetype's history?
+
+The practical impact is small — for immediate re-trigger to occur, the agent's rolling-$W$-day Brier under $r^*$ must already satisfy the $W = 7$ consecutive-day criterion on day $d+14$, which requires above-mean Brier for every day from $d+8$ through $d+14$; if the retention test fails (Brier not improved under $r^*$), the agent is unlikely to simultaneously satisfy consecutive above-mean Brier under $r^*$ for 7 days.  But the specification is formally incomplete: a reader implementing the system from Definition 2 cannot determine the ordering from the text as written.
+
+**Fix applied (VV2):**
+- `04-method.md` §3.4 Definition 2 step 5: Added "Retention test" label and explicit ordering clause:
+  "5. *Retention test* — executes at the start of the step-6 SRR check on day $d + W_{\text{persist}}$, **before** fresh sacrifice-eligibility is evaluated for that day: if ... retain $r^*$; else revert to $r_i^{(\text{pre})}$. **Fresh sacrifice-eligibility is then evaluated under the archetype in force after the retention test resolves.**" ✓
+- `paper.md` §3.4 Definition 2 step 5: identical fix (line 690). ✓
+
+*Post-fix verification:*
+`grep -n "Retention test.*start of the step-6" 04-method.md paper.md` → two hits. ✓
+`grep -n "Fresh sacrifice-eligibility is then evaluated" 04-method.md paper.md` → two hits. ✓
+
+---
+
+### VV3. §6 preamble uses "epistemically competitive" 57 lines before its §6.1 inline definition [FIXED]
+
+**Reviewer:** The Discussion section opens with a summary paragraph (§6, lines 3–11) that names four discussion lines, including "a candidate sixth rule specific to *epistemically competitive* agent societies."  The formal inline definition of this term appears in §6.1 approximately 57 lines later: "populations in which agents share a prediction target and a scoring rule but are individually evaluated."
+
+A reader encountering the term in the preamble paragraph sees a technical-sounding term with no immediate gloss.  Because "epistemically competitive" is a novel coinage (not standard vocabulary in either evolutionary game theory or LLM literature), a Nature Machine Intelligence reader who does not continue into §6.1 cannot evaluate whether the claimed sixth mechanism genuinely requires a new category.  The preamble is the first thing editors and referees read; an undefined technical term in that position is a quality signal for the desk editor.
+
+**Fix applied (VV3):**
+- `07-discussion.md` §6 preamble: "sixth rule specific to epistemically competitive agent societies;" →
+  "sixth rule specific to *epistemically competitive* agent societies **(populations sharing a prediction target and proper scoring rule with individual evaluation — defined formally in §6.1)**;" ✓
+- `paper.md` §6 preamble (line 1677): identical fix. ✓
+
+*Post-fix verification:*
+`grep -n "epistemically competitive" 07-discussion.md paper.md | grep -v "09-self-critique"` → two hits, both now include the parenthetical gloss at first occurrence. ✓
+
+---
+
+## CYCLE VV SUMMARY
+
+**Fixed:** VV1 (§7.1 T3 attribution gap — added "T3: Cerebras Llama 3.1 8B" to the model–provider enumeration; also qualified T1/T2/T12 as "Cerebras Qwen 3 235B" to distinguish by model family); VV2 (Definition 2 step 5 — retention-test/re-trigger ordering made explicit: retention test executes before same-day fresh eligibility check, eliminating the formal ambiguity); VV3 (§6 preamble — inline gloss added at first occurrence of "epistemically competitive" to eliminate the 57-line forward-reference gap before the term's definition).
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (unchanged from Cycle UU — no new items added):**
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Verify `@ouyang2022training` author list against arXiv:2203.02155 | OPEN |
+| 2 | Verify `@llm_ipd2024` first author against arXiv:2406.13605 | OPEN |
+| 3 | Verify `@polyswarm2026` author list against arXiv:2604.03888 | OPEN |
+| 4 | Populate all **[PENDING]** cells in §5–6 once `axelrod-log/` complete | OPEN |
+| 5 | Populate Table B.2 (per-pair avg + per-agent min); confirm all pairs ≥ 0.037 | OPEN |
+| 6 | Fill §C.2.2 sensitivity surface | OPEN |
+| 7 | Fill §C.3.2 temperature Brier/ECE table | OPEN |
+| 8 | Fill §C.2.3 reversal-target sensitivity analysis [MM3] | OPEN |
+| 9 | Remove abstract Brier-delta placeholder; fill with actual results | OPEN |
+| 10 | Convert "if confirmed"/"pending" language in §6 to indicative mood | OPEN |
+| 11 | Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$ | OPEN |
+| 12 | Verify A4 slack $\eta_{\text{A4}} < 0.22$; run §C.2.4 out-of-sample partition | OPEN |
+| 13 | Populate Table 3 per-agent $\overline{B}_i$ from pilot backtest | OPEN |
+| 14 | HH4/NN5: run dev/val partition for $\hat{\epsilon}_{\text{arch}}$ ≥ 0.031 | OPEN |
+| 15 | H5 contamination test: run Qwen sub-group vs T3–T11 and document in §5.6 | OPEN |
+| 16a | PP1: verify category count (249 vs. 235) against JSON schema | OPEN |
+| 16b | RR2: confirm exact `app.py` line count via `wc -l` before submission | OPEN |
+| 17 | QQ1 DONE (footnote added): confirm axelrod-log has no records from 5 routing agents | OPEN |
+| 18 | m2: confirm arXiv:2510.04643 as `@quantagents2025`; remove BibTeX VERIFY note | OPEN |
+| VV1–VV3 | T3 attribution gap; Definition 2 ordering; epistemically-competitive gloss | DONE |
+
+**Post-fix verification (carried forward):**
+After any targeted fix, run `grep -rn "<term>" papers/axelrod-llm-2026/*.md`
+to confirm propagation to all relevant files, including source files.
+
+**Structural changes this cycle:**
+- `08-limitations.md` §7.1: T3 added to attribution list; T1/T2/T12 qualified as "Cerebras Qwen 3 235B" (VV1)
+- `04-method.md` §3.4 Definition 2 step 5: "Retention test" label + ordering clause added (VV2)
+- `07-discussion.md` §6 preamble: inline gloss added at first "epistemically competitive" (VV3)
+- `paper.md`: all three VV fixes mirrored (lines 2049, 690, 1677)

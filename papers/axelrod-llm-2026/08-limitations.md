@@ -12,8 +12,8 @@ on responsible deployment of the techniques we describe.
 
 The fundamental attribution problem in our experimental design is that agents
 differ simultaneously along at least three dimensions: (i) underlying language
-model and provider (T1–T2: Cerebras 235B; T4–T5: Google Gemini 3 Flash;
-T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras 235B (originally self-hosted; see §4.1 Table 3 note$^\dagger$));
+model and provider (T1–T2: Cerebras Qwen 3 235B; T3: Cerebras Llama 3.1 8B; T4–T5: Google Gemini 3 Flash;
+T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras Qwen 3 235B (originally self-hosted; see §4.1 Table 3 note$^\dagger$));
 (ii) initial strategy archetype; and (iii) SRR history accumulated over the
 175-day experimental period.
 

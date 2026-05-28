@@ -687,7 +687,7 @@ $\tau_{\text{vac}} = 0.025 < 1/N$, so vacancy $\equiv$ zero occupants
 > 2. Update agent $i$'s archetype: $r_i \leftarrow r^*$.
 > 3. Rewrite agent $i$'s system prompt to reflect archetype $r^*$.
 > 4. Persist for $W_{\text{persist}} = 14$ days; agent $i$ is ineligible for further SRR events during this window (sacrifice-eligibility is suspended from day $d$ through day $d + W_{\text{persist}} - 1$).
-> 5. After $W_{\text{persist}}$ days: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to $r_i^{(\text{pre})}$, the archetype held by agent $i$ immediately before this SRR event. (Note: $r_i^{(\text{pre})}$ may itself differ from the agent's initial archetype if multiple SRR events have occurred; each event stores its own pre-event archetype for potential reversal.)^[An alternative design stores the agent's *initial* archetype $r_i^{(0)}$ as the permanent reversal target ("home base"), rather than the immediately-prior archetype. This prevents multi-SRR drift — successive failed reallocations cannot move an agent progressively further from its original reasoning disposition — but it discards any beneficial intermediate transitions that would otherwise be retained by the immediately-prior design. Because the 14-day persistence window ($W_{\text{persist}}$) limits the rate of SRR events to at most $\lfloor D / 14 \rfloor \approx 12$ events per agent over a 175-day season, multi-SRR chains deeper than two hops are rare in practice. A sensitivity analysis comparing the two reversal targets (immediately-prior vs.\ home-base) is reported in §C.2.3.]
+> 5. *Retention test* — executes at the start of the step-6 SRR check on day $d + W_{\text{persist}}$, before fresh sacrifice-eligibility is evaluated for that day: if $\overline{B}_{i,d+W_{\text{persist}}} < \overline{B}_{i,d} - \epsilon_{\text{keep}}$, retain $r^*$; else revert to $r_i^{(\text{pre})}$, the archetype held by agent $i$ immediately before this SRR event. Fresh sacrifice-eligibility is then evaluated under the archetype in force after the retention test resolves. (Note: $r_i^{(\text{pre})}$ may itself differ from the agent's initial archetype if multiple SRR events have occurred; each event stores its own pre-event archetype for potential reversal.)^[An alternative design stores the agent's *initial* archetype $r_i^{(0)}$ as the permanent reversal target ("home base"), rather than the immediately-prior archetype. This prevents multi-SRR drift — successive failed reallocations cannot move an agent progressively further from its original reasoning disposition — but it discards any beneficial intermediate transitions that would otherwise be retained by the immediately-prior design. Because the 14-day persistence window ($W_{\text{persist}}$) limits the rate of SRR events to at most $\lfloor D / 14 \rfloor \approx 12$ events per agent over a 175-day season, multi-SRR chains deeper than two hops are rare in practice. A sensitivity analysis comparing the two reversal targets (immediately-prior vs.\ home-base) is reported in §C.2.3.]
 
 We set $\epsilon_{\text{keep}} = 0.005$ (one-half Brier standard deviation in our
 pilot data). SRR is *decentralised*: no central planner is needed. Each agent
@@ -1674,7 +1674,7 @@ resolves this question at the agent level.
 Our results (pending full experimental resolution) afford four lines of
 discussion: (i) the relationship between SRR and Nowak's evolutionary
 cooperation mechanisms, extending the theoretical canon with a candidate
-sixth rule specific to epistemically competitive agent societies;
+sixth rule specific to *epistemically competitive* agent societies (populations sharing a prediction target and proper scoring rule with individual evaluation — defined formally in §6.1);
 (ii) the information-architecture lesson of asymmetric day-end broadcasting,
 grounded in Aumann's common-knowledge impossibility;
 (iii) the structural risk of behavioural homogeneity in LLM ensembles and why
@@ -2046,8 +2046,8 @@ on responsible deployment of the techniques we describe.
 
 The fundamental attribution problem in our experimental design is that agents
 differ simultaneously along at least three dimensions: (i) underlying language
-model and provider (T1–T2: Cerebras 235B; T4–T5: Google Gemini 3 Flash;
-T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras 235B (originally self-hosted; see §4.1 Table 3 note$^\dagger$));
+model and provider (T1–T2: Cerebras Qwen 3 235B; T3: Cerebras Llama 3.1 8B; T4–T5: Google Gemini 3 Flash;
+T6–T10: Mistral family; T11: OpenRouter Nemotron-120B; T12: Cerebras Qwen 3 235B (originally self-hosted; see §4.1 Table 3 note$^\dagger$));
 (ii) initial strategy archetype; and (iii) SRR history accumulated over the
 175-day experimental period.
 
