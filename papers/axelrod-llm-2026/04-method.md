@@ -450,7 +450,7 @@ selection criterion [@nowak2006five].
 ## 3.6 Day-Bucket v3 Architecture
 
 The LPSG is instantiated in a *Day-Bucket v3* pipeline
-(Figure 1; implementation at `scripts/arena/hf-llm-trading-floor/`).
+(Figure 1; `LBJLincoln26/nba-llm-trading-floor`).
 
 **Morning council (09:00 ET, Eastern Time; UTC−5/−4 seasonal).** A *moderator* agent circulates a
 structured morning brief: yesterday's outcomes, current bankroll standings,

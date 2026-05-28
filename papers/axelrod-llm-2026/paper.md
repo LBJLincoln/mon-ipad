@@ -927,7 +927,7 @@ selection criterion [@nowak2006five].
 ## 3.6 Day-Bucket v3 Architecture
 
 The LPSG is instantiated in a *Day-Bucket v3* pipeline
-(Figure 1; implementation at `scripts/arena/hf-llm-trading-floor/`).
+(Figure 1; `LBJLincoln26/nba-llm-trading-floor`).
 
 **Morning council (09:00 ET, Eastern Time; UTC−5/−4 seasonal).** A *moderator* agent circulates a
 structured morning brief: yesterday's outcomes, current bankroll standings,
@@ -1166,9 +1166,9 @@ The primary experimental arena is the complete 2025–26 NBA regular season and
 playoffs, comprising **1,257 games** played from October 2025 through June 2026.
 Ground-truth outcomes are binary: $\omega_t = 1$ if the home team wins (moneyline
 resolution); $\omega_t = 0$ otherwise. Market signals (spread, moneyline, total,
-alternative spreads, player props) are sourced from real-time odds feeds
-ingested via `scripts/bloomberg/bloomberg-api.py` and archived in
-`data/full-odds-2025-26.json`, which contains 249 market categories per game
+alternative spreads, player props) are sourced from a public real-time sports
+odds API (ingestion and schema details in `LBJLincoln26/mon-ipad`; archived in
+`data/full-odds-2025-26.json`), which contains 249 market categories per game
 (162 alternative spread/total lines, 28 team-total, 22 player-prop, 20 halves
 and quarters, 3 primary game-level markets). Of these, agents receive the full
 249-category context block.
@@ -1177,8 +1177,8 @@ Additionally, each agent receives the feature representation used by the
 ensemble oracle: the LPSG feature engine (v3.1) generates 7,213 candidate
 features across 54 categories (team form, pace, efficiency differentials,
 rest days, back-to-back flags, referee tendencies, travel distance, altitude,
-injury impact, and market implied probabilities; see `features/engine.py`
-header for the full taxonomy). Feature dimensionality is reduced to at most
+injury impact, and market implied probabilities; full taxonomy in
+`LBJLincoln26/nomos-nba-agent`, `features/engine.py`). Feature dimensionality is reduced to at most
 200 features per game via variance-based selection as part of the oracle's
 pre-game pipeline. Agents do not receive the feature matrix directly; they
 receive the natural-language summary that the oracle pipeline generates from
@@ -1189,8 +1189,8 @@ statistical context as the island GA models.
 restricted to information available before the first tip-off of $\mathcal{B}_d$.
 Injury reports, line movements, and standing updates are timestamped; any
 item with a timestamp after the day-bucket open is withheld. This is enforced
-at the data-layer level by a cutoff filter in
-`scripts/arena/hf-llm-trading-floor/app.py`, not at the prompt level, to
+at the data-layer level within the Day-Bucket v3 pipeline
+(`LBJLincoln26/nba-llm-trading-floor`), not at the prompt level, to
 prevent prompt-injection attacks from bypassing the cutoff.
 
 ### 4.2.2  US Political Events 2025
@@ -2272,14 +2272,14 @@ for sports betting. We do not advocate for real-money deployment of
 this system without appropriate legal review.
 
 **Data collection and privacy.** All NBA data used in this experiment
-were sourced from public odds feeds (ingested via `scripts/bloomberg/`)
-and official league statistics. Political event data are drawn from
-publicly recorded government documents, regulatory filings, and official
-election results — all in the public domain under federal law. No
-personal data about individual athletes, politicians, bettors, or
-prediction-market participants is collected, stored, or processed.
-The feature engine (v3.1, `features/engine.py`) does not use personally
-identifiable information.
+were sourced from public sports odds feeds (ingestion scripts in
+`LBJLincoln26/mon-ipad`) and official league statistics. Political event
+data are drawn from publicly recorded government documents, regulatory
+filings, and official election results — all in the public domain under
+federal law. No personal data about individual athletes, politicians,
+bettors, or prediction-market participants is collected, stored, or processed.
+The feature engine (v3.1; `LBJLincoln26/nomos-nba-agent`, `features/engine.py`)
+does not use personally identifiable information.
 
 **LLM inference costs and environmental impact.** The 12-agent NBA
 and 10-agent political ensembles generate approximately 24–48

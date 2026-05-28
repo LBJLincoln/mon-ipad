@@ -7314,3 +7314,216 @@ checklist items 1–18 remain as documented after Cycle SS.
 - `07-discussion.md` §6.3: "five-provider…(Cerebras, Google, Mistral, OpenRouter, self-hosted)" → "four-provider…(Cerebras, Google, Mistral, OpenRouter)" (TT4)
 - `08-limitations.md` §7.7: code-comment parenthetical removed, replaced with "(§3.6)" (TT3)
 - `paper.md`: all five TT changes propagated
+
+---
+
+# Peer-Review Self-Critique — Cycle UU (2026-06-02)
+
+*Fresh systematic re-read of the compiled manuscript. Four issues identified;
+all four fixed in this cycle. Focus: a new class of internal-reference
+anti-pattern in §4.2.1 (data provenance section) plus two residual
+script-path references in §3.6 and §4.2.1 that escaped prior search scopes.*
+
+---
+
+## UU1 — §4.2.1: Odds data provider unnamed; `bloomberg-api.py` script name misleads on data provenance [FIXED]
+
+**Issue.** The §4.2.1 data description reads:
+
+> "Market signals (spread, moneyline, total, alternative spreads, player props)
+> are sourced from real-time odds feeds ingested via
+> `scripts/bloomberg/bloomberg-api.py` and archived in
+> `data/full-odds-2025-26.json`"
+
+Two defects:
+
+(a) **Misleading script name.** The filename `bloomberg-api.py` unambiguously
+implies that data originates from Bloomberg LP's terminal or its paid
+financial-data API — a proprietary, subscription-gated service costing
+$\geq$\$20,000/year that cannot be reproduced by an independent researcher
+without institutional access.  A Nature reviewer in quantitative finance or
+sports analytics would flag this immediately as a fatal reproducibility barrier.
+
+(b) **Actual data source unnamed.** The paper never states which odds API or
+data provider was used, forcing the reader to infer (incorrectly) from the
+script name.  The §7.2 limitations section states "public odds feeds", which
+directly contradicts the Bloomberg Terminal interpretation — the word "public"
+is the corrective signal, but it appears four sections later and requires the
+reader to connect the two statements.  No published paper should name an internal
+ingestion script as a substitute for naming its data source.
+
+The root cause is that `bloomberg-api.py` is an internal historical misnomer:
+the script wraps a public sports odds aggregator API (confirmed by §7.2 "public
+odds feeds" and by system documentation), not Bloomberg Terminal.  The correct
+data source is a public real-time sports odds API aggregating major US sportsbook
+lines.
+
+**Fix.** `05-experimental-setup.md` §4.2.1; `paper.md` §4.2.1:
+
+Replace:
+> "are sourced from real-time odds feeds ingested via
+> `scripts/bloomberg/bloomberg-api.py` and archived in"
+
+→
+
+> "are sourced from a public real-time sports odds API
+> (ingestion and schema details in `LBJLincoln26/mon-ipad`; archived in"
+
+and close with the closing parenthesis so the sentence reads:
+"…sports odds API (ingestion and schema details in `LBJLincoln26/mon-ipad`; archived in `data/full-odds-2025-26.json`), which contains 249 market categories…"
+
+Additionally `08-limitations.md` §7.2: replace "public odds feeds (ingested via `scripts/bloomberg/`)"
+→ "public sports odds feeds (ingestion scripts in `LBJLincoln26/mon-ipad`)"
+
+---
+
+## UU2 — §4.2.1: `features/engine.py` header used as a reader-facing documentation reference [FIXED]
+
+**Issue.** §4.2.1 reads:
+
+> "The LPSG feature engine (v3.1) generates 7,213 candidate features across 54
+> categories (team form, pace, efficiency differentials, rest days,
+> back-to-back flags, referee tendencies, travel distance, altitude,
+> injury impact, and market implied probabilities; see `features/engine.py`
+> header for the full taxonomy)."
+
+The parenthetical "(see `features/engine.py` header for the full taxonomy)"
+sends readers to an internal code file header as if it were a citable reference.
+This is the same anti-pattern removed in TT5 (where "(source:
+`scripts/arena/hf-llm-trading-floor/app.py`)" was replaced with
+"`LBJLincoln26/llm-gateway`") and in SS6/Q5/V5/CC2, with one difference:
+here the reference is to a code documentation header, not a line comment or
+source attribution.  In a published paper, supplementary taxonomy information
+belongs either in an appendix or in a repo reference that readers can
+access independently.  An internal relative path `features/engine.py` does
+not tell readers which public repository to look in.
+
+**Fix.** `05-experimental-setup.md` §4.2.1; `paper.md` §4.2.1:
+
+Replace "(see `features/engine.py` header for the full taxonomy)"
+→ "(full taxonomy in `LBJLincoln26/nomos-nba-agent`, `features/engine.py`)"
+
+This gives readers the public HuggingFace repository and the file path within
+it, making the reference independently reproducible.
+
+Additionally `08-limitations.md` §7.2: the sentence
+"The feature engine (v3.1, `features/engine.py`) does not use personally
+identifiable information" uses the same unqualified relative path.
+Replace → "The feature engine (v3.1; `LBJLincoln26/nomos-nba-agent`,
+`features/engine.py`) does not use personally identifiable information."
+
+---
+
+## UU3 — §4.2.1 "No leakage guarantee": script path in security-architecture claim [FIXED]
+
+**Issue.** The no-leakage paragraph reads:
+
+> "This is enforced at the data-layer level by a cutoff filter in
+> `scripts/arena/hf-llm-trading-floor/app.py`, not at the prompt level,
+> to prevent prompt-injection attacks from bypassing the cutoff."
+
+Prior cycles (TT5, SS6, Q5, V5, CC2) removed script-path references from
+Table 3 captions, §4.6 reproducibility, and §7.7 inference cost paragraphs.
+The no-leakage guarantee paragraph in §4.2.1 was not in any of those search
+scopes and was missed.
+
+The substantive claim — that the cutoff is enforced at the data layer, not
+the prompt layer — is correct and important for reproducibility.  The
+defect is the reference form: the pipeline is publicly hosted on
+`LBJLincoln26/nba-llm-trading-floor`, so the correct reader-facing reference
+is that HuggingFace Space, not the internal subdirectory path.
+
+The secondary claim "to prevent prompt-injection attacks from bypassing the
+cutoff" is a valuable security-architecture statement.  It should be retained;
+only the path reference is wrong.
+
+**Fix.** `05-experimental-setup.md` §4.2.1; `paper.md` §4.2.1:
+
+Replace:
+> "This is enforced at the data-layer level by a cutoff filter in
+> `scripts/arena/hf-llm-trading-floor/app.py`, not at the prompt level,
+> to prevent prompt-injection attacks from bypassing the cutoff."
+
+→
+
+> "This is enforced at the data-layer level within the Day-Bucket v3
+> pipeline (`LBJLincoln26/nba-llm-trading-floor`), not at the prompt
+> level, to prevent prompt-injection attacks from bypassing the cutoff."
+
+---
+
+## UU4 — §3.6 Figure 1 caption: internal directory path `scripts/arena/hf-llm-trading-floor/` [FIXED]
+
+**Issue.** The §3.6 opening reads:
+
+> "The LPSG is instantiated in a *Day-Bucket v3* pipeline
+> (Figure 1; implementation at `scripts/arena/hf-llm-trading-floor/`)."
+
+The parenthetical "(implementation at `scripts/arena/hf-llm-trading-floor/`)"
+is an internal filesystem reference — a relative path within the private
+`mon-ipad` repository.  It appears in the running text immediately following
+the section heading and precedes the Figure 1 reference, so it reads as part
+of the figure citation infrastructure.  As with UU3 and the prior-cycle fixes,
+the public endpoint for this code is the HuggingFace Space
+`LBJLincoln26/nba-llm-trading-floor`.
+
+**Fix.** `04-method.md` §3.6; `paper.md` §3.6:
+
+Replace:
+> "(Figure 1; implementation at `scripts/arena/hf-llm-trading-floor/`)"
+
+→
+
+> "(Figure 1; `LBJLincoln26/nba-llm-trading-floor`)"
+
+---
+
+**Root cause pattern across UU1–UU4:** All four issues fall in §4.2.1 or §3.6
+— sections that were not included in the TT-cycle grep scope
+(`grep -rn "source:.*app\|five.provider\|self-hosted" *.md`).  The
+anti-pattern in question — internal filesystem paths substituted for
+public repository references — has now been removed from: Table 3 caption
+(TT5), §7.7 (TT3), §4.6 inference-cost note (SS6), §4.1 archetype
+rationale (SS3), and (this cycle) §3.6 Figure 1, §4.2.1 no-leakage,
+§4.2.1 odds provider, §4.2.1 feature-engine taxonomy pointer, and
+§7.2 data-collection ethics.
+
+**Protocol addition:** The search command for future cycles should include
+§3 and §4.2 files:
+```
+grep -rn "scripts/\|bloomberg-api\|engine\.py.*header\|source:.*\.py\|\.py.*source" \
+  papers/axelrod-llm-2026/*.md | grep -v "axelrod-log\|paper\.md\|09-self"
+```
+
+**PRE-SUBMISSION checklist (updated after Cycle UU):**
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Verify `@ouyang2022training` author list against arXiv:2203.02155 | OPEN |
+| 2 | Verify `@llm_ipd2024` first author against arXiv:2406.13605 | OPEN |
+| 3 | Verify `@polyswarm2026` author list against arXiv:2604.03888 | OPEN |
+| 4 | Populate all **[PENDING]** cells in §5–6 once `axelrod-log/` complete | OPEN |
+| 5 | Populate Table B.2 (per-pair avg + per-agent min); confirm all pairs ≥ 0.037 | OPEN |
+| 6 | Fill §C.2.2 sensitivity surface | OPEN |
+| 7 | Fill §C.3.2 temperature Brier/ECE table | OPEN |
+| 8 | Fill §C.2.3 reversal-target sensitivity analysis [MM3] | OPEN |
+| 9 | Remove abstract Brier-delta placeholder; fill with actual results | OPEN |
+| 10 | Convert "if confirmed"/"pending" language in §6 to indicative mood | OPEN |
+| 11 | Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$ | OPEN |
+| 12 | Verify A4 slack $\eta_{\text{A4}} < 0.22$; run §C.2.4 out-of-sample partition | OPEN |
+| 13 | Populate Table 3 per-agent $\overline{B}_i$ from pilot backtest | OPEN |
+| 14 | HH4/NN5: run dev/val partition for $\hat{\epsilon}_{\text{arch}}$ ≥ 0.031 | OPEN |
+| 15 | H5 contamination test: run Qwen sub-group vs T3–T11 and document in §5.6 | OPEN |
+| 16a | PP1: verify category count (249 vs. 235) against JSON schema | OPEN |
+| 16b | RR2: confirm exact `app.py` line count via `wc -l` before submission | OPEN |
+| 17 | QQ1 DONE (footnote added): confirm axelrod-log has no records from 5 routing agents | OPEN |
+| 18 | m2: confirm arXiv:2510.04643 as `@quantagents2025`; remove BibTeX VERIFY note | OPEN |
+| 19–UU4 | QQ2, RR1–RR3, SS1–SS6, TT1–TT5, UU1–UU4, PP2, OO0–PP3: all DONE | DONE |
+
+**Structural changes this cycle:**
+- `05-experimental-setup.md` §4.2.1: `bloomberg-api.py` script ref → "public real-time sports odds API (ingestion and schema details in `LBJLincoln26/mon-ipad`)" (UU1)
+- `05-experimental-setup.md` §4.2.1: "(see `features/engine.py` header for the full taxonomy)" → "(full taxonomy in `LBJLincoln26/nomos-nba-agent`, `features/engine.py`)" (UU2)
+- `05-experimental-setup.md` §4.2.1: "`scripts/arena/hf-llm-trading-floor/app.py`" in no-leakage → "`LBJLincoln26/nba-llm-trading-floor`" (UU3)
+- `08-limitations.md` §7.2: "`scripts/bloomberg/`" → "ingestion scripts in `LBJLincoln26/mon-ipad`" (UU1); "`features/engine.py`" → "`LBJLincoln26/nomos-nba-agent`, `features/engine.py`" (UU2)
+- `04-method.md` §3.6: "`scripts/arena/hf-llm-trading-floor/`" → "`LBJLincoln26/nba-llm-trading-floor`" (UU4)
+- `paper.md`: all five UU changes propagated

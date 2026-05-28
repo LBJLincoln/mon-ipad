@@ -243,14 +243,14 @@ for sports betting. We do not advocate for real-money deployment of
 this system without appropriate legal review.
 
 **Data collection and privacy.** All NBA data used in this experiment
-were sourced from public odds feeds (ingested via `scripts/bloomberg/`)
-and official league statistics. Political event data are drawn from
+were sourced from public sports odds feeds (ingestion scripts in
+`LBJLincoln26/mon-ipad`) and official league statistics. Political event data are drawn from
 publicly recorded government documents, regulatory filings, and official
 election results — all in the public domain under federal law. No
 personal data about individual athletes, politicians, bettors, or
 prediction-market participants is collected, stored, or processed.
-The feature engine (v3.1, `features/engine.py`) does not use personally
-identifiable information.
+The feature engine (v3.1; `LBJLincoln26/nomos-nba-agent`, `features/engine.py`)
+does not use personally identifiable information.
 
 **LLM inference costs and environmental impact.** The 12-agent NBA
 and 10-agent political ensembles generate approximately 24–48
