@@ -1,0 +1,172 @@
+{
+  "fire": 223,
+  "timestamp": "2026-06-04T12:00:00Z",
+  "parity": "ODD",
+  "nba_islands": {
+    "S13": {
+      "status": "404-DOWN",
+      "note": "sleeping (consistent fire-223). 50+ fires sleeping.",
+      "last_known_cycle": 974,
+      "last_known_gen": 2921,
+      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (POTENTIAL BELOW FLEET BEST 0.22012)",
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (50+ fires). VM: retry /api/status; when up curl /api/export IMMEDIATELY."
+    },
+    "S14": {
+      "status": "404-DOWN",
+      "note": "sleeping (consistent fire-223). 50+ fires sleeping.",
+      "last_known_best_brier": 0.22054,
+      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 threshold — VM wake + checkpoint"
+    },
+    "S15": {
+      "status": "404-DOWN",
+      "note": "404-DOWN fire-223. 50+ fires sleeping total.",
+      "last_known_best_brier": 0.22012,
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping 50+ fires — VM retry /api/status periodically."
+    },
+    "S17": {
+      "status": "503-DOWN",
+      "note": "PAUSED 143+d"
+    },
+    "S18": {
+      "status": "EVOLVING",
+      "status_detail": "FRESH RESTART fire-221 — now EVOLVING at c=25 (FIRST AUTO-RESET POINT)",
+      "cycle": 25,
+      "generation": 74,
+      "best_brier": 0.22427,
+      "best_brier_note": "LightGBM-47f field-lag pattern. Top pareto: CatBoost/XGBoost-200f 0.2207-0.2241.",
+      "stagnation": 0,
+      "pareto_front_size": 13,
+      "model_types": [
+        "lightgbm",
+        "catboost",
+        "xgboost"
+      ],
+      "no_stacking_visible": true,
+      "rule8_status": "CLEAN so far — NO stacking visible in top-5 fire-223. FRESH RESTART clean pool.",
+      "first_auto_reset_reached": true,
+      "export_endpoint": "404 via WebFetch (2nd consecutive fire — VM must curl directly)",
+      "prior_history_lost": {
+        "last_known_cycle": 1492,
+        "last_known_gen": 4476,
+        "last_known_pareto": 17,
+        "pareto_best_lost": 0.22067,
+        "rule8_violations_prior": 30
+      },
+      "alert": "CRITICAL: c=25 FIRST AUTO-RESET POINT reached. VM: (1) verify model_types seeded NO stacking at c25 reset, (2) curl /api/export to lock any sub-0.22085 candidates, (3) monitor pareto=13 (healthy). See vm-s18-c25-first-autoreset-fire223."
+    },
+    "S22": {
+      "status": "UP",
+      "status_detail": "EVOLVING",
+      "cycle": 1510,
+      "generation": 4529,
+      "best_brier": 0.22124,
+      "best_brier_note": "Field lag applies. EXTREME URGENT: RF-200f pareto candidate 0.2197 gen=4526 BELOW FLEET BEST 0.22012.",
+      "best_model_type": "random_forest",
+      "stagnation": 0,
+      "pareto_front_size": 12,
+      "pareto_candidate_extreme_urgent": {
+        "model": "RF-200f",
+        "brier": 0.2197,
+        "gen": 4526,
+        "status": "UNCONFIRMED (/api/export 404, 40th fire) — VM must curl /api/export URGENTLY",
+        "fleet_best_comparison": "0.2197 < 0.22012 fleet best — NEW GA FLEET BEST if confirmed"
+      },
+      "confirmed_resets_fire223": {
+        "c1503": {
+          "reset_number": 21,
+          "trigger": "auto (c1478+25=c1503 CONFIRMED, fire-223)"
+        }
+      },
+      "prior_confirmed_resets": {
+        "c1453": {
+          "reset_number": 19,
+          "trigger": "auto (c1428+25=c1453, fire-221)"
+        },
+        "c1478": {
+          "reset_number": 20,
+          "trigger": "auto (c1453+25=c1478, fire-221)"
+        }
+      },
+      "next_auto_reset_estimate": "~c1528 (c1503+25). ~18 cycles from c1510.",
+      "rule8_status": "UNKNOWN at c1503 (/api/export 404, 40th fire). best_brier=0.22124 RF-primary suggests RF may dominate.",
+      "export_endpoint": "404 via WebFetch (40th consecutive fire)",
+      "alert": "EXTREME URGENT: RF-200f 0.2197 gen=4526 POTENTIAL NEW FLEET BEST (<0.22012). VM: curl /api/export S22 IMMEDIATELY. c1503=21ST RESET CONFIRMED (c1478+25=c1503, fire-223). Next reset ~c1528 (~18 cycles)."
+    }
+  },
+  "pol_islands": {
+    "P1": {
+      "status": "404-DOWN",
+      "note": "50+ fires sleeping.",
+      "last_known_pareto_best": 0.24902,
+      "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f — VM wake + checkpoint NOW"
+    },
+    "P2": {
+      "status": "404-DOWN",
+      "note": "50+ fires sleeping.",
+      "last_known_pareto": 3,
+      "alert": "CRITICAL: pareto=3 SHRINK eviction risk — VM wake + checkpoint + add LightGBM"
+    },
+    "P4": {
+      "status": "404-DOWN",
+      "note": "50+ fires sleeping.",
+      "last_known_best_brier": 0.2497,
+      "alert": "POL FLEET BEST — VM wake + checkpoint"
+    },
+    "P5": {
+      "status": "404-DOWN",
+      "note": "50+ fires sleeping.",
+      "last_known_best_brier": 0.24993,
+      "alert": "VM wake + checkpoint"
+    },
+    "P7": {
+      "status": "404-DOWN",
+      "note": "50+ fires sleeping.",
+      "last_known_best_brier": 0.24931,
+      "alert": "VM wake + checkpoint"
+    }
+  },
+  "fleet_best": {
+    "nba": 0.22012,
+    "nba_source": "S15 RF-75f (sleeping 50+ fires)",
+    "nba_active_best": "S22 RF-200f candidate 0.2197 gen=4526 EXTREME URGENT UNCONFIRMED (export 404, 40th fire). best_brier=0.22124 (field lag).",
+    "nba_note": "S18 EVOLVING c=25 g=74 stag=0 pareto=13 — FIRST AUTO-RESET POINT. NO stacking visible. S22 c1510 c1503=21ST RESET CONFIRMED. 0.2197 candidate EXTREME URGENT.",
+    "pol": 0.2497,
+    "pol_source": "P4 LightGBM-131f (confirmed, sleeping 50+ fires)"
+  },
+  "rule8_summary": {
+    "S18": {
+      "prior_resets": 0,
+      "current_status": "EVOLVING c=25. FRESH RESTART — first auto-reset ~c25 reached. NO stacking visible in top-5 fire-223. VM: verify at export.",
+      "action": "VM: curl /api/export S18 to confirm no stacking seeded at c25 auto-reset."
+    },
+    "S22": {
+      "total_resets": 21,
+      "c1503": "21ST RESET CONFIRMED (c1478+25=c1503, fire-223)",
+      "c1478": "20TH RESET CONFIRMED (c1453+25=c1478, fire-221)",
+      "c1453": "19TH RESET CONFIRMED (c1428+25=c1453, fire-221)",
+      "rule8_status_at_c1503": "UNKNOWN (no /api/export, 40th fire)",
+      "next_reset": "~c1528 (c1503+25). ~18 cycles from c1510."
+    }
+  },
+  "export_endpoint_alert": {
+    "s22_fires_count": 40,
+    "s18_fires_count": 2,
+    "note": "WebFetch /api/export returns 404 on S18+S22 (S22: 40th fire, S18: 2nd fire since fresh restart). VM must curl directly."
+  },
+  "axelrod_status": {
+    "mech_a": "DONE (fire-122)",
+    "mech_b": "CODE-DONE BLOCKED (do_not_push_hf_space_yet)",
+    "mech_c": "CODE-DONE (murphy_score_d+brier_score_d+cost_per_alpha_unit fire-222) BLOCKED deploy",
+    "sha_nba": "19f4acf49d (5993L, verified fire-218)",
+    "sha_pol": "3496362c60 (3977L, verified fire-218)",
+    "parity": "13/13 OK (verified fire-218). ODD fire-223: no Axelrod verify (EVEN fires only)."
+  },
+  "actions_taken_fire223": [
+    "STEP 0: No crash recovery needed. No local-agent-* items >6h. All pending are local-vm.",
+    "S18: c=25 g=74 stag=0 pareto=13 EVOLVING. FIRST AUTO-RESET POINT REACHED (~c25). NO stacking visible in top-5. LightGBM/CatBoost/XGBoost top performers. vm-s18-c25-first-autoreset-fire223 added (priority=0).",
+    "S22: c1510 g4529 stag=0 pareto=12. c1503=21ST RESET CONFIRMED (c1478+25=c1503). EXTREME URGENT: RF-200f 0.2197 gen=4526 BELOW FLEET BEST 0.22012. vm-s22-rf200f-0.2197-gen4526-fire223 added (priority=0).",
+    "S13/S14/S15: 404-DOWN (50+ fires). P1/P2/P4/P5/P7: 404-DOWN (50+ fires). No HF MCP restart capability available.",
+    "ODD fire-223: No WebSearch (Rule#10).",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-223 2026-06-04T12h)"
+  ]
+}
