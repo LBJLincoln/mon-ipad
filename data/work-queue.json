@@ -44,7 +44,7 @@
       "completed_at": "2026-06-04T20:00:00Z",
       "completed_by": "cloud-brain-fire-225",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-225: Axelrod ablation config - AXELROD_MECH_A_ON/B_ON/C_ON flags + if-guards in both NBA+POL apps (parity +12L each). Set env var AXELROD_ABLATION to one of A+B+C (full), A+C, B+C, C, empty to run arXiv:2605.03310 section3 coordination ablation. BLOCKED from HF-push: do_not_push_hf_space_yet."
+      "subject": "CODE-DONE fire-225: Axelrod ablation config - AXELROD_MECH_A_ON/B_ON/C_ON flags + if-guards in both NBA+POL apps (parity +12L each). AXELROD_ABLATION env var: A+B+C (full), A+C, B+C, C, empty = 5 coordination configs per arXiv:2605.03310. BLOCKED: do_not_push_hf_space_yet."
     },
     {
       "id": "cloud-brain-fire224-2026-06-04T16h",
@@ -53,7 +53,7 @@
       "completed_at": "2026-06-04T16:00:00Z",
       "completed_by": "cloud-brain-fire-224",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-224 EVEN: S18-c84-g251-stag=0-pareto=14-c67=1ST-AUTO-RESET-CONFIRMED(XGB/LGB/CAT-NO-STACKING-RULE8-1ST-CLEAN-FROM-GEN0!)-best_brier=0.22326-gen124; S22-c1557-g4669-stag=0-pareto=12; /api/export-404-BOTH(S22-41st,S18-3rd); EVEN: arXiv:2602.19284-Localized-Conformal-Model-Selection-Feb2026-proposal-written (2026-06-04T16h)"
+      "subject": "fire-224 EVEN: S18-c84-g251-stag=0-pareto=14-c67=1ST-AUTO-RESET-CONFIRMED(RULE8-BREAKTHROUGH); S22-c1557-g4669-c1528=22ND+c1553=23RD-RESET; arXiv:2602.19284-Localized-CP-proposal-written (2026-06-04T16h)"
     },
     {
       "id": "vm-s22-rf200f-0.2197-gen4526-fire223",
@@ -61,7 +61,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T00:00:00Z",
-      "subject": "fire-226 UPDATE: RF-200f 0.2197 gen=4526 CONFIRMED LOST (3 resets since: c1528+c1553+c1578). See vm-s22-c1578-24th-reset-fire226."
+      "subject": "fire-226 UPDATE: RF-200f 0.2197 gen=4526 CONFIRMED LOST (3 resets: c1528+c1553+c1578). See vm-s22-c1578-24th-reset-fire226."
     },
     {
       "id": "vm-s18-c25-first-autoreset-fire223",
@@ -85,7 +85,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T00:00:00Z",
-      "subject": "RESEARCH: Coordination as Architectural Layer - arXiv:2605.03310. ALL 3 APPLICATIONS COMPLETE: App1 murphy_score_d (fire-220), App2 cost_per_alpha_unit (fire-222), App3 AXELROD_ABLATION ablation config (fire-225 DONE). BLOCKED: do_not_push_hf_space_yet."
+      "subject": "RESEARCH: Coordination as Architectural Layer - arXiv:2605.03310. ALL 3 APPS COMPLETE: App1 murphy_score_d (fire-220), App2 cost_per_alpha_unit (fire-222), App3 AXELROD_ABLATION config (fire-225 DONE). BLOCKED: do_not_push_hf_space_yet."
     },
     {
       "id": "vm-research-localized-conformal-model-selection-fire224",
@@ -128,22 +128,6 @@
       "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features"
     },
     {
-      "id": "vm-remove-stacking-s13",
-      "priority": 44,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S13 MODEL_TYPES - Rule#8 violation. S13 404-DOWN 52+ fires."
-    },
-    {
-      "id": "vm-remove-stacking-s15",
-      "priority": 45,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S15 MODEL_TYPES - Rule#8 violation. S15 404-DOWN 52+ fires."
-    },
-    {
       "id": "vm-remove-stacking-s22",
       "priority": 43,
       "status": "pending",
@@ -157,7 +141,15 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T00:00:00Z",
-      "subject": "fire-226: S18 c=120 g=360 stag=0 pareto=9. c67=1ST CLEAN AUTO-RESET FROM GEN=0 CONFIRMED. Rule8 BREAKTHROUGH. Next reset when stag>=25. VM: curl /api/export; verify clean pool."
+      "subject": "fire-226: S18 c=120 g=360 stag=0 pareto=9. c67=1ST CLEAN AUTO-RESET CONFIRMED. Rule8 BREAKTHROUGH. Next reset when stag>=25. VM: curl /api/export."
+    },
+    {
+      "id": "vm-remove-stacking-s13",
+      "priority": 44,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Remove stacking from S13 MODEL_TYPES - Rule#8 violation. S13 404-DOWN 52+ fires."
     },
     {
       "id": "vm-remove-stacking-s14",
@@ -166,6 +158,22 @@
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
       "subject": "Remove stacking from S14 MODEL_TYPES - Rule#8 violation. S14 404-DOWN 52+ fires."
+    },
+    {
+      "id": "vm-remove-stacking-s15",
+      "priority": 45,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Remove stacking from S15 MODEL_TYPES - Rule#8 violation. S15 404-DOWN 52+ fires."
+    },
+    {
+      "id": "vm-add-lightgbm-p1-p2",
+      "priority": 46,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "PORT NBA->POL: Add lightgbm to P1 and P2 MODEL_TYPES - ALL 5 POL islands LightGBM=pareto_best"
     },
     {
       "id": "vm-add-lightgbm-s22-s13",
@@ -182,14 +190,6 @@
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
       "subject": "Add logistic_regression + elastic_net to MODEL_TYPES on islands missing them"
-    },
-    {
-      "id": "vm-add-lightgbm-p1-p2",
-      "priority": 46,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "PORT NBA->POL: Add lightgbm to P1 and P2 MODEL_TYPES - ALL 5 POL islands LightGBM=pareto_best"
     },
     {
       "id": "vm-add-elo-ratings-engine",
@@ -229,7 +229,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-05-30T06:00:00Z",
-      "subject": "RESEARCH: Market-making framework for multi-agent LLM coordination - arXiv:2511.17621"
+      "subject": "RESEARCH: Online Learning in Betting Markets - arXiv:2511.17621"
     },
     {
       "id": "vm-research-llm-strategic-fingerprints-fire196",
@@ -245,7 +245,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-05-31T06:00:00Z",
-      "subject": "RESEARCH: Market-making framework for multi-agent LLM coordination - arXiv:2511.17621"
+      "subject": "RESEARCH: Market-Making Multi-Agent LLM Coordination - arXiv:2511.17621"
     },
     {
       "id": "vm-research-conformal-ts-benchmarking-fire200",
