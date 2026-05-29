@@ -986,7 +986,7 @@ $$g_{i,t} = \frac{1 - q_t}{q_t} \qquad (\text{net return per unit staked; decima
 
 For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i W_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
-`scripts/arena/bankroll.py` and referenced in Appendix D (§C.5).
+`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in Appendix D (§C.5).
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference
@@ -1352,9 +1352,8 @@ oracle training data and experimental evaluation data.
 
 **Reproducibility.** The Day-Bucket v3 pipeline is hosted on
 HuggingFace Space `LBJLincoln26/nba-llm-trading-floor` (NBA) and
-`LBJLincoln26/political-llm-trading-floor` (political), with source
-code at `scripts/arena/hf-llm-trading-floor/app.py`
-(approximately 4,400 lines, FastAPI + Gradio). All prediction logs, archetype
+`LBJLincoln26/political-llm-trading-floor` (political)
+(main application: `app.py`, approximately 4,400 lines, FastAPI + Gradio). All prediction logs, archetype
 transition records, and bankroll histories are written to
 `data/arena/axelrod-log/` in newline-delimited JSON. The axelrod-log
 schema is documented in Appendix D. Agent prompts (including all 20

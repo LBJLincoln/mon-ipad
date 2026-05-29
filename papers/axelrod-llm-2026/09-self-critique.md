@@ -7648,3 +7648,136 @@ to confirm propagation to all relevant files, including source files.
 - `04-method.md` §3.4 Definition 2 step 5: "Retention test" label + ordering clause added (VV2)
 - `07-discussion.md` §6 preamble: inline gloss added at first "epistemically competitive" (VV3)
 - `paper.md`: all three VV fixes mirrored (lines 2049, 690, 1677)
+
+---
+
+# Peer-Review Self-Critique — Cycle WW (2026-06-04)
+
+**Reviewer persona:** Nature Machine Intelligence Associate Editor — methods transparency, reproducibility, internal consistency, prior-cycle propagation completeness.
+
+*Three issues found and fixed this cycle. Root cause: the script-path anti-pattern grep in prior cycles used scopes limited to specific sections (§4.2.1, §3.6 Figure 1, §7.7, Table 3); §4.6 reproducibility and the §3.6 bankroll-update sentence fell outside those search boundaries. WW3 is a T12 characterisation residual in Appendix A missed by the SS-cycle provider-count grep (different phrasing: "small-model self-hosted" vs. "self-hosted model").*
+
+---
+
+## CYCLE VV STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle VV.
+
+---
+
+## NEW ISSUES (Cycle WW full-manuscript re-read)
+
+---
+
+### WW1 — §4.6 reproducibility paragraph: `scripts/arena/hf-llm-trading-floor/app.py` internal path [FIXED]
+
+**Issue.** The §4.6 reproducibility paragraph reads:
+
+> "The Day-Bucket v3 pipeline is hosted on HuggingFace Space
+> `LBJLincoln26/nba-llm-trading-floor` (NBA) and
+> `LBJLincoln26/political-llm-trading-floor` (political), with source
+> code at `scripts/arena/hf-llm-trading-floor/app.py`
+> (approximately 4,400 lines, FastAPI + Gradio)."
+
+The `scripts/arena/hf-llm-trading-floor/app.py` is an internal filesystem path — the same anti-pattern removed from Table 3 caption (TT5), §7.7 (TT3), §4.2.1 no-leakage (UU3), and §3.6 Figure 1 (UU4) in prior cycles. The §4.6 reproducibility sentence was not in the grep scope of any of those cycles (they targeted `§4.2.1`, `§7.7`, and `§3.6 Figure 1`), so it was missed.
+
+The public hosting location is already named (`LBJLincoln26/nba-llm-trading-floor` and `LBJLincoln26/political-llm-trading-floor`). The internal script path is therefore redundant and unpublishable: it duplicates the repo reference (the `app.py` is root-level code in those very HF Spaces) without adding reader-accessible information. The line-count (approximately 4,400 lines, FastAPI + Gradio) is useful and should be preserved.
+
+**Fix applied (WW1):**
+- `05-experimental-setup.md` §4.6: replace "with source code at `scripts/arena/hf-llm-trading-floor/app.py` (approximately 4,400 lines, FastAPI + Gradio)" → "(main application: `app.py`, approximately 4,400 lines, FastAPI + Gradio)" ✓
+- `paper.md` §4.6 (line 1356): identical fix. ✓
+
+*Post-fix verification:*
+`grep -n "scripts/arena/hf-llm-trading-floor/app.py" 05-experimental-setup.md paper.md` → zero hits. ✓
+
+---
+
+### WW2 — §3.6 bankroll-update sentence: `scripts/arena/bankroll.py` internal path [FIXED]
+
+**Issue.** The bankroll-update paragraph in §3.6 reads:
+
+> "The full vig-adjusted formula, including the sportsbook's overround
+> correction, is implemented in `scripts/arena/bankroll.py` and
+> referenced in Appendix D (§C.5)."
+
+`scripts/arena/bankroll.py` is an unqualified relative path — an internal reference that does not tell readers which public repository the file lives in. Prior cycles removed analogous unqualified paths from §4.2.1 (UU1, UU2, UU3) and §3.6 Figure 1 (UU4), but the `bankroll.py` reference in the same §3.6 section's bankroll-update paragraph was not in the UU search scope.
+
+The script is in `LBJLincoln26/mon-ipad`; adding the repository qualifier gives readers a reachable endpoint.
+
+**Fix applied (WW2):**
+- `04-method.md` §3.6 bankroll-update paragraph: "`scripts/arena/bankroll.py`" → "`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`" ✓
+- `paper.md` §3.6 (line 989): identical fix. ✓
+
+*Post-fix verification:*
+`grep -n "scripts/arena/bankroll" 04-method.md paper.md` → two hits, both now include `LBJLincoln26/mon-ipad`. ✓
+
+---
+
+### WW3 — `appendix-a.md` §A.4.2: "small-model self-hosted agents (e.g., T12)" outdated [FIXED]
+
+**Issue.** The *Disciplined* archetype description in §A.4.2 (Dimension D2 — Risk Appetite) reads:
+
+> "The archetype is well-suited to small-model self-hosted agents
+> (e.g., T12) that may produce noisy outputs; the edge gate filters
+> out low-quality predictions before they are scored."
+
+After the QQ2 (T12 provider-routing fix) and SS1–SS3 (provider-count / model-size cleanup) cycles, T12 is no longer a small-model self-hosted agent — it is a Cerebras Qwen 3 235B-A22B instance (235B parameters, cloud API). Calling T12 a "small-model self-hosted agent" in Appendix A contradicts the corrective history and would confuse a reader who has seen Table 3 note$^\dagger$.
+
+The sentence serves a legitimate purpose: explaining that the *Disciplined* archetype was designed with throughput-constrained agents in mind. The fix preserves that purpose while accurately characterising T12's original design intent rather than its current runtime configuration.
+
+Note: `paper.md` contains a condensed archetype description for the *Disciplined* archetype (line 2487–2489) that does not include the T12 example sentence; only `appendix-a.md` requires the fix.
+
+**Root cause:** The SS-cycle grep command searched for `"self-hosted model"` — a noun-phrase that does not match `"self-hosted agents"`. The slightly different phrasing in §A.4.2 escaped detection.
+
+**Fix applied (WW3):**
+- `appendix-a.md` §A.4.2 *Disciplined* description: "well-suited to small-model self-hosted agents (e.g., T12) that may produce noisy outputs" → "well-suited to agents originally designed for constrained or self-hosted deployment (e.g., T12, originally planned as a 4B self-hosted model; see §4.1 Table 3 note$^\dagger$) that may produce noisy outputs" ✓
+
+*Post-fix verification:*
+`grep -n "small-model self-hosted\|self-hosted agents" appendix-a.md paper.md` → zero hits (appendix-a.md fix applied; paper.md condensed version was already clean). ✓
+
+**Protocol addition:** Extend the SS-cycle provider-count grep to include `"self-hosted agents"` and `"small.model"`:
+```
+grep -rn "five.provider\|five.*ecosystem\|self-hosted model\|self-hosted agents\|small.model\|Qwen3-4B" \
+  papers/axelrod-llm-2026/*.md
+```
+
+---
+
+## CYCLE WW SUMMARY
+
+**Fixed this cycle:** WW1 (§4.6 reproducibility paragraph — `scripts/arena/hf-llm-trading-floor/app.py` → removed; `05-experimental-setup.md` + `paper.md`); WW2 (§3.6 bankroll-update — `scripts/arena/bankroll.py` → `LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`; `04-method.md` + `paper.md`); WW3 (`appendix-a.md` §A.4.2 — "small-model self-hosted agents (e.g., T12)" → "agents originally designed for constrained or self-hosted deployment (e.g., T12, originally planned as a 4B self-hosted model; see §4.1 Table 3 note$^\dagger$)"; `appendix-a.md` only — `paper.md` condensed version was already clean).
+
+**Remaining open:** None from prior cycles.
+
+**Root cause pattern across WW1–WW3:** The script-path anti-pattern (WW1, WW2) recurs in sections not previously in grep scope — §4.6 reproducibility and the §3.6 bankroll-update sentence. WW3 is a phrasing-variant residual from the SS provider-count cleanup. All three issues were catchable by extending the search protocol to cover §4.6 and alternate phrasings.
+
+**PRE-SUBMISSION checklist (unchanged from Cycle VV — no new items added):**
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Verify `@ouyang2022training` author list against arXiv:2203.02155 | OPEN |
+| 2 | Verify `@llm_ipd2024` first author against arXiv:2406.13605 | OPEN |
+| 3 | Verify `@polyswarm2026` author list against arXiv:2604.03888 | OPEN |
+| 4 | Populate all **[PENDING]** cells in §5–6 once `axelrod-log/` complete | OPEN |
+| 5 | Populate Table B.2 (per-pair avg + per-agent min); confirm all pairs ≥ 0.037 | OPEN |
+| 6 | Fill §C.2.2 sensitivity surface | OPEN |
+| 7 | Fill §C.3.2 temperature Brier/ECE table | OPEN |
+| 8 | Fill §C.2.3 reversal-target sensitivity analysis [MM3] | OPEN |
+| 9 | Remove abstract Brier-delta placeholder; fill with actual results | OPEN |
+| 10 | Convert "if confirmed"/"pending" language in §6 to indicative mood | OPEN |
+| 11 | Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$ | OPEN |
+| 12 | Verify A4 slack $\eta_{\text{A4}} < 0.22$; run §C.2.4 out-of-sample partition | OPEN |
+| 13 | Populate Table 3 per-agent $\overline{B}_i$ from pilot backtest | OPEN |
+| 14 | HH4/NN5: run dev/val partition for $\hat{\epsilon}_{\text{arch}}$ ≥ 0.031 | OPEN |
+| 15 | H5 contamination test: run Qwen sub-group vs T3–T11 and document in §5.6 | OPEN |
+| 16a | PP1: verify category count (249 vs. 235) against JSON schema | OPEN |
+| 16b | RR2: confirm exact `app.py` line count via `wc -l` | OPEN |
+| 17 | QQ1 DONE (footnote added): confirm axelrod-log has no records from 5 routing agents | OPEN |
+| 18 | m2: confirm arXiv:2510.04643 as `@quantagents2025`; remove BibTeX VERIFY note | OPEN |
+| 19–WW3 | QQ2, RR1–RR3, SS1–SS6, TT1–TT5, UU1–UU4, VV1–VV3, WW1–WW3: all DONE | DONE |
+
+**Structural changes this cycle:**
+- `05-experimental-setup.md` §4.6: "`scripts/arena/hf-llm-trading-floor/app.py`" script path removed, line-count preserved in parenthetical (WW1)
+- `04-method.md` §3.6 bankroll update: "`scripts/arena/bankroll.py`" → "`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`" (WW2)
+- `appendix-a.md` §A.4.2 Disciplined: "small-model self-hosted agents (e.g., T12)" → "agents originally designed for constrained or self-hosted deployment (e.g., T12, originally planned as a 4B self-hosted model; see §4.1 Table 3 note$^\dagger$)" (WW3)
+- `paper.md`: WW1 + WW2 propagated (lines 1356, 989); WW3 not required (paper.md uses condensed archetype descriptions)

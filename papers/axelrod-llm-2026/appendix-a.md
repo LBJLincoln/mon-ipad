@@ -269,9 +269,10 @@ participation: the agent only predicts when its estimated probability diverges
 from the market implied probability by $\geq 4$ pp and the oracle confidence
 interval is narrow. When the threshold is not met, the agent PASSES without
 prediction. This produces fewer but higher-conviction predictions. The
-archetype is well-suited to small-model self-hosted agents (e.g., T12) that
-may produce noisy outputs; the edge gate filters out low-quality predictions
-before they are scored.
+archetype is well-suited to agents originally designed for constrained or
+self-hosted deployment (e.g., T12, originally planned as a 4B self-hosted
+model; see §4.1 Table 3 note$^\dagger$) that may produce noisy outputs;
+the edge gate filters out low-quality predictions before they are scored.
 
 *Core directive.* "If your probability estimate is within 4 pp of the market
 implied probability, PASS. If oracle $\sigma > 0.09$, PASS. Only predict when

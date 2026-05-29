@@ -509,7 +509,7 @@ $$g_{i,t} = \frac{1 - q_t}{q_t} \qquad (\text{net return per unit staked; decima
 
 For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i W_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
-`scripts/arena/bankroll.py` and referenced in Appendix D (§C.5).
+`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in Appendix D (§C.5).
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference
