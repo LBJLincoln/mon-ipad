@@ -1,84 +1,82 @@
 {
-  "fire": 226,
-  "timestamp": "2026-06-05T00:00:00Z",
-  "parity": "EVEN",
+  "fire": 227,
+  "timestamp": "2026-06-05T04:00:00Z",
+  "parity": "ODD",
   "nba_islands": {
-    "S13": {"status": "404-DOWN", "note": "sleeping 52+ fires", "last_known_cycle": 974, "pareto_candidate": "CatBoost-200f-0.21992 gen=2831", "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (52+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."},
-    "S14": {"status": "404-DOWN", "note": "sleeping 52+ fires", "last_known_best_brier": 0.22054, "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 — VM wake + checkpoint"},
-    "S15": {"status": "404-DOWN", "note": "404-DOWN 52+ fires", "last_known_best_brier": 0.22012, "alert": "URGENT: fleet-best RF-0.22012 sleeping 52+ fires"},
+    "S13": {"status": "404-DOWN", "note": "sleeping 53+ fires", "last_known_cycle": 974, "pareto_candidate": "CatBoost-200f-0.21992 gen=2831", "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (53+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."},
+    "S14": {"status": "404-DOWN", "note": "sleeping 53+ fires", "last_known_best_brier": 0.22054, "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 — VM wake + checkpoint"},
+    "S15": {"status": "404-DOWN", "note": "404-DOWN 53+ fires", "last_known_best_brier": 0.22012, "alert": "URGENT: fleet-best RF-0.22012 sleeping 53+ fires"},
     "S17": {"status": "503-DOWN", "note": "PAUSED 144+d"},
     "S18": {
       "status": "EVOLVING",
-      "cycle": 120,
-      "generation": 360,
+      "cycle": 153,
+      "generation": 457,
       "best_brier": 0.22326,
-      "best_brier_note": "gen=124 plateau. Recent gens at 0.2233. cycle-stag=3 (need <0.22306). games_in_cache=7067.",
+      "best_brier_note": "Plateau continues. c142=2ND AUTO-RESET CONFIRMED (~c120+22). pareto=10 recovering from 9. Next reset ~c167 (c142+25). stag=0.",
       "stagnation": 0,
-      "pareto_front_size": 9,
-      "pareto_trend": "SHRINKING (14->9 post-c67 convergence)",
-      "rule8_status": "c67=1ST CLEAN RESET FROM GEN=0 CONFIRMED (XGB+LGB+CAT, NO STACKING) BREAKTHROUGH",
-      "export_endpoint": "404 (5th fire since fresh restart)",
-      "next_reset": "when stag>=25 (currently stag=0)",
+      "pareto_front_size": 10,
+      "pareto_trend": "RECOVERING (9->10 post-c142-reset)",
+      "rule8_status": "c67=1ST CLEAN (GEN=0 BREAKTHROUGH). c142=2ND AUTO-RESET CLEAN. Both clean — no stacking observed.",
+      "export_endpoint": "404 (6th fire)",
+      "next_reset": "~c167 (c142+25)",
       "games_in_cache": 7067,
-      "alert": "S18 PLATEAU: best_brier=0.22326 gen=124 unchanged. cycle-stag=3. Pareto shrinking to 9. VM: curl /api/export."
+      "alert": "MONITOR: best_brier=0.22326 plateau. pareto recovering (9->10). VM: curl /api/export to confirm pareto_best and Rule8."
     },
     "S22": {
       "status": "UP",
-      "cycle": 1583,
-      "generation": 4749,
+      "cycle": 1606,
+      "generation": 4816,
       "best_brier": 0.22124,
-      "best_brier_note": "Field lag. c1578=24TH RESET CONFIRMED. pareto GROWING (15). RF primary at 0.2233 in recent gens.",
+      "best_brier_note": "Field lag. ACTUAL best in top_pareto_models: RF-200f-0.21953-gen=4814 — BELOW FLEET BEST 0.22012!",
       "best_model_type": "random_forest",
-      "stagnation": 0,
-      "pareto_front_size": 15,
-      "pareto_trend": "GROWING (12->15 post-24th reset)",
-      "confirmed_reset_c1578": {"reset_number": 24, "trigger": "auto (c1553+25=c1578 exact)", "model_types": "unknown (/api/export 404)"},
-      "next_auto_reset_estimate": "~c1603 (c1578+25, ~20 cycles from c1583)",
-      "rule8_status": "c1578=24TH RESET. Rule8 unknown at c1578 — /api/export 404 (43rd fire). RF primary visible.",
-      "export_endpoint": "404 (43rd consecutive fire)",
-      "games_in_cache": 9551,
-      "alert": "c1578=24TH RESET CONFIRMED (c1553+25=c1578-EXACT). pareto=15 GROWING. next~c1603. VM: curl /api/export S22 — confirm Rule8; check sub-0.22085 candidates."
+      "stagnation": 2,
+      "pareto_front_size": 10,
+      "pareto_trend": "STABLE (15->10 post-c1603-25th-reset)",
+      "confirmed_reset_c1603": {"reset_number": 25, "trigger": "auto (c1578+25=c1603 exact)", "rule8": "CLEAN — model_types_in_top5: RF+LGB+CAT, NO stacking (confirmed from /api/status)"},
+      "rf200f_candidate": {
+        "brier": 0.21953,
+        "generation": 4814,
+        "features": 200,
+        "model": "random_forest",
+        "alert": "EXTREME URGENT: 0.21953 BELOW FLEET BEST 0.22012. VM: curl /api/export S22 IMMEDIATELY to checkpoint!"
+      },
+      "next_auto_reset_estimate": "~c1628 (c1603+25, ~22 cycles from c1606)",
+      "rule8_status": "c1603=25TH RESET CLEAN (RF+LGB+CAT, NO stacking confirmed via /api/status model_types_in_top5). /api/export still 404 (44th fire).",
+      "export_endpoint": "404 (44th consecutive fire)",
+      "games_in_cache": 7067,
+      "alert": "EXTREME URGENT: RF-200f-0.21953 gen=4814 BELOW FLEET BEST 0.22012! VM: curl /api/export S22 NOW — checkpoint before next reset ~c1628!"
     }
   },
   "pol_islands": {
-    "P1": {"status": "404-DOWN", "fires_sleeping": "52+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f"},
-    "P2": {"status": "404-DOWN", "fires_sleeping": "52+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk"},
-    "P4": {"status": "404-DOWN", "fires_sleeping": "52+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST"},
-    "P5": {"status": "404-DOWN", "fires_sleeping": "52+", "last_known_best_brier": 0.24993},
-    "P7": {"status": "404-DOWN", "fires_sleeping": "52+", "last_known_best_brier": 0.24931}
+    "P1": {"status": "404-DOWN", "fires_sleeping": "53+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f"},
+    "P2": {"status": "404-DOWN", "fires_sleeping": "53+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk"},
+    "P4": {"status": "404-DOWN", "fires_sleeping": "53+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST"},
+    "P5": {"status": "404-DOWN", "fires_sleeping": "53+", "last_known_best_brier": 0.24993},
+    "P7": {"status": "404-DOWN", "fires_sleeping": "53+", "last_known_best_brier": 0.24931}
   },
   "fleet_best": {
-    "nba": 0.22012, "nba_source": "S15 RF-75f (sleeping 52+ fires)",
-    "nba_active_best": "S22 best_brier=0.22124 RF-primary (field lag). S18 best_brier=0.22326 plateau gen=124.",
-    "pol": 0.2497, "pol_source": "P4 LightGBM-131f (sleeping 52+ fires)"
+    "nba": 0.22012, "nba_source": "S15 RF-75f (sleeping 53+ fires)",
+    "nba_active_candidate": 0.21953,
+    "nba_active_candidate_note": "S22 RF-200f gen=4814 EXTREME URGENT — below fleet best, needs /api/export checkpoint before ~c1628 reset",
+    "pol": 0.2497, "pol_source": "P4 LightGBM-131f (sleeping 53+ fires)"
   },
   "rule8_summary": {
-    "S18": {"status": "c67=1ST CLEAN AUTO-RESET GEN=0 BREAKTHROUGH. c=120 stag=0 pareto=9. Next reset when stag>=25."},
-    "S22": {"total_resets": 24, "c1578": "24TH RESET CONFIRMED (c1553+25=c1578)", "rule8_at_c1578": "UNKNOWN (/api/export 404 43rd fire)", "next_reset": "~c1603 (c1578+25)"}
+    "S18": {"status": "c67=1ST CLEAN (GEN=0). c142=2ND AUTO-RESET CLEAN. c=153 stag=0 pareto=10. Next reset ~c167."},
+    "S22": {"total_resets": 25, "c1603": "25TH RESET CONFIRMED (c1578+25=c1603-EXACT)", "rule8_at_c1603": "CLEAN — RF+LGB+CAT, NO stacking (confirmed /api/status model_types_in_top5)", "next_reset": "~c1628 (c1603+25)"}
   },
-  "export_alert": {"s22_fires": 43, "s18_fires": 5, "note": "VM must curl /api/export directly"},
+  "export_alert": {"s22_fires": 44, "s18_fires": 6, "note": "VM must curl /api/export directly. S22 RF-200f-0.21953 EXTREME URGENT — checkpoint before ~c1628 reset!"},
   "axelrod_status": {
     "mech_a": "DONE (fire-122)",
     "mech_b": "CODE-DONE BLOCKED",
     "mech_c": "CODE-DONE (murphy+brier+cost_per_alpha+ablation_config fire-225) BLOCKED",
     "ablation_config": "DONE fire-225: AXELROD_MECH_A/B/C_ON flags. AXELROD_ABLATION=5 configs per arXiv:2605.03310 §3."
   },
-  "research_fire226": {
-    "paper": "arXiv:2502.05565",
-    "title": "Multi-Scale Conformal Prediction: A Theoretical Framework with Coverage Guarantees",
-    "date": "Feb 2026",
-    "key_finding": "Finite-sample coverage at multiple hierarchical scales simultaneously (global/macro/meso/micro). Standard marginal CP fails sub-populations; multi-scale CP valid at each scale.",
-    "application": "NBA pareto selection via game-condition hierarchy. multi_scale_coverage_violation as 6th Pareto obj. Extends arXiv:2602.19284 (fire-224).",
-    "proposal": "data/research-proposals/sota-multi-scale-conformal-fire226.md",
-    "work_queue": "vm-research-multi-scale-conformal-fire226 (priority=106)"
-  },
-  "actions_taken_fire226": [
+  "actions_taken_fire227": [
     "STEP 0: No crash recovery. No local-agent-* items >6h.",
-    "S18: c=120 g=360 stag=0 pareto=9(shrinking). best_brier=0.22326 plateau. cycle-stag=3. Rule8 BREAKTHROUGH c67 holds.",
-    "S22: c=1583 g=4749 stag=0 pareto=15(GROWING). c1578=24TH RESET CONFIRMED (c1553+25=c1578 exact).",
-    "No stagnation>15 on any island. No diversify. No threshold candidates.",
-    "All POL+S13/S14/S15: 404-DOWN 52+ fires.",
-    "EVEN fire-226: arXiv:2502.05565 Multi-Scale Conformal Prediction research proposal written.",
-    "health-status.json+brain-status.json+work-queue.json+CLAUDE.md+research-proposal updated (fire-226 2026-06-05T00h)"
+    "S18: c=153 g=457 stag=0 pareto=10 (recovering 9->10). c142=2ND AUTO-RESET CONFIRMED. best_brier=0.22326 plateau. next reset ~c167. /api/export-404(6th).",
+    "S22: EXTREME URGENT — RF-200f-0.21953 gen=4814 BELOW FLEET BEST 0.22012! c1603=25TH RESET CONFIRMED (c1578+25=c1603 exact). Rule8 CLEAN (RF+LGB+CAT). stag=2 (no diversify). /api/export-404(44th).",
+    "All POL + S13/S14/S15: 404-DOWN (53+ fires). No HF MCP restart available.",
+    "ODD fire-227: No WebSearch.",
+    "health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (fire-227 2026-06-05T04h)"
   ]
 }
