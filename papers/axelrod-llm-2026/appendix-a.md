@@ -56,9 +56,11 @@ The column $\kappa_{\min}^{(r)}$ is the **archetype minimum stake floor**: the
 smallest value the realised stake fraction $s_i = \max(\kappa_{\min}^{(r_i)}, \rho_i
 \cdot \kappa_i)$ can take for an agent occupying archetype $r$, independent of the
 agent-level Kelly cap $\kappa_i$ or personality risk weight $\rho_i$. This floor
-ensures that an SRR-reallocated agent contributes meaningful predictions even when
-its pilot Brier is temporarily high (depressing $\kappa_i$). Floors are set to
-reflect the minimum informational contribution expected from each strategy type:
+ensures that an SRR-reallocated agent places financially meaningful bets even when
+its pilot Brier is temporarily high (depressing $\kappa_i$) — the floor
+maintains minimum betting exposure, not prediction participation (the
+equal-weighted prediction mean $\bar{p}_t$ is unaffected by stake size; see §3.3 and §3.6 footnote). Floors are set to
+reflect the minimum financial commitment expected from each strategy type:
 aggressive archetypes carry higher floors (0.08) because their value lies in
 high-conviction allocations; conservative archetypes carry the lowest floor (0.01)
 because their design purpose is low-risk rehabilitation. The three-factor stake

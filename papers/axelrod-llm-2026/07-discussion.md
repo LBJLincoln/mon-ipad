@@ -271,11 +271,17 @@ Kelly stakes couple prediction confidence directly to bankroll exposure:
 overconfident predictions on losing outcomes reduce bankroll; underconfident
 predictions (staking too little on high-edge bets) forgo returns.
 This creates a second-order feedback: agents with better-calibrated probability
-estimates stake more, earn more, and their bankroll weight in the ensemble
-mean prediction grows. The emergent ensemble weighting is a form of implicit
-*Bayesian model averaging*: each agent's effective influence on the
-ensemble mean prediction $\bar{p}_t$ is proportional to its accumulated
-track record, with Kelly stakes as the weighting mechanism.
+estimates stake more, earn more, and their aggregate bankroll grows.
+The emergent financial weighting is a form of implicit
+*Bayesian model averaging* at the bankroll level: each agent's effective
+financial stake — and hence its contribution to the betting pool — grows
+with accumulated track record, with Kelly-sized positions as the weighting
+mechanism.^[This BMA analogy applies to the *financial* dimension of the
+system, not to prediction averaging. The ensemble mean prediction
+$\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$ (§3.3) is equal-weighted over
+agent predictions, independent of stake fractions or bankroll size.
+The implicit BMA effect therefore operates through differential betting
+exposure rather than differential prediction influence on $\bar{p}_t$.]
 
 The Prediction Arena findings [@zhang2026arena] — LLM agents losing
 16–30.8% on Kalshi despite sophisticated reasoning — are consistent with

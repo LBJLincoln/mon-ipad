@@ -7781,3 +7781,180 @@ grep -rn "five.provider\|five.*ecosystem\|self-hosted model\|self-hosted agents\
 - `04-method.md` §3.6 bankroll update: "`scripts/arena/bankroll.py`" → "`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`" (WW2)
 - `appendix-a.md` §A.4.2 Disciplined: "small-model self-hosted agents (e.g., T12)" → "agents originally designed for constrained or self-hosted deployment (e.g., T12, originally planned as a 4B self-hosted model; see §4.1 Table 3 note$^\dagger$)" (WW3)
 - `paper.md`: WW1 + WW2 propagated (lines 1356, 989); WW3 not required (paper.md uses condensed archetype descriptions)
+
+---
+
+# Peer-Review Self-Critique — Cycle XX (2026-06-05)
+
+*Full re-read of §3.3, §3.5, §3.6, §6.5, and Appendix A.3 against the formal
+definitions in §3.1. Five issues identified; all fixed in this cycle.*
+
+---
+
+## CYCLE WW OPEN ISSUES — RESOLUTION STATUS
+
+All issues from Cycle WW are confirmed resolved (WW1–WW3 applied; checklist
+items 1–18 remain data-blocked or require manual network verification; see
+PRE-SUBMISSION checklist below).
+
+---
+
+## NEW ISSUES (Cycle XX re-read)
+
+### XX1. §3.3 Brier ambiguity decomposition: primary citation missing [@krogh1995neural] [FIXED]
+
+**Reviewer:** Section 3.3 cites only `@brown2005diversity` (Brown et al., Information
+Fusion 2005, a survey of diversity creation methods) as the source of the Brier
+ambiguity decomposition identity
+$B_{\text{ens}} = \overline{B}_{\text{indiv}} - \text{Amb}$.
+Krogh & Vedelsby (NeurIPS 1995, pp. 231–238) is the canonical first rigorous
+statement of this decomposition for MSE-class losses (including the Brier score).
+`@krogh1995neural` was added to `references.bib` in Cycle 9 and cited in
+§2.2 of `03-related-work.md`, but was never added to §3.3 where the identity is
+first formally stated in the paper.
+
+**Fix applied:** `04-method.md` §3.3 and `paper.md` §3.3:
+`[@brown2005diversity]` → `[@krogh1995neural; @brown2005diversity]`. ✓
+
+---
+
+### XX2. Assumption A5 claims empirical verification that hasn't happened [FIXED]
+
+**Reviewer:** §3.5 Assumption A5 states: "This bound is empirically verified from
+the 2024–25 pilot season holdout backtest (§5.1, Table 4)." But Table 4 (§5.1)
+is entirely `[PENDING]` — the pilot backtest has not run. The phrase "empirically
+verified" is false as written: A5 is a design-stage estimate, not a verified bound.
+This is a material misrepresentation of the state of the evidence. If the
+empirical value exceeds 0.017, the Lemma 1 Case 2 argument reverses and the
+lemma's conclusion fails; this failure mode is not acknowledged.
+
+**Fix applied:** `04-method.md` §3.5 Assumption A5 and `paper.md` §3.5:
+- "empirically verified" → "**pre-registered** and will be verified"
+- Added explicit statement: "The value 0.014 is a design-stage estimate;
+  the formal verification must precede Conditions B–E."
+- Added failure-case acknowledgement: "Should the empirical value exceed 0.017,
+  the proof requires revision and archetype revision would be triggered before
+  the main conditions run." ✓
+
+---
+
+### XX3. §3.6 bankroll return formula omits the outcome-0 case [FIXED]
+
+**Reviewer:** The bankroll update formula in §3.6 states the net return for a
+correct bet as $g_{i,t} = (1-q_t)/q_t$ ("decimal odds minus 1"). This formula
+is correct for a bet on outcome $\omega=1$ (home win, where the market-implied
+probability is $q_t$). An agent that predicts $p_{i,t} < q_t$ bets on
+$\omega=0$ (away win, market-implied probability $1-q_t$); its correct-bet return
+is $g_{i,t} = q_t/(1-q_t) \neq (1-q_t)/q_t$ unless $q_t = 0.5$. The two returns
+are equal only at even odds. As stated, the formula is ambiguous and would be
+incorrect for all $q_t \neq 0.5$ bets on outcome 0.
+
+**Fix applied:** `04-method.md` §3.6 and `paper.md` §3.6: replaced single-case
+formula with a three-case display equation distinguishing outcome-1 correct bets
+($g = (1-q_t)/q_t$), outcome-0 correct bets ($g = q_t/(1-q_t)$), and incorrect
+bets ($g = -1$). Added a numerical illustration ($q_t = 0.6$: correct away-bet
+returns 1.5 vs. 0.67 for home-bet). ✓
+
+---
+
+### XX4. §3.6 floor-overrides-probation justification invokes equal-weighted $\bar{p}_t$ incorrectly [FIXED]
+
+**Reviewer:** Section 3.6 justifies the archetype minimum floor superseding the
+probation cap by claiming "even probation agents must contribute to the ensemble
+mean prediction $\bar{p}_t$ at a non-trivial level, preventing them from vanishing
+from the ensemble entirely." But §3.3 defines $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$
+as an equal-weighted average of predictions, not a stake-weighted average.
+An agent with stake fraction $s_i = 0$ would still contribute $p_{i,t}$ to
+$\bar{p}_t$ with weight $1/N$ — the floor has no effect on $\bar{p}_t$ whatsoever.
+The stated justification is therefore incorrect: a zero-stake agent does not
+"vanish from the ensemble" in the prediction-averaging sense.
+The floor's actual function is financial (maintaining minimum exposure in the
+betting pool), not predictive.
+
+The same error appears in `appendix-a.md` §A.3: "This floor ensures that an
+SRR-reallocated agent contributes meaningful predictions even when its pilot
+Brier is temporarily high" — again conflating stake size with prediction contribution.
+
+**Fix applied:**
+- `04-method.md` §3.6: replaced "ensemble mean prediction... preventing them from
+  vanishing from the ensemble" with "financially meaningful bets, preventing them
+  from becoming zero-cost observers who predict but never stake." Added a footnote
+  explicitly distinguishing the floor's financial role from $\bar{p}_t$'s equal
+  weighting. ✓
+- `appendix-a.md` §A.3: "contributes meaningful predictions" → "places financially
+  meaningful bets"; added parenthetical clarifying that $\bar{p}_t$ is unaffected
+  by stake size. ✓
+- `paper.md` §3.6: same fix applied. ✓
+
+---
+
+### XX5. §6.5 "implicit Bayesian model averaging" claim contradicts §3.3 equal-weighted $\bar{p}_t$ [FIXED]
+
+**Reviewer:** Section 6.5 states: "each agent's effective influence on the ensemble
+mean prediction $\bar{p}_t$ is proportional to its accumulated track record, with
+Kelly stakes as the weighting mechanism." This is inconsistent with §3.3, which
+defines $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$ as equal-weighted. Kelly stakes
+determine the size of financial bets, not the weight of predictions in the ensemble
+mean. An agent with a large bankroll and high Kelly stake still contributes
+$p_{i,t}$ to $\bar{p}_t$ with equal weight $1/N$. The "implicit BMA" framing is
+correct if interpreted as applying to the *financial betting pool* (agents with
+larger stakes have greater financial influence on the pool's aggregate position),
+but the current wording incorrectly attributes this effect to the prediction mean
+$\bar{p}_t$.
+
+The paper.md version cited a non-existent "Appendix E" ("a connection we formalise
+in Appendix E") — there is no Appendix E in the manuscript.
+
+**Fix applied:**
+- `07-discussion.md` §6.5: revised to distinguish financial BMA (Kelly stakes
+  weight the betting pool) from equal-weighted prediction averaging ($\bar{p}_t$,
+  §3.3). Added footnote making the distinction explicit. ✓
+- `paper.md` §6.5: same revision; removed the "Appendix E" forward reference
+  (non-existent appendix). ✓
+
+---
+
+### XX6. Assumption numbering is non-sequential in §3.5 [FIXED]
+
+**Reviewer:** Assumptions are presented in the order A1, A2, A4, A5 (Lemma 1),
+then A3 (Proposition 2). A reader encounters A4 and A5 before A3, which is
+disorienting and inconsistent with standard mathematical presentation. While
+the sequencing is logically defensible (A3 is not needed until Proposition 2),
+it is not flagged in the text, creating the impression of a numbering error.
+
+**Fix applied:** `04-method.md` §3.5 and `paper.md` §3.5: added a footnote
+after Assumption A2 explaining that A3 is introduced after Lemma 1 because it
+is not required until Proposition 2, and directing readers who notice the
+out-of-sequence label. ✓
+
+---
+
+## CYCLE XX SUMMARY
+
+**Fixed this cycle:** XX1 (§3.3 Krogh citation), XX2 (A5 empirical-verified
+claim corrected), XX3 (bankroll return formula direction), XX4 (floor
+justification — equal-weighted vs. financial distinction), XX5 (§6.5 implicit
+BMA claim and non-existent Appendix E), XX6 (assumption numbering footnote)
+
+**Remaining open from prior cycles:** Items 1–18 in the open-issues checklist;
+all are data-blocked (pilot backtest, axelrod-log) or require manual network
+verification (arXiv author lists). No prose issues remain.
+
+**Structural changes this cycle:**
+- `04-method.md`: §3.3 citation fix, §3.5 A5 wording + A2 footnote, §3.6 return
+  formula rewrite + floor justification fix
+- `07-discussion.md` §6.5: BMA claim corrected, footnote added
+- `appendix-a.md` §A.3: floor justification corrected
+- `paper.md`: all six fixes propagated to corresponding sections
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. Verify `@llm_ipd2024` first author (arXiv:2406.13605)
+3. Verify `@polyswarm2026` author list (arXiv:2604.03888)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (m2)
+5. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+6. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+7. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table

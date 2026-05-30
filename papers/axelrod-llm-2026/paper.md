@@ -631,7 +631,7 @@ the binary entropy function. JSD is bounded in $[0, 1]$ for $\log_2$ entropy
 and equals zero if and only if all agents report identical predictions.
 
 The connection to ensemble accuracy is formalised by the *Brier ambiguity decomposition*
-[@brown2005diversity]:
+[@krogh1995neural; @brown2005diversity]:
 
 $$\underbrace{B_{\text{ens},t}}_{\text{ensemble Brier}} =
 \underbrace{\frac{1}{N}\sum_i B_{i,t}}_{\overline{\text{indiv. Brier}}} -
@@ -733,7 +733,11 @@ are those whose predictions are most similar to the prevailing consensus —
 they add the least diversity and hence the least Ambiguity to the ensemble.
 This is consistent with the empirical finding that poorly calibrated agents
 in correlated prediction markets tend to mirror the favourite rather than
-take differentiated positions [@zhang2026arena].
+take differentiated positions [@zhang2026arena].^[*Assumption sequencing note.*
+Assumptions A1, A2, A4, and A5 are used in Lemma 1. Assumption A3 (no
+spontaneous recovery) is not needed until Proposition 2 and is therefore
+introduced after the Lemma 1 proof. Readers who notice A4 appearing before
+A3 should refer to the A3 statement after Lemma 1.]
 
 **Assumption A4 (Archetype-shift event-independence).** The expected absolute
 prediction shift induced by drawing a vacant archetype uniformly at random is
@@ -752,12 +756,16 @@ centroid deviation satisfies:
 
 $$\mathbb{E}_t\!\left[\frac{1}{N}\sum_{j=1}^N |p_{j,t} - \bar{p}_t|\right] \;\leq\; 0.014$$
 
-This bound is empirically verified from the 2024–25 pilot season holdout backtest
-(§5.1, Table 4). A5 is not implied by A1–A4 alone; it provides the numerical
+This bound is **pre-registered** and will be verified against the 2024–25 pilot season
+holdout backtest (§5.1, Table 4; verification pending pilot run completion).
+The value 0.014 is a design-stage estimate; the formal verification must precede
+Conditions B–E. A5 is not implied by A1–A4 alone; it provides the numerical
 threshold required for the Case 2 arithmetic in the Lemma 1 proof. Should the
-pilot bound exceed 0.014, the lemma still holds provided
+empirical pilot value exceed 0.014, the lemma still holds provided
 $\mathbb{E}[|\delta_i|] < \frac{(N-1)}{2N}\epsilon_{\text{arch}} = \frac{11}{24}\times 0.037 \approx 0.017$;
 values in $(0.014, 0.017)$ tighten the numerical margin but do not overturn the result.
+Should the value exceed 0.017, the proof requires revision and archetype revision would
+be triggered before the main conditions run.
 
 > **Lemma 1 (SRR increases expected diversity).** Under A1, A2, A4, and A5, an SRR event
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
@@ -982,8 +990,16 @@ on its favoured outcome: $\omega = 1$ if $p_{i,t} > q_t$, $\omega = 0$ if
 $p_{i,t} < q_t$, where $q_t$ is the market-implied probability derived from the
 published moneyline; if $p_{i,t} = q_t$ no bet is placed.  For a correct bet:
 
-$$g_{i,t} = \frac{1 - q_t}{q_t} \qquad (\text{net return per unit staked; decimal odds minus 1})$$
+$$g_{i,t} = \begin{cases}
+\dfrac{1 - q_t}{q_t} & \text{correct bet on outcome } \omega=1 \;(p_{i,t} > q_t) \\[6pt]
+\dfrac{q_t}{1 - q_t} & \text{correct bet on outcome } \omega=0 \;(p_{i,t} < q_t) \\[6pt]
+-1 & \text{incorrect bet (either direction)}
+\end{cases}$$
 
+The two correct-bet returns are not generally equal: a correct away-bet ($\omega=0$) when
+$q_t = 0.6$ returns $0.6/0.4 = 1.5$ per unit versus $0.4/0.6 \approx 0.67$ for a
+correct home-bet ($\omega=1$), reflecting the higher implied difficulty of the
+contrarian position.
 For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i W_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
 `LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in Appendix D (§C.5).
@@ -1001,8 +1017,13 @@ probation criterion").
 Note: the archetype minimum floor $\kappa_{\min}^{(r_i)}$ is applied *after* the
 probation cap, so for archetypes with $\kappa_{\min}^{(r_i)} > 0.03$ the floor
 supersedes the probation ceiling; this is by design — even probation agents
-must contribute to the ensemble mean prediction $\bar{p}_t$ at a non-trivial level,
-preventing them from vanishing from the ensemble entirely.
+must place financially meaningful bets, preventing them from becoming
+zero-cost observers who predict but never stake.^[The floor does *not*
+affect $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$ (§3.3), which is equal-weighted
+and independent of stake fractions. A probation agent contributes $p_{i,t}$
+to $\bar{p}_t$ with weight $1/N$ regardless of $s_i$. The floor's function
+is financial: it maintains minimum betting exposure so that the Kelly
+bankroll dynamics remain meaningful.]
 
 **End-of-day broadcast.** At 23:59 UTC, resolved outcomes $\Omega_d$ are
 broadcast to all agents. Each agent updates its private history $h_{i,d}$.
@@ -1941,11 +1962,16 @@ Kelly stakes couple prediction confidence directly to bankroll exposure:
 overconfident predictions on losing outcomes reduce bankroll; underconfident
 predictions (staking too little on high-edge bets) forgo returns.
 This creates a second-order feedback: agents with better-calibrated probability
-estimates stake more, earn more, and their bankroll weight in the ensemble
-mean prediction grows. The emergent ensemble weighting is a form of implicit
-*Bayesian model averaging* where the weight assigned to each agent is
-proportional to evidence from its track record — a connection we formalise
-in Appendix E.
+estimates stake more, earn more, and their aggregate bankroll grows.
+The emergent financial weighting is a form of implicit
+*Bayesian model averaging* at the bankroll level: each agent's financial stake —
+and hence its contribution to the betting pool — grows with accumulated track record,
+with Kelly-sized positions as the weighting mechanism.^[This BMA analogy
+applies to the *financial* dimension, not to prediction averaging.
+The ensemble mean prediction $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$ (§3.3)
+is equal-weighted over predictions, independent of bankroll.
+The implicit BMA effect operates through differential betting exposure,
+not differential prediction influence on $\bar{p}_t$.]
 
 The Prediction Arena findings [@zhang2026arena] — LLM agents losing
 16–30.8% on Kalshi despite sophisticated reasoning — are consistent with
