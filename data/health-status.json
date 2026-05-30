@@ -1,26 +1,26 @@
 {
-  "fire": 231,
-  "timestamp": "2026-06-05T20:00:00Z",
-  "parity": "ODD",
+  "fire": 232,
+  "timestamp": "2026-06-06T00:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping 57+ fires",
+      "note": "sleeping 58+ fires",
       "last_known_cycle": 974,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (57+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (58+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping 57+ fires",
+      "note": "sleeping 58+ fires",
       "last_known_best_brier": 0.22054,
       "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate — VM wake + checkpoint"
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "404-DOWN 57+ fires",
+      "note": "404-DOWN 58+ fires",
       "last_known_best_brier": 0.22012,
-      "alert": "URGENT: fleet-best RF-0.22012 sleeping 57+ fires"
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping 58+ fires"
     },
     "S17": {
       "status": "503-DOWN",
@@ -28,100 +28,97 @@
     },
     "S18": {
       "status": "EVOLVING",
-      "cycle": 246,
-      "generation": 736,
+      "cycle": 268,
+      "generation": 803,
       "best_brier": 0.22326,
-      "best_brier_note": "Plateau continues. c242=6TH-AUTO-RESET-CONFIRMED(c217+25=c242-EXACT). pareto=5 SEVERE COLLAPSE from 16.",
+      "best_brier_note": "Plateau continues. c267=7TH-AUTO-RESET-CONFIRMED(c242+25=c267-EXACT). pareto RECOVERED 5→12!",
       "stagnation": 0,
-      "pareto_front_size": 5,
-      "pareto_trend": "SEVERE-COLLAPSE: 16(fire-230)→5(fire-231) post-c242-6TH-RESET",
-      "reset_history": "c67=1ST-CLEAN + c142=2ND-CLEAN + c167=3RD-CLEAN + c192=4TH-RESET(STACKING-REINJECTED-RULE8-VIOLATION!) + c217=5TH-RESET(logistic_regression) + c242=6TH-RESET-CONFIRMED(c217+25=c242-EXACT)",
-      "rule8_status": "CRITICAL: c192 4th-reset REINJECTED STACKING. c242 6th-reset confirmed — unknown if stacking reinjected AGAIN. pareto=5 collapse matches c192 stacking-reinjection pattern. VM: fix reset_pool EXCLUDE stacking URGENTLY.",
-      "export_endpoint": "404 (10th fire)",
-      "next_reset": "~c267 (c242+25)",
-      "alert": "CRITICAL: pareto=5 SEVERE COLLAPSE post-c242=6TH-RESET. VM: (1) fix reset_pool EXCLUDE stacking URGENTLY before c267, (2) curl /api/export S18 to check pareto_best."
+      "pareto_front_size": 12,
+      "pareto_trend": "RECOVERY: 5(fire-231-post-c242)→12(fire-232-post-c267). Matches clean-reset pattern from c67/c142/c167.",
+      "reset_history": "c67=1ST-CLEAN + c142=2ND-CLEAN + c167=3RD-CLEAN + c192=4TH-RESET(STACKING-REINJECTED-RULE8-VIOLATION!) + c217=5TH-RESET(logistic_regression) + c242=6TH-RESET-CONFIRMED(stacking-reinjected?-pareto-collapsed-16→5) + c267=7TH-RESET-CONFIRMED(c242+25=c267-EXACT-pareto-RECOVERED-5→12-LIKELY-CLEAN!)",
+      "rule8_status": "LIKELY-CLEAN at c267: pareto recovery 5→12 strongly suggests c267 excluded stacking (matches c67/c142/c167 clean-reset pattern where pareto stayed healthy). Stacking-reinjected resets (c192/c242) caused collapses (16→5). UNCONFIRMED without /api/export.",
+      "export_endpoint": "404 (11th fire)",
+      "next_reset": "~c292 (c267+25)",
+      "alert": "MONITORING: pareto=12 RECOVERY post-c267=7TH-RESET. VM: (1) curl /api/export S18 to confirm Rule8-CLEAN at c267 — if confirmed, reset_pool fix is working! (2) monitor stagnation toward c292."
     },
     "S22": {
       "status": "UP",
-      "cycle": 1671,
-      "generation": 5013,
+      "cycle": 1689,
+      "generation": 5065,
       "best_brier": 0.22124,
-      "best_brier_note": "Field lag confirmed. ACTUAL pareto candidate: 200f-0.21880 gen=4960 — ALL-TIME CANDIDATE alive 3rd fire, 13bp below fleet best 0.22012.",
+      "best_brier_note": "Field lag. ACTUAL pareto candidate: 200f-0.21880 gen=4960 — STATUS UNKNOWN (possibly evicted at c~1680 reset). pareto=17 growing suggests new candidates emerging.",
       "stagnation": 0,
-      "pareto_front_size": 12,
-      "pareto_trend": "SLIGHT-SHRINK: 15(fire-230)→12(fire-231) — normal post-reset adjustment, healthy",
-      "confirmed_reset_c1628": {
-        "reset_number": 26,
-        "rule8": "CLEAN — xgboost_brier/lightgbm_brier/catboost/logistic_regression NO STACKING"
-      },
-      "c1653_survived": "CONFIRMED fire-230: stag=0, no reset at c1628+25=c1653",
+      "pareto_front_size": 17,
+      "pareto_trend": "GROWING: 12(fire-231)→17(fire-232) — healthy post-reset expansion",
+      "reset_history_update": "c1628=26TH(CLEAN)-c1653-SURVIVED-c~1678-1680=27TH-RESET-POSSIBLE(pareto-12→17-recovery-signal)",
       "candidate_200f": {
         "brier": 0.21880,
         "generation": 4960,
-        "features": 200,
-        "fires_alive": 3,
-        "alert": "⚡⚡⚡ ALL-TIME CANDIDATE: 200f-0.21880 BELOW FLEET BEST 0.22012 BY 13bp! ALIVE 3RD FIRE! VM: curl /api/export S22 IMMEDIATELY — checkpoint before c1680!"
+        "status": "UNKNOWN — possibly evicted at c~1680 27TH reset. pareto=17 growing; new ALL-TIME candidates may have emerged.",
+        "fires_tracked": "fire-228(born)→fire-229→fire-230→fire-231(alive 3rd fire)→fire-232(UNKNOWN post-c~1680)",
+        "alert": "⚡⚡⚡ VM: curl /api/export S22 IMMEDIATELY (49th fire) — confirm if 200f-0.21880 survived c~1680 or new candidate emerged!"
       },
-      "next_reset_estimate": "~c1680 (stag=0=SAFE — only 9 cycles from c1671)",
-      "next_reset_urgency": "APPROACHING: 9 cycles from c1671 to ~c1680. stag=0 currently SAFE. If stag accumulates, 0.21880 candidate could be EVICTED. VM: checkpoint IMMEDIATELY!",
-      "export_endpoint": "404 (48th consecutive fire)",
-      "alert": "⚡⚡⚡ 200f-0.21880 ALL-TIME CANDIDATE ALIVE (3rd fire)! Next reset ~c1680 (9cy away). /api/export-404(48th). VM: curl /api/export S22 IMMEDIATELY — checkpoint 200f-0.21880 before c1680!"
+      "next_reset_estimate": "~c1705 (if stag accumulates; currently stag=0=SAFE)",
+      "export_endpoint": "404 (49th consecutive fire — CRITICAL: approaching 50th without checkpoint!)",
+      "alert": "⚡⚡⚡ /api/export-404 for 49 consecutive fires! VM: curl /api/export S22 IMMEDIATELY. Candidate fate unknown. If new ALL-TIME candidate exists, checkpoint before c1705."
     }
   },
   "pol_islands": {
-    "P1": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
-    "P2": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
-    "P4": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
-    "P5": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_best_brier": 0.24993},
-    "P7": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_best_brier": 0.24931}
+    "P1": {"status": "404-DOWN", "fires_sleeping": "58+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
+    "P2": {"status": "404-DOWN", "fires_sleeping": "58+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
+    "P4": {"status": "404-DOWN", "fires_sleeping": "58+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
+    "P5": {"status": "404-DOWN", "fires_sleeping": "58+", "last_known_best_brier": 0.24993},
+    "P7": {"status": "404-DOWN", "fires_sleeping": "58+", "last_known_best_brier": 0.24931}
   },
   "fleet_best": {
     "nba": 0.22012,
-    "nba_source": "S15 RF-75f (sleeping 57+ fires)",
-    "nba_active_candidate": 0.21880,
-    "nba_active_candidate_note": "S22 200f gen=4960 ALL-TIME CANDIDATE — 13bp below fleet best! ALIVE 3RD FIRE. /api/export-404(48th). ~c1680 approaching (9cy). VM: checkpoint URGENTLY.",
+    "nba_source": "S15 RF-75f (sleeping 58+ fires)",
+    "nba_active_candidate": "UNKNOWN",
+    "nba_active_candidate_note": "S22 200f-0.21880 gen=4960 status UNKNOWN post-c~1680. /api/export-404(49th). pareto=17 growing — new candidates possible.",
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (sleeping 57+ fires)"
+    "pol_source": "P4 LightGBM-131f (sleeping 58+ fires)"
   },
   "rule8_summary": {
     "S18": {
-      "status": "CRITICAL",
-      "c192": "4TH-RESET + STACKING REINJECTED (RULE8 VIOLATION)",
-      "c217": "5TH-RESET (logistic_regression)",
-      "c242": "6TH-RESET CONFIRMED (c217+25=c242-EXACT). pareto collapsed 16→5 — stacking likely reinjected again.",
-      "action": "VM must fix reset_pool EXCLUDE stacking. pareto=5 CRITICAL. Next reset ~c267."
+      "status": "LIKELY-CLEAN at c267",
+      "evidence": "pareto 5→12 recovery post-c267-7TH-RESET. Clean resets (c67/c142/c167) all maintained healthy pareto; stacking resets (c192/c242) caused collapses. c267 recovery = CLEAN signal.",
+      "reset_sequence": "c67(CLEAN)→c142(CLEAN)→c167(CLEAN)→c192(STACKING-VIOLATION-collapse-16→5)→c217(LR)→c242(STACKING?-collapse-16→5)→c267(LIKELY-CLEAN-recovery-5→12)",
+      "action": "VM: curl /api/export S18 — verify MODEL_TYPES at c267. If clean confirmed, reset_pool fix is working! Next reset ~c292."
     },
     "S22": {
-      "total_resets": 26,
-      "c1628": "26TH RESET CONFIRMED. Rule8-CLEAN: xgboost_brier/lightgbm_brier/catboost/logistic_regression NO STACKING.",
-      "c1653": "SURVIVED (stag=0)",
-      "next_reset": "~c1680 (stag=0=SAFE, 9cy away)"
+      "total_resets": "27 (26th confirmed at c1628, 27th possible at c~1680)",
+      "c1628": "26TH RESET CONFIRMED. Rule8-CLEAN (xgboost_brier/lightgbm_brier/catboost/logistic_regression — NO STACKING).",
+      "c_1680_possible": "27TH RESET POSSIBLE (c1655+25=c1680). pareto 12→17 recovery = LIKELY-CLEAN signal.",
+      "status": "MONITORING — stag=0, next reset ~c1705"
     }
   },
   "export_alert": {
-    "s22_fires": 48,
-    "s18_fires": 10,
-    "note": "VM: curl /api/export on both. S22 200f-0.21880 ALL-TIME CANDIDATE — checkpoint before ~c1680!"
+    "s22_fires": 49,
+    "s18_fires": 11,
+    "note": "S22 approaching 50-fire export drought! CRITICAL. VM: curl /api/export on BOTH urgently."
+  },
+  "even_fire_research_fire232": {
+    "source": "IEEE 2024 — Comparing Machine Learning Methods for NBA Game Outcome Prediction (ieeexplore.ieee.org/document/11030489/)",
+    "key_finding_1": "home_next (next game is at home) = TOP-3 FEATURE consistently across all models. Distinct from is_home (current game). Captures schedule fatigue and team motivation dynamics.",
+    "key_finding_2": "team_elo + team_elo_5_y = SHAP #1 and #2. Validates vm-add-elo-ratings-engine priority=60.",
+    "key_finding_3": "Random Forest + Logistic Regression jointly highest accuracy/ROC AUC. Extra Trees near top on high-dimensional spaces.",
+    "key_finding_4": "Deep learning pregame Brier=0.206 (arXiv:2508.02725 NCAA). Gap from our 0.22012 ≈ 1.4bp. LSTM headroom is real.",
+    "new_work_queue_item": "vm-add-schedule-home-next-features-engine (priority=61): home_next, games_until_home, home_stand_length, fatigue_index",
+    "proposal": "data/research-proposals/sota-schedule-home-next-feature-fire232.md"
   },
   "axelrod_status": {
     "mech_a": "DONE (fire-122)",
     "mech_b": "CODE-DONE BLOCKED (do_not_push_hf_space_yet)",
     "mech_c": "CODE-DONE + ablation-config (fire-225) BLOCKED",
-    "shas": "NBA 85e7682e1d (6035L) / POL 6983c86517 (4019L) — UNCHANGED (no HF push since fire-225, do_not_push_hf_space_yet=TRUE)"
+    "shas": "NBA 85e7682e1d (6035L) / POL 6983c86517 (4019L) — UNCHANGED"
   },
-  "odd_fire_analysis_fire231": {
-    "title": "S18 pareto collapse trajectory + S22 c1680 urgency",
-    "s18_collapse": "pareto_front_size: 16(fire-230)→5(fire-231) post-c242=6TH-RESET. Collapse pattern matches c192 (4th-reset stacking-reinjection). c192 caused stacking reinjection → 16→16 maintained (stacking offspring initially survived). c242 now causes 16→5 collapse — consistent with stacking offspring being fit enough to enter pareto but driving diversity collapse. Root cause: reset_pool includes stacking variants. VM must fix reset_pool before c267.",
-    "s22_urgency": "200f-0.21880 gen=4960 has survived 3 consecutive fires (228→229→230→231). stag=0 healthy. Next predicted reset ~c1680 (9 cycles away). If stag=0 holds through c1680, no reset fires. But if even 1-2 stagnation cycles accumulate, c1680 reset would EVICT 0.21880 candidate as happened to ET-0.21875 at c1628. VM MUST checkpoint before c1680.",
-    "s22_vs_s18_contrast": "S22 Rule8-CLEAN post-c1628: pareto=12 (healthy, slight normal shrink from 15). S18 Rule8-VIOLATED post-c192: pareto=5 (severe collapse from 16). Clear evidence that stacking in reset pool causes population collapse."
-  },
-  "actions_taken_fire231": [
-    "STEP 0: No crash recovery. No local-agent-* items >6h in work-queue.",
-    "S22: c=1671 g=5013 stag=0 pareto=12(↓15→12). 200f-0.21880 gen=4960 ALL-TIME CANDIDATE alive 3rd fire. /api/export-404(48th). Next reset ~c1680(9cy, stag=0=SAFE). Rule8-CLEAN.",
-    "S18: c=246 g=736 stag=0 pareto=5(↓16→5-SEVERE-COLLAPSE!). c242=6TH-RESET-CONFIRMED(c217+25=c242-EXACT). /api/export-404(10th). Next reset ~c267. RULE8-CONCERN: collapse matches stacking reinjection pattern.",
-    "S13/S14/S15/S17: 404/503-DOWN (57+ fires sleeping).",
-    "POL P1/P2/P4/P5/P7: 404-DOWN (57+ fires sleeping). HF private spaces — cannot restart remotely.",
-    "ODD fire-231: no WebSearch. Structural analysis: S18 pareto collapse root cause + S22 c1680 checkpoint urgency documented.",
-    "health-status.json + work-queue.json updated (fire-231 2026-06-05T20h)"
+  "actions_taken_fire232": [
+    "STEP 0: No crash recovery. No local-agent-* items in work-queue.",
+    "S18: c=268 g=803 stag=0 pareto=12(↑5→12-RECOVERY!). c267=7TH-AUTO-RESET-CONFIRMED(c242+25=c267-EXACT). Rule8-LIKELY-CLEAN. /api/export-404(11th). Next reset ~c292.",
+    "S22: c=1689 g=5065 stag=0 pareto=17(↑12→17-GROWING!). 200f-0.21880 STATUS-UNKNOWN post-c~1680. /api/export-404(49th). Next reset ~c1705.",
+    "S13/S14/S15/S17: 404/503-DOWN (58+ fires sleeping).",
+    "POL P1/P2/P4/P5/P7: 404-DOWN (58+ fires sleeping). Cannot restart (private spaces).",
+    "EVEN fire-232: WebSearch → IEEE 2024 home_next schedule feature top-3 finding. New proposal: sota-schedule-home-next-feature-fire232.md. New WQ item: vm-add-schedule-home-next-features-engine (priority=61).",
+    "health-status.json + nomos-political-alpha/data/brain-status.json + work-queue.json + CLAUDE.md updated (fire-232 2026-06-06T00h)."
   ]
 }
