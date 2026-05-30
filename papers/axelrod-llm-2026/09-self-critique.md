@@ -7958,3 +7958,158 @@ verification (arXiv author lists). No prose issues remain.
 8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
 9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
 10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+
+---
+
+# Peer-Review Self-Critique — Cycle YY (2026-06-05, fire-231)
+
+*Full re-read of §3.6 (bankroll update), §6.1 (epistemic role sacrifice),
+§7.1 (Condition E description), and cross-checking §4.3 against §7.1 for
+experimental-condition consistency. Three issues identified; all fixed this cycle.*
+
+---
+
+## CYCLE YY — NEW ISSUES
+
+### YY1. §6.1 inverts the direction of Assumption A3: "at most" should be "at least" [FIXED]
+
+**Reviewer:** Section 6.1 argues that epistemic role sacrifice is individually
+incentive-compatible by invoking Assumption A3.  The passage reads:
+
+> "by A3, remaining in the same archetype yields **at most**
+> $\bar{B}_d + \delta_{\text{sac}}/2$ in expected individual Brier"
+
+Assumption A3 (§3.5) states: *"In the absence of an archetype change, a
+sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$
+days is **at least** $\bar{B}_d + \delta_{\text{sac}}/2$ (partial persistence
+of the performance deficit)."*
+
+Since lower Brier is *better*, "at least $\bar{B}_d + \delta_{\text{sac}}/2$"
+means the agent's expected performance remains *worse than* the population
+mean plus half the threshold — the performance deficit *persists*, not
+*resolves*.  The §6.1 phrase "at most $\bar{B}_d + \delta_{\text{sac}}/2$"
+inverts this inequality: it would mean the agent's Brier is *no higher* than
+$\bar{B}_d + \delta_{\text{sac}}/2$, implying the deficit *cannot grow worse*
+— which is the opposite of what A3 asserts and undermines the incentive-
+compatibility argument.  A hostile reviewer would catch this immediately and
+conclude the incentive-compatibility claim is unsupported.
+
+The error does not affect the Proposition 2 proof (which correctly cites A3 as
+a lower bound on future Brier), but the §6.1 prose summarising that result is
+logically backwards.
+
+**Fix applied:** `07-discussion.md` §6.1 and `paper.md` §6.1:
+- "yields at most" → "yields **at least**"
+- Added parenthetical clarification: "(A3: partial persistence of the
+  performance deficit — the agent's Brier remains *above* mean, not *below*
+  it)" to make the direction of the inequality unambiguous for readers. ✓
+
+---
+
+### YY2. $W_{i,d}$ (bankroll) collides notationally with $W$ (patience window) [FIXED]
+
+**Reviewer:** The paper uses the letter $W$ for two structurally distinct
+quantities:
+
+1. **Patience window** (§3.4, Table 2): $W = 7$ days — the consecutive-day
+   window over which sacrifice-eligibility is evaluated.  Used throughout §3.4,
+   §3.5, §3.6 ("SRR eligibility is evaluated using the rolling window of the
+   most recent $W = 7$ days"), and Table 2.
+
+2. **Virtual bankroll** (§3.6): $W_{i,d}$ — agent $i$'s cumulative virtual
+   wealth at day $d$.  Used in the bankroll update formula
+   $W_{i,d} = W_{i,d-1} \cdot (1 + \sum_t s_i g_{i,t})$ and adjacent prose.
+
+The subscript $_{i,d}$ disambiguates in equations, but in prose the two can be
+confused: a reader encountering "rolling window of the most recent $W = 7$ days"
+immediately before the bankroll formula could misread the bankroll symbol as the
+patience window.  The clash is non-standard: in mathematical finance, $W$ is a
+conventional symbol for *wealth* (consistent with our use) but in stochastic
+processes $W$ conventionally denotes a Wiener process.  Within this paper's own
+notation system, $W$ is already claimed by patience window, so $W_{i,d}$ creates
+an unambiguous within-paper collision.
+
+Standard remedy: rename the bankroll to $V_{i,d}$ (for *virtual* value), which
+is unoccupied in the notation.  The rename touches only §3.6 (three occurrences
+in `04-method.md`, three in `paper.md`).
+
+**Fix applied:** `04-method.md` §3.6 and `paper.md` §3.6:
+- $W_{i,d}$ → $V_{i,d}$ throughout (bankroll update formula and two adjacent
+  prose references).
+- Added a parenthetical at first introduction: "bankroll $V_{i,d}$ (notation:
+  $V$ for virtual value; distinct from the patience window scalar $W$ defined
+  in §3.4)" to proactively resolve any residual ambiguity. ✓
+
+---
+
+### YY3. §3.6 causal-identification note (in `paper.md`) misdescribes Condition E [FIXED]
+
+**Reviewer:** The §3.6 causal-identification footnote in `paper.md` (§3.7 in
+the section ordering) describes the experimental controls:
+
+> "(2) a *free-rider* ablation in which **eligible agents are randomly selected
+> for reallocation regardless of performance**"
+
+This contradicts the formal definition of Condition E in §4.3:
+
+> "On each day that any agent would be sacrifice-eligible under Condition A, a
+> randomly selected ***non-eligible* agent** (drawn uniformly from those whose
+> Brier is at or below the society mean) is instead reallocated."
+
+The two descriptions specify opposite agent classes: the §3.6/causal-note version
+says *eligible* agents are randomly selected; §4.3 says a *non-eligible* agent
+is reallocated.  This is a material experimental-design discrepancy.
+
+The §4.3 definition is the primary specification and is scientifically correct
+for the stated purpose of Condition E: to test whether *targeting the worst
+performer* is essential, versus *any reallocation at the same trigger event*.
+Reallocating a non-eligible (well-performing) agent on the same trigger day
+isolates the targeting effect cleanly.  The §3.6 causal-note shorthand
+("eligible agents randomly selected") is the incorrect version.
+
+**Fix applied:** `paper.md` §3.6/causal-note: replaced the erroneous shorthand
+with a precise description that matches §4.3:
+
+> "(2) a *free-rider* ablation in which, on days that any agent would be
+> sacrifice-eligible under Condition A, a randomly selected *non-eligible* agent
+> (at or below the society mean Brier) is instead reallocated — testing whether
+> the performance-based *targeting* of SRR is essential, rather than reallocation
+> per se (full definition in §4.3)" ✓
+
+*Note:* `08-limitations.md` §7.1 and `07-discussion.md` §6.4 do not contain the
+erroneous description (§7.1 does not include a parallel shorthand; §6.4 correctly
+identifies Condition E as testing whether "targeting" is the active ingredient
+without specifying eligible vs. non-eligible).  Both `paper.md` and `04-method.md`
+(§3.6 causal-identification note) contained the erroneous description and were
+both corrected. ✓
+
+---
+
+## CYCLE YY SUMMARY
+
+**Fixed this cycle:** YY1 (§6.1 A3 direction inversion — "at most" → "at least"),
+YY2 ($W_{i,d}$ → $V_{i,d}$ bankroll rename + disambiguation note),
+YY3 (§3.6 causal-note Condition E misdescription corrected in `paper.md` and `04-method.md`)
+
+**Remaining open from prior cycles:** Items 1–10 in the PRE-SUBMISSION
+checklist below; all are data-blocked (pilot backtest, axelrod-log) or require
+manual network verification (arXiv author lists). No prose issues remain.
+
+**Structural changes this cycle:**
+- `07-discussion.md` §6.1: "at most" → "at least" + parenthetical (YY1)
+- `04-method.md` §3.6: $W_{i,d}$ → $V_{i,d}$ (×3 occurrences) + notation note (YY2); causal-note Condition E corrected (YY3)
+- `paper.md` §6.1: same as §6.1 fix (YY1)
+- `paper.md` §3.6/bankroll: same as §3.6 fix (YY2)
+- `paper.md` §3.6/causal-note: Condition E description corrected (YY3)
+
+**PRE-SUBMISSION checklist (unchanged from Cycle XX):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. Verify `@llm_ipd2024` first author (arXiv:2406.13605)
+3. Verify `@polyswarm2026` author list (arXiv:2604.03888)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (m2)
+5. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+6. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+7. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table

@@ -79,11 +79,12 @@ the reallocation — offers no individual improvement and imposes a diversity
 tax on the population. In the vocabulary of evolutionary dynamics, epistemic
 role sacrifice is *individually incentive-compatible under Assumption A3*
 for chronically below-performing agents: by A3, remaining in the same
-archetype yields at most $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
-individual Brier, while accepting the reallocation offers a strictly
-positive probability of improvement through the archetype change and
-strictly improves group fitness through the Ambiguity increase from
-Lemma 1.
+archetype yields **at least** $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
+individual Brier (A3: partial persistence of the performance deficit —
+the agent's Brier remains above mean, not below it), while accepting
+the reallocation offers a strictly positive probability of improvement
+through the archetype change and strictly improves group fitness through
+the Ambiguity increase from Lemma 1.
 The mechanism is therefore individually rational in expectation
 (not unconditionally dominant — an agent whose archetype happens to
 recover spontaneously would rationally resist — but A3 precisely

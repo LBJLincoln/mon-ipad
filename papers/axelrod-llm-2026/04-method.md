@@ -506,11 +506,12 @@ The **realised stake fraction** on day $d$ is:
 $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
 
 **Bankroll update.** After all events in $\mathcal{B}_d$ resolve, each agent's virtual
-bankroll updates as:
+bankroll $V_{i,d}$ (notation: $V$ for virtual value; distinct from the patience
+window scalar $W$ defined in §3.4) updates as:
 
-$$W_{i,d} = W_{i,d-1} \cdot \left(1 + \sum_{t \in \mathcal{B}_d} s_i \cdot g_{i,t}\right)$$
+$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \sum_{t \in \mathcal{B}_d} s_i \cdot g_{i,t}\right)$$
 
-where $g_{i,t}$ is the signed net return on event $t$.  The agent bets $s_i \cdot W_{i,d-1}$
+where $g_{i,t}$ is the signed net return on event $t$.  The agent bets $s_i \cdot V_{i,d-1}$
 on its favoured outcome: $\omega = 1$ if $p_{i,t} > q_t$, $\omega = 0$ if
 $p_{i,t} < q_t$, where $q_t$ is the market-implied probability derived from the
 published moneyline; if $p_{i,t} = q_t$ no bet is placed.  For a correct bet:
@@ -526,7 +527,7 @@ odds minus 1 for an away-win bet. The two correct-bet returns are not generally
 equal: when $q_t = 0.6$ (a 60\% market favourite), a correct away-bet returns
 $0.6/0.4 = 1.5$ per unit staked versus $0.4/0.6 \approx 0.67$ for a correct
 home-bet, reflecting the higher implied difficulty of the contrarian position.
-For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i W_{i,d-1}$).  The full vig-adjusted formula,
+For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i V_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
 `LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in Appendix D (§C.5).
 
@@ -604,8 +605,11 @@ see Appendix C.2 for sensitivity analysis.*
 > We address this via three controls: (1) an SRR *sham* condition
 > in which eligible agents receive a new archetype label but an
 > *identical* system prompt (testing whether the label change alone
-> drives effects); (2) a *free-rider* ablation in which eligible agents
-> are randomly selected for reallocation regardless of performance;
-> and (3) a matched pairs analysis comparing each SRR agent to a
+> drives effects); (2) a *free-rider* ablation in which, on days that
+> any agent would be sacrifice-eligible under Condition A, a randomly
+> selected *non-eligible* agent (at or below the society mean Brier) is
+> instead reallocated — testing whether the performance-based *targeting*
+> of SRR is essential, rather than reallocation per se (full definition in
+> §4.3); and (3) a matched pairs analysis comparing each SRR agent to a
 > non-eligible agent with the same pre-intervention Brier trajectory.
 > All three controls are described in §4.3 and results in §5.3.
