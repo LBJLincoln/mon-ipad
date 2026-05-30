@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-05T12:00:00Z",
+  "updated_at": "2026-06-05T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire230-2026-06-05T16h",
+      "priority": 280,
+      "status": "done",
+      "completed_at": "2026-06-05T16:00:00Z",
+      "completed_by": "cloud-brain-fire-230",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-230 EVEN: S22-c1655-g4963-stag=0-pareto=15-ET200f-0.21875-EVICTED-c1628(26TH-RESET-CONFIRMED)-NEW-200f-0.21880-gen4960-BELOW-FLEET-BEST-0.22012(13bp)-c1653-SURVIVED(stag=0)-next~c1680-/api/export-404(47th); S18-c220-g658-stag=0-pareto=16-c192=4TH-RESET+STACKING-REINJECTED(RULE8-VIOLATION!)-c217=5TH-RESET-best_brier=0.22326-next~c242-/api/export-404(9th); S13/S14/S15+POL-404-DOWN(56+fires); EVEN: arXiv:2506.12183-Temporal-CV-Sliding-Window-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T16h)"
+    },
     {
       "id": "cloud-brain-fire229-2026-06-05T12h",
       "priority": 279,
@@ -11,6 +20,30 @@
       "completed_by": "cloud-brain-fire-229",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-229 ODD: Axelrod-verify-pass-SHAs-NBA-85e7682e1d/POL-6983c86517-UNCHANGED; py_compile-OK-both; 13/13-parity-OK; S22-c~1628-26TH-RESET-PREDICTED(c1603+25=c1628-EXACT!)-ET-200f-0.21875-STATUS-UNKNOWN(/api/export-404-46th); S18-c~205-stag=0-4TH-RESET-APPROACHING(~c192+25=~c217); S13/S14/S15-404-DOWN(55+fires); all-POL-404-DOWN(55+fires); ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T12h)"
+    },
+    {
+      "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
+      "priority": 2,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "RULE8 VIOLATION fire-230: S18 c192 4th auto-reset REINJECTED STACKING into pool ('xgboost, lightgbm variants, and stacking' confirmed). c217=5th reset (logistic_regression). Current: c=220 g=658 stag=0 pareto=16. Next reset ~c242 (c217+25). VM: fix reset_pool logic to EXCLUDE 'stacking' from reseeding — stacking causes overfitting (Rule #8). Also curl /api/export S18 to check c192+c217 pareto_best."
+    },
+    {
+      "id": "vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230 UPDATE: ET-200f-0.21875 EVICTED at c1628 (26th reset CONFIRMED). NEW ALL-TIME CANDIDATE: 200f-0.21880 gen=4960, ROI=34.0%, Sharpe=11.04 — 13bp BELOW FLEET BEST 0.22012! Also: 200f-0.21907 gen=4720 and 200f-0.21963 gen=4961 in top performers. c1653 SURVIVED (stag=0, no reset). Next reset ~c1680 (if stag accumulates). /api/export-404(47th fire). VM: curl /api/export S22 URGENTLY — checkpoint 200f-0.21880 gen=4960 IMMEDIATELY. EXTREME URGENT!"
+    },
+    {
+      "id": "vm-s22-rf200f-0.21953-extreme-urgent-fire227",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230 UPDATE: RF-200f-0.21953 SUPERSEDED by ET-200f-0.21875 (fire-228) then 200f-0.21880 (fire-230). See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
     },
     {
       "id": "cloud-brain-fire228-2026-06-05T08h",
@@ -22,12 +55,292 @@
       "subject": "fire-228 EVEN: S22-c1627-g4880-stag=0-pareto=20(↑10↑20!)-ET-200f-0.21875-ALL-TIME-CANDIDATE-BELOW-FLEET-BEST-0.22012-BY-14bp!-next-reset-c1628-ONE-CYCLE-AWAY!-Rule8-CLEAN(RF+ET)-/api/export-404(45th); S18-c193-g579-stag=0-pareto=18(↑10↑18!)-c167=3RD-AUTO-RESET-CONFIRMED(stag=0-recovery)-best_brier=0.22326-/api/export-404(7th); S13/S14/S15-404-DOWN(54+fires); all-POL-404-DOWN(54+fires); EVEN: arXiv:2410.21484-ML-Sports-Betting-Systematic-Review-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T08h)"
     },
     {
-      "id": "vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228",
+      "id": "vm-s22-c1578-24th-reset-fire226",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "⚡⚡⚡ ALL-TIME CANDIDATE fire-228: S22 ET-200f brier=0.21875 roi=0.3427 sharpe=12.87 gen=4880. BELOW FLEET BEST 0.22012 BY 14bp! c=1627, last_hard_reset=c1603(25TH), next_reset=c1628 — predicted EXACT(c1603+25=c1628). fire-229 UPDATE: c1628 PREDICTED-RESET WINDOW — ET-200f-0.21875 may have been evicted at c1628. /api/export-404(46th fire). Rule8 CLEAN (RF+ET confirmed fire-228). VM: curl /api/export S22 URGENTLY — confirm if ET-200f-0.21875 survived c1628 reset or was evicted! EXTREME URGENT!"
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230 UPDATE: c1603=25TH + c1628=26TH-CONFIRMED-RESET. ET-200f-0.21875 EVICTED at c1628. NEW: 200f-0.21880 gen=4960. c1653 SURVIVED (stag=0). See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
+    },
+    {
+      "id": "vm-research-temporal-cv-sliding-window-fire230",
+      "priority": 108,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "RESEARCH fire-230 EVEN: Temporal Cross-Validation Sliding Window - arXiv:2506.12183 (Jun 2025/2026). Key: sliding window CV yields higher median AUC-PR and reduced fold-to-fold variance vs walk-forward. Directly addresses negative CV→holdout gap (~-0.01 in all 3 models). App1: Add cv_method='sliding_window' param to validate_model() with max_train_size=3000. App2: Add cv_holdout_gap metric to /api/export. App3: Add minimize_cv_gap as 7th Pareto objective. App4: Port to political_engine.py. Library: sklearn TimeSeriesSplit(n_splits=5, max_train_size=3000). Expected: 0.001-0.003 Brier reduction + more honest CV estimates. Proposal: data/research-proposals/sota-temporal-cv-sliding-window-fire230.md."
+    },
+    {
+      "id": "vm-research-ml-sports-betting-review-fire228",
+      "priority": 107,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T08:00:00Z",
+      "subject": "RESEARCH fire-228 EVEN: Systematic Review ML Sports Betting - arXiv:2410.21484 (Oct 2024). Key: ET > RF on 200f calibration tasks (validates S22 ET-200f-0.21875 > RF-200f-0.21953). Calibration taxonomy: Venn-Abers theoretically strongest. Top features: Elo ratings (SHAP#1), rolling 10-game form (SHAP#2) — aligns with vm-add-elo-ratings-engine (priority=60). App1: Ensure ET in all island MODEL_TYPES. App2: Add rolling 10-game form feature category to engine.py. App3: Add Platt scaling as calibration_method alternative. Expected: 0.001-0.002 Brier improvement. Proposal: data/research-proposals/sota-ml-sports-betting-review-fire228.md."
+    },
+    {
+      "id": "vm-research-multi-scale-conformal-fire226",
+      "priority": 106,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T00:00:00Z",
+      "subject": "RESEARCH: Multi-Scale Conformal Prediction - arXiv:2502.05565 (Feb 2026). Multi-scale CP gives finite-sample coverage guarantees simultaneously at multiple game-condition hierarchies (global/home-away/back-to-back/playoff/opponent-tier). App1: NBA pareto model selection via scale hierarchy. App2: multi_scale_coverage_violation as 6th Pareto objective. App3: coverage_at_scales in /api/export. App4: Port to POL with political hierarchy. Library: MAPIE + GroupedConformalPredictor. Expected: 0.001-0.002 Brier. Proposal: data/research-proposals/sota-multi-scale-conformal-fire226.md."
+    },
+    {
+      "id": "vm-research-localized-conformal-model-selection-fire224",
+      "priority": 105,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T16:00:00Z",
+      "subject": "RESEARCH: Localized Conformal Model Selection - arXiv:2602.19284 (Feb 2026). Proposal: data/research-proposals/sota-localized-conformal-model-selection-fire224.md"
+    },
+    {
+      "id": "vm-research-brier-score-misconceptions-fire220",
+      "priority": 104,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T00:00:00Z",
+      "subject": "RESEARCH: Brier Score Misconceptions - PMC12818272 (Global Epidemiology 2026)."
+    },
+    {
+      "id": "vm-research-coordination-layer-llm-fire218",
+      "priority": 103,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T00:00:00Z",
+      "subject": "RESEARCH: Coordination as Architectural Layer - arXiv:2605.03310. ALL 3 APPS COMPLETE: App1 murphy_score_d (fire-220), App2 cost_per_alpha_unit (fire-222), App3 AXELROD_ABLATION config (fire-225 DONE). BLOCKED: do_not_push_hf_space_yet."
+    },
+    {
+      "id": "vm-research-stacked-conformal-prediction-fire216",
+      "priority": 102,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T08:00:00Z",
+      "subject": "RESEARCH: Stacked Conformal Prediction - arXiv:2505.12578. Library: MAPIE (method=ACI, cv=5)."
+    },
+    {
+      "id": "vm-research-collective-alignment-statistical-physics-fire212",
+      "priority": 101,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "RESEARCH: Collective Alignment in LLM Multi-Agent Systems via Statistical Physics - arXiv:2605.10528"
+    },
+    {
+      "id": "vm-research-memetic-drift-scaling-laws-fire210",
+      "priority": 100,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T08:00:00Z",
+      "subject": "RESEARCH: Memetic Drift Scaling Laws in LLM Collectives - arXiv:2603.24676"
+    },
+    {
+      "id": "vm-research-conformal-no-labeled-calibration-fire208",
+      "priority": 99,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "RESEARCH: Conformal Prediction Without Labeled Calibration Data - arXiv:2509.10321"
+    },
+    {
+      "id": "vm-research-distributed-info-failure-multi-llm-fire206",
+      "priority": 98,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-01T16:00:00Z",
+      "subject": "RESEARCH: Distributed Information Failure in Multi-Agent LLMs - arXiv:2505.11556"
+    },
+    {
+      "id": "vm-research-social-dynamics-llm-collectives-fire204",
+      "priority": 97,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-01T08:00:00Z",
+      "subject": "RESEARCH: Social Dynamics as Critical Vulnerabilities in LLM Collectives - arXiv:2604.06091"
+    },
+    {
+      "id": "vm-research-llm-active-alignment-nash-fire202",
+      "priority": 96,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-01T00:00:00Z",
+      "subject": "RESEARCH: LLM Active Alignment via Nash Equilibrium - arXiv:2602.06836"
+    },
+    {
+      "id": "vm-research-conformal-ts-benchmarking-fire200",
+      "priority": 95,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-05-31T14:00:00Z",
+      "subject": "RESEARCH: Conformal Prediction for Time Series - arXiv:2601.18509"
+    },
+    {
+      "id": "vm-research-market-making-multi-llm-fire198",
+      "priority": 94,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-05-31T06:00:00Z",
+      "subject": "RESEARCH: Market-Making Multi-Agent LLM Coordination - arXiv:2511.17621"
+    },
+    {
+      "id": "vm-research-llm-strategic-fingerprints-fire196",
+      "priority": 93,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-05-30T22:00:00Z",
+      "subject": "RESEARCH: LLM strategic fingerprints in Axelrod tournament - arXiv:2507.02618"
+    },
+    {
+      "id": "vm-research-online-learning-betting-markets-fire192",
+      "priority": 92,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-05-30T06:00:00Z",
+      "subject": "RESEARCH: Online Learning in Betting Markets - arXiv:2511.17621"
+    },
+    {
+      "id": "vm-research-lstm-nba-multiseason-fire190",
+      "priority": 91,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-05-29T22:00:00Z",
+      "subject": "RESEARCH: Long-Sequence LSTM NBA - arXiv:2512.08591"
+    },
+    {
+      "id": "vm-research-lstm-sequence-model-fire160",
+      "priority": 90,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-05-31T02:00:00Z",
+      "subject": "RESEARCH: Implement LSTM+Brier-loss sequence model for NBA prediction - arXiv:2508.02725"
+    },
+    {
+      "id": "vm-shap-feature-analysis-s15",
+      "priority": 80,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "SHAP analysis on S15 fleet best RF-75f + S22 RF-48f pareto models"
+    },
+    {
+      "id": "vm-add-elo-ratings-engine",
+      "priority": 60,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Add Elo ratings as feature category to features/engine.py - SHAP #1+#2 (IEEE/MDPI 2026). arXiv:2410.21484 systematic review confirms Elo ratings as universal SHAP #1 feature for basketball prediction."
+    },
+    {
+      "id": "vm-add-logistic-regression-model-pool",
+      "priority": 50,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Add logistic_regression + elastic_net to MODEL_TYPES on islands missing them"
+    },
+    {
+      "id": "vm-add-lightgbm-s22-s13",
+      "priority": 48,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Add lightgbm to S22 and verify in S13 MODEL_TYPES"
+    },
+    {
+      "id": "vm-remove-stacking-s14",
+      "priority": 47,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Remove stacking from S14 MODEL_TYPES - Rule#8 violation. S14 404-DOWN 56+ fires."
+    },
+    {
+      "id": "vm-add-lightgbm-p1-p2",
+      "priority": 46,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "PORT NBA->POL: Add lightgbm to P1 and P2 MODEL_TYPES - ALL 5 POL islands LightGBM=pareto_best"
+    },
+    {
+      "id": "vm-remove-stacking-s13",
+      "priority": 44,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Remove stacking from S13 MODEL_TYPES - Rule#8 violation. S13 404-DOWN 56+ fires."
+    },
+    {
+      "id": "vm-remove-stacking-s15",
+      "priority": 45,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Remove stacking from S15 MODEL_TYPES - Rule#8 violation. S15 404-DOWN 56+ fires."
+    },
+    {
+      "id": "vm-remove-stacking-s22",
+      "priority": 43,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230: S22 c=1655 g=4963 stag=0. c1628=26TH-RESET-CONFIRMED. Rule8 CLEAN post-c1628 (xgboost_brier/lightgbm_brier/catboost/logistic_regression - NO STACKING). NEW: 200f-0.21880 gen=4960 ALL-TIME CANDIDATE. /api/export-404(47th). VM: curl /api/export S22 NOW."
+    },
+    {
+      "id": "vm-remove-stacking-s18",
+      "priority": 42,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230 RULE8 VIOLATION: S18 c192=4TH-RESET REINJECTED STACKING ('xgboost, lightgbm variants, and stacking'). c217=5TH-RESET. Current: c=220 g=658 stag=0 pareto=16. Next reset ~c242. VM: fix reset_pool to exclude stacking from reseeding. /api/export-404(9th)."
+    },
+    {
+      "id": "engine-parity-sync",
+      "priority": 40,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T00:00:00Z",
+      "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features"
+    },
+    {
+      "id": "vm-s15-403-possibly-waking-fire193",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) 404-DOWN fire-230 (56+ fires). Holds FLEET BEST RF-75f 0.22012. VM: retry /api/status periodically."
+    },
+    {
+      "id": "vm-checkpoint-p4-lgbm-0.2492-fire143",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 - 404-DOWN 56+ fires"
+    },
+    {
+      "id": "vm-s22-rf200f-0.2197-gen4526-fire223",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230 UPDATE: RF-200f 0.2197 gen=4526 LOST (multiple resets). Superseded by ET-200f-0.21875 (fire-228, evicted c1628) then 200f-0.21880 gen=4960 (fire-230). See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
+    },
+    {
+      "id": "vm-s18-c25-first-autoreset-fire223",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230 UPDATE: S18 c=220 g=658 stag=0 pareto=16. c67=1ST CLEAN + c142=2ND CLEAN + c167=3RD CLEAN + c192=4TH-RESET(STACKING-REINJECTED-RULE8-VIOLATION) + c217=5TH-RESET. Next ~c242. VM: fix reset_pool, curl /api/export."
+    },
+    {
+      "id": "vm-s22-c1528-22nd-c1553-23rd-reset-fire224",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-230 UPDATE: c1578=24TH + c1603=25TH + c1628=26TH all CONFIRMED RESETS. ET-200f-0.21875 EVICTED at c1628. NEW: 200f-0.21880 gen=4960. c1653 SURVIVED (stag=0). VM: curl /api/export S22."
     },
     {
       "id": "cloud-brain-fire227-2026-06-05T04h",
@@ -39,14 +352,6 @@
       "subject": "fire-227 ODD: S22-c1606-g4816-stag=2-pareto=10-c1603=25TH-RESET-CONFIRMED(c1578+25=c1603-EXACT)-RF-200f-0.21953-BELOW-FLEET-BEST-0.22012-EXTREME-URGENT!-Rule8-CLEAN(RF+LGB+CAT-NO-STACKING)-next-reset~c1628-/api/export-404(44th); S18-c153-g457-stag=0-pareto=10-c142=2ND-AUTO-RESET-CONFIRMED-next-reset~c167-best_brier=0.22326-plateau-/api/export-404(6th); S13/S14/S15-404-DOWN(53+fires); all-POL-404-DOWN(53+fires); ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T04h)"
     },
     {
-      "id": "vm-s22-rf200f-0.21953-extreme-urgent-fire227",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "fire-229 UPDATE: RF-200f-0.21953 SUPERSEDED by ET-200f-0.21875 (fire-228 pareto_best). See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228. VM: curl /api/export S22."
-    },
-    {
       "id": "cloud-brain-fire226-2026-06-05T00h",
       "priority": 276,
       "status": "done",
@@ -54,30 +359,6 @@
       "completed_by": "cloud-brain-fire-226",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-226 EVEN: S18-c120-g360-stag=0-pareto=9(down14to9-SHRINK-POST-c67)-best_brier=0.22326-plateau-cycle-stag=3; S22-c1583-g4749-stag=0-pareto=15(up12to15-GROWING!)-c1578=24TH-RESET-CONFIRMED(c1553+25=c1578-EXACT)-RF-primary-NO-STACKING-visible; /api/export-404-BOTH(S22-43rd,S18-5th); S13/S14/S15-404-DOWN(52+fires); all-POL-404-DOWN(52+fires); EVEN: arXiv:2502.05565-Multi-Scale-Conformal-Prediction-Feb2026-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T00h)"
-    },
-    {
-      "id": "vm-s22-c1578-24th-reset-fire226",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "fire-229 UPDATE: c1603=25TH + c1628=26TH-PREDICTED-RESET. ET-200f-0.21875 ALL-TIME CANDIDATE survival at c1628 UNKNOWN. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
-    },
-    {
-      "id": "vm-research-multi-scale-conformal-fire226",
-      "priority": 106,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T00:00:00Z",
-      "subject": "RESEARCH: Multi-Scale Conformal Prediction - arXiv:2502.05565 (Feb 2026). Multi-scale CP gives finite-sample coverage guarantees simultaneously at multiple game-condition hierarchies (global/home-away/back-to-back/playoff/opponent-tier). App1: NBA pareto model selection via scale hierarchy. App2: multi_scale_coverage_violation as 6th Pareto objective. App3: coverage_at_scales in /api/export. App4: Port to POL with political hierarchy. Library: MAPIE + GroupedConformalPredictor. Expected: 0.001-0.002 Brier. Proposal: data/research-proposals/sota-multi-scale-conformal-fire226.md."
-    },
-    {
-      "id": "vm-research-ml-sports-betting-review-fire228",
-      "priority": 107,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T08:00:00Z",
-      "subject": "RESEARCH fire-228 EVEN: Systematic Review ML Sports Betting - arXiv:2410.21484 (Oct 2024). Key: ET > RF on 200f calibration tasks (validates S22 ET-200f-0.21875 > RF-200f-0.21953). Calibration taxonomy: Venn-Abers theoretically strongest. Top features: Elo ratings (SHAP#1), rolling 10-game form (SHAP#2) — aligns with vm-add-elo-ratings-engine (priority=60). App1: Ensure ET in all island MODEL_TYPES. App2: Add rolling 10-game form feature category to engine.py. App3: Add Platt scaling as calibration_method alternative. Expected: 0.001-0.002 Brier improvement. Proposal: data/research-proposals/sota-ml-sports-betting-review-fire228.md."
     },
     {
       "id": "cloud-brain-fire225-2026-06-04T20h",
@@ -105,262 +386,6 @@
       "completed_by": "cloud-brain-fire-224",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-224 EVEN: S18-c84-g251-stag=0-pareto=14-c67=1ST-AUTO-RESET-CONFIRMED(RULE8-BREAKTHROUGH); S22-c1557-g4669-c1528=22ND+c1553=23RD-RESET; arXiv:2602.19284-Localized-CP-proposal-written (2026-06-04T16h)"
-    },
-    {
-      "id": "vm-s22-rf200f-0.2197-gen4526-fire223",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "fire-229 UPDATE: RF-200f 0.2197 gen=4526 LOST (multiple resets). Superseded by ET-200f-0.21875 gen=4880. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
-    },
-    {
-      "id": "vm-s18-c25-first-autoreset-fire223",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "fire-229 UPDATE: S18 c=~205 g=~615 stag=0 (est). c167=3RD AUTO-RESET CONFIRMED. 4TH auto-reset approaching (~c192+25=~c217). best_brier=0.22326 plateau. Rule8 CLEAN (RF+ET). VM: curl /api/export S18 + confirm c192+ pool."
-    },
-    {
-      "id": "vm-s22-c1528-22nd-c1553-23rd-reset-fire224",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "fire-229 UPDATE: c1578=24TH + c1603=25TH + c1628=26TH-PREDICTED all RESETS. ET-200f-0.21875 survival at c1628 UNKNOWN. VM: curl /api/export S22."
-    },
-    {
-      "id": "vm-s15-403-possibly-waking-fire193",
-      "priority": 1,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) 404-DOWN fire-229 (55+ fires). Holds FLEET BEST RF-75f 0.22012. VM: retry /api/status periodically."
-    },
-    {
-      "id": "vm-checkpoint-p4-lgbm-0.2492-fire143",
-      "priority": 1,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 - 404-DOWN 55+ fires"
-    },
-    {
-      "id": "engine-parity-sync",
-      "priority": 40,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Sync nomos-nba-agent/features/engine.py from mon-ipad (Rule#2 violation) + add roster continuity features"
-    },
-    {
-      "id": "vm-remove-stacking-s18",
-      "priority": 42,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "fire-229: S18 c=~205 g=~615 stag=0 (est). c67+c142+c167=3 CLEAN AUTO-RESETS. 4TH reset approaching ~c217. Rule8 CLEAN (RF+ET). VM: curl /api/export S18 to confirm c192+ pool."
-    },
-    {
-      "id": "vm-remove-stacking-s22",
-      "priority": 43,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
-      "subject": "fire-229: S22 c=~1628 26TH-RESET-PREDICTED. ET-200f-0.21875 ALL-TIME CANDIDATE survival UNKNOWN at c1628. /api/export-404 (46th). VM: curl /api/export S22 NOW — EXTREME URGENT."
-    },
-    {
-      "id": "vm-remove-stacking-s13",
-      "priority": 44,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S13 MODEL_TYPES - Rule#8 violation. S13 404-DOWN 55+ fires."
-    },
-    {
-      "id": "vm-remove-stacking-s15",
-      "priority": 45,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S15 MODEL_TYPES - Rule#8 violation. S15 404-DOWN 55+ fires."
-    },
-    {
-      "id": "vm-add-lightgbm-p1-p2",
-      "priority": 46,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "PORT NBA->POL: Add lightgbm to P1 and P2 MODEL_TYPES - ALL 5 POL islands LightGBM=pareto_best"
-    },
-    {
-      "id": "vm-remove-stacking-s14",
-      "priority": 47,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S14 MODEL_TYPES - Rule#8 violation. S14 404-DOWN 55+ fires."
-    },
-    {
-      "id": "vm-add-lightgbm-s22-s13",
-      "priority": 48,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Add lightgbm to S22 and verify in S13 MODEL_TYPES"
-    },
-    {
-      "id": "vm-add-logistic-regression-model-pool",
-      "priority": 50,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Add logistic_regression + elastic_net to MODEL_TYPES on islands missing them"
-    },
-    {
-      "id": "vm-add-elo-ratings-engine",
-      "priority": 60,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Add Elo ratings as feature category to features/engine.py - SHAP #1+#2 (IEEE/MDPI 2026). arXiv:2410.21484 systematic review confirms Elo ratings as universal SHAP #1 feature for basketball prediction."
-    },
-    {
-      "id": "vm-shap-feature-analysis-s15",
-      "priority": 80,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "SHAP analysis on S15 fleet best RF-75f + S22 RF-48f pareto models"
-    },
-    {
-      "id": "vm-research-lstm-sequence-model-fire160",
-      "priority": 90,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-05-31T02:00:00Z",
-      "subject": "RESEARCH: Implement LSTM+Brier-loss sequence model for NBA prediction - arXiv:2508.02725"
-    },
-    {
-      "id": "vm-research-lstm-nba-multiseason-fire190",
-      "priority": 91,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-05-29T22:00:00Z",
-      "subject": "RESEARCH: Long-Sequence LSTM NBA - arXiv:2512.08591"
-    },
-    {
-      "id": "vm-research-online-learning-betting-markets-fire192",
-      "priority": 92,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-05-30T06:00:00Z",
-      "subject": "RESEARCH: Online Learning in Betting Markets - arXiv:2511.17621"
-    },
-    {
-      "id": "vm-research-llm-strategic-fingerprints-fire196",
-      "priority": 93,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-05-30T22:00:00Z",
-      "subject": "RESEARCH: LLM strategic fingerprints in Axelrod tournament - arXiv:2507.02618"
-    },
-    {
-      "id": "vm-research-market-making-multi-llm-fire198",
-      "priority": 94,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-05-31T06:00:00Z",
-      "subject": "RESEARCH: Market-Making Multi-Agent LLM Coordination - arXiv:2511.17621"
-    },
-    {
-      "id": "vm-research-conformal-ts-benchmarking-fire200",
-      "priority": 95,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-05-31T14:00:00Z",
-      "subject": "RESEARCH: Conformal Prediction for Time Series - arXiv:2601.18509"
-    },
-    {
-      "id": "vm-research-llm-active-alignment-nash-fire202",
-      "priority": 96,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-01T00:00:00Z",
-      "subject": "RESEARCH: LLM Active Alignment via Nash Equilibrium - arXiv:2602.06836"
-    },
-    {
-      "id": "vm-research-social-dynamics-llm-collectives-fire204",
-      "priority": 97,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-01T08:00:00Z",
-      "subject": "RESEARCH: Social Dynamics as Critical Vulnerabilities in LLM Collectives - arXiv:2604.06091"
-    },
-    {
-      "id": "vm-research-distributed-info-failure-multi-llm-fire206",
-      "priority": 98,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-01T16:00:00Z",
-      "subject": "RESEARCH: Distributed Information Failure in Multi-Agent LLMs - arXiv:2505.11556"
-    },
-    {
-      "id": "vm-research-conformal-no-labeled-calibration-fire208",
-      "priority": 99,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "RESEARCH: Conformal Prediction Without Labeled Calibration Data - arXiv:2509.10321"
-    },
-    {
-      "id": "vm-research-memetic-drift-scaling-laws-fire210",
-      "priority": 100,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T08:00:00Z",
-      "subject": "RESEARCH: Memetic Drift Scaling Laws in LLM Collectives - arXiv:2603.24676"
-    },
-    {
-      "id": "vm-research-collective-alignment-statistical-physics-fire212",
-      "priority": 101,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "RESEARCH: Collective Alignment in LLM Multi-Agent Systems via Statistical Physics - arXiv:2605.10528"
-    },
-    {
-      "id": "vm-research-stacked-conformal-prediction-fire216",
-      "priority": 102,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-03T08:00:00Z",
-      "subject": "RESEARCH: Stacked Conformal Prediction - arXiv:2505.12578. Library: MAPIE (method=ACI, cv=5)."
-    },
-    {
-      "id": "vm-research-coordination-layer-llm-fire218",
-      "priority": 103,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T00:00:00Z",
-      "subject": "RESEARCH: Coordination as Architectural Layer - arXiv:2605.03310. ALL 3 APPS COMPLETE: App1 murphy_score_d (fire-220), App2 cost_per_alpha_unit (fire-222), App3 AXELROD_ABLATION config (fire-225 DONE). BLOCKED: do_not_push_hf_space_yet."
-    },
-    {
-      "id": "vm-research-brier-score-misconceptions-fire220",
-      "priority": 104,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-04T00:00:00Z",
-      "subject": "RESEARCH: Brier Score Misconceptions - PMC12818272 (Global Epidemiology 2026)."
-    },
-    {
-      "id": "vm-research-localized-conformal-model-selection-fire224",
-      "priority": 105,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-04T16:00:00Z",
-      "subject": "RESEARCH: Localized Conformal Model Selection - arXiv:2602.19284 (Feb 2026). Proposal: data/research-proposals/sota-localized-conformal-model-selection-fire224.md"
     }
   ]
 }
