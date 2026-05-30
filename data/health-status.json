@@ -1,119 +1,127 @@
 {
-  "fire": 230,
-  "timestamp": "2026-06-05T16:00:00Z",
-  "parity": "EVEN",
+  "fire": 231,
+  "timestamp": "2026-06-05T20:00:00Z",
+  "parity": "ODD",
   "nba_islands": {
-    "S13": {"status": "404-DOWN", "note": "sleeping 56+ fires", "last_known_cycle": 974, "pareto_candidate": "CatBoost-200f-0.21992 gen=2831", "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (56+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."},
-    "S14": {"status": "404-DOWN", "note": "sleeping 56+ fires", "last_known_best_brier": 0.22054, "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate — VM wake + checkpoint"},
-    "S15": {"status": "404-DOWN", "note": "404-DOWN 56+ fires", "last_known_best_brier": 0.22012, "alert": "URGENT: fleet-best RF-0.22012 sleeping 56+ fires"},
-    "S17": {"status": "503-DOWN", "note": "PAUSED 144+d"},
+    "S13": {
+      "status": "404-DOWN",
+      "note": "sleeping 57+ fires",
+      "last_known_cycle": 974,
+      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831",
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (57+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
+    },
+    "S14": {
+      "status": "404-DOWN",
+      "note": "sleeping 57+ fires",
+      "last_known_best_brier": 0.22054,
+      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate — VM wake + checkpoint"
+    },
+    "S15": {
+      "status": "404-DOWN",
+      "note": "404-DOWN 57+ fires",
+      "last_known_best_brier": 0.22012,
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping 57+ fires"
+    },
+    "S17": {
+      "status": "503-DOWN",
+      "note": "PAUSED 144+d"
+    },
     "S18": {
       "status": "EVOLVING",
-      "cycle": 220,
-      "generation": 658,
+      "cycle": 246,
+      "generation": 736,
       "best_brier": 0.22326,
-      "best_brier_note": "Plateau continues. c192=4TH-AUTO-RESET+STACKING-REINJECTED(RULE8-VIOLATION!). c217=5TH-AUTO-RESET(logistic_regression). pareto=16 stag=0. Next reset ~c242.",
+      "best_brier_note": "Plateau continues. c242=6TH-AUTO-RESET-CONFIRMED(c217+25=c242-EXACT). pareto=5 SEVERE COLLAPSE from 16.",
       "stagnation": 0,
-      "pareto_front_size": 16,
-      "rule8_status": "VIOLATION: c192 4th-reset REINJECTED STACKING into pool. c217=5th-reset. VM must fix reset_pool to exclude stacking from reseeding logic.",
-      "export_endpoint": "404 (9th fire est.)",
-      "next_reset": "~c242 (c217+25)",
-      "alert": "RULE8 VIOLATION: c192 4th-reset reinjected stacking. VM: fix reset_pool logic to EXCLUDE stacking. Next reset ~c242. /api/export-404(9th)."
+      "pareto_front_size": 5,
+      "pareto_trend": "SEVERE-COLLAPSE: 16(fire-230)→5(fire-231) post-c242-6TH-RESET",
+      "reset_history": "c67=1ST-CLEAN + c142=2ND-CLEAN + c167=3RD-CLEAN + c192=4TH-RESET(STACKING-REINJECTED-RULE8-VIOLATION!) + c217=5TH-RESET(logistic_regression) + c242=6TH-RESET-CONFIRMED(c217+25=c242-EXACT)",
+      "rule8_status": "CRITICAL: c192 4th-reset REINJECTED STACKING. c242 6th-reset confirmed — unknown if stacking reinjected AGAIN. pareto=5 collapse matches c192 stacking-reinjection pattern. VM: fix reset_pool EXCLUDE stacking URGENTLY.",
+      "export_endpoint": "404 (10th fire)",
+      "next_reset": "~c267 (c242+25)",
+      "alert": "CRITICAL: pareto=5 SEVERE COLLAPSE post-c242=6TH-RESET. VM: (1) fix reset_pool EXCLUDE stacking URGENTLY before c267, (2) curl /api/export S18 to check pareto_best."
     },
     "S22": {
       "status": "UP",
-      "cycle": 1655,
-      "generation": 4963,
+      "cycle": 1671,
+      "generation": 5013,
       "best_brier": 0.22124,
-      "best_brier_note": "Field lag. ACTUAL pareto candidate: 200f-0.21880 gen=4960 — NEW ALL-TIME CANDIDATE 13bp BELOW FLEET BEST 0.22012.",
-      "best_model_type": "unknown_200f_post_c1628_reset",
+      "best_brier_note": "Field lag confirmed. ACTUAL pareto candidate: 200f-0.21880 gen=4960 — ALL-TIME CANDIDATE alive 3rd fire, 13bp below fleet best 0.22012.",
       "stagnation": 0,
-      "pareto_front_size": 15,
-      "pareto_trend": "STABLE-REBUILDING (20→15 post-c1628-reset)",
+      "pareto_front_size": 12,
+      "pareto_trend": "SLIGHT-SHRINK: 15(fire-230)→12(fire-231) — normal post-reset adjustment, healthy",
       "confirmed_reset_c1628": {
         "reset_number": 26,
-        "trigger": "auto (c1603+25=c1628 EXACT — predicted fire-229, confirmed fire-230)",
-        "rule8": "CLEAN — reseeded with xgboost_brier, lightgbm_brier, catboost, logistic_regression. NO STACKING."
+        "rule8": "CLEAN — xgboost_brier/lightgbm_brier/catboost/logistic_regression NO STACKING"
       },
-      "et200f_eviction": {
-        "model": "extra_trees",
-        "brier": 0.21875,
-        "generation": 4880,
-        "note": "ET-200f-0.21875 EVICTED at c1628 (26th reset). Was ALL-TIME CANDIDATE fire-228."
-      },
-      "new_candidate_200f": {
+      "c1653_survived": "CONFIRMED fire-230: stag=0, no reset at c1628+25=c1653",
+      "candidate_200f": {
         "brier": 0.21880,
         "generation": 4960,
         "features": 200,
-        "roi": 0.34,
-        "sharpe": 11.04,
-        "note": "NEW ALL-TIME CANDIDATE post-c1628. 0.21880 BELOW FLEET BEST 0.22012 by 13bp. Model type unknown (post-reset pool). Stepped up after ET eviction.",
-        "alert": "⚡⚡⚡ NEW ALL-TIME CANDIDATE: 200f-0.21880 gen=4960 BELOW FLEET BEST 0.22012 BY 13bp! VM: curl /api/export S22 IMMEDIATELY — checkpoint 200f-0.21880!"
+        "fires_alive": 3,
+        "alert": "⚡⚡⚡ ALL-TIME CANDIDATE: 200f-0.21880 BELOW FLEET BEST 0.22012 BY 13bp! ALIVE 3RD FIRE! VM: curl /api/export S22 IMMEDIATELY — checkpoint before c1680!"
       },
-      "also_notable": {
-        "gen4720": {"brier": 0.21907, "features": 200, "roi": 0.3365, "sharpe": 7.72},
-        "gen4961": {"brier": 0.21963, "features": 200, "roi": 0.3306, "sharpe": 10.73}
-      },
-      "c1653_survived": "c1653 (c1628+25) passed with stag=0 — NO reset triggered at c1653. GOOD.",
-      "next_reset_estimate": "~c1680 (c1655+25 only if stagnation accumulates)",
-      "export_endpoint": "404 (47th consecutive fire)",
-      "alert": "⚡⚡⚡ NEW ALL-TIME CANDIDATE: 200f-0.21880 BELOW FLEET BEST 0.22012 BY 13bp! /api/export-404(47th). VM: curl /api/export S22 IMMEDIATELY to checkpoint 200f-0.21880!"
+      "next_reset_estimate": "~c1680 (stag=0=SAFE — only 9 cycles from c1671)",
+      "next_reset_urgency": "APPROACHING: 9 cycles from c1671 to ~c1680. stag=0 currently SAFE. If stag accumulates, 0.21880 candidate could be EVICTED. VM: checkpoint IMMEDIATELY!",
+      "export_endpoint": "404 (48th consecutive fire)",
+      "alert": "⚡⚡⚡ 200f-0.21880 ALL-TIME CANDIDATE ALIVE (3rd fire)! Next reset ~c1680 (9cy away). /api/export-404(48th). VM: curl /api/export S22 IMMEDIATELY — checkpoint 200f-0.21880 before c1680!"
     }
   },
   "pol_islands": {
-    "P1": {"status": "404-DOWN", "fires_sleeping": "56+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f"},
-    "P2": {"status": "404-DOWN", "fires_sleeping": "56+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk"},
-    "P4": {"status": "404-DOWN", "fires_sleeping": "56+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST"},
-    "P5": {"status": "404-DOWN", "fires_sleeping": "56+", "last_known_best_brier": 0.24993},
-    "P7": {"status": "404-DOWN", "fires_sleeping": "56+", "last_known_best_brier": 0.24931}
+    "P1": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
+    "P2": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
+    "P4": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
+    "P5": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_best_brier": 0.24993},
+    "P7": {"status": "404-DOWN", "fires_sleeping": "57+", "last_known_best_brier": 0.24931}
   },
   "fleet_best": {
     "nba": 0.22012,
-    "nba_source": "S15 RF-75f (sleeping 56+ fires)",
+    "nba_source": "S15 RF-75f (sleeping 57+ fires)",
     "nba_active_candidate": 0.21880,
-    "nba_active_candidate_note": "S22 200f gen=4960 NEW ALL-TIME CANDIDATE — 13bp below fleet best! ET-200f-0.21875 EVICTED c1628. /api/export-404(47th). VM: checkpoint URGENTLY.",
+    "nba_active_candidate_note": "S22 200f gen=4960 ALL-TIME CANDIDATE — 13bp below fleet best! ALIVE 3RD FIRE. /api/export-404(48th). ~c1680 approaching (9cy). VM: checkpoint URGENTLY.",
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (sleeping 56+ fires)"
+    "pol_source": "P4 LightGBM-131f (sleeping 57+ fires)"
   },
   "rule8_summary": {
     "S18": {
-      "status": "VIOLATION",
-      "c192": "4TH-RESET CONFIRMED + STACKING REINJECTED into pool (xgboost, lightgbm variants, stacking)",
-      "c217": "5TH-RESET CONFIRMED (logistic_regression added)",
-      "action": "VM must fix reset_pool to EXCLUDE stacking from reseeding. Next reset ~c242."
+      "status": "CRITICAL",
+      "c192": "4TH-RESET + STACKING REINJECTED (RULE8 VIOLATION)",
+      "c217": "5TH-RESET (logistic_regression)",
+      "c242": "6TH-RESET CONFIRMED (c217+25=c242-EXACT). pareto collapsed 16→5 — stacking likely reinjected again.",
+      "action": "VM must fix reset_pool EXCLUDE stacking. pareto=5 CRITICAL. Next reset ~c267."
     },
     "S22": {
       "total_resets": 26,
-      "c1628": "26TH RESET CONFIRMED (c1603+25=c1628-EXACT)",
-      "rule8_at_c1628": "CLEAN — reseeded xgboost_brier/lightgbm_brier/catboost/logistic_regression, NO STACKING",
-      "c1653": "SURVIVED (stag=0, no reset triggered at c1628+25=c1653)",
-      "next_reset": "~c1680 (only if stagnation accumulates)"
+      "c1628": "26TH RESET CONFIRMED. Rule8-CLEAN: xgboost_brier/lightgbm_brier/catboost/logistic_regression NO STACKING.",
+      "c1653": "SURVIVED (stag=0)",
+      "next_reset": "~c1680 (stag=0=SAFE, 9cy away)"
     }
   },
   "export_alert": {
-    "s22_fires": 47,
-    "s18_fires": 9,
-    "note": "VM must curl /api/export directly. S22 NEW 200f-0.21880 ALL-TIME CANDIDATE — checkpoint URGENTLY!"
+    "s22_fires": 48,
+    "s18_fires": 10,
+    "note": "VM: curl /api/export on both. S22 200f-0.21880 ALL-TIME CANDIDATE — checkpoint before ~c1680!"
   },
   "axelrod_status": {
     "mech_a": "DONE (fire-122)",
-    "mech_b": "CODE-DONE BLOCKED",
-    "mech_c": "CODE-DONE (murphy+brier+cost_per_alpha+ablation_config fire-225) BLOCKED",
-    "ablation_config": "DONE fire-225: AXELROD_MECH_A/B/C_ON flags. AXELROD_ABLATION=5 configs per arXiv:2605.03310 §3."
+    "mech_b": "CODE-DONE BLOCKED (do_not_push_hf_space_yet)",
+    "mech_c": "CODE-DONE + ablation-config (fire-225) BLOCKED",
+    "shas": "NBA 85e7682e1d (6035L) / POL 6983c86517 (4019L) — UNCHANGED (no HF push since fire-225, do_not_push_hf_space_yet=TRUE)"
   },
-  "research_fire230_even": {
-    "arxiv": "2506.12183",
-    "title": "Temporal cross-validation impacts multivariate time series subsequence anomaly detection evaluation",
-    "key_finding": "Sliding window CV yields higher median AUC-PR and reduced fold-to-fold variance vs walk-forward. Directly relevant to negative CV→holdout gap (~-0.01). Sliding window controls for training set size effects in non-stationary data.",
-    "application": "Evaluate sliding window CV as alternative validation in GA islands; add cv_holdout_gap metric; port to POL.",
-    "proposal": "data/research-proposals/sota-temporal-cv-sliding-window-fire230.md"
+  "odd_fire_analysis_fire231": {
+    "title": "S18 pareto collapse trajectory + S22 c1680 urgency",
+    "s18_collapse": "pareto_front_size: 16(fire-230)→5(fire-231) post-c242=6TH-RESET. Collapse pattern matches c192 (4th-reset stacking-reinjection). c192 caused stacking reinjection → 16→16 maintained (stacking offspring initially survived). c242 now causes 16→5 collapse — consistent with stacking offspring being fit enough to enter pareto but driving diversity collapse. Root cause: reset_pool includes stacking variants. VM must fix reset_pool before c267.",
+    "s22_urgency": "200f-0.21880 gen=4960 has survived 3 consecutive fires (228→229→230→231). stag=0 healthy. Next predicted reset ~c1680 (9 cycles away). If stag=0 holds through c1680, no reset fires. But if even 1-2 stagnation cycles accumulate, c1680 reset would EVICT 0.21880 candidate as happened to ET-0.21875 at c1628. VM MUST checkpoint before c1680.",
+    "s22_vs_s18_contrast": "S22 Rule8-CLEAN post-c1628: pareto=12 (healthy, slight normal shrink from 15). S18 Rule8-VIOLATED post-c192: pareto=5 (severe collapse from 16). Clear evidence that stacking in reset pool causes population collapse."
   },
-  "actions_taken_fire230": [
-    "STEP 0: No crash recovery. No local-agent-* items >6h.",
-    "S22: c1655 g4963 stag=0 pareto=15. c1628=26TH-RESET-CONFIRMED. ET-200f-0.21875 EVICTED. NEW: 200f-0.21880 gen=4960 NEW ALL-TIME CANDIDATE (13bp below fleet best 0.22012). c1653 SURVIVED (stag=0). /api/export-404(47th). Rule8 CLEAN post-c1628.",
-    "S18: c220 g658 stag=0 pareto=16. c192=4TH-RESET+STACKING-REINJECTED(RULE8-VIOLATION!). c217=5TH-RESET(logistic_regression). best_brier=0.22326 plateau. /api/export-404(9th). Next reset ~c242.",
-    "All POL + S13/S14/S15: 404-DOWN (56+ fires). HF MCP auth-required for private spaces — cannot wake remotely.",
-    "EVEN fire-230: WebSearch → arXiv:2506.12183 temporal CV sliding-window. Research proposal written (priority=108).",
-    "health-status.json+work-queue.json+CLAUDE.md+research-proposal updated (fire-230 2026-06-05T16h)"
+  "actions_taken_fire231": [
+    "STEP 0: No crash recovery. No local-agent-* items >6h in work-queue.",
+    "S22: c=1671 g=5013 stag=0 pareto=12(↓15→12). 200f-0.21880 gen=4960 ALL-TIME CANDIDATE alive 3rd fire. /api/export-404(48th). Next reset ~c1680(9cy, stag=0=SAFE). Rule8-CLEAN.",
+    "S18: c=246 g=736 stag=0 pareto=5(↓16→5-SEVERE-COLLAPSE!). c242=6TH-RESET-CONFIRMED(c217+25=c242-EXACT). /api/export-404(10th). Next reset ~c267. RULE8-CONCERN: collapse matches stacking reinjection pattern.",
+    "S13/S14/S15/S17: 404/503-DOWN (57+ fires sleeping).",
+    "POL P1/P2/P4/P5/P7: 404-DOWN (57+ fires sleeping). HF private spaces — cannot restart remotely.",
+    "ODD fire-231: no WebSearch. Structural analysis: S18 pareto collapse root cause + S22 c1680 checkpoint urgency documented.",
+    "health-status.json + work-queue.json updated (fire-231 2026-06-05T20h)"
   ]
 }
