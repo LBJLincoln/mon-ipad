@@ -149,8 +149,9 @@ $$B_{\text{ens},d} = \frac{1}{N}\sum_i B_{i,d} - \text{Amb}_d, \quad
 \frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$$
 
 JSD is a monotone function of this $\text{Amb}_d$ term for Bernoulli predictions in the
-operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb} \leq 0.08$
-(proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$), so increasing
+operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$
+(proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$; range justified by
+pilot-season data, Table 4), so increasing
 $D_d$ is equivalent to reducing $B_{\text{ens},d}$ holding $\frac{1}{N}\sum_i B_{i,d}$ fixed.
 This motivates $D_d$ as our primary diversity target.
 
@@ -357,7 +358,7 @@ and the RHS $= 0.028$, giving $0.034 > 0.028$. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
-$\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
+$\bar{p}_t \in [0.24, 0.76]$ and $\text{Amb}_t \leq 0.04$), increasing Ambiguity
 strictly increases JSD. Pilot season data confirm that NBA game-day centroids satisfy
 $\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout
 the 2024–25 season (Table 4, §5.1); the monotonicity regime is therefore satisfied
@@ -535,9 +536,13 @@ $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
 bankroll $V_{i,d}$ (notation: $V$ for virtual value; distinct from the patience
 window scalar $W$ defined in §3.4) updates as:
 
-$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \frac{s_i}{|\mathcal{B}_d^+|}\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right)$$
+$$V_{i,d} = \begin{cases}
+V_{i,d-1} \cdot \left(1 + \dfrac{s_i}{|\mathcal{B}_d^+|}\displaystyle\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right) & \text{if } |\mathcal{B}_d^+| \geq 1 \\[8pt]
+V_{i,d-1} & \text{if } |\mathcal{B}_d^+| = 0
+\end{cases}$$
 
-where $\mathcal{B}_d^+ = \{t \in \mathcal{B}_d : p_{i,t} \neq q_t\}$ is the subset of
+The $|\mathcal{B}_d^+| = 0$ case (agent's predictions match market odds on every event) leaves the bankroll unchanged; the sum is empty and no stake is committed.
+$\mathcal{B}_d^+ = \{t \in \mathcal{B}_d : p_{i,t} \neq q_t\}$ is the subset of
 day-$d$ events on which the agent places a bet, and $g_{i,t}$ is the signed net return
 per unit staked on event $t$.  Here $s_i$ is the agent's *daily budget fraction*:
 the agent allocates a total stake of $s_i \cdot V_{i,d-1}$ across all bet-placing events,

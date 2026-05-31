@@ -6,8 +6,8 @@
 
 We prove the claim in §3.3: that Jensen–Shannon diversity $D_d$ is a strictly
 increasing function of the Ambiguity term $\text{Amb}_t = \frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$
-in the operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb}_t \leq 0.08$,
-when $\bar{p}_t$ is held fixed.
+in the operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb}_t \leq 0.04$
+(pilot-season empirical range; Table 4, §5.1), when $\bar{p}_t$ is held fixed.
 
 **Setup.** For a fixed event $t$, let $p_1, \ldots, p_N \in [0,1]$ be agent predictions,
 $\bar{p} = \frac{1}{N}\sum_i p_i$, and $\delta_i = p_i - \bar{p}$ (so $\sum_i \delta_i = 0$).
@@ -37,12 +37,11 @@ $$H''(p) = -\frac{1}{p(1-p)\ln 2} < 0 \quad \forall\, p \in (0,1)$$
 
 Therefore $-\frac{1}{2}H''(\bar{p}) = \frac{1}{2\bar{p}(1-\bar{p})\ln 2} > 0$.
 
-Numerically, at the boundary $\bar{p} = 0.15$:
+Numerically, at the worst-case boundary of the empirical operating range $\bar{p} = 0.24$:
 
-$$-\frac{1}{2}H''(0.15) = \frac{1}{2 \times 0.15 \times 0.85 \times \ln 2} \approx \frac{1}{0.1768} \approx 5.65$$
+$$-\frac{1}{2}H''(0.24) = \frac{1}{2 \times 0.24 \times 0.76 \times \ln 2} = \frac{1}{0.2518} \approx 3.97$$
 
-(units: bits per unit Ambiguity, since JSD is in bits via $\log_2$ and Ambiguity is dimensionless;
-*not* nats$^{-1}$, which would arise from a natural-log JSD definition)
+(units: bits per unit Ambiguity; *not* nats$^{-1}$, which would arise from a natural-log JSD)
 and at $\bar{p} = 0.50$, the coefficient is $\frac{1}{2 \times 0.25 \times \ln 2} \approx 2.89$.
 
 **Bounding the remainder.** The third derivative is:
@@ -50,47 +49,62 @@ and at $\bar{p} = 0.50$, the coefficient is $\frac{1}{2 \times 0.25 \times \ln 2
 $$H'''(p) = \frac{(1-2p)}{p^2(1-p)^2\ln 2}$$
 
 which vanishes at $p = 0.5$ and is maximised in magnitude at the boundary of the
-operating range. At $\bar{p} = 0.15$:
+empirical operating range. At $\bar{p} = 0.24$:
 
-$$|H'''(0.15)| = \frac{|1 - 0.30|}{(0.15)^2(0.85)^2 \ln 2}
-= \frac{0.70}{0.0225 \times 0.7225 \times 0.693} \approx 62.3$$
+$$|H'''(0.24)| = \frac{|1 - 0.48|}{(0.24)^2(0.76)^2 \ln 2}
+= \frac{0.52}{0.0576 \times 0.5776 \times 0.693} \approx 22.5$$
 
-The zero-sum constraint $\sum_i \delta_i = 0$ implies
-$|\delta_i| \leq \sqrt{(N-1)\,\text{Amb}}$, attained by the extremal
-configuration $\delta_i = c$, $\delta_j = -c/(N-1)$ for all $j \neq i$,
-which satisfies $\frac{1}{N}(c^2 + (N-1)\cdot c^2/(N-1)^2) = c^2/(N-1) = \text{Amb}$,
-giving $c = \sqrt{(N-1)\,\text{Amb}}$.
-With $N = 12$ and $\text{Amb} \leq 0.08$: $|\delta_i| \leq \sqrt{11 \times 0.08} \leq 0.94$.
-The remainder bound is then:
+To bound $\frac{1}{N}\sum_i |\delta_i|^3$, we use the *extremal configuration*
+under the constraints $\sum_i \delta_i = 0$ and $\frac{1}{N}\sum_i \delta_i^2 = \text{Amb}$:
+the maximum of $\frac{1}{N}\sum_i |\delta_i|^3$ is attained at
+$\delta_1 = c$, $\delta_j = -c/(N-1)$ for $j \neq 1$, where $c = \sqrt{(N-1)\,\text{Amb}}$.
+Substituting:
 
-$$|\bar{R}| \leq \frac{1}{6}|H'''|_{\max}\cdot\frac{1}{N}\sum_i |\delta_i|^3
-\leq \frac{|H'''|_{\max}}{6}\,\text{Amb}^{3/2}$$
+$$\frac{1}{N}\sum_i |\delta_i|^3\bigg|_{\text{extremal}} = \frac{c^3}{N}\!\left(1 + \frac{1}{(N-1)^2}\right)
+= \frac{(N-1)^{3/2}}{N}\!\left(1 + \frac{1}{(N-1)^2}\right)\text{Amb}^{3/2}$$
 
-using $\frac{1}{N}\sum_i |\delta_i|^3 \leq \left(\frac{1}{N}\sum_i \delta_i^2\right)^{3/2} = \text{Amb}^{3/2}$
-(power-mean inequality).
+For $N = 12$: the factor is $\frac{11^{3/2}}{12}(1 + \frac{1}{121}) \approx 3.04 \times 1.008 \approx 3.07$.
+*Note:* the power-mean inequality $M_2 \leq M_3$ gives the opposite direction ($\frac{1}{N}\sum_i |\delta_i|^3 \geq \text{Amb}^{3/2}$) and cannot be used for an upper bound here.
+
+The remainder bound is therefore:
+
+$$|\bar{R}| \leq \frac{|H'''|_{\max}}{6}\cdot\frac{(N-1)^{3/2}}{N}\!\left(1+\frac{1}{(N-1)^2}\right)\text{Amb}^{3/2}
+\;\approx\; \frac{|H'''|_{\max}}{6}\times 3.07\times\text{Amb}^{3/2}$$
 
 **Monotonicity claim.** From equation (B.1), the total derivative is:
 
 $$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}} =
 -\frac{1}{2}H''(\bar{p}) - \frac{\partial \bar{R}}{\partial \text{Amb}}$$
 
-The first term equals $\frac{1}{2\bar{p}(1-\bar{p})\ln 2} > 0$.
-The remainder satisfies $|\partial\bar{R}/\partial\text{Amb}| \leq \frac{|H'''|_{\max}}{4}\sqrt{\text{Amb}}$
-(differentiating the bound).  In the operating range $\text{Amb} \leq 0.08$,
-$\bar{p} \in [0.15, 0.85]$:
+The remainder derivative satisfies (differentiating the extremal bound):
 
-$$\frac{|H'''|_{\max}}{4}\sqrt{0.08} \approx \frac{62.3}{4} \times 0.283 \approx 4.41$$
+$$\left|\frac{\partial \bar{R}}{\partial \text{Amb}}\right| \leq \frac{|H'''|_{\max}}{6}\times 3.07\times\frac{3}{2}\sqrt{\text{Amb}}
+= \frac{3\times 3.07\times|H'''|_{\max}}{12}\sqrt{\text{Amb}}$$
 
-versus the leading coefficient of at least $5.65$.  Hence
-$\frac{\partial \text{JSD}}{\partial \text{Amb}} \geq 5.65 - 4.41 = 1.24 > 0$,
-confirming strict monotonicity throughout the stated range.
+At the worst-case boundary of the empirical range ($\bar{p} = 0.24$, $\text{Amb} = 0.04$,
+$N = 12$):
 
-*Remark.* The margin (1.24 vs zero) narrows near the boundary $\bar{p} = 0.15$
-and $\text{Amb} = 0.08$, reflecting genuine nonlinearity at extreme values.
-For $\bar{p} \in [0.25, 0.75]$ and $\text{Amb} \leq 0.05$ — the typical operating
-regime observed in our experiments — the remainder is an order of magnitude smaller
-than the leading term, and the linear approximation $\text{JSD} \approx c(\bar{p})\cdot\text{Amb}$
-is highly accurate.
+$$\left|\frac{\partial \bar{R}}{\partial \text{Amb}}\right| \leq \frac{3 \times 3.07 \times 22.5}{12}\times\sqrt{0.04}
+= \frac{207.2}{12}\times 0.200 \approx 3.46$$
+
+The leading coefficient at $\bar{p} = 0.24$ is $3.97$.  Hence:
+
+$$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}=0.24,\,\text{Amb}=0.04} \geq 3.97 - 3.46 = 0.51 > 0$$
+
+confirming strict monotonicity throughout the empirical operating range. $\square$
+
+*Remark.* The margin (0.51 vs zero) is tightest at the corner $\bar{p} = 0.24$,
+$\text{Amb} = 0.04$, reflecting the fact that for $\bar{p}$ near the market-boundary
+and $\text{Amb}$ at its pilot maximum, higher-order terms are non-negligible.
+For $\bar{p} \in [0.35, 0.65]$ (the modal game probability regime) and
+$\text{Amb} \leq 0.02$, the remainder derivative is an order of magnitude smaller
+than the leading term, and the linear approximation
+$\text{JSD} \approx c(\bar{p})\cdot\text{Amb}$ is highly accurate.
+
+*Scope note.* This proof is calibrated to the pilot-season empirical range
+($\bar{p} \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$; Table 4).  For larger
+$\text{Amb}$ or more extreme $\bar{p}$ values, the Taylor-expansion argument does
+not provide a guarantee; we do not claim monotonicity outside the empirical range.
 
 ---
 

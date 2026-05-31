@@ -8247,3 +8247,119 @@ The added case makes explicit that the no-bet event contributes zero to the bank
 8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
 9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
 10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+
+---
+
+# Peer-Review Self-Critique — Cycle AAA (2026-06-07, fire-238)
+
+*Full re-read of §3.6 bankroll formula edge case, Appendix B.1 remainder bound (power-mean direction), and cascading operating-range references. Two issues identified and fixed.*
+
+---
+
+## CYCLE AAA — NEW ISSUES
+
+### AAA1. §3.6 Bankroll update formula undefined when $|\mathcal{B}_d^+| = 0$ [FIXED]
+
+**Reviewer:** The bankroll update in its previous form:
+
+$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \frac{s_i}{|\mathcal{B}_d^+|}\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right)$$
+
+is undefined when $|\mathcal{B}_d^+| = 0$: the denominator is zero and the numerator (empty sum) is also zero, yielding an indeterminate $0/0$ form.  This case — every agent prediction exactly equals the market-implied probability $q_t$ for all events on day $d$ — is rare in practice but not excluded by the model definition.  The piecewise definition of $g_{i,t}$ added in Cycle ZZ3 already defines $g_{i,t} = 0$ when $p_{i,t} = q_t$, but that only prevents an incorrect result inside the sum; it does not resolve the $1/|\mathcal{B}_d^+|$ singularity when the sum is empty.
+
+**Root cause:** The ZZ1 fix restructured the formula to normalise by $|\mathcal{B}_d^+|$ (per-day budget), which introduced a new edge case: when the agent places no bets at all, the normalisation factor is undefined.
+
+**Fix applied (`04-method.md` §3.6 and `paper.md` §3.6):**
+
+Replaced the single-formula definition with a two-case piecewise:
+
+$$V_{i,d} = \begin{cases}
+V_{i,d-1} \cdot \left(1 + \dfrac{s_i}{|\mathcal{B}_d^+|}\displaystyle\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right) & \text{if } |\mathcal{B}_d^+| \geq 1 \\[8pt]
+V_{i,d-1} & \text{if } |\mathcal{B}_d^+| = 0
+\end{cases}$$
+
+Added prose: "The $|\mathcal{B}_d^+| = 0$ case (agent's predictions match market odds on every event of day $d$) leaves the bankroll unchanged; the sum is empty and no stake is committed." ✓
+
+*Post-fix verification:*
+`grep -n "mathcal{B}_d.*= 0\|B_d.*= 0.*bankroll" 04-method.md paper.md` — two hits (one per file for the new piecewise case label). ✓
+
+---
+
+### AAA2. Appendix B.1 remainder bound uses power-mean inequality in wrong direction, invalidating the stated operating range [FIXED]
+
+**Reviewer:** Appendix B.1, line 69 (standalone appendix) claimed:
+
+$$\frac{1}{N}\sum_i |\delta_i|^3 \leq \left(\frac{1}{N}\sum_i \delta_i^2\right)^{3/2} = \text{Amb}^{3/2}$$
+
+citing the "power-mean inequality."  The power-mean inequality states $M_r \leq M_s$ for $r \leq s$, where $M_r = \left(\frac{1}{N}\sum_i |x_i|^r\right)^{1/r}$.  For $r = 2$, $s = 3$: $M_2 \leq M_3$, i.e.,
+
+$$\left(\frac{1}{N}\sum_i \delta_i^2\right)^{1/2} \leq \left(\frac{1}{N}\sum_i |\delta_i|^3\right)^{1/3}$$
+
+Raising both sides to the third power: $\text{Amb}^{3/2} \leq \frac{1}{N}\sum_i |\delta_i|^3$.  The true direction is therefore **$\frac{1}{N}\sum_i |\delta_i|^3 \geq \text{Amb}^{3/2}$** — the *opposite* of what was claimed.  The claimed upper bound $\leq \text{Amb}^{3/2}$ is false.
+
+**Consequence:** The remainder in equation (B.1) is not bounded by $\frac{|H'''|_{\max}}{6}\,\text{Amb}^{3/2}$ as stated.  The correct upper bound uses the *extremal configuration* under $\sum_i \delta_i = 0$, $\frac{1}{N}\sum_i \delta_i^2 = \text{Amb}$: the maximiser of $\frac{1}{N}\sum_i |\delta_i|^3$ is $\delta_1 = c$, $\delta_j = -c/(N-1)$, $c = \sqrt{(N-1)\text{Amb}}$, giving
+
+$$\frac{1}{N}\sum_i |\delta_i|^3\bigg|_{\max} = \frac{(N-1)^{3/2}}{N}\!\left(1+\frac{1}{(N-1)^2}\right)\text{Amb}^{3/2} \;\approx\; 3.07\,\text{Amb}^{3/2} \quad (N=12)$$
+
+With this correct factor of $3.07$ (versus the erroneous factor of $1$), the derivative of the remainder bound at the previously claimed worst-case corner ($\bar{p} = 0.15$, $\text{Amb} = 0.08$) is:
+
+$$\frac{3 \times 3.07 \times 62.3}{12}\sqrt{0.08} \approx 47.8 \times 0.283 \approx 13.5$$
+
+versus the leading coefficient $5.65$.  The proof fails for the stated range $\bar{p} \in [0.15, 0.85]$, $\text{Amb} \leq 0.08$: the derivative of the remainder bound exceeds the leading coefficient, so monotonicity is not guaranteed in that range.
+
+**The claim is still true** — but only for the actual empirical range from pilot data: $\bar{p} \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$ (Table 4, §5.1).  At the worst-case empirical boundary ($\bar{p} = 0.24$, $\text{Amb} = 0.04$):
+
+- Leading coefficient: $-\frac{1}{2}H''(0.24) \approx 3.97$
+- $|H'''(0.24)| \approx 22.5$
+- Remainder derivative bound: $\frac{3 \times 3.07 \times 22.5}{12}\sqrt{0.04} \approx 3.46$
+- Net: $3.97 - 3.46 = 0.51 > 0$ ✓
+
+Monotonicity holds throughout the actual experimental range.
+
+**Fix applied (standalone `appendix-b.md` and `paper.md` Appendix B.1):**
+
+1. Removed the erroneous power-mean step.
+2. Added the extremal-configuration derivation, obtaining the correct factor $\frac{(N-1)^{3/2}}{N}(1+(N-1)^{-2}) \approx 3.07$ for $N=12$.
+3. Added a parenthetical note: "*Note:* the power-mean inequality gives the opposite direction $\frac{1}{N}\sum_i |\delta_i|^3 \geq \text{Amb}^{3/2}$ and cannot be used here as an upper bound."
+4. Narrowed the stated operating range from $\bar{p} \in [0.15, 0.85]$, $\text{Amb} \leq 0.08$ to $\bar{p} \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$ (empirically justified).
+5. Recomputed the numerical check: $3.97 - 3.46 = 0.51 > 0$ at the new worst-case corner.
+6. Added a *Scope note* making explicit that the proof covers only the pilot-season empirical range.
+
+**Cascading range updates** in `04-method.md` and `paper.md`:
+
+- §3.3: "operating range $\bar{p}_t \in [0.15, 0.85]$, Amb $\leq 0.08$" → "[0.24, 0.76], Amb $\leq 0.04$ (pilot-season data, Table 4)" ✓
+- Lemma 1 proof (§3.5): same range citation updated ✓
+- Appendix B.1 title paragraph: range updated ✓
+
+*Post-fix verification:*
+`grep -n "0\.15.*0\.85\|0\.08" appendix-b.md paper.md 04-method.md | grep -v "self-critique"` — zero hits for the old range in the operative files (only remaining reference is in the self-critique historical record). ✓
+`grep -n "3\.97.*3\.46\|3\.46.*3\.97\|0\.51 > 0" appendix-b.md paper.md` — two hits each. ✓
+
+---
+
+## CYCLE AAA SUMMARY
+
+**Fixed this cycle:** AAA1 (§3.6 bankroll formula — $|\mathcal{B}_d^+| = 0$ case undefined; added two-case piecewise with explicit bankroll-unchanged convention); AAA2 (Appendix B.1 — power-mean inequality used in wrong direction, invalidating the stated operating range; corrected using extremal-configuration bound and narrowed operating range to pilot-season empirical values $\bar{p} \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$).
+
+**Remaining open from prior cycles:** Items 1–10 in PRE-SUBMISSION checklist below; all data-blocked or require manual network verification.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.6: bankroll formula → two-case piecewise (AAA1)
+- `04-method.md` §3.3: operating range $[0.15, 0.85]$/0.08 → $[0.24, 0.76]$/0.04 (AAA2)
+- `04-method.md` Lemma 1 proof: same range update (AAA2)
+- `appendix-b.md` B.1: power-mean step removed; extremal-configuration derivation added; factor 3.07; new numerical check 3.97 − 3.46 = 0.51; scope note added (AAA2)
+- `paper.md` §3.6: same as AAA1
+- `paper.md` §3.3: same range update (AAA2)
+- `paper.md` Lemma 1 proof: same range update (AAA2)
+- `paper.md` Appendix B.1: full B.1 rewrite matching standalone appendix-b.md (AAA2)
+
+**PRE-SUBMISSION checklist (unchanged from Cycle ZZ):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. Verify `@llm_ipd2024` first author (arXiv:2406.13605)
+3. Verify `@polyswarm2026` author list (arXiv:2604.03888)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (m2)
+5. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+6. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+7. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table

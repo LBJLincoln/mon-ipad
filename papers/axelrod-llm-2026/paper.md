@@ -647,8 +647,9 @@ $$B_{\text{ens},d} = \frac{1}{N}\sum_i B_{i,d} - \text{Amb}_d, \quad
 \frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$$
 
 JSD is a monotone function of this $\text{Amb}_d$ term for Bernoulli predictions in the
-operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb} \leq 0.08$
-(proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$), so increasing
+operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$
+(proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$; range justified by
+pilot-season data, Table 4), so increasing
 $D_d$ is equivalent to reducing $B_{\text{ens},d}$ holding $\frac{1}{N}\sum_i B_{i,d}$ fixed.
 This motivates $D_d$ as our primary diversity target.
 
@@ -832,7 +833,7 @@ $\mathbb{E}[|\delta_i|] \leq 0.014$ (A5): LHS $\geq \frac{11}{12}\times 0.037 = 
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
-$\bar{p}_t \in [0.15, 0.85]$ and $\text{Amb}_t \leq 0.08$), increasing Ambiguity
+$\bar{p}_t \in [0.24, 0.76]$ and $\text{Amb}_t \leq 0.04$), increasing Ambiguity
 strictly increases JSD. Pilot season data confirm that NBA game-day centroids satisfy
 $\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout
 the 2024–25 season (Table 4, §5.1); the monotonicity regime is therefore satisfied
@@ -1007,9 +1008,13 @@ $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
 bankroll $V_{i,d}$ (notation: $V$ for virtual value; distinct from the patience
 window scalar $W$ defined in §3.4) updates as:
 
-$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \frac{s_i}{|\mathcal{B}_d^+|}\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right)$$
+$$V_{i,d} = \begin{cases}
+V_{i,d-1} \cdot \left(1 + \dfrac{s_i}{|\mathcal{B}_d^+|}\displaystyle\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right) & \text{if } |\mathcal{B}_d^+| \geq 1 \\[8pt]
+V_{i,d-1} & \text{if } |\mathcal{B}_d^+| = 0
+\end{cases}$$
 
-where $\mathcal{B}_d^+ = \{t \in \mathcal{B}_d : p_{i,t} \neq q_t\}$ is the subset of
+The $|\mathcal{B}_d^+| = 0$ case (agent's predictions match market odds on every event of day $d$) leaves the bankroll unchanged.
+$\mathcal{B}_d^+ = \{t \in \mathcal{B}_d : p_{i,t} \neq q_t\}$ is the subset of
 day-$d$ events on which the agent places a bet, and $g_{i,t}$ is the signed net return
 per unit staked on event $t$.  Here $s_i$ is the agent's *daily budget fraction*:
 the agent allocates a total stake of $s_i \cdot V_{i,d-1}$ across all bet-placing events,
@@ -2630,8 +2635,8 @@ improvement target for SRR (§5.1, results pending).
 
 We prove the claim in §3.3: that Jensen–Shannon diversity $D_d$ is a strictly
 increasing function of the Ambiguity term $\text{Amb}_t = \frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$
-in the operating range $\bar{p}_t \in [0.15, 0.85]$, $\text{Amb}_t \leq 0.08$,
-when $\bar{p}_t$ is held fixed.
+in the operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb}_t \leq 0.04$
+(pilot-season empirical range; Table 4, §5.1), when $\bar{p}_t$ is held fixed.
 
 **Setup.** For a fixed event $t$, let $p_1, \ldots, p_N \in [0,1]$ be agent
 predictions, $\bar{p} = \frac{1}{N}\sum_i p_i$, and $\delta_i = p_i - \bar{p}$
@@ -2656,26 +2661,32 @@ $$\text{JSD} = -\frac{1}{2}H''(\bar{p})\cdot\text{Amb} - \bar{R} \tag{B.1}$$
 
 **Sign of the leading coefficient.** Since $H''(p) = -\frac{1}{p(1-p)\ln 2} < 0$,
 the coefficient $-\frac{1}{2}H''(\bar{p}) = \frac{1}{2\bar{p}(1-\bar{p})\ln 2} > 0$.
-At $\bar{p} = 0.15$: $-\frac{1}{2}H''(0.15) \approx 5.65$; at $\bar{p} = 0.50$: $\approx 2.89$.
+At the worst-case empirical boundary $\bar{p} = 0.24$: $-\frac{1}{2}H''(0.24) \approx 3.97$; at $\bar{p} = 0.50$: $\approx 2.89$.
 
-**Bounding the remainder.** The third derivative satisfies
-$|H'''(p)| = \frac{|1-2p|}{p^2(1-p)^2 \ln 2}$, maximised at $\bar{p} = 0.15$ as
-$|H'''(0.15)| \approx 62.3$.  By the power-mean inequality,
-$\frac{1}{N}\sum_i |\delta_i|^3 \leq \text{Amb}^{3/2}$, so
-$|\bar{R}| \leq \frac{|H'''|_{\max}}{6}\,\text{Amb}^{3/2}$ and
-$|\partial\bar{R}/\partial\text{Amb}| \leq \frac{|H'''|_{\max}}{4}\sqrt{\text{Amb}}$.
+**Bounding the remainder.** The third derivative satisfies $|H'''(p)| = \frac{|1-2p|}{p^2(1-p)^2 \ln 2}$;
+at the empirical boundary $\bar{p} = 0.24$: $|H'''(0.24)| \approx 22.5$.
+To bound $\frac{1}{N}\sum_i |\delta_i|^3$, we use the *extremal configuration*:
+under $\sum_i \delta_i = 0$ and $\frac{1}{N}\sum_i \delta_i^2 = \text{Amb}$, the maximum
+of $\frac{1}{N}\sum_i |\delta_i|^3$ is attained at $\delta_1 = c$, $\delta_j = -c/(N-1)$
+($j \neq 1$), $c = \sqrt{(N-1)\text{Amb}}$, giving
+$\frac{1}{N}\sum_i |\delta_i|^3 \leq \frac{(N-1)^{3/2}}{N}(1+(N-1)^{-2})\text{Amb}^{3/2} \approx 3.07\,\text{Amb}^{3/2}$
+for $N=12$.  (*Note:* the power-mean inequality gives the opposite direction $\frac{1}{N}\sum_i |\delta_i|^3 \geq \text{Amb}^{3/2}$ and cannot be used here as an upper bound.)
+Therefore $|\bar{R}| \leq \frac{3.07\,|H'''|_{\max}}{6}\,\text{Amb}^{3/2}$ and
+$|\partial\bar{R}/\partial\text{Amb}| \leq \frac{3\times 3.07\times|H'''|_{\max}}{12}\sqrt{\text{Amb}}$.
 
-**Monotonicity.** In the operating range ($\bar{p} \in [0.15, 0.85]$,
-$\text{Amb} \leq 0.08$), the total derivative is:
+**Monotonicity.** At the worst-case empirical boundary ($\bar{p} = 0.24$,
+$\text{Amb} = 0.04$, $N = 12$):
 
 $$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}} \geq
-5.65 - \frac{62.3}{4}\sqrt{0.08} \approx 5.65 - 4.41 = 1.24 > 0$$
+3.97 - \frac{3 \times 3.07 \times 22.5}{12}\sqrt{0.04} \approx 3.97 - 3.46 = 0.51 > 0$$
 
-confirming strict monotonicity throughout the stated range. $\square$
+confirming strict monotonicity throughout the empirical range. $\square$
 
-*Remark.* The margin narrows near the corner $\bar{p}=0.15$, $\text{Amb}=0.08$.
-In the typical experimental regime ($\bar{p} \in [0.25,0.75]$, $\text{Amb} \leq 0.05$)
-the remainder is an order of magnitude smaller than the leading term.
+*Remark.* The margin (0.51 vs zero) is tightest at the corner $\bar{p} = 0.24$,
+$\text{Amb} = 0.04$.  In the modal experimental regime ($\bar{p} \in [0.35,0.65]$,
+$\text{Amb} \leq 0.02$) the remainder is an order of magnitude smaller than the
+leading term.  The proof is calibrated to the pilot-season empirical range
+and does not claim monotonicity outside it.
 
 ---
 
