@@ -1,26 +1,26 @@
 {
-  "fire": 236,
-  "timestamp": "2026-06-06T16:00:00Z",
+  "fire": 238,
+  "timestamp": "2026-06-07T00:00:00Z",
   "parity": "EVEN",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping 62+ fires",
+      "note": "sleeping 64+ fires",
       "last_known_cycle": 974,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (62+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (64+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping 62+ fires",
+      "note": "sleeping 64+ fires",
       "last_known_best_brier": 0.22054,
       "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate — VM wake + checkpoint"
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "404-DOWN 62+ fires",
+      "note": "404-DOWN 64+ fires",
       "last_known_best_brier": 0.22012,
-      "alert": "URGENT: fleet-best RF-0.22012 sleeping 62+ fires"
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping 64+ fires"
     },
     "S17": {
       "status": "503-DOWN",
@@ -28,88 +28,89 @@
     },
     "S18": {
       "status": "EVOLVING",
-      "cycle": 336,
-      "generation": 1006,
+      "cycle": 363,
+      "generation": 1088,
       "best_brier": 0.22326,
       "stagnation": 0,
-      "pareto_front_size": 12,
-      "note": "9TH-AUTO-RESET-c317-CONFIRMED(c292+25=c317-EXACT). Rule8-CLEAN: /api/status top_model_types=[random_forest,catboost,xgboost,lightgbm,logistic_regression]-NO-STACKING confirmed. best_brier=0.22326 plateau.",
-      "reset_history": "c67(CLEAN)+c142(CLEAN)+c167(CLEAN)+c192(STACKING-VIOLATION)+c217(LR)+c242(STACKING?)+c267(LIKELY-CLEAN)+c292(LIKELY-CLEAN)+c317(CONFIRMED-CLEAN-from-/api/status)",
-      "rule8_status": "CLEAN at c317 — top_model_types=[RF,Cat,XGB,LGB,LR] NO STACKING. /api/export-404(13th). Formally unverified at checkpoint level.",
-      "export_endpoint": "404 (13th fire)",
-      "next_reset": "~c342 (c317+25)",
-      "alert": "POSITIVE: Rule8 CLEAN confirmed from /api/status. next_reset ~c342. VM: curl /api/export S18."
+      "pareto_front_size": 15,
+      "note": "10TH-AUTO-RESET-c342-CONFIRMED(c317+25=c342-EXACT). pareto 12→15 post-c342 = GROWING (matches clean-reset recovery pattern). best_brier=0.22326 plateau.",
+      "reset_history": "c67(CLEAN)+c142(CLEAN)+c167(CLEAN)+c192(STACKING-VIOLATION)+c217(LR)+c242(STACKING?)+c267(LIKELY-CLEAN)+c292(LIKELY-CLEAN)+c317(CONFIRMED-CLEAN)+c342(CONFIRMED-10TH)",
+      "rule8_status": "CLEAN at c317 confirmed from /api/status; c342 presumed CLEAN (pareto growing 12→15). /api/export-404(14th). Formally unverified at checkpoint level.",
+      "export_endpoint": "404 (14th fire)",
+      "next_reset": "~c367 (c342+25)",
+      "alert": "POSITIVE: pareto=15 growing. next_reset ~c367. VM: curl /api/export S18 to formally verify Rule8-CLEAN at c342."
     },
     "S22": {
       "status": "UP",
-      "cycle": 1738,
-      "generation": 5214,
+      "cycle": 1758,
+      "generation": 5274,
       "best_brier_field": 0.22124,
       "stagnation": 0,
-      "pareto_front_size": 6,
-      "note": "30TH-AUTO-RESET-c1728-CONFIRMED(c1703+25=c1728-EXACT). pareto=6(↓8→6-post-reset-normal). gene_pool=XGB/LGB/CAT-only post-c1678.",
+      "pareto_front_size": 15,
+      "note": "31ST-AUTO-RESET-c1753-CONFIRMED(c1728+25=c1753-EXACT). pareto=15(↑6→15-MASSIVE-RECOVERY!). Brier range 0.21881~0.22327 in top performers. gene_pool=XGB/LGB/CAT-only post-c1678.",
       "extreme_urgent_candidate": {
-        "generation": 5210,
-        "features": 200,
-        "brier": 0.21952,
-        "roi": 0.31,
-        "sharpe": 14.13,
-        "status": "BELOW-FLEET-BEST-0.22012-BY-6bp! EXTREME URGENT CHECKPOINT!",
-        "field_lag_note": "best_brier field=0.22124 (Rule #4 field-lag applies). pareto_best likely 0.21952.",
-        "model_type": "UNKNOWN — need /api/export to confirm. If XGB/LGB/CAT = GENE POOL BREAKTHROUGH."
+        "brier_range_low": 0.21881,
+        "brier_range_high": 0.22327,
+        "status": "BELOW-FLEET-BEST-0.22012-BY-13bp! EXTREME URGENT CHECKPOINT!",
+        "field_lag_note": "best_brier field=0.22124 (Rule #4 field-lag applies). Brier=0.21881 visible in /api/status top performers.",
+        "model_type": "UNKNOWN — need /api/export. If XGB/LGB/CAT = GENE POOL BREAKTHROUGH post-c1728."
       },
-      "gene_pool_status": "XGB/LGB/CAT-ONLY post-c1678. RF/ET excluded from reseeding. gen5210 emerged AFTER c1728 reset — strong indicator of XGB/LGB/CAT origin.",
-      "export_endpoint": "404 (53rd consecutive fire — CRITICAL)",
-      "next_reset": "~c1753 (c1728+25)",
-      "alert": "EXTREME URGENT: gen5210-200f-0.21952-BELOW-FLEET-BEST-0.22012(6bp)! VM: curl /api/export S22 IMMEDIATELY — confirm model type + checkpoint!"
+      "gene_pool_status": "XGB/LGB/CAT-ONLY post-c1678. RF/ET excluded from reseeding. 31st reset at c1753 — pareto=15 recovery strongly suggests CLEAN.",
+      "export_endpoint": "404 (55th consecutive fire — CRITICAL)",
+      "next_reset": "~c1778 (c1753+25)",
+      "alert": "EXTREME URGENT: Brier=0.21881-BELOW-FLEET-BEST-0.22012(13bp)! pareto=15(↑6→15). VM: curl /api/export S22 IMMEDIATELY — confirm model type + checkpoint!"
     }
   },
   "pol_islands": {
-    "P1": {"status": "404-DOWN", "fires_sleeping": "63+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
-    "P2": {"status": "404-DOWN", "fires_sleeping": "63+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
-    "P4": {"status": "404-DOWN", "fires_sleeping": "63+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
-    "P5": {"status": "404-DOWN", "fires_sleeping": "63+", "last_known_best_brier": 0.24993},
-    "P7": {"status": "404-DOWN", "fires_sleeping": "63+", "last_known_best_brier": 0.24931}
+    "P1": {"status": "404-DOWN", "fires_sleeping": "64+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
+    "P2": {"status": "404-DOWN", "fires_sleeping": "64+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
+    "P4": {"status": "404-DOWN", "fires_sleeping": "64+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
+    "P5": {"status": "404-DOWN", "fires_sleeping": "64+", "last_known_best_brier": 0.24993},
+    "P7": {"status": "404-DOWN", "fires_sleeping": "64+", "last_known_best_brier": 0.24931}
   },
   "fleet_best": {
     "nba": 0.22012,
-    "nba_source": "S15 RF-75f (sleeping 62+ fires)",
+    "nba_source": "S15 RF-75f (sleeping 64+ fires)",
     "nba_active_best_brier_field": 0.22124,
-    "nba_active_pareto_candidate": 0.21952,
-    "nba_active_note": "S22 gen5210-200f-0.21952-BELOW-FLEET-BEST(6bp)! EXTREME URGENT. /api/export-404(53rd) unconfirmed.",
+    "nba_active_pareto_candidate_low": 0.21881,
+    "nba_active_note": "S22 Brier-range=0.21881~0.22327 from /api/status top performers. 0.21881 BELOW fleet best 0.22012 by 13bp! EXTREME URGENT. /api/export-404(55th) unconfirmed.",
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (sleeping 63+ fires)"
+    "pol_source": "P4 LightGBM-131f (sleeping 64+ fires)"
   },
-  "s22_gen5210_analysis": {
-    "finding": "S22 gen5210 shows 200f model Brier=0.21952, Sharpe=14.13, ROI=31%. Emerged AFTER 30th reset at c1728. Sharpe=14.13 vs population avg ~5.67 — significant risk-adjusted superiority.",
-    "gene_pool_implication": "If XGB/LGB/CAT origin (consistent with gene pool post-c1678), proves XGB/LGB/CAT can match/beat RF/ET at 200f — MAJOR breakthrough. Field-lag confirms pareto_best leads best_brier by 1-3 fires.",
-    "action": "VM: curl /api/export S22 IMMEDIATELY. Confirm model_type. Checkpoint if Brier<0.22012."
+  "s22_fire238_analysis": {
+    "finding": "S22 fire-238 pareto=15(↑6→15) after 31st reset at c1753. Brier range in /api/status top performers: 0.21881~0.22327. 0.21881 is 13bp below fleet best 0.22012 — MOST EXTREME URGENT CANDIDATE in project history (55th consecutive /api/export-404).",
+    "pareto_recovery": "pareto 6→15 post-c1753 matches clean-reset recovery pattern (c67,c142,c167,c317,c1578 all showed pareto growth post-clean-reset). Strongly indicates c1753 was CLEAN (XGB/LGB/CAT reseed, NO stacking).",
+    "gene_pool_implication": "If XGB/LGB/CAT origin (gene pool post-c1678), 0.21881 proves XGB/LGB/CAT can match RF/ET at 200f — MAJOR breakthrough. S22 XGB/LGB/CAT-only since c1678.",
+    "action": "VM: curl /api/export S22 IMMEDIATELY (55th fire since export worked). Confirm model_type. Checkpoint if Brier<0.22012 or <0.22085."
   },
-  "even_fire_research_fire236": {
-    "source_1": "arXiv:2603.29928 (Mar 2026) — ScoringBench: Tabular Foundation Models with Proper Scoring Rules",
-    "source_2": "arXiv:2603.08206 (Mar 2026) — Distributional Regression with Tabular FM: TabPFNv2.5 vs TabICLv2",
-    "key_finding": "Model rankings shift substantially depending on scoring rule. CRPS+CRLS = better probabilistic calibration signal than Brier alone. TabICLv2 has explicit distributional calibration.",
+  "s18_fire238_analysis": {
+    "finding": "S18 fire-238 c=363 g=1088 stag=0 pareto=15(↑12→15). 10TH-AUTO-RESET-c342-CONFIRMED(c317+25=c342-EXACT). Pareto growth 12→15 = positive sign (clean reset). best_brier=0.22326 plateau. /api/export-404(14th).",
+    "rule8_status": "c317 CLEAN confirmed from /api/status (fire-236). c342 presumed CLEAN based on pareto recovery 12→15. Next reset ~c367(c342+25).",
+    "action": "VM: curl /api/export S18 to formally verify c342 Rule8-CLEAN."
+  },
+  "even_fire_research_fire238": {
+    "source": "arXiv:2603.07448 (Mar 8, 2026) — Discrete Tokenization Unlocks Transformers for Calibrated Tabular Forecasting",
+    "key_finding": "Discretized vocabulary tokenizer + Gaussian smoothing outperforms tuned gradient boosting on tabular data, producing calibrated PDFs natively — no post-hoc isotonic/Venn-Abers needed",
     "applications": [
-      "App1: ScoringBench comparison TabICLv2 vs TabPFNv2.5 vs TabICL on 186f NBA dataset",
-      "App2: CRPS as 5th Pareto objective on evolution islands",
-      "App3: CRLS as 6th Pareto objective for tail-risk calibration",
-      "App4: TabICLv2 upgrade (expected 0.001-0.003 Brier improvement)",
-      "App5: Port proper scoring rules to political_engine.py"
+      "App1: Add discrete_transformer as new MODEL_TYPE on evolution islands (XGB/LGB/CAT/DT)",
+      "App2: ScoringBench eval (extends fire-236): discrete Transformer vs TabICLv2 vs XGB using Brier+CRPS+CRLS",
+      "App3: Calibrated PDF → direct Brier-loss training objective (replaces post-hoc calibration)",
+      "App4: Port to political_engine.py for calibrated state-level predictions"
     ],
-    "expected_improvement": "0.002-0.004 Brier",
-    "new_wq_item": "vm-research-scoring-bench-tabicl-fire236 (priority=110)",
-    "proposal": "data/research-proposals/sota-scoring-bench-tabicl-fire236.md"
+    "expected_improvement": "0.001-0.003 Brier",
+    "new_wq_item": "vm-research-discrete-tokenization-fire238 (priority=111)",
+    "proposal": "data/research-proposals/sota-discrete-tokenization-transformer-fire238.md"
   },
   "councils_d1_d9": {
-    "note": "Councils D1-D9 are VM-local scripts (scripts/councils/department-council.sh per nomos-dashboard CLAUDE.md). Not accessible from cloud. Council state in data/departments/council-<dept>.json on VM."
+    "note": "Councils D1-D9 are VM-local scripts. Not accessible from cloud. Council state in data/departments/ on VM."
   },
-  "actions_taken_fire236": [
+  "actions_taken_fire238": [
     "STEP 0: No crash recovery. No local-agent-* items in work-queue.",
-    "S18: c=336 g=1006 stag=0 pareto=12. 9TH-AUTO-RESET-c317-CONFIRMED(c292+25=c317-EXACT). Rule8-CLEAN from /api/status. /api/export-404(13th). Next ~c342.",
-    "S22: c=1738 g=5214 stag=0 pareto=6(↓8→6). 30TH-RESET-c1728-CONFIRMED. gen5210-200f-0.21952-EXTREME-URGENT! /api/export-404(53rd).",
-    "S13/S14/S15/S17: 404/503-DOWN (62+ fires sleeping).",
-    "POL P1/P2/P4/P5/P7: 404-DOWN (63+ fires).",
-    "EVEN fire-236: ScoringBench (arXiv:2603.29928) + Distributional TabFM (arXiv:2603.08206). Proposal written. WQ item added (priority=110).",
-    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-236 2026-06-06T16h)."
+    "S18: c=363 g=1088 stag=0 pareto=15(↑12→15). 10TH-AUTO-RESET-c342-CONFIRMED(c317+25=c342-EXACT). Rule8 presumed CLEAN (pareto growing). /api/export-404(14th). Next ~c367.",
+    "S22: c=1758 g=5274 stag=0 pareto=15(↑6→15-MASSIVE!). 31ST-AUTO-RESET-c1753-CONFIRMED(c1728+25=c1753-EXACT). Brier range 0.21881~0.22327-EXTREME-URGENT! /api/export-404(55th).",
+    "S13/S14/S15/S17: 404/503-DOWN (64+ fires sleeping).",
+    "POL P1/P2/P4/P5/P7: 404-DOWN (64+ fires).",
+    "EVEN fire-238: arXiv:2603.07448 DiscreteTokenization Transformer. Proposal written. WQ item added (priority=111).",
+    "health-status.json + work-queue.json + research-proposal + CLAUDE.md updated (fire-238 2026-06-07T00h)."
   ]
 }
