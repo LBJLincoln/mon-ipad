@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-06T12:00:00Z",
+  "updated_at": "2026-06-06T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire236-2026-06-06T16h",
+      "priority": 286,
+      "status": "done",
+      "completed_at": "2026-06-06T16:00:00Z",
+      "completed_by": "cloud-brain-fire-236",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-236 EVEN: S18-c336-g1006-stag=0-pareto=12-9TH-AUTO-RESET-c317-CONFIRMED(c292+25=c317-EXACT)-Rule8-CLEAN(RF/Cat/XGB/LGB/LR-NO-STACKING)-/api/export-404(13th)-next-reset~c342; S22-c1738-g5214-stag=0-pareto=6(↓8→6)-30TH-RESET-c1728-CONFIRMED(c1703+25=c1728-EXACT)-gen5210-200f-0.21952-BELOW-FLEET-BEST-0.22012(6bp!)-EXTREME-URGENT!-best_brier=0.22124-field-lag-/api/export-404(53rd)-next-reset~c1753; S13/S14/S15+POL-404-DOWN(62/63+fires); EVEN: arXiv:2603.29928-ScoringBench-TabFM+arXiv:2603.08206-DistribTabFM-TabICLv2-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-06T16h)"
+    },
     {
       "id": "cloud-brain-fire235-2026-06-06T12h",
       "priority": 285,
@@ -28,7 +37,7 @@
       "completed_at": "fire-122",
       "completed_by": "cloud-brain-fire-122",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-122+: Axelrod Mech B — sacrificial role reallocation (bottom-3 by 7d bankroll delta → SACRIFICIAL_PROMPT with unused archetype). AXELROD_MECH_B_ON env flag (fire-225). Verified fire-214, fire-235. BLOCKED: do_not_push_hf_space_yet (Rule #7). Next step: user approves HF push → activate."
+      "subject": "CODE-DONE fire-122+: Axelrod Mech B — sacrificial role reallocation. AXELROD_MECH_B_ON env flag (fire-225). Verified fire-235. BLOCKED: do_not_push_hf_space_yet (Rule #7)."
     },
     {
       "id": "tf-axelrod-mech-c",
@@ -37,7 +46,16 @@
       "completed_at": "fire-122",
       "completed_by": "cloud-brain-fire-122",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-122+: Axelrod Mech C — post-mortem log + dataset (data/arena/axelrod-log/day-N.jsonl, approx_tokens_d+cost_per_alpha_unit added fire-222). AXELROD_MECH_C_ON env flag (fire-225). Verified fire-214, fire-222, fire-235. BLOCKED: do_not_push_hf_space_yet (Rule #7). Next step: user approves HF push → activate."
+      "subject": "CODE-DONE fire-122+: Axelrod Mech C — post-mortem log + dataset. AXELROD_MECH_C_ON env flag (fire-225). Verified fire-235. BLOCKED: do_not_push_hf_space_yet (Rule #7)."
+    },
+    {
+      "id": "tf-axelrod-ablation-config",
+      "priority": 14,
+      "status": "done",
+      "completed_at": "2026-06-04T20:00:00Z",
+      "completed_by": "cloud-brain-fire-225",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "CODE-DONE fire-225: Axelrod ablation config DONE. BLOCKED: do_not_push_hf_space_yet."
     },
     {
       "id": "cloud-brain-fire234-2026-06-06T08h",
@@ -46,7 +64,7 @@
       "completed_at": "2026-06-06T08:00:00Z",
       "completed_by": "cloud-brain-fire-234",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-234 EVEN: S18-c300-g898-stag=0-pareto=12-8TH-AUTO-RESET-PASSED(~c292=c267+25)-best_brier=0.22326-/api/export-404(12th)-next-reset~c317; S22-c1706-g5117-stag=0-pareto=8(post-c1703-29TH-RESET)-28TH-RESET-c1678(CLEAN:xgb/xgb_brier/lgb/lgb_brier/cat-NO-STACKING)+29TH-RESET-c1703(CLEAN:same)-200f-0.21880-CONFIRMED-EVICTED-c1678(RF/ET-not-in-reseed-pool-confirmed-from-logs)-cycle-stag=2-/api/export-404(51st)-next-reset~c1728; S13/S14/S15+POL-404-DOWN(60+fires); EVEN: MDPI-2079-3197-13-10-230-NBA+WNBA-multitask-transfer-learning-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-06T08h)"
+      "subject": "fire-234 EVEN: S18-c300-g898-stag=0-pareto=12-8TH-AUTO-RESET-PASSED; S22-c1706-g5117-28TH+29TH-RESET-CLEAN-200f-0.21880-EVICTED; EVEN: MDPI-WNBA-transfer-learning-proposal-written"
     },
     {
       "id": "cloud-brain-fire233-2026-06-06T04h",
@@ -55,7 +73,7 @@
       "completed_at": "2026-06-06T04:00:00Z",
       "completed_by": "cloud-brain-fire-233",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-233 ODD: Axelrod-verify-pass-SHAs-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L)-UNCHANGED; py_compile-OK-both; 13/13-parity-OK; KL-div-OK; Mech-A/B/C+AblationFlags-ALL-CODE-DONE-BLOCKED(do_not_push_hf_space_yet); S13/S14/S15+POL-404-DOWN(59+fires); ODD-no-WebSearch; work-queue.json+CLAUDE.md updated (2026-06-06T04h)"
+      "subject": "fire-233 ODD: Axelrod-verify-pass. S13/S14/S15+POL-404-DOWN(59+fires); ODD-no-WebSearch"
     },
     {
       "id": "cloud-brain-fire232-2026-06-06T00h",
@@ -64,31 +82,7 @@
       "completed_at": "2026-06-06T00:00:00Z",
       "completed_by": "cloud-brain-fire-232",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-232 EVEN: S18-c268-g803-stag=0-pareto=12(RECOVERY!)-c267=7TH-AUTO-RESET-CONFIRMED; S22-c1689-g5065-stag=0-pareto=17(GROWING)-200f-0.21880-STATUS-UNKNOWN; EVEN: IEEE-2024-home_next-schedule-feature-proposal-written; health+brain+wq+CLAUDE updated (2026-06-06T00h)"
-    },
-    {
-      "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
-      "priority": 2,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "fire-234 UPDATE: S18 c=300 g=898 stag=0 pareto=12. 8TH-AUTO-RESET PASSED ~c292(c267+25=c292). pareto=12 stable — good sign. /api/export-404(12th). Next reset ~c317(c292+25). VM: curl /api/export S18 to confirm Rule8-CLEAN at c292."
-    },
-    {
-      "id": "vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "fire-234 UPDATE: S22 c=1706 g=5117 stag=0 pareto=8(post-c1703-29TH-RESET). 28TH-RESET-c1678 CONFIRMED from logs: reseeded with [xgboost, xgboost_brier, lightgbm, lightgbm_brier, catboost] — NO-RF, NO-ET, NO-STACKING. 29TH-RESET-c1703 CONFIRMED same clean types. 200f-0.21880 CONFIRMED-EVICTED-at-c1678 (RF/ET absent from reseed pool; all post-c1678 gens show Brier=0.2233 with RF only in old pareto). cycle-stag=2. /api/export-404(51st). Next reset ~c1728(c1703+25). ISLAND NOW XGB/LGB/CAT-ONLY GENE POOL. VM: curl /api/export S22 — confirm any new candidates below 0.22085."
-    },
-    {
-      "id": "vm-s22-rf200f-0.21953-extreme-urgent-fire227",
-      "priority": 0,
-      "status": "pending",
-      "owner": "local-vm",
-      "updated_at": "2026-06-05T16:00:00Z",
-      "subject": "fire-230 UPDATE: RF-200f-0.21953 SUPERSEDED by ET-200f-0.21875 (fire-228) then 200f-0.21880 (fire-230). Both CONFIRMED EVICTED at c1678 (fire-234). See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
+      "subject": "fire-232 EVEN: S18-c268-pareto=12-RECOVERY; S22-c1689-pareto=17-GROWING; EVEN: IEEE-2024-home_next-schedule-feature-proposal-written"
     },
     {
       "id": "cloud-brain-fire228-2026-06-05T08h",
@@ -97,15 +91,83 @@
       "completed_at": "2026-06-05T08:00:00Z",
       "completed_by": "cloud-brain-fire-228",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-228 EVEN: S22-ET-200f-0.21875-ALL-TIME-CANDIDATE; S18-c193-3RD-AUTO-RESET; EVEN: arXiv:2410.21484-ML-Sports-Betting-Review-proposal-written"
+      "subject": "fire-228 EVEN: S22-ET-200f-0.21875-ALL-TIME-CANDIDATE; S18-c193-3RD-AUTO-RESET; arXiv:2410.21484-ML-Sports-Betting-Review-proposal-written"
+    },
+    {
+      "id": "cloud-brain-fire227-2026-06-05T04h",
+      "priority": 277,
+      "status": "done",
+      "completed_at": "2026-06-05T04:00:00Z",
+      "completed_by": "cloud-brain-fire-227",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-227 ODD: S22-RF-200f-0.21953-EXTREME-URGENT; S18-c153-2ND-AUTO-RESET-CONFIRMED"
+    },
+    {
+      "id": "cloud-brain-fire226-2026-06-05T00h",
+      "priority": 276,
+      "status": "done",
+      "completed_at": "2026-06-05T00:00:00Z",
+      "completed_by": "cloud-brain-fire-226",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-226 EVEN: arXiv:2502.05565-Multi-Scale-Conformal-Prediction-Feb2026-proposal-written"
+    },
+    {
+      "id": "cloud-brain-fire225-2026-06-04T20h",
+      "priority": 275,
+      "status": "done",
+      "completed_at": "2026-06-04T20:00:00Z",
+      "completed_by": "cloud-brain-fire-225",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-225 ODD: Axelrod-ablation-config-app3-DONE NBA(6035L)+POL(4019L)"
+    },
+    {
+      "id": "cloud-brain-fire224-2026-06-04T16h",
+      "priority": 274,
+      "status": "done",
+      "completed_at": "2026-06-04T16:00:00Z",
+      "completed_by": "cloud-brain-fire-224",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-224 EVEN: S18-c84-c67=1ST-AUTO-RESET-CONFIRMED(RULE8-BREAKTHROUGH); arXiv:2602.19284-Localized-CP-proposal-written"
+    },
+    {
+      "id": "vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "fire-236 UPDATE: S22 c=1738 g=5214 stag=0 pareto=6(↓8→6). 30TH-RESET-c1728-CONFIRMED(c1703+25=c1728-EXACT). gen5210-200f-0.21952-BELOW-FLEET-BEST-0.22012(6bp!)-EXTREME-URGENT! best_brier=0.22124-field-lag(Rule#4). /api/export-404(53rd-CRITICAL). Next reset ~c1753(c1728+25). ISLAND XGB/LGB/CAT-ONLY. VM: curl /api/export S22 IMMEDIATELY — confirm gen5210-0.21952 model type (XGB/LGB/CAT = gene pool BREAKTHROUGH!). If confirmed Brier<0.22012, CHECKPOINT IMMEDIATELY."
+    },
+    {
+      "id": "vm-s22-rf200f-0.21953-extreme-urgent-fire227",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-236 UPDATE: RF-200f-0.21953 SUPERSEDED. ET-200f-0.21875+RF-200f-0.21880 both EVICTED c1678 (fire-234). NEW: gen5210-200f-0.21952 detected fire-236 — see vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
     },
     {
       "id": "vm-s22-c1578-24th-reset-fire226",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "fire-234 UPDATE: c1678=28TH-RESET + c1703=29TH-RESET CONFIRMED (both CLEAN from logs). 200f-0.21880 EVICTED c1678. pareto=8 post-c1703. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "fire-236 UPDATE: c1728=30TH-RESET-CONFIRMED(c1703+25=c1728-EXACT). pareto=6 post-c1728. gen5210-200f-0.21952 EXTREME URGENT. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
+    },
+    {
+      "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
+      "priority": 2,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "fire-236 UPDATE: S18 c=336 g=1006 stag=0 pareto=12. 9TH-AUTO-RESET-c317-CONFIRMED(c292+25=c317-EXACT). Rule8-CLEAN from /api/status: top_model_types=[random_forest,catboost,xgboost,lightgbm,logistic_regression]-NO-STACKING! /api/export-404(13th). Next reset ~c342(c317+25). VM: curl /api/export S18 to verify Rule8-CLEAN at c317."
+    },
+    {
+      "id": "vm-research-scoring-bench-tabicl-fire236",
+      "priority": 110,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "RESEARCH fire-236 EVEN: ScoringBench + Distributional Tabular FM — arXiv:2603.29928 + arXiv:2603.08206 (Mar 2026). App1: ScoringBench eval TabICLv2 vs TabPFNv2.5 vs current TabICL on 186f NBA dataset. App2: Add CRPS as 5th Pareto objective on evolution islands. App3: Add CRLS as 6th Pareto objective for tail-risk. App4: TabICLv2 upgrade (explicit distributional calibration). App5: Port proper scoring rules to political_engine.py. Expected: 0.002-0.004 Brier. Proposal: data/research-proposals/sota-scoring-bench-tabicl-fire236.md."
     },
     {
       "id": "vm-research-wnba-nba-transfer-learning-fire234",
@@ -113,7 +175,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "RESEARCH fire-234 EVEN: WNBA→NBA Multi-Task Transfer Learning — MDPI 2079-3197/13/10/230 (2026). App1: joint NBA+WNBA loss (weight=0.1). App2: WNBA feature importance as prior for NBA selection. App3: cross-sport Brier calibration holdout. App4: state legislative→federal analog in political_engine.py. Expected: 0.001-0.003 Brier improvement on 200f spaces. Proposal: data/research-proposals/sota-wnba-nba-transfer-learning-fire234.md."
+      "subject": "RESEARCH fire-234 EVEN: WNBA→NBA Multi-Task Transfer Learning — MDPI 2079-3197/13/10/230. App1: joint NBA+WNBA loss (weight=0.1). App2: WNBA feature importance as prior. App3: cross-sport Brier calibration holdout. App4: state legislative→federal POL analog. Expected: 0.001-0.003 Brier. Proposal: data/research-proposals/sota-wnba-nba-transfer-learning-fire234.md."
     },
     {
       "id": "vm-research-temporal-cv-sliding-window-fire230",
@@ -121,7 +183,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T16:00:00Z",
-      "subject": "RESEARCH fire-230 EVEN: Temporal Cross-Validation Sliding Window - arXiv:2506.12183. Add cv_method='sliding_window' to validate_model() with max_train_size=3000. Add cv_holdout_gap metric to /api/export. Add minimize_cv_gap as 7th Pareto objective. Port to political_engine.py. Expected: 0.001-0.003 Brier reduction. Proposal: data/research-proposals/sota-temporal-cv-sliding-window-fire230.md."
+      "subject": "RESEARCH fire-230 EVEN: Temporal CV Sliding Window - arXiv:2506.12183. Add cv_method='sliding_window' + minimize_cv_gap Pareto objective. Expected: 0.001-0.003 Brier."
     },
     {
       "id": "vm-research-ml-sports-betting-review-fire228",
@@ -129,7 +191,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T08:00:00Z",
-      "subject": "RESEARCH fire-228 EVEN: Systematic Review ML Sports Betting - arXiv:2410.21484. ET > RF on 200f. Venn-Abers theoretically strongest calibration. Elo ratings SHAP#1. Proposal: data/research-proposals/sota-ml-sports-betting-review-fire228.md."
+      "subject": "RESEARCH fire-228 EVEN: Systematic Review ML Sports Betting - arXiv:2410.21484. ET > RF on 200f. Venn-Abers theoretically strongest."
     },
     {
       "id": "vm-research-multi-scale-conformal-fire226",
@@ -153,7 +215,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-04T00:00:00Z",
-      "subject": "RESEARCH: Brier Score Misconceptions - PMC12818272 (Global Epidemiology 2026)."
+      "subject": "RESEARCH: Brier Score Misconceptions - PMC12818272."
     },
     {
       "id": "vm-research-coordination-layer-llm-fire218",
@@ -249,7 +311,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-05-30T06:00:00Z",
-      "subject": "RESEARCH: Online Learning in Betting Markets - arXiv:2511.17621"
+      "subject": "RESEARCH: Online Learning in Betting Markets - arXiv:2406.04062"
     },
     {
       "id": "vm-research-lstm-nba-multiseason-fire190",
@@ -281,7 +343,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-06T00:00:00Z",
-      "subject": "RESEARCH fire-232 EVEN: Schedule Fatigue Features — IEEE 2024 confirms home_next = TOP-3 FEATURE. Add to engine.py: (1) next_game_is_home (binary), (2) games_until_home (consecutive away count), (3) home_stand_length, (4) fatigue_index = away_streak × (1-next_game_is_home). Expected: 0.001-0.002 Brier. Proposal: data/research-proposals/sota-schedule-home-next-feature-fire232.md."
+      "subject": "RESEARCH fire-232 EVEN: Schedule Fatigue Features — IEEE 2024 confirms home_next = TOP-3 FEATURE. Add to engine.py: next_game_is_home, games_until_home, home_stand_length, fatigue_index. Expected: 0.001-0.002 Brier."
     },
     {
       "id": "vm-add-elo-ratings-engine",
@@ -289,7 +351,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Add Elo ratings as feature category to features/engine.py - SHAP #1+#2 (IEEE/MDPI 2026). arXiv:2410.21484 systematic review confirms Elo ratings as universal SHAP #1 feature for basketball prediction."
+      "subject": "Add Elo ratings as feature category to features/engine.py - SHAP #1+#2 (IEEE/MDPI 2026)."
     },
     {
       "id": "vm-add-logistic-regression-model-pool",
@@ -313,7 +375,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S14 MODEL_TYPES - Rule#8 violation. S14 404-DOWN 60+ fires."
+      "subject": "Remove stacking from S14 MODEL_TYPES - Rule#8 violation. S14 404-DOWN 62+ fires."
     },
     {
       "id": "vm-add-lightgbm-p1-p2",
@@ -329,7 +391,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S15 MODEL_TYPES - Rule#8 violation. S15 404-DOWN 60+ fires."
+      "subject": "Remove stacking from S15 MODEL_TYPES - Rule#8 violation. S15 404-DOWN 62+ fires."
     },
     {
       "id": "vm-remove-stacking-s13",
@@ -337,23 +399,23 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S13 MODEL_TYPES - Rule#8 violation. S13 404-DOWN 60+ fires."
+      "subject": "Remove stacking from S13 MODEL_TYPES - Rule#8 violation. S13 404-DOWN 62+ fires."
     },
     {
       "id": "vm-remove-stacking-s22",
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "fire-234 UPDATE: S22 c=1706 g=5117 stag=0 pareto=8(post-c1703-29TH-RESET). 28TH/29TH resets BOTH CLEAN (xgb/lgb/cat only, no stacking, no RF/ET). 200f-0.21880 EVICTED c1678. cycle-stag=2. /api/export-404(51st). Next reset ~c1728. VM: curl /api/export S22."
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "fire-236 UPDATE: S22 c=1738 g=5214 stag=0 pareto=6(↓8→6). 30TH-RESET-c1728-CONFIRMED. gen5210-200f-0.21952-EXTREME-URGENT! /api/export-404(53rd). Next ~c1753. VM: curl /api/export S22 — confirm model type at c1728 reset + gen5210 model type."
     },
     {
       "id": "vm-remove-stacking-s18",
       "priority": 42,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "fire-234 UPDATE: S18 c=300 g=898 stag=0 pareto=12. 8TH-RESET PASSED ~c292. Rule8 UNKNOWN (export-404). /api/export-404(12th). Next reset ~c317. VM: curl /api/export S18."
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "fire-236 UPDATE: S18 c=336 g=1006 stag=0 pareto=12. 9TH-RESET-c317-CONFIRMED. Rule8-CLEAN confirmed from /api/status top_model_types=[RF,Cat,XGB,LGB,LR]. /api/export-404(13th). Next ~c342. VM: curl /api/export to formally verify."
     },
     {
       "id": "engine-parity-sync",
@@ -368,16 +430,16 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) 404-DOWN fire-234 (60+ fires). Holds FLEET BEST RF-75f 0.22012. VM: retry /api/status periodically."
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) 404-DOWN fire-236 (62+ fires). Holds FLEET BEST RF-75f 0.22012. VM: retry /api/status periodically."
     },
     {
       "id": "vm-checkpoint-p4-lgbm-0.2492-fire143",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 - 404-DOWN 60+ fires"
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 - 404-DOWN 63+ fires"
     },
     {
       "id": "vm-s22-rf200f-0.2197-gen4526-fire223",
@@ -385,68 +447,23 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T16:00:00Z",
-      "subject": "fire-234: RF-200f 0.2197 LOST + ET-200f-0.21875 LOST + 200f-0.21880 CONFIRMED EVICTED c1678. All 200f candidates gone. S22 now XGB/LGB/CAT-only gene pool."
+      "subject": "fire-236: All previous 200f candidates evicted. NEW: gen5210-200f-0.21952 EXTREME URGENT. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
     },
     {
       "id": "vm-s18-c25-first-autoreset-fire223",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "fire-234 UPDATE: S18 c=300 g=898 stag=0 pareto=12. 8TH-RESET PASSED ~c292. Next ~c317. VM: curl /api/export."
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "fire-236 UPDATE: S18 c=336 g=1006 stag=0 pareto=12. 9TH-RESET-c317-CONFIRMED. Rule8-CLEAN(/api/status). Next ~c342. VM: curl /api/export."
     },
     {
       "id": "vm-s22-c1528-22nd-c1553-23rd-reset-fire224",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "fire-234 UPDATE: c1703=29TH-RESET CONFIRMED (CLEAN). 200f-0.21880 EVICTED c1678. pareto=8 post-c1703. VM: curl /api/export S22."
-    },
-    {
-      "id": "cloud-brain-fire227-2026-06-05T04h",
-      "priority": 277,
-      "status": "done",
-      "completed_at": "2026-06-05T04:00:00Z",
-      "completed_by": "cloud-brain-fire-227",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-227 ODD: S22-RF-200f-0.21953-EXTREME-URGENT; S18-c153-2ND-AUTO-RESET-CONFIRMED"
-    },
-    {
-      "id": "cloud-brain-fire226-2026-06-05T00h",
-      "priority": 276,
-      "status": "done",
-      "completed_at": "2026-06-05T00:00:00Z",
-      "completed_by": "cloud-brain-fire-226",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-226 EVEN: arXiv:2502.05565-Multi-Scale-Conformal-Prediction-Feb2026-proposal-written"
-    },
-    {
-      "id": "cloud-brain-fire225-2026-06-04T20h",
-      "priority": 275,
-      "status": "done",
-      "completed_at": "2026-06-04T20:00:00Z",
-      "completed_by": "cloud-brain-fire-225",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-225 ODD: Axelrod-ablation-config-app3-DONE NBA(6035L)+POL(4019L)"
-    },
-    {
-      "id": "tf-axelrod-ablation-config",
-      "priority": 14,
-      "status": "done",
-      "completed_at": "2026-06-04T20:00:00Z",
-      "completed_by": "cloud-brain-fire-225",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-225: Axelrod ablation config DONE. BLOCKED: do_not_push_hf_space_yet."
-    },
-    {
-      "id": "cloud-brain-fire224-2026-06-04T16h",
-      "priority": 274,
-      "status": "done",
-      "completed_at": "2026-06-04T16:00:00Z",
-      "completed_by": "cloud-brain-fire-224",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-224 EVEN: S18-c84-c67=1ST-AUTO-RESET-CONFIRMED(RULE8-BREAKTHROUGH); arXiv:2602.19284-Localized-CP-proposal-written"
+      "updated_at": "2026-06-06T16:00:00Z",
+      "subject": "fire-236 UPDATE: c1728=30TH-RESET-CONFIRMED. pareto=6 post-c1728. gen5210-200f-0.21952 EXTREME URGENT. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
     }
   ]
 }
