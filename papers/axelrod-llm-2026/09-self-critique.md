@@ -8113,3 +8113,137 @@ manual network verification (arXiv author lists). No prose issues remain.
 8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
 9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
 10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+
+---
+
+# Peer-Review Self-Critique — Cycle ZZ (2026-06-06, fire-235)
+
+*Full re-read of §3.6 (bankroll update formula), §3.5 Proposition 2 Claim 1 proof (timing structure), and $g_{i,t}$ piecewise definition. Three issues identified; all fixed this cycle.*
+
+---
+
+## CYCLE ZZ — NEW ISSUES
+
+### ZZ1. §3.6 Bankroll update formula allows negative bankrolls on heavy game days [FIXED]
+
+**Reviewer:** The bankroll update reads:
+
+$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \sum_{t \in \mathcal{B}_d} s_i \cdot g_{i,t}\right)$$
+
+accompanied by: "The agent bets $s_i \cdot V_{i,d-1}$ on its favoured outcome" — meaning the agent stakes fraction $s_i$ of its total bankroll on *each* individual event $t \in \mathcal{B}_d$.  With the maximum empirical stake $s_i = 0.14$ (from $\rho_i = 0.70 \times \kappa_i = 0.20$, combined with $\kappa_{\min}^{(r)} \leq 0.08$) and a heavy NBA game day of 10 events, total exposure is $10 \times 0.14 \times V_{i,d-1} = 1.4\,V_{i,d-1}$ — exceeding the agent's entire bankroll.  If all bets lose simultaneously ($g_{i,t} = -1$), the update produces:
+
+$$V_{i,d} = V_{i,d-1} \cdot (1 + 10 \times 0.14 \times (-1)) = V_{i,d-1} \cdot (-0.4) < 0$$
+
+This is a physically impossible state: a virtual bankroll cannot be negative.  The 2025–26 NBA season includes days with up to 15 games (playoff-style scheduling during the final weeks); at $|\mathcal{B}_d| = 15$ and $s_i = 0.14$, total potential loss is $2.1\,V_{i,d-1}$ — catastrophically negative.  The formula as written is mathematically inconsistent with any realistic betting model: standard Kelly theory for simultaneous bets requires the total stake across all contemporaneous positions to remain below 100\% of current wealth.
+
+**Root cause:** The formula conflates a *per-event* stake (fraction of bankroll allocated to each game independently) with a *per-day* budget (fraction of bankroll allocated across all games collectively). The intended interpretation is the latter — agents have a daily risk budget $s_i \cdot V_{i,d-1}$ distributed equally across events where bets are placed — but the current wording says "bets $s_i \cdot V_{i,d-1}$ on its favoured outcome" (per event), which implies unbounded total exposure.
+
+**Fix applied (`04-method.md` §3.6 and `paper.md` §3.6):**
+
+Redefined the formula so that $s_i$ is the *daily budget fraction* divided equally across the $|\mathcal{B}_d^+|$ events on which the agent places a bet:
+
+$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \frac{s_i}{|\mathcal{B}_d^+|}\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right)$$
+
+where $\mathcal{B}_d^+ = \{t \in \mathcal{B}_d : p_{i,t} \neq q_t\}$ denotes the subset of events on which the agent places a bet (excluding the no-bet case $p_{i,t} = q_t$, which contributes $g_{i,t} = 0$).  The per-event stake is therefore $\frac{s_i}{|\mathcal{B}_d^+|} \cdot V_{i,d-1}$, bounding total daily exposure at $s_i \leq 1$ regardless of game count.  Updated prose: "The agent allocates a daily budget of fraction $s_i$ of its bankroll, split equally across the $|\mathcal{B}_d^+|$ events on which it places a bet; per-event stake is $\frac{s_i}{|\mathcal{B}_d^+|} \cdot V_{i,d-1}$."  Added parenthetical: "(This normalization bounds total daily exposure at $s_i \cdot V_{i,d-1}$ regardless of game count, preventing negative bankrolls even on days with $|\mathcal{B}_d| = 15$ games.)" ✓
+
+Updated Table 2 footnote for $s_i$: range $[0.01, 0.14]$ is the per-day budget fraction; per-event allocation adjusts automatically with daily game count. ✓
+
+*Post-fix verification:*
+`grep -n "bets s_i.*V_{i,d-1}.*on its favoured outcome" 04-method.md paper.md` → zero hits (old per-event framing removed). ✓
+`grep -n "daily budget.*fraction" 04-method.md paper.md` → two hits. ✓
+
+---
+
+### ZZ2. Proposition 2 Claim 1 proof mixes day-$d$ and day-$(d+1)$ quantities, making the core comparison vacuously true on day $d$ [FIXED]
+
+**Reviewer:** The Claim 1 proof (§3.5) makes two assertions:
+
+1. **"SRR increases $\text{Amb}^{\mathcal{C}}$"** (line: "Under SRR, eligible agents in $\mathcal{C}$ draw archetype assignments from $\mathcal{V}_d$, differentiating their predictions from one another and increasing $\text{Amb}^{\mathcal{C}}$").
+
+2. **"$\overline{B}^{\mathcal{C}}$ is unchanged at day $d$"** (line: "SRR leaves the per-agent mean Brier $\overline{B}^{\mathcal{C}}$ unchanged at day $d$ (the archetype change takes effect in future predictions; the term $\overline{B}^{\mathcal{C}}$ is a sample average over past outcomes)").
+
+These two assertions refer to *different days*, creating a self-defeating proof structure.  Per the LPSG protocol (Definition 1, §3.2), SRR fires at **step 6** — *after* day-$d$ predictions (step 2) and scoring (step 4).  Therefore:
+
+- At day $d$: both the SRR and deviation conditions produce *identical* predictions $p_{i,t}$, identical individual Brier $B_{i,d}$, and identical within-coalition Ambiguity $\text{Amb}_d^{\mathcal{C}}$.  The assertion "$\overline{B}^{\mathcal{C}}$ unchanged at day $d$" is correct, but so is "$\text{Amb}^{\mathcal{C}}$ unchanged at day $d$."  The comparison is trivially $B_{\text{ens},d}^{\mathcal{C},\text{deviation}} = B_{\text{ens},d}^{\mathcal{C},\text{SRR}}$ — equal, not weak inequality, and vacuously true.
+
+- At day $d+1$: the archetype assignment from SRR takes effect, changing both $B_{i,d+1}$ (individual Brier, as predictions are now generated from the new archetype) and $\text{Amb}_{d+1}^{\mathcal{C}}$ (Ambiguity, as archetype differentiation increases prediction spread).  Assertion (1) correctly describes this day-$d+1$ increase in Ambiguity, but assertion (2) ("$\overline{B}^{\mathcal{C}}$ unchanged") no longer holds because day-$d+1$ individual Brier depends on day-$d+1$ predictions, which *are* different under SRR.
+
+The proof thus applies the "unchanged $\overline{B}^{\mathcal{C}}$" argument (valid only on day $d$, where Ambiguity is also unchanged) to a comparison where the Ambiguity increase (only visible from day $d+1$) is the driving term.  A hostile reviewer will immediately recognise that on the one day (day $d$) where $\overline{B}^{\mathcal{C}}$ is genuinely unchanged, the Ambiguity difference is also zero — making Claim 1's comparison trivially tight but empty.
+
+**Correct argument structure:** Claim 1 should compare *expected ensemble Brier from day $d+1$ onwards*, where both terms of the Ambiguity decomposition differ.  At day $d+1$:
+
+- $\mathbb{E}[\text{Amb}_{d+1}^{\mathcal{C},\text{SRR}}] > \mathbb{E}[\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}}]$ follows from Lemma 1 (SRR strictly increases expected JSD diversity at day $d+1$). ✓
+- $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}] \geq \mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{SRR}}]$ follows from Claim 2 (A3 — eligible agents' Brier persists above mean under refusal; SRR relocates agents toward a fresh archetype, so their expected day-$d+1$ Brier is at worst the population mean, which is ≤ the above-mean value guaranteed by deviation). This means deviation does not reduce, and in expectation elevates, mean individual Brier relative to SRR.
+
+Both effects favor SRR: higher Ambiguity *and* weakly lower mean individual Brier.  Combined via the Ambiguity decomposition: $\mathbb{E}[B_{\text{ens},d+1}^{\mathcal{C},\text{deviation}}] \geq \mathbb{E}[B_{\text{ens},d+1}^{\mathcal{C},\text{SRR}}]$. ✓
+
+**Fix applied (`04-method.md` §3.5 Claim 1 and `paper.md` §3.5 Claim 1):**
+
+Replaced the mixed-day argument with an explicit day-$d+1$ comparison:
+
+- Added opening sentence: "Since SRR fires at step 6 (after day-$d$ scoring), day-$d$ ensemble Brier is identical under both conditions; the non-trivial comparison concerns $\mathbb{E}[B_{\text{ens},d+1}^{\mathcal{C}}]$."
+- Changed "SRR leaves $\overline{B}^{\mathcal{C}}$ unchanged at day $d$" to "At day $d+1$, mean individual Brier is weakly lower under SRR than under deviation in expectation: by Claim 2, deviation keeps eligible agents above the population mean (A3); SRR assigns a fresh archetype drawn from $\mathcal{V}_d$, so the expected day-$d+1$ Brier of a reallocated agent is at most the population mean — strictly below the above-mean floor guaranteed by deviation. Therefore $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}] \geq \mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{SRR}}]$."
+- The Ambiguity inequality remains: $\mathbb{E}[\text{Amb}_{d+1}^{\mathcal{C},\text{SRR}}] > \mathbb{E}[\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}}]$ (from Lemma 1). ✓
+- Final inequality restated with explicit day subscripts and expectation: $\mathbb{E}[B_{\text{ens},d+1}^{\mathcal{C},\text{deviation}}] \geq \mathbb{E}[B_{\text{ens},d+1}^{\mathcal{C},\text{SRR}}]$. ✓
+
+*Note: This fix requires referencing Claim 2 from within Claim 1 (for the mean-individual-Brier bound). This is a forward reference (Claim 2 is presented after Claim 1 in the current proof structure), which we resolve by adding: "The individual-Brier bound invokes Claim 2 below; the logical order is: Claim 2 (A3-based) → Claim 1 (Ambiguity + Claim 2 combined) → Combined conclusion."  Alternatively, Claims 1 and 2 could be presented in reverse order. We retain the current order (more natural for reader intuition: ensemble before individual) and add the forward-reference note.*
+
+*Post-fix verification:*
+`grep -n "unchanged at day.*d\b" 04-method.md paper.md | grep "Claim 1"` → zero hits (old mixed-day language removed). ✓
+`grep -n "day.*d+1.*comparison\|non-trivial comparison" 04-method.md paper.md` → two hits. ✓
+
+---
+
+### ZZ3. $g_{i,t}$ piecewise definition omits the no-bet case; formula incomplete [FIXED]
+
+**Reviewer:** The bankroll update formula sums $s_i \cdot g_{i,t}$ over $t \in \mathcal{B}_d$, but the piecewise definition of $g_{i,t}$ provides only three cases:
+
+$$g_{i,t} = \begin{cases}
+\frac{1-q_t}{q_t} & \text{correct bet on } \omega = 1 \\
+\frac{q_t}{1-q_t} & \text{correct bet on } \omega = 0 \\
+-1 & \text{incorrect bet}
+\end{cases}$$
+
+The prose states "if $p_{i,t} = q_t$ no bet is placed," but this case is absent from the piecewise definition.  A reader implementing the formula from the paper must infer that the no-bet case contributes $g_{i,t} = 0$ (and hence $s_i \cdot g_{i,t} = 0$) — a reasonable inference, but one that should be stated explicitly.  Without the fourth case, the piecewise definition is formally incomplete: there exist values of $p_{i,t}$ (specifically $p_{i,t} = q_t$) for which $g_{i,t}$ is undefined in the formula, even though those values arise naturally during any day when an agent's calibration exactly matches the market.  An inconsistent source code implementation (e.g., accidentally passing $p_{i,t} = q_t$ to the formula and receiving a division-by-zero or a spurious return value) is a non-trivial reproducibility risk that this omission permits.
+
+**Fix applied (`04-method.md` §3.6 and `paper.md` §3.6):**
+
+Added a fourth case to the piecewise definition:
+
+$$g_{i,t} = \begin{cases}
+\dfrac{1 - q_t}{q_t} & \text{correct bet on outcome } \omega=1 \;(p_{i,t} > q_t) \\[6pt]
+\dfrac{q_t}{1 - q_t} & \text{correct bet on outcome } \omega=0 \;(p_{i,t} < q_t) \\[6pt]
+-1 & \text{incorrect bet (either direction)} \\[6pt]
+0 & \text{no bet placed} \;(p_{i,t} = q_t)
+\end{cases}$$
+
+The added case makes explicit that the no-bet event contributes zero to the bankroll update.  Updated the prose footnote: "In the no-bet case ($p_{i,t} = q_t$, event $t$ excluded from $\mathcal{B}_d^+$), $g_{i,t} = 0$ by convention; only bet-placing events enter the numerator sum of the bankroll update." ✓
+
+*Post-fix verification:*
+`grep -n "no bet placed.*g_{i,t}.*= 0\|g_{i,t} = 0.*no bet" 04-method.md paper.md` → two hits. ✓
+
+---
+
+## CYCLE ZZ SUMMARY
+
+**Fixed this cycle:** ZZ1 (§3.6 bankroll formula — per-event stake $s_i$ allows negative bankrolls on heavy game days; redefined as per-day budget fraction with per-event normalization $s_i/|\mathcal{B}_d^+|$); ZZ2 (§3.5 Proposition 2 Claim 1 — proof mixes day-$d$ and day-$d+1$ quantities; rewritten to explicitly compare $\mathbb{E}[B_{\text{ens},d+1}^{\mathcal{C}}]$ using both Ambiguity increase from Lemma 1 and mean individual Brier bound from Claim 2); ZZ3 (§3.6 $g_{i,t}$ definition — fourth case "$g_{i,t} = 0$ when no bet placed" added to close the formal incompleteness)
+
+**Remaining open from prior cycles:** Items 1–10 in the PRE-SUBMISSION checklist below; all are data-blocked or require manual network verification. No prose issues remain.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.6: bankroll formula updated (per-day budget, $\mathcal{B}_d^+$ notation); $g_{i,t}$ piecewise extended (ZZ1, ZZ3)
+- `04-method.md` §3.5 Claim 1: day-$d+1$ comparison made explicit; forward reference to Claim 2 noted (ZZ2)
+- `paper.md` §3.6: same as ZZ1 + ZZ3 fixes
+- `paper.md` §3.5 Claim 1: same as ZZ2 fix
+
+**PRE-SUBMISSION checklist (unchanged from Cycle YY):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. Verify `@llm_ipd2024` first author (arXiv:2406.13605)
+3. Verify `@polyswarm2026` author list (arXiv:2604.03888)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (m2)
+5. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+6. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+7. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table

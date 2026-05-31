@@ -861,22 +861,29 @@ scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5
 *Proof.* We establish two claims and then combine them.
 
 **Claim 1 (Coalition ensemble Brier weakly increases under deviation).**
-Apply the Brier ambiguity decomposition to the coalition sub-ensemble $\mathcal{C}$:
+*Timing note:* SRR fires at step 6 — after day-$d$ predictions (step 2) and
+scoring (step 4) — so day-$d$ Brier is identical under both the SRR and deviation
+conditions.  The non-trivial comparison concerns expected ensemble Brier from
+day $d+1$ onwards, where the archetype assignments from SRR take effect.
+Apply the Brier ambiguity decomposition to the coalition sub-ensemble $\mathcal{C}$
+at day $d+1$:
 
-$$B_{\text{ens}}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_i - \text{Amb}^{\mathcal{C}},
-\quad \text{Amb}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_d|}\sum_{t}\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
+$$B_{\text{ens},d+1}^{\mathcal{C}} = \frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}} B_{i,d+1} - \text{Amb}_{d+1}^{\mathcal{C}},
+\quad \text{Amb}_{d+1}^{\mathcal{C}} = \frac{1}{|\mathcal{B}_{d+1}|}\sum_{t}\frac{1}{|\mathcal{C}|}\sum_{i\in\mathcal{C}}(p_{i,t} - \bar{p}_t^{\mathcal{C}})^2$$
 
-*Case $|\mathcal{C}|=1$:* With a single agent, $\text{Amb}^{\mathcal{C}} \equiv 0$ identically.
-The decomposition yields $B_{\text{ens}}^{\mathcal{C}} = B_i$, so ensemble and individual
+*Case $|\mathcal{C}|=1$:* With a single agent, $\text{Amb}_{d+1}^{\mathcal{C}} \equiv 0$ identically.
+The decomposition yields $B_{\text{ens},d+1}^{\mathcal{C}} = B_{i,d+1}$, so ensemble and individual
 Brier coincide; any claim about ensemble-Brier improvement requires individual-Brier
 improvement, which is addressed in Claim 2 below.
 
-*Case $|\mathcal{C}|\geq 2$:* A coalition refusing SRR forgoes the within-coalition
+*Case $|\mathcal{C}|\geq 2$:* We bound both terms of the decomposition at day $d+1$.
+
+*Ambiguity term.* A coalition refusing SRR forgoes the within-coalition
 Ambiguity increase that the mechanism provides.  Under SRR, eligible agents in
 $\mathcal{C}$ draw archetype assignments from $\mathcal{V}_d$, differentiating their
-predictions from one another and increasing $\text{Amb}^{\mathcal{C}}$.  Under
+day-$(d+1)$ predictions and increasing $\text{Amb}_{d+1}^{\mathcal{C}}$.  Under
 deviation, coalition members retain their current archetypes, so
-$\text{Amb}^{\mathcal{C},\text{deviation}} = \text{Amb}^{\mathcal{C},\text{pre}}$.
+$\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}} = \text{Amb}_{d+1}^{\mathcal{C},\text{pre}}$.
 Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (Assumptions A1,
 A2, A4, A5 each apply because $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$
 and the archetype-distinguishability and centroid-deviation bounds hold
@@ -887,19 +894,35 @@ deviation satisfies $\mathbb{E}_t[\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}
 |p_{j,t}-\bar{p}_t^{\mathcal{C}}|] \leq 0.014$ by the convexity of absolute value
 and the per-agent bound) yields:
 
-$$\text{Amb}^{\mathcal{C},\text{SRR}} > \text{Amb}^{\mathcal{C},\text{deviation}}$$
+$$\mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{SRR}}\right] > \mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}}\right]$$
 
-Since $B_{\text{ens}}^{\mathcal{C}} = \overline{B}^{\mathcal{C}} - \text{Amb}^{\mathcal{C}}$
-and SRR leaves the per-agent mean Brier $\overline{B}^{\mathcal{C}}$ unchanged at
-day $d$ (the archetype change takes effect in future predictions; the term
-$\overline{B}^{\mathcal{C}}$ is a sample average over past outcomes), strictly
-higher Ambiguity under SRR implies:
+*Mean individual Brier term.* At day $d+1$, individual Brier depends on day-$(d+1)$
+predictions generated from the archetype in force after SRR.  By Claim 2
+(invoked via forward reference; the argument is not circular — Claim 2 depends
+only on A3 and sacrifice-eligibility, both independent of Claim 1):
+deviation keeps every eligible agent in the same archetype that produced above-mean
+Brier (A3: the performance deficit persists at level $\geq \bar{B}_d + \delta_{\text{sac}}/2$),
+so $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}] \geq \bar{B}_d + \delta_{\text{sac}}/2 > \bar{B}_d$.
+Under SRR, the reallocated agent adopts a fresh archetype drawn from $\mathcal{V}_d$;
+in expectation a vacant archetype produces predictions near the population mean
+(A1 ensures the new archetype generates distinct, differentiated predictions),
+so $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \mathbb{E}[B_{i,d+1}^{\text{deviation}}]$.
+Therefore:
 
-$$B_{\text{ens}}^{\mathcal{C},\text{deviation}} \;=\; \overline{B}^{\mathcal{C}} - \text{Amb}^{\mathcal{C},\text{deviation}}
-\;\geq\; \overline{B}^{\mathcal{C}} - \text{Amb}^{\mathcal{C},\text{SRR}}
-\;=\; B_{\text{ens}}^{\mathcal{C},\text{SRR}}$$
+$$\mathbb{E}\!\left[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}\right] \;\geq\;
+\mathbb{E}\!\left[\overline{B}_{d+1}^{\mathcal{C},\text{SRR}}\right]$$
 
-Coalition ensemble Brier is therefore weakly *worse* (or equal in the boundary case)
+*Combining at day $d+1$.* Applying $B_{\text{ens},d+1}^{\mathcal{C}} = \overline{B}_{d+1}^{\mathcal{C}} - \text{Amb}_{d+1}^{\mathcal{C}}$:
+
+$$\mathbb{E}\!\left[B_{\text{ens},d+1}^{\mathcal{C},\text{deviation}}\right] \;=\;
+\mathbb{E}\!\left[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}\right] -
+\mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}}\right]
+\;\geq\;
+\mathbb{E}\!\left[\overline{B}_{d+1}^{\mathcal{C},\text{SRR}}\right] -
+\mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{SRR}}\right]
+\;=\; \mathbb{E}\!\left[B_{\text{ens},d+1}^{\mathcal{C},\text{SRR}}\right]$$
+
+Coalition expected ensemble Brier at day $d+1$ is therefore weakly *worse*
 under deviation for $|\mathcal{C}| \geq 2$. Combined with the $|\mathcal{C}|=1$ case,
 Claim 1 holds for all $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$.
 
@@ -984,24 +1007,34 @@ $$s_i = \max\!\left(\kappa_{\min}^{(r_i)},\; \rho_i \cdot \kappa_i\right)$$
 bankroll $V_{i,d}$ (notation: $V$ for virtual value; distinct from the patience
 window scalar $W$ defined in §3.4) updates as:
 
-$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \sum_{t \in \mathcal{B}_d} s_i \cdot g_{i,t}\right)$$
+$$V_{i,d} = V_{i,d-1} \cdot \left(1 + \frac{s_i}{|\mathcal{B}_d^+|}\sum_{t \in \mathcal{B}_d^+} g_{i,t}\right)$$
 
-where $g_{i,t}$ is the signed net return on event $t$.  The agent bets $s_i \cdot V_{i,d-1}$
-on its favoured outcome: $\omega = 1$ if $p_{i,t} > q_t$, $\omega = 0$ if
-$p_{i,t} < q_t$, where $q_t$ is the market-implied probability derived from the
-published moneyline; if $p_{i,t} = q_t$ no bet is placed.  For a correct bet:
+where $\mathcal{B}_d^+ = \{t \in \mathcal{B}_d : p_{i,t} \neq q_t\}$ is the subset of
+day-$d$ events on which the agent places a bet, and $g_{i,t}$ is the signed net return
+per unit staked on event $t$.  Here $s_i$ is the agent's *daily budget fraction*:
+the agent allocates a total stake of $s_i \cdot V_{i,d-1}$ across all bet-placing events,
+with per-event allocation $\frac{s_i}{|\mathcal{B}_d^+|} \cdot V_{i,d-1}$.
+(This normalization bounds total daily exposure at $s_i \cdot V_{i,d-1}$ regardless
+of game count, preventing negative bankrolls even on days with $|\mathcal{B}_d| = 15$
+games. Without it, a per-event stake of $s_i$ on each of 10 games at $s_i = 0.14$
+would yield total exposure 140\% of bankroll.)
+The agent bets on outcome $\omega = 1$ if $p_{i,t} > q_t$, on $\omega = 0$ if
+$p_{i,t} < q_t$, where $q_t$ is the market-implied probability from the published
+moneyline; if $p_{i,t} = q_t$ no bet is placed ($t \notin \mathcal{B}_d^+$).
+The signed net return is:
 
 $$g_{i,t} = \begin{cases}
 \dfrac{1 - q_t}{q_t} & \text{correct bet on outcome } \omega=1 \;(p_{i,t} > q_t) \\[6pt]
 \dfrac{q_t}{1 - q_t} & \text{correct bet on outcome } \omega=0 \;(p_{i,t} < q_t) \\[6pt]
--1 & \text{incorrect bet (either direction)}
+-1 & \text{incorrect bet (either direction)} \\[6pt]
+0 & \text{no bet placed} \;(p_{i,t} = q_t, \; t \notin \mathcal{B}_d^+)
 \end{cases}$$
 
 The two correct-bet returns are not generally equal: a correct away-bet ($\omega=0$) when
 $q_t = 0.6$ returns $0.6/0.4 = 1.5$ per unit versus $0.4/0.6 \approx 0.67$ for a
 correct home-bet ($\omega=1$), reflecting the higher implied difficulty of the
 contrarian position.
-For an incorrect bet: $g_{i,t} = -1$ (unit loss on the staked amount $s_i V_{i,d-1}$).  The full vig-adjusted formula,
+For an incorrect bet: $g_{i,t} = -1$ (unit loss on the per-event allocation $\frac{s_i}{|\mathcal{B}_d^+|} V_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
 `LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in Appendix D (§C.5).
 
