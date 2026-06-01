@@ -142,7 +142,7 @@ including congressional floor votes, Federal Reserve policy decisions,
 regulatory approval outcomes, gubernatorial races, state ballot initiatives,
 and macro-economic indicator release thresholds. Ground-truth resolutions
 are sourced from the political feature engine
-(`nomos-political-alpha/political_engine.py`, v3.19, 718 features), which
+(`LBJLincoln26/nomos-political-alpha`, `political_engine.py`, v3.19, 718 features), which
 archives resolutions with a canonical timestamp against which all agent
 predictions are scored.
 

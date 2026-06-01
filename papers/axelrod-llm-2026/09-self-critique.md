@@ -8363,3 +8363,98 @@ Monotonicity holds throughout the actual experimental range.
 8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
 9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
 10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+
+---
+
+# Cycle BBB — fire-242 — 2026-06-07T16h (EVEN)
+
+## Simulated Reviewer: Hostile Mathematician (second pass of Lemma 1)
+
+---
+
+## BBB1 — Lemma 1 Case 2: $(1+\eta_{\text{A4}})$ factor dropped from sufficient condition
+
+**Location:** `04-method.md` §3.5 (Lemma 1 proof, Case 2); `paper.md` §3.5 (same).
+
+**Severity:** Major mathematical — stated sufficient condition is formally incorrect without the A4 slack factor; pre-submission checklist item 12 carried the wrong bound.
+
+**Problem.** Assumption A4 provides the *exact* bound:
+$$\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \leq \mathbb{E}[|\Delta p|]\cdot(1+\eta_{\text{A4}})$$
+The cross-term in the JSD variance expansion therefore satisfies:
+$$\mathbb{E}[|\delta_i||\Delta p|] \leq (1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$$
+The Cycle A (original) text wrote the approximation "$\approx \mathbb{E}[|\Delta p|]$ for small $\eta_{\text{A4}}$" and treated it as an equality in the numerical verification, implying $\eta_{\text{A4}} = 0$. The stated sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$ with numerical check $0.034 > 0.028$ ($= 2 \times 0.014$) follows only under $\eta_{\text{A4}} = 0$.
+
+The correct *exact* sufficient condition (no approximation) is:
+$$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2(1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]$$
+Substituting the numerical values ($N=12$, $\mathbb{E}[|\Delta p|] \geq 0.037$ from A1, $\mathbb{E}[|\delta_i|] \leq 0.014$ from A5):
+$$\frac{11}{12}\times 0.037 = 0.03392 > 2(1+\eta_{\text{A4}})\times 0.014 = 0.028(1+\eta_{\text{A4}})$$
+This holds iff $(1+\eta_{\text{A4}}) < 0.03392/0.028 = 1.211$, i.e., $\eta_{\text{A4}} < 0.211$.
+
+The pre-submission checklist item 12 (added in Cycle BB) read "Verify A4 slack $\eta_{\text{A4}} < 0.22$" — this bound was too loose by $0.22 - 0.211 = 0.009$. The correct tight bound is $\eta_{\text{A4}} < 0.211$.
+
+**Fix.** In `04-method.md` §3.5 (Case 2) and `paper.md` §3.5:
+- Replaced "$\sup_{x_t}[\ldots] \approx \mathbb{E}[|\Delta p|]$ for small $\eta_{\text{A4}}$" with the exact A4 bound (no "$\approx$", no "for small").
+- Changed "$\mathbb{E}[|\delta_i||\Delta p|] \lesssim \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$" to the exact "$\leq (1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$".
+- Changed sufficient condition from $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$ to $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2(1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]$.
+- Updated numerical check from "0.034 > 0.028 $\checkmark$" to "holds iff $\eta_{\text{A4}} < 0.211$; pilot data must confirm this before Conditions B–E $\checkmark$".
+
+*Post-fix verification:*
+`grep -n "0\.211" 04-method.md paper.md` — two hits each, both in the Case 2 numerical check. ✓
+
+---
+
+## BBB2 — §4.2.2 unqualified internal path `nomos-political-alpha/political_engine.py`
+
+**Location:** `05-experimental-setup.md` §4.2.2; `paper.md` §4.2.2.
+
+**Severity:** Minor presentation — internal path leaks implied directory structure; same anti-pattern removed from §4.2.1 in Cycle UU (UU1/UU2) but §4.2.2 was missed.
+
+**Problem.** The text read:
+```
+(`nomos-political-alpha/political_engine.py`, v3.19, 718 features)
+```
+This bare `repo/file.py` form is unqualified — it does not tell readers where to find the file (GitHub? HuggingFace? local path?). Cycle UU already corrected the §4.2.1 counterpart (`nomos-nba-agent/features/engine.py`) by adding the full HuggingFace repository reference (`LBJLincoln26/nomos-nba-agent`, `engine.py`). The §4.2.2 path was not in the UU grep scope and survived.
+
+**Fix.** In `05-experimental-setup.md` §4.2.2 and `paper.md` §4.2.2:
+- Old: `` (`nomos-political-alpha/political_engine.py`, v3.19, 718 features) ``
+- New: `` (`LBJLincoln26/nomos-political-alpha`, `political_engine.py`, v3.19, 718 features) ``
+
+*Post-fix verification:*
+`grep -n "nomos-political-alpha/political_engine" 05-experimental-setup.md paper.md` — zero hits. ✓
+`grep -n "LBJLincoln26/nomos-political-alpha.*political_engine" 05-experimental-setup.md paper.md` — two hits each. ✓
+
+---
+
+## BBB-WS — EVEN-fire WebSearch finding
+
+**Query 1:** "arXiv 2026 LLM ensemble diversity Brier score prediction market" → found arXiv:2604.03888 (PolySwarm), arXiv:2605.03310 (Coordination Arch Layer), arXiv:2402.19379 (Silicon Crowd).
+
+**Query 2:** Confirmed `@schoenegger2024wisdom` (arXiv:2402.19379, Science Advances Nov 2024, "Wisdom of the Silicon Crowd") is already cited in `references.bib` and manuscript. N=12 LLM ensemble outperforms human crowd — directly validates §1 motivation for 12-agent TF design. **No action required.**
+
+---
+
+## CYCLE BBB SUMMARY
+
+**Fixed this cycle:** BBB1 (§3.5 Lemma 1 Case 2 — dropped $(1+\eta_{\text{A4}})$ from A4 cross-term bound; exact sufficient condition now stated; pre-submission item 12 tightened from $\eta_{\text{A4}} < 0.22$ to $\eta_{\text{A4}} < 0.211$); BBB2 (§4.2.2 `nomos-political-alpha/political_engine.py` unqualified path — same anti-pattern as UU1/UU2, now qualified with HF org prefix).
+
+**Remaining open from prior cycles:** Items 1–10 in PRE-SUBMISSION checklist below; all data-blocked or require manual network verification.
+
+**Structural changes this cycle:**
+- `04-method.md` §3.5: Lemma 1 Case 2 A4 cross-term — approximation → exact bound; sufficient condition updated; $\eta_{\text{A4}} < 0.211$ stated (BBB1)
+- `05-experimental-setup.md` §4.2.2: path `nomos-political-alpha/political_engine.py` → `LBJLincoln26/nomos-political-alpha`, `political_engine.py` (BBB2)
+- `paper.md` §3.5: same as BBB1
+- `paper.md` §4.2.2: same as BBB2
+
+**PRE-SUBMISSION checklist (item 12 tightened this cycle):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. Verify `@llm_ipd2024` first author (arXiv:2406.13605)
+3. Verify `@polyswarm2026` author list (arXiv:2604.03888)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (m2)
+5. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+6. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+7. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+11. *(was item 11, added Cycle BB)* Confirm T12 Cerebras rerouting footnote cites the correct date (2026-04-22) in Table 3
+12. Verify A4 slack $\eta_{\text{A4}} < \mathbf{0.211}$ (tightened from 0.22 by BBB1 — must confirm from pilot data before Conditions B–E)

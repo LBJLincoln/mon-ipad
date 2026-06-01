@@ -343,18 +343,21 @@ Therefore:
 $$\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}_{x_t}\!\bigl[|\delta_i(x_t)|\cdot\mathbb{E}_{r^*}\!\bigl[|\Delta p(r^*\!,x_t)|\bigr]\bigr]
 \;\leq\; \mathbb{E}[|\delta_i|]\cdot\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*\!,x_t)|]$$
 
-Under A4, $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \leq \mathbb{E}[|\Delta p|]\cdot(1+\eta_{\text{A4}})
-\approx \mathbb{E}[|\Delta p|]$ for small $\eta_{\text{A4}}$, giving
-$\mathbb{E}[|\delta_i||\Delta p|] \lesssim \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
+Under A4, $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \leq \mathbb{E}[|\Delta p|]\cdot(1+\eta_{\text{A4}})$,
+yielding the *exact* cross-term bound (no approximation):
+$\mathbb{E}[|\delta_i||\Delta p|] \leq (1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
 By Jensen's inequality applied to the convex function $f(x) = x^2$,
 $\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring $\mathbb{E}[|\Delta p|]$
-out of the lower bound then yields the sufficient condition:
+out of the lower bound then yields the exact sufficient condition:
 
-$$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\,\mathbb{E}[|\delta_i|]$$
+$$\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2(1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]$$
 
 Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
-$\mathbb{E}[|\delta_i|] \leq 0.014$ (A5), the LHS $\geq \frac{11}{12}\times 0.037 = 0.034$
-and the RHS $= 0.028$, giving $0.034 > 0.028$. $\checkmark$
+$\mathbb{E}[|\delta_i|] \leq 0.014$ (A5), the LHS $\geq \frac{11}{12}\times 0.037 = 0.03392$
+and the RHS $= 0.028(1+\eta_{\text{A4}})$. The inequality holds iff
+$\eta_{\text{A4}} < 0.03392/0.028 - 1 = 0.211$; pilot data must confirm
+$\eta_{\text{A4}} < 0.211$ before Conditions B–E (pre-submission checklist item 12,
+bound tightened from earlier stated 0.22). $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for

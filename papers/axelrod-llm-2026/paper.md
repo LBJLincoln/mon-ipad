@@ -823,13 +823,14 @@ $\delta_i(x_t)$ (determined before the draw). Therefore:
 $$\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}_{x_t}\!\bigl[|\delta_i(x_t)|\cdot\mathbb{E}_{r^*}\!\bigl[|\Delta p(r^*\!,x_t)|\bigr]\bigr]
 \;\leq\; \mathbb{E}[|\delta_i|]\cdot\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*\!,x_t)|]$$
 
-Under A4, $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \approx \mathbb{E}[|\Delta p|]$,
-giving $\mathbb{E}[|\delta_i||\Delta p|] \lesssim \mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
+Under A4, $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \leq \mathbb{E}[|\Delta p|]\cdot(1+\eta_{\text{A4}})$,
+giving the exact bound $\mathbb{E}[|\delta_i||\Delta p|] \leq (1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
 By Jensen's inequality ($\mathbb{E}[X^2] \geq (\mathbb{E}[|X|])^2$),
 $\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring out $\mathbb{E}[|\Delta p|]$
-yields the sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2\mathbb{E}[|\delta_i|]$.
-Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
-$\mathbb{E}[|\delta_i|] \leq 0.014$ (A5): LHS $\geq \frac{11}{12}\times 0.037 = 0.034 > 0.028 =$ RHS. $\checkmark$
+yields the exact sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2(1+\eta_{\text{A4}})\mathbb{E}[|\delta_i|]$.
+Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and $\mathbb{E}[|\delta_i|] \leq 0.014$ (A5):
+LHS $\geq \frac{11}{12}\times 0.037 = 0.03392$; RHS $= 0.028(1+\eta_{\text{A4}})$.
+Inequality holds iff $\eta_{\text{A4}} < 0.211$; pilot data must confirm this before Conditions B–E. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
@@ -1264,7 +1265,7 @@ including congressional floor votes, Federal Reserve policy decisions,
 regulatory approval outcomes, gubernatorial races, state ballot initiatives,
 and macro-economic indicator release thresholds. Ground-truth resolutions
 are sourced from the political feature engine
-(`nomos-political-alpha/political_engine.py`, v3.19, 718 features), which
+(`LBJLincoln26/nomos-political-alpha`, `political_engine.py`, v3.19, 718 features), which
 archives resolutions with a canonical timestamp against which all agent
 predictions are scored.
 
