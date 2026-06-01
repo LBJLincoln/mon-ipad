@@ -573,7 +573,7 @@ $0.6/0.4 = 1.5$ per unit staked versus $0.4/0.6 \approx 0.67$ for a correct
 home-bet, reflecting the higher implied difficulty of the contrarian position.
 For an incorrect bet: $g_{i,t} = -1$ (unit loss on the per-event allocation $\frac{s_i}{|\mathcal{B}_d^+|} V_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
-`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in Appendix D (§C.5).
+`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in §C.5.
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference

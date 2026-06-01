@@ -106,11 +106,12 @@ This paper makes four contributions:
    distinct in its formal SRR mechanism and cross-domain pairing rather than in
    raw agent count.]
 
-4. **Empirical validation of diversity-accuracy coupling.** We show that population-level
-   Jensen–Shannon divergence of agent prediction distributions is positively correlated
-   with ensemble Brier-score improvement, and that SRR reliably increases this divergence
-   versus a fixed-ensemble control, an ablation of mechanism components, and a DMAD
-   baseline (§5).
+4. **Empirical validation of diversity-accuracy coupling.** We pre-register and structure
+   four directional hypotheses (H1–H4, §4.3) testing whether SRR increases JSD
+   diversity (H1), reduces ensemble Brier (H2), requires genuine prompt-level reasoning
+   change rather than label signalling alone (H3), and whether static initial diversity
+   decays without dynamic maintenance (H4). Experimental structure and predicted
+   outcomes are detailed in §4–5; results pending full season resolution.
 
 ## Paper Organization
 

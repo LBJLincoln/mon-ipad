@@ -8458,3 +8458,223 @@ This bare `repo/file.py` form is unqualified — it does not tell readers where 
 10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
 11. *(was item 11, added Cycle BB)* Confirm T12 Cerebras rerouting footnote cites the correct date (2026-04-22) in Table 3
 12. Verify A4 slack $\eta_{\text{A4}} < \mathbf{0.211}$ (tightened from 0.22 by BBB1 — must confirm from pilot data before Conditions B–E)
+
+---
+
+# Cycle CCC — fire-246 — 2026-06-08T08h (EVEN)
+
+## Simulated Reviewer: Hostile Detail-Checker (citation hygiene + structural nomenclature)
+
+---
+
+## CCC1 — §C.5 titled "Appendix D" — 8-location naming inconsistency
+
+**Location:** `appendix-c.md` §C.5 header; `04-method.md` §3.6; `05-experimental-setup.md` §4.6;
+`06-results.md` §5.6 data availability note; `08-limitations.md` §7.7; `appendix-c.md` §C.1.2;
+`paper.md` corresponding lines (7 total — 1045, 1423, 1731, 2382, 2735, 2911).
+
+**Severity:** Moderate structural — the axelrod-log JSON schema content is physically located
+in `appendix-c.md` as section C.5, but was labelled throughout the paper as "Appendix D"
+*and* as "§C.5" simultaneously. The section header `## C.5  Appendix D — Axelrod Log Schema`
+was self-contradictory: it named itself both Appendix C §5 and a separate Appendix D.
+`paper.md` line 2735 had already partially acknowledged the dual label with
+"(schema in §C.5/Appendix D)" — evidence that earlier revision cycles noticed the
+conflict but resolved it inconsistently. A hostile reviewer compiling the manuscript
+into LaTeX would find that `\ref{appendix-d}` resolves to nothing.
+
+**Problem.** Eight locations used "Appendix D" as the canonical reference; the content
+was in §C.5. Readers following the "Appendix D" pointer in §3.6, §4.6, §5.6, and §7.7
+would find no such appendix — only §C.5 within Appendix C.
+
+**Fix.** Established §C.5 as the single canonical label throughout:
+- `appendix-c.md` §C.5 header: `"## C.5  Appendix D — Axelrod Log Schema"` → `"## C.5  Axelrod Log JSON Schema"`
+- `appendix-c.md` §C.1.2: `"described in Appendix D"` → `"described in §C.5"`
+- `04-method.md` §3.6: `"documented in Appendix D (§C.5)"` → `"documented in §C.5"`
+- `05-experimental-setup.md` §4.6: `"documented in Appendix D"` → `"documented in §C.5"`
+- `06-results.md` §5.6 data note: `"documented in Appendix D"` → `"documented in §C.5"`
+- `08-limitations.md` §7.7: `"documented in Appendix D"` → `"documented in §C.5"`
+- `paper.md` all 6 counterpart locations: same replacements
+- `paper.md` §C.5 header (line 2913): `"## C.5  Appendix D — Axelrod Log Schema  *(stub)*"` → `"## C.5  Axelrod Log JSON Schema  *(stub)*"`
+
+*Post-fix verification:*
+`grep -c "Appendix D" 04-method.md 05-experimental-setup.md 06-results.md 07-discussion.md 08-limitations.md appendix-c.md paper.md` — all zero. ✓
+
+---
+
+## CCC2 (Major) — `@llm_ipd2024` wrong first author: "Jorgensen" → "Fontana"
+
+**Location:** `references.bib` `@article{llm_ipd2024}` author field;
+`03-related-work.md` §2.1 prose ("Jorgensen et al."); `paper.md` §2.1 prose (same).
+
+**Severity:** MAJOR factual error — pre-submission checklist item 2 flagged this as
+"verify first author surname for arXiv:2406.13605". EVEN-fire WebSearch (Cycle CCC)
+confirmed: the first author is **Nicolò Fontana** (Politecnico di Milano), not "Jorgensen".
+Full author list: Fontana, Nicolò; Pierri, Francesco; Aiello, Luca Maria.
+
+**Problem.** The BibTeX entry used `author = {Jorgensen, A. and others}` — a placeholder
+based on an incorrect guess that survived through Cycle BBB without correction.
+The in-text citation read "Jorgensen et al." throughout §2.1 and §2.1 in paper.md.
+The actual paper (arXiv:2406.13605) has no author named Jorgensen.
+
+**Secondary problem (finding accuracy).** The prior text stated LLMs "are systematically
+*more* cooperative than human players in iterated PD". The actual finding is that
+LLMs are *at least as cooperative* as typical human players, with GPT-3.5 and Llama-2
+notably more cooperative — a materially weaker and more precise claim. The overclaim
+"systematically more cooperative" would be contestable at a hostile reviewer's request
+to verify this against the cited source.
+
+**Fix.**
+In `references.bib`:
+- Old: `author = {Jorgensen, A. and others}` + VERIFY note
+- New: `author = {Fontana, Nicolò and Pierri, Francesco and Aiello, Luca Maria}` + verification note
+
+In `03-related-work.md` §2.1 and `paper.md` §2.1:
+- Old: `"Jorgensen et al. [@llm_ipd2024] find that LLM agents are systematically *more* cooperative than human players in iterated PD"`
+- New: `"Fontana et al. [@llm_ipd2024] find that LLM agents (GPT-3.5, Llama-2, Llama-3) are at least as cooperative as typical human players in the iterated PD — with GPT-3.5 and Llama-2 notably more cooperative"`
+
+*Post-fix verification:*
+`grep -c "Jorgensen" 03-related-work.md paper.md references.bib` — zero, zero, one (remaining in comment explaining the correction only). ✓
+`grep -n "Fontana" 03-related-work.md paper.md references.bib` — three hits, all correct. ✓
+
+---
+
+## CCC3 — `@polyswarm2026` placeholder author resolved
+
+**Location:** `references.bib` `@article{polyswarm2026}` author field.
+
+**Severity:** Pre-submission item 3 resolved — placeholder author field replaced with
+verified author list.
+
+**Problem.** The BibTeX entry used `author = {{PolySwarm Authors (verify arXiv:2604.03888)}}`
+as a placeholder. This would cause a malformed author field in any LaTeX compilation.
+
+**Fix.** EVEN-fire WebSearch confirmed:
+- **Rajat M. Barot** — Department of Computer Science, SUNY Binghamton
+- **Arjun S. Borkhatariya** — Department of Software Engineering, Arizona State University
+
+In `references.bib`:
+- Old: `author = {{PolySwarm Authors (verify arXiv:2604.03888)}}`
+- New: `author = {Barot, Rajat M. and Borkhatariya, Arjun S.}`
+
+Note: text uses `[@polyswarm2026]` in §2.6 (§1 footnote and §2.6 prose); both now render
+as "Barot and Borkhatariya (2026)" — two-author citation, which is appropriate since
+there are exactly two authors (no "et al." needed until three authors minimum).
+
+*Post-fix verification:*
+`grep "polyswarm2026" references.bib` — shows Barot and Borkhatariya, no placeholder. ✓
+
+---
+
+## CCC4 — Contribution 4 uses present tense "We show" for pending experimental results
+
+**Location:** `02-introduction.md` Contributions §1, item 4; `paper.md` corresponding line 150.
+
+**Severity:** Moderate presentational — a hostile reviewer reading the contributions
+section and then §5 (which says "status: pending full experimental run") would flag
+the mismatch: "The authors claim to *show* something that by their own §5 admission
+has not yet been demonstrated."
+
+**Problem.** Contribution 4 stated:
+> "**Empirical validation of diversity-accuracy coupling.** We show that population-level
+> JSD divergence...is positively correlated with ensemble Brier-score improvement, and that
+> SRR reliably increases this divergence versus a fixed-ensemble control..."
+
+The words "We show that" and "SRR reliably increases" both assert completion of an
+experiment that is 71% complete as of the current draft.
+
+**Fix.** Changed to describe the contribution as the *pre-registration and experimental design*
+(which is complete) rather than the experimental *results* (which are pending):
+> "**Empirical validation of diversity-accuracy coupling.** We pre-register and structure
+> four directional hypotheses (H1–H4, §4.3) testing whether SRR increases JSD
+> diversity (H1), reduces ensemble Brier (H2), requires genuine prompt-level reasoning
+> change rather than label signalling alone (H3), and whether static initial diversity
+> decays without dynamic maintenance (H4). Experimental structure and predicted
+> outcomes are detailed in §4–5; results pending full season resolution."
+
+*Post-fix verification:*
+`grep "We show that population-level" 02-introduction.md paper.md` — zero hits. ✓
+`grep "pre-register and structure" 02-introduction.md paper.md` — two hits. ✓
+
+---
+
+## CCC5 — "defined formally in §6.1" is a misleading forward reference
+
+**Location:** `07-discussion.md` opening paragraph (line 6); `paper.md` line 1740.
+
+**Severity:** Minor presentational — "defined formally" implies a Definition block exists
+in §6.1. §6.1 provides only a characterisation via three structural conditions (a)–(c),
+without a formal numbered Definition environment. A reviewer looking for "Definition 3"
+or a boxed formal definition would not find one, and the qualifier "formally" would
+appear misleading.
+
+**Problem.** The opening paragraph of §6 reads:
+> "...sixth rule specific to *epistemically competitive* agent societies (populations
+> sharing a prediction target and proper scoring rule with individual evaluation —
+> **defined formally** in §6.1)"
+
+The §6.1 text introduces the term via a parenthetical triad of structural conditions —
+a conceptual characterisation, not a numbered formal definition.
+
+**Fix.** Changed "defined formally in §6.1" to "characterised in §6.1" — a softer
+qualifier that accurately describes what §6.1 provides.
+
+*Post-fix verification:*
+`grep "defined formally" 07-discussion.md paper.md` — zero hits. ✓
+`grep "characterised in §6.1" 07-discussion.md paper.md` — two hits. ✓
+
+---
+
+## CCC-WS — EVEN-fire WebSearch findings
+
+**Query 1:** "arXiv 2406.13605 Nicer Than Humans Prisoner's Dilemma LLM author"
+→ **Result:** First author confirmed as Nicolò Fontana (Politecnico di Milano); co-authors
+Francesco Pierri and Luca Maria Aiello. Fixes CCC2 above.
+
+**Query 2:** "arXiv 2604.03888 PolySwarm prediction market LLM author list"
+→ **Result:** Authors confirmed as Rajat M. Barot (SUNY Binghamton CS) and
+Arjun S. Borkhatariya (Arizona State Univ. Software Engineering). Fixes CCC3 above.
+
+No new literature requiring a new research proposal was found in this cycle.
+The PolySwarm paper (Barot & Borkhatariya 2026, arXiv:2604.03888) is correctly
+characterised in §2.6: 50-persona LLM swarm on Polymarket with fixed-persona diversity
+and no endogenous SRR-like mechanism.
+
+---
+
+## CYCLE CCC SUMMARY
+
+**Fixed this cycle:**
+- CCC1: §C.5 / "Appendix D" dual-label inconsistency — 8 locations normalized to §C.5.
+- CCC2: `@llm_ipd2024` wrong author "Jorgensen" → "Fontana et al." (Fontana, Pierri, Aiello); finding overclaim "systematically more cooperative" → "at least as cooperative ... with GPT-3.5 and Llama-2 notably more cooperative".
+- CCC3: `@polyswarm2026` placeholder author resolved to Barot and Borkhatariya.
+- CCC4: Contribution 4 "We show that" → pre-registration framing.
+- CCC5: "defined formally in §6.1" → "characterised in §6.1".
+
+**Structural changes this cycle:**
+- `references.bib`: llm_ipd2024 author corrected; polyswarm2026 placeholder resolved
+- `03-related-work.md` §2.1: author + finding accuracy
+- `02-introduction.md` Contribution 4: language
+- `04-method.md` §3.6: §C.5 reference
+- `05-experimental-setup.md` §4.6: §C.5 reference
+- `06-results.md` §5.6: §C.5 reference
+- `07-discussion.md` §6 preamble: "characterised"
+- `08-limitations.md` §7.7: §C.5 reference
+- `appendix-c.md` §C.5 header and §C.1.2 reference
+- `paper.md`: all of the above (8 locations)
+
+**Pre-submission checklist — updated:**
+
+*(Items resolved this cycle are checked ✓; remaining open items carry forward.)*
+
+1. ~~Verify `@ouyang2022training` full author list (arXiv:2203.02155)~~ — still open (ODD-fire bandwidth; check next EVEN)
+2. ✓ ~~Verify `@llm_ipd2024` first author (arXiv:2406.13605)~~ — **RESOLVED CCC2: Fontana, Pierri, Aiello**
+3. ✓ ~~Verify `@polyswarm2026` author list (arXiv:2604.03888)~~ — **RESOLVED CCC3: Barot & Borkhatariya**
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (m2)
+5. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+6. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+7. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+11. Confirm T12 Cerebras rerouting footnote cites the correct date (2026-04-22) in Table 3
+12. Verify A4 slack $\eta_{\text{A4}} < 0.211$ (pilot data must confirm before Conditions B–E)

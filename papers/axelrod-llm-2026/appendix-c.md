@@ -38,7 +38,7 @@ manuscript.
 
 All prediction logs accumulated to date are archived at
 `data/arena/axelrod-log/` in newline-delimited JSON, with one file per
-trading day per domain. The schema is described in Appendix D.
+trading day per domain. The schema is described in §C.5.
 
 ---
 
@@ -306,7 +306,7 @@ The study remains adequately powered under this pessimistic variance assumption.
 
 ---
 
-## C.5  Appendix D — Axelrod Log Schema
+## C.5  Axelrod Log JSON Schema
 
 *(Stub — full documentation deferred to data release upon season completion.)*
 

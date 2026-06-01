@@ -147,11 +147,12 @@ This paper makes four contributions:
    distinct in its formal SRR mechanism and cross-domain pairing rather than in
    raw agent count.]
 
-4. **Empirical validation of diversity-accuracy coupling.** We show that population-level
-   Jensen–Shannon divergence of agent prediction distributions is positively correlated
-   with ensemble Brier-score improvement, and that SRR reliably increases this divergence
-   versus a fixed-ensemble control, an ablation of mechanism components, and a DMAD
-   baseline (§5).
+4. **Empirical validation of diversity-accuracy coupling.** We pre-register and structure
+   four directional hypotheses (H1–H4, §4.3) testing whether SRR increases JSD
+   diversity (H1), reduces ensemble Brier (H2), requires genuine prompt-level reasoning
+   change rather than label signalling alone (H3), and whether static initial diversity
+   decays without dynamic maintenance (H4). Experimental structure and predicted
+   outcomes are detailed in §4–5; results pending full season resolution.
 
 ## Paper Organization
 
@@ -222,9 +223,10 @@ reputation tracking, nor network structure — only a common-knowledge
 performance signal and a finite strategy taxonomy.
 
 Recent empirical work has returned to the original Axelrod questions using LLMs as
-subjects rather than experimenters. Jorgensen et al. [@llm_ipd2024] find that LLM
-agents are systematically *more* cooperative than human players in iterated PD,
-crediting shared training-data conventions for creating an implicit common prior
+subjects rather than experimenters. Fontana et al. [@llm_ipd2024] find that LLM
+agents (GPT-3.5, Llama-2, Llama-3) are at least as cooperative as typical human players
+in the iterated PD — with GPT-3.5 and Llama-2 notably more cooperative —
+consistent with shared pre-training conventions creating an implicit common prior
 that biases toward Tit-for-Tat–like strategies. This finding has a direct implication
 for our setting: if LLMs share cooperation biases, they may also share *prediction*
 biases — a homogeneity pressure that SRR is designed to counteract.
@@ -1042,7 +1044,7 @@ correct home-bet ($\omega=1$), reflecting the higher implied difficulty of the
 contrarian position.
 For an incorrect bet: $g_{i,t} = -1$ (unit loss on the per-event allocation $\frac{s_i}{|\mathcal{B}_d^+|} V_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
-`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in Appendix D (§C.5).
+`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in §C.5.
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference
@@ -1420,7 +1422,7 @@ HuggingFace Space `LBJLincoln26/nba-llm-trading-floor` (NBA) and
 (main application: `app.py`, approximately 4,400 lines, FastAPI + Gradio). All prediction logs, archetype
 transition records, and bankroll histories are written to
 `data/arena/axelrod-log/` in newline-delimited JSON. The axelrod-log
-schema is documented in Appendix D. Agent prompts (including all 20
+schema is documented in §C.5. Agent prompts (including all 20
 archetype modules and the shared mission preamble) are archived in
 `data/arena/archetypes/`. LLM temperature is fixed at
 $\tau = 0.7$ for all agents across all conditions to balance
@@ -1728,7 +1730,7 @@ resolves this question at the agent level.
 > records, bankroll histories, and SRR event logs will be released under the
 > repository's open data policy upon acceptance:
 > `github.com/LBJLincoln/mon-ipad` → `data/arena/axelrod-log/`. The schema
-> for all JSON files is documented in Appendix D.
+> for all JSON files is documented in §C.5.
 
 ---
 
@@ -1737,7 +1739,7 @@ resolves this question at the agent level.
 Our results (pending full experimental resolution) afford four lines of
 discussion: (i) the relationship between SRR and Nowak's evolutionary
 cooperation mechanisms, extending the theoretical canon with a candidate
-sixth rule specific to *epistemically competitive* agent societies (populations sharing a prediction target and proper scoring rule with individual evaluation — defined formally in §6.1);
+sixth rule specific to *epistemically competitive* agent societies (populations sharing a prediction target and proper scoring rule with individual evaluation — characterised in §6.1);
 (ii) the information-architecture lesson of asymmetric day-end broadcasting,
 grounded in Aumann's common-knowledge impossibility;
 (iii) the structural risk of behavioural homogeneity in LLM ensembles and why
@@ -2379,7 +2381,7 @@ review window before the new archetype is confirmed. We operate under the
 principle that autonomous mechanisms affecting agent behaviour require
 complete audit trails, and our implementation satisfies this requirement
 via append-only JSON prediction logs (`data/arena/axelrod-log/`), the
-archetype transition records documented in Appendix D, and a programmatic
+archetype transition records documented in §C.5, and a programmatic
 commit gate that enforces repository-level review before any agent
 system-prompt modification is persisted — all archived in the public
 repository upon acceptance.
@@ -2732,7 +2734,7 @@ whose *disciplined* archetype may constrain its prediction range even at
 *Table C.1: Experimental timeline. Conditions B–E are retrospective
 replays over the logged event stream from Condition A.*
 As of the current draft (May 2026), Condition A is $\approx 71\%$ complete.
-All prediction logs are archived at `data/arena/axelrod-log/` (schema in §C.5/Appendix D).
+All prediction logs are archived at `data/arena/axelrod-log/` (schema in §C.5).
 
 ---
 
@@ -2908,7 +2910,7 @@ the JSD diversity test.
 
 ---
 
-## C.5  Appendix D — Axelrod Log Schema  *(stub)*
+## C.5  Axelrod Log JSON Schema  *(stub)*
 
 Each file in `data/arena/axelrod-log/` is newline-delimited JSON with schema:
 

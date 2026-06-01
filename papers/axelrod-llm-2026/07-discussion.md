@@ -3,7 +3,7 @@
 Our results (pending full experimental resolution) afford four lines of
 discussion: (i) the relationship between SRR and Nowak's evolutionary
 cooperation mechanisms, extending the theoretical canon with a candidate
-sixth rule specific to *epistemically competitive* agent societies (populations sharing a prediction target and proper scoring rule with individual evaluation — defined formally in §6.1);
+sixth rule specific to *epistemically competitive* agent societies (populations sharing a prediction target and proper scoring rule with individual evaluation — characterised in §6.1);
 (ii) the information-architecture lesson of asymmetric day-end broadcasting,
 grounded in Aumann's common-knowledge impossibility;
 (iii) the structural risk of behavioural homogeneity in LLM ensembles and why

@@ -284,7 +284,7 @@ review window before the new archetype is confirmed. We operate under the
 principle that autonomous mechanisms affecting agent behaviour require
 complete audit trails, and our implementation satisfies this requirement
 via append-only JSON prediction logs (`data/arena/axelrod-log/`), the
-archetype transition records documented in Appendix D, and a programmatic
+archetype transition records documented in §C.5, and a programmatic
 commit gate that enforces repository-level review before any agent
 system-prompt modification is persisted — all archived in the public
 repository upon acceptance.

@@ -250,4 +250,4 @@ resolves this question at the agent level.
 > records, bankroll histories, and SRR event logs will be released under the
 > repository's open data policy upon acceptance:
 > `github.com/LBJLincoln/mon-ipad` → `data/arena/axelrod-log/`. The schema
-> for all JSON files is documented in Appendix D.
+> for all JSON files is documented in §C.5.

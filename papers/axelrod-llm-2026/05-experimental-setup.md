@@ -310,7 +310,7 @@ HuggingFace Space `LBJLincoln26/nba-llm-trading-floor` (NBA) and
 (main application: `app.py`, approximately 4,400 lines, FastAPI + Gradio). All prediction logs, archetype
 transition records, and bankroll histories are written to
 `data/arena/axelrod-log/` in newline-delimited JSON. The axelrod-log
-schema is documented in Appendix D. Agent prompts (including all 20
+schema is documented in §C.5. Agent prompts (including all 20
 archetype modules and the shared mission preamble) are archived in
 `data/arena/archetypes/`. LLM temperature is fixed at
 $\tau = 0.7$ for all agents across all conditions to balance

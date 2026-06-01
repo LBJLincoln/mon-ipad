@@ -42,9 +42,10 @@ reputation tracking, nor network structure — only a common-knowledge
 performance signal and a finite strategy taxonomy.
 
 Recent empirical work has returned to the original Axelrod questions using LLMs as
-subjects rather than experimenters. Jorgensen et al. [@llm_ipd2024] find that LLM
-agents are systematically *more* cooperative than human players in iterated PD,
-crediting shared training-data conventions for creating an implicit common prior
+subjects rather than experimenters. Fontana et al. [@llm_ipd2024] find that LLM
+agents (GPT-3.5, Llama-2, Llama-3) are at least as cooperative as typical human players
+in the iterated PD — with GPT-3.5 and Llama-2 notably more cooperative —
+consistent with shared pre-training conventions creating an implicit common prior
 that biases toward Tit-for-Tat–like strategies. This finding has a direct implication
 for our setting: if LLMs share cooperation biases, they may also share *prediction*
 biases — a homogeneity pressure that SRR is designed to counteract.
