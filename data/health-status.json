@@ -1,26 +1,26 @@
 {
-  "fire": 247,
-  "timestamp": "2026-06-08T12:00:00Z",
-  "parity": "ODD",
+  "fire": 248,
+  "timestamp": "2026-06-08T16:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping 73+ fires",
+      "note": "sleeping 74+ fires",
       "last_known_cycle": 974,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (73+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (74+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping 73+ fires",
+      "note": "sleeping 74+ fires",
       "last_known_best_brier": 0.22054,
       "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate — VM wake + checkpoint"
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "404-DOWN 73+ fires",
+      "note": "404-DOWN 74+ fires",
       "last_known_best_brier": 0.22012,
-      "alert": "URGENT: fleet-best RF-0.22012 sleeping 73+ fires"
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping 74+ fires"
     },
     "S17": {
       "status": "503-DOWN",
@@ -28,59 +28,65 @@
     },
     "S18": {
       "status": "EVOLVING",
-      "cycle": 642,
-      "generation": 1925,
+      "cycle": 674,
+      "generation": 2021,
       "best_brier": 0.22326,
-      "best_brier_note": "field-lag — RF-200f-0.21949 CONFIRMED EVICTED at c617 reset",
+      "best_brier_note": "field-lag — actual pareto best ET-200f-0.22029",
       "stagnation": 0,
-      "pareto_front_size": 15,
-      "note": "21ST-AUTO-RESET-c617-CONFIRMED(c592+25=c617-EXACT). RF-200f-0.21949 CONFIRMED EVICTED (best_brier=0.22326 unchanged). Current 200f best ~0.2210 (above 0.22085 gate). NEXT RESET ~c642 IMMINENT! Rule8-CLEAN: reseed=xgb_brier/lgbm/catboost/logistic_regression (NO stacking). /api/export-404(23rd-CRITICAL).",
-      "reset_history": "c67+c142+c167+c192(STACKING-VIOLATION)+c217+c242+c267+c292+c317+c342+c367+c392+c417+c442+c467+c492+c517+c542+c567+c592+c617",
-      "rule8_status": "CLEAN: c617 reseed=xgb_brier/lgbm/catboost/logistic_regression. No stacking.",
-      "export_endpoint": "404 (23rd consecutive)",
-      "next_reset": "~c642 (c617+25) — IMMINENT!",
-      "alert": "VM: curl /api/export S18 before ~c642 reset (23rd-CRITICAL). RF-200f-0.21949 was EVICTED at c617. Current 200f ~0.2210 above gate. NEXT RESET IMMINENT."
+      "pareto_front_size": 12,
+      "note": "22ND-AUTO-RESET-c667-CONFIRMED(c642+25=c667-EXACT). RULE8-VIOLATION: stacking-37f-0.24738 rank-1 in pareto! ET-200f-0.22029(BELOW-0.22085-CHECKPOINT-URGENT!)+ET-200f-0.22069(BELOW-0.22085). /api/export-404(25th-CRITICAL). Next reset ~c692(c667+25).",
+      "reset_history": "c67+c142+c167+c192(STACKING-VIOLATION)+c217+c242+c267+c292+c317+c342+c367+c392+c417+c442+c467+c492+c517+c542+c567+c592+c617+c667",
+      "rule8_status": "VIOLATION: stacking-37f in pareto rank-1 (brier=0.24738). VM: remove stacking from MODEL_TYPES before ~c692 reset.",
+      "pareto_top": [
+        {"rank": 1, "model": "stacking", "features": 37, "brier": 0.24738, "alert": "RULE8 VIOLATION: stacking in pareto!"},
+        {"rank": 2, "model": "extra_trees", "features": 200, "brier": 0.22029, "alert": "BELOW 0.22085 GATE — CHECKPOINT URGENT! (1.7bp above fleet best 0.22012)"},
+        {"rank": 3, "model": "extra_trees", "features": 200, "brier": 0.22069, "alert": "BELOW 0.22085 GATE — CHECKPOINT URGENT!"},
+        {"rank": 4, "model": "xgboost", "features": 200, "brier": 0.22152},
+        {"rank": 5, "model": "xgboost", "features": 200, "brier": 0.22343}
+      ],
+      "export_endpoint": "404 (25th consecutive — CRITICAL)",
+      "next_reset": "~c692 (c667+25)",
+      "alert": "VM: RULE8-VIOLATION stacking-37f in pareto rank-1! Remove stacking from MODEL_TYPES before ~c692. ET-200f-0.22029 and ET-200f-0.22069 BOTH BELOW 0.22085 — /api/export-404(25th-CRITICAL) blocks checkpoint."
     },
     "S22": {
       "status": "EVOLVING",
-      "cycle": 36,
-      "generation": 108,
+      "cycle": 56,
+      "generation": 166,
       "best_brier": 0.2207,
-      "best_brier_gen": 9,
-      "best_brier_note": "SEVERE FIELD-LAG — actual pareto best is ET-200f-0.2194",
+      "best_brier_note": "field-lag — actual pareto best ET-200f-0.22027 (below 0.22085 gate)",
       "stagnation": 0,
-      "pareto_front_size": 12,
-      "note": "1ST-AUTO-RESET-c28-CONFIRMED (predicted ~c25, actual c28). RULE8-CLEAN: LightGBM/CatBoost/Extra Trees/Logistic Regression reseed (NO stacking). EXTRAORDINARY PARETO at g=108: ET-200f-0.2194(18bp below fleet best!)+ET-200f-0.2197(15bp!)+ET-200f-0.2201(11bp!)+RF-200f-0.2207(6bp!) — ALL FOUR BELOW FLEET BEST 0.22012. /api/export-404(24TH-CRITICAL). Next reset ~c53(c28+25).",
+      "pareto_front_size": 15,
+      "note": "2ND-AUTO-RESET-c53-CONFIRMED(c28+25=c53-EXACT). ET-0.2193 CONFIRMED-EVICTED at c53 (3RD CONSECUTIVE RUN LOSS — extraordinary early-gen candidate lost all 3 runs). RULE8-VIOLATION: stacking-47f-0.24738 rank-1 in pareto! ET-200f-0.22027-BELOW-0.22085-CHECKPOINT-URGENT! /api/export-404(4th-new-run). Next reset ~c78(c53+25).",
       "pareto_top": [
-        {"rank": 1, "model": "extra_trees", "features": 200, "brier": 0.2201, "alert": "EXTREME URGENT: 11bp below fleet best 0.22012!"},
-        {"rank": 2, "model": "extra_trees", "features": 200, "brier": 0.2194, "alert": "EXTREME URGENT: 18bp below fleet best! BEST ACTIVE CANDIDATE ACROSS ALL ISLANDS!"},
-        {"rank": 3, "model": "extra_trees", "features": 200, "brier": 0.2197, "alert": "EXTREME URGENT: 15bp below fleet best 0.22012!"},
-        {"rank": 4, "model": "random_forest", "features": 200, "brier": 0.2207, "alert": "BELOW FLEET BEST: 6bp below 0.22012"},
-        {"rank": 5, "model": "extra_trees", "features": 52, "brier": 0.2289}
+        {"rank": 1, "model": "stacking", "features": 47, "brier": 0.24738, "alert": "RULE8 VIOLATION: stacking in pareto!"},
+        {"rank": 2, "model": "extra_trees", "features": 200, "brier": 0.22027, "alert": "BELOW 0.22085 GATE — CHECKPOINT URGENT! (1.5bp above fleet best 0.22012)"},
+        {"rank": 3, "model": "xgboost_brier", "features": 200, "brier": 0.22603},
+        {"rank": 4, "model": "xgboost_brier", "features": 200, "brier": 0.22634},
+        {"rank": 5, "model": "xgboost_brier", "features": 200, "brier": 0.22675}
       ],
-      "export_endpoint": "404 (3rd in new run — 24TH OVERALL CRITICAL!)",
-      "next_reset": "~c53 (c28+25)",
-      "rule8_status": "CLEAN: c28 reseed=LightGBM/CatBoost/Extra Trees/Logistic Regression. NO stacking.",
-      "alert": "VM: curl /api/export S22 IMMEDIATELY. ET-200f-0.2194 is BEST ACTIVE CANDIDATE (18bp below fleet best 0.22012). All 4 top models below fleet best at only g=108. DO NOT EVICT ET at ~c53 reset."
+      "export_endpoint": "404 (4th in new run — critical)",
+      "next_reset": "~c78 (c53+25)",
+      "rule8_status": "VIOLATION: stacking-47f in pareto rank-1 (brier=0.24738). VM: remove stacking from MODEL_TYPES before ~c78 reset.",
+      "alert": "ET-0.2193 from fire-246/247 CONFIRMED EVICTED at c53 (3rd run, 3rd consecutive loss — all 3 S22 restarts lost best ET candidate at reset). RULE8-VIOLATION stacking-47f in pareto. ET-200f-0.22027 is new best (1.5bp above fleet best, below 0.22085 gate). VM: remove stacking; /api/export-404(4th). Next reset ~c78."
     }
   },
   "pol_islands": {
-    "P1": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
-    "P2": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
-    "P4": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
-    "P5": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_best_brier": 0.24993},
-    "P7": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_best_brier": 0.24931}
+    "P1": {"status": "404-DOWN", "fires_sleeping": "74+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
+    "P2": {"status": "404-DOWN", "fires_sleeping": "74+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
+    "P4": {"status": "404-DOWN", "fires_sleeping": "74+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
+    "P5": {"status": "404-DOWN", "fires_sleeping": "74+", "last_known_best_brier": 0.24993},
+    "P7": {"status": "404-DOWN", "fires_sleeping": "74+", "last_known_best_brier": 0.24931}
   },
   "fleet_best": {
     "nba_official": 0.22012,
-    "nba_official_source": "S15 RF-75f (sleeping 73+ fires)",
-    "nba_active_pareto_top": 0.2194,
-    "nba_active_pareto_top_note": "S22 ET-200f c36 g108 — BEST ACTIVE CANDIDATE! 18bp below fleet best 0.22012. /api/export-404(24th-CRITICAL). Next reset ~c53.",
-    "nba_s18_note": "S18 c642. 21ST-RESET-c617-CONFIRMED. RF-0.21949 EVICTED. Current 200f ~0.2210. NEXT RESET ~c642 IMMINENT.",
+    "nba_official_source": "S15 RF-75f (sleeping 74+ fires)",
+    "nba_active_pareto_top": 0.22027,
+    "nba_active_pareto_top_note": "S22 ET-200f c56 g166 — 1.5bp ABOVE fleet best 0.22012. ET-0.2193 EVICTED at c53 (3rd consecutive run loss). /api/export-404(4th new run). RULE8 VIOLATION: stacking in pareto.",
+    "nba_s18_note": "S18 c674 g2021. 22ND-RESET-c667-CONFIRMED. ET-200f-0.22029 BELOW 0.22085. RULE8-VIOLATION: stacking-37f rank-1. /api/export-404(25th).",
     "nba_s22_best_brier_field": 0.2207,
     "nba_s18_best_brier_field": 0.22326,
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (sleeping 73+ fires)"
+    "pol_source": "P4 LightGBM-131f (sleeping 74+ fires)"
   },
   "axelrod_status": {
     "do_not_push_hf_space_yet": true,
@@ -92,22 +98,20 @@
     "nba_tf_lines": 6035,
     "pol_tf_sha": "6983c86517",
     "pol_tf_lines": 4019,
-    "last_verify": "fire-245 ODD direct-verify (25/25 parity OK, KL-div OK). fire-247 ODD: carry-forward (do_not_push_hf_space_yet=TRUE; NBA TF HF updated 1-Jun-2026 likely auto-rebuild; POL TF HF updated 7-May-2026 matches expected).",
-    "nba_tf_hf_last_updated": "1 Jun 2026 (HF hub — auto-rebuild suspected, no code push per do_not_push_hf_space_yet=TRUE)",
-    "pol_tf_hf_last_updated": "7 May 2026 (matches POL-TF-May7)",
+    "last_verify": "fire-245 ODD direct-verify (25/25 parity OK, KL-div OK). fire-247/248: carry-forward (do_not_push_hf_space_yet=TRUE).",
     "next_verify": "fire-249 ODD"
   },
   "councils_d1_d9": {
     "note": "Councils D1-D9 are VM-local scripts. Not accessible from cloud."
   },
-  "actions_taken_fire247": [
+  "actions_taken_fire248": [
     "STEP 0: No crash recovery — no local-agent-* items in work-queue.",
-    "S18: c=642 g=1925 stag=0 pareto=15. 21ST-RESET-c617-CONFIRMED. RF-200f-0.21949 CONFIRMED EVICTED. NEXT RESET ~c642 IMMINENT. /api/export-404(23rd).",
-    "S22: c=36 g=108 stag=0 pareto=12. 1ST-RESET-c28-CONFIRMED. RULE8-CLEAN. ET-200f-0.2194 BEST ACTIVE CANDIDATE (18bp below fleet best!)+ET-0.2197+ET-0.2201+RF-0.2207 ALL BELOW FLEET BEST at g=108. /api/export-404(24TH-CRITICAL). Next ~c53.",
-    "S13/S14/S15: 404-DOWN (73+ fires).",
-    "POL P1/P2/P4/P5/P7: 404-DOWN (73+ fires). P4 confirmed 404 via WebFetch.",
-    "Axelrod: SHA carry-forward NBA-85e7682e1d(6035L)/POL-6983c86517(4019L). NBA TF HF updated 1-Jun (auto-rebuild suspected). POL TF HF updated 7-May (matches). do_not_push_hf_space_yet=TRUE.",
-    "ODD fire-247: No WebSearch.",
-    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-247 2026-06-08T12h)."
+    "S18: c=674 g=2021 stag=0 pareto=12(↓15→12). 22ND-AUTO-RESET-c667-CONFIRMED(c642+25=c667-EXACT). RULE8-VIOLATION: stacking-37f-0.24738 rank-1 in pareto! ET-200f-0.22029+ET-200f-0.22069 BOTH BELOW 0.22085. /api/export-404(25th-CRITICAL). Next ~c692.",
+    "S22: c=56 g=166 stag=0 pareto=15(↑12→15-GROWING). 2ND-AUTO-RESET-c53-CONFIRMED(c28+25=c53-EXACT). ET-0.2193 CONFIRMED EVICTED at c53 (3rd consecutive run loss). RULE8-VIOLATION: stacking-47f-0.24738 rank-1 in pareto! ET-200f-0.22027-BELOW-0.22085-CHECKPOINT-URGENT! /api/export-404(4th-new-run). Next ~c78.",
+    "S13/S14/S15: 404-DOWN (74+ fires).",
+    "POL P1/P2/P4/P5/P7: 404-DOWN (74+ fires).",
+    "EVEN fire-248: WebSearch no new arXiv 2026 paper found beyond pipeline. RULE8 VIOLATION confirmed both S18 (stacking-37f) + S22 (stacking-47f) — both rank-1 in pareto at 0.24738.",
+    "Axelrod: carry-forward NBA-85e7682e1d(6035L)/POL-6983c86517(4019L). do_not_push_hf_space_yet=TRUE. Next verify fire-249.",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-248 2026-06-08T16h)."
   ]
 }
