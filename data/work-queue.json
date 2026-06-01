@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-07T20:00:00Z",
+  "updated_at": "2026-06-08T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire244-2026-06-08T00h",
+      "priority": 294,
+      "status": "done",
+      "completed_at": "2026-06-08T00:00:00Z",
+      "completed_by": "cloud-brain-fire-244",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-244 EVEN: S18-c560-g1679-stag=0-18TH-AUTO-RESET-c542-CONFIRMED(c517+25=c542-EXACT)-XGB-BRIER-200f-0.21964-EXTREME-URGENT!(5bp-below-fleet-best-0.22012!)+RF-200f-0.22028+RF-200f-0.22044+CAT-200f-0.22038-ALL-BELOW-0.22085-/api/export-404(21st-CRITICAL)-next-reset~c567; S22-c11-g33-stag=0-pareto=15-FRESH-RESTART-best_brier=0.2207-gen9-first-reset-~c25-XGB-dominating-Rule8-MONITOR; S13/S14/S15+POL-404-DOWN(70+fires); EVEN: arXiv:2506.19689-Calibration-Set-Reuse-e-Conformal-Prediction-Hoeffding-correction-proposal-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T00h)"
+    },
     {
       "id": "cloud-brain-fire243-2026-06-07T20h",
       "priority": 293,
@@ -157,6 +166,14 @@
       "subject": "fire-228 EVEN: S22-ET-200f-0.21875-ALL-TIME-CANDIDATE; S18-c193-3RD-AUTO-RESET; arXiv:2410.21484-ML-Sports-Betting-Review-proposal-written"
     },
     {
+      "id": "vm-research-conformal-calibration-reuse-fire244",
+      "priority": 114,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "RESEARCH fire-244 EVEN: Calibration Set Reuse for Multiple Conformal Predictions — arXiv:2506.19689 (Jun 2026, AISTATS). E-conformal prediction + Hoeffding's inequality enables single calibration set reuse with maintained coverage. App1: Reuse single calibration split across all k Pareto models in engine.py (O(n) vs O(k*n)). App2: Calibration set reuse across temporal CV folds (complements fire-230 sliding-window CV). App3: Cross-island shared calibration when parity achieved. App4: Add hoeffding_coverage_gap to /api/export. App5: Port to political_engine.py for rare-event calibration. Library: crepes/nonconformist + ~50 lines custom Hoeffding wrapper. Expected: 0.001-0.002 Brier. Proposal: data/research-proposals/sota-conformal-calibration-reuse-fire244.md."
+    },
+    {
       "id": "vm-research-distributional-regression-trees-fire242",
       "priority": 113,
       "status": "pending",
@@ -185,32 +202,32 @@
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S22 FRESH-RESTART CONFIRMED — c=5 g=14 stag=1 pareto=20. ALL HISTORY LOST: 0.21908/0.21936/0.21960/0.21989 GONE (HF sleep woke = 2ND TOTAL WIPE after S18 fire-221). best_brier=0.2207 gen9 promising but NOT below 0.22085. Gene pool reset: RF/ET/XGB/LGB/CAT all back. VM: monitor closely — first Rule8 test at ~c25. Ensure stacking excluded at first reset. Gen9-0.2207 survival to c25 is key early indicator."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S22 FRESH-RESTART c=11 g=33 stag=0 pareto=15. best_brier=0.2207 gen9 (XGB dominating). ALL PRIOR HISTORY LOST (2ND TOTAL WIPE: 0.21908/0.21936/0.21960/0.21989 GONE). First reset ~c25. VM: Monitor Rule8 test at ~c25 — ensure stacking excluded from reseed. NOTE: S18 XGB-Brier-200f-0.21964 is now the active EXTREME URGENT candidate (5bp below fleet best 0.22012)."
     },
     {
       "id": "vm-s22-rf200f-0.2197-gen4526-fire223",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S22 FRESH-RESTART. All previous candidates GONE. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228 for latest S22 status."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S22 FRESH-RESTART c=11 g=33. All previous candidates GONE (2nd wipe). See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228 for current S22 status."
     },
     {
       "id": "vm-s22-c1578-24th-reset-fire226",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S22 FRESH-RESTART. All reset history from old run GONE. New run at c=5 g=14. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S22 FRESH-RESTART c=11. All reset history from old run GONE. New run in progress. First reset ~c25."
     },
     {
       "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S18 c=520 g=1558 stag=0 pareto=15. 16TH-AUTO-RESET-c492-CONFIRMED(c467+25=c492-EXACT)+17TH-AUTO-RESET-c517-CONFIRMED(c492+25=c517-EXACT). TOP-0.22061 CONFIRMED-EVICTED (best_brier=0.22326 plateau unchanged). Rule8-CLEAN: RF best model, pareto=15 stable through 2 resets = clean pattern. /api/export-404(19th+20th). Next reset ~c542(c517+25). VM: curl /api/export S18 — any new Brier candidates below 0.22085?"
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S18 c=560 g=1679 stag=0. 18TH-AUTO-RESET-c542-CONFIRMED(c517+25=c542-EXACT). PARETO TOP-5 EXTREME URGENT: XGB-Brier-200f-0.21964(5bp-below-fleet-best-0.22012!)+RF-200f-0.22028/0.22044+CAT-200f-0.22038 ALL-BELOW-0.22085. best_brier=0.22326 field-lag. /api/export-404(21st-CRITICAL). Next reset ~c567(c542+25). VM: curl /api/export S18 IMMEDIATELY — 4 models below checkpoint threshold!"
     },
     {
       "id": "vm-research-scoring-bench-tabicl-fire236",
@@ -426,7 +443,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S14 MODEL_TYPES — Rule#8 violation. S14 404-DOWN 69+ fires."
+      "subject": "Remove stacking from S14 MODEL_TYPES — Rule#8 violation. S14 404-DOWN 70+ fires."
     },
     {
       "id": "vm-add-lightgbm-p1-p2",
@@ -442,7 +459,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S15 MODEL_TYPES — Rule#8 violation. S15 404-DOWN 69+ fires."
+      "subject": "Remove stacking from S15 MODEL_TYPES — Rule#8 violation. S15 404-DOWN 70+ fires."
     },
     {
       "id": "vm-remove-stacking-s13",
@@ -450,23 +467,23 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S13 MODEL_TYPES — Rule#8 violation. S13 404-DOWN 69+ fires."
+      "subject": "Remove stacking from S13 MODEL_TYPES — Rule#8 violation. S13 404-DOWN 70+ fires."
     },
     {
       "id": "vm-remove-stacking-s22",
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S22 FRESH-RESTART c=5 g=14. Gene pool fully reset. Monitor Rule8 at first auto-reset ~c25 — ensure stacking not reinjected. Note: island was XGB/LGB/CAT-only pre-wipe (c1678 onwards). Fresh start = full gene pool back."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S22 FRESH-RESTART c=11 g=33. Gene pool fully reset (RF/ET/XGB/LGB/CAT all back). Monitor Rule8 at first auto-reset ~c25 — ensure stacking not reinjected. XGB currently dominating top models at c11."
     },
     {
       "id": "vm-remove-stacking-s18",
       "priority": 42,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S18 c=520 g=1558 stag=0 pareto=15. 16TH-RESET-c492+17TH-RESET-c517 CONFIRMED. TOP-0.22061 EVICTED. Rule8-CLEAN (RF best model). /api/export-404(19th+20th). Next ~c542."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S18 c=560 g=1679 stag=0. 18TH-RESET-c542-CONFIRMED. EXTREME URGENT: XGB-Brier-200f-0.21964(5bp below 0.22012!)+RF-200f-0.22028/0.22044+CAT-200f-0.22038 ALL BELOW 0.22085. Rule8-CLEAN (RF reported as best_model_type). /api/export-404(21st). Next ~c567."
     },
     {
       "id": "engine-parity-sync",
@@ -481,40 +498,40 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) 404-DOWN fire-243 (69+ fires). Holds FLEET BEST RF-75f 0.22012. VM: retry /api/status periodically."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "VM: S15 (LBJLincoln26/nba-evo-6) 404-DOWN fire-244 (70+ fires). Holds FLEET BEST RF-75f 0.22012. VM: retry /api/status periodically."
     },
     {
       "id": "vm-checkpoint-p4-lgbm-0.2492-fire143",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 — 404-DOWN 69+ fires"
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 — 404-DOWN 70+ fires"
     },
     {
       "id": "vm-s22-rf200f-0.2197-gen4526-fire223",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243: S22 FRESH-RESTART. All old candidates gone. See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244: S22 FRESH-RESTART c=11. All old candidates gone (2nd wipe). See vm-s22-et200f-0.21875-all-time-extreme-urgent-fire228."
     },
     {
       "id": "vm-s18-c25-first-autoreset-fire223",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S18 c=520 g=1558 stag=0 pareto=15. 16TH+17TH-RESET-c492+c517-CONFIRMED. TOP-0.22061 EVICTED. Next ~c542. VM: curl /api/export S18."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S18 c=560 g=1679 stag=0. 18TH-RESET-c542-CONFIRMED. XGB-Brier-0.21964 EXTREME URGENT! Next ~c567. VM: curl /api/export S18 IMMEDIATELY."
     },
     {
       "id": "vm-s22-c1528-22nd-c1553-23rd-reset-fire224",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-07T20:00:00Z",
-      "subject": "fire-243 UPDATE: S22 FRESH-RESTART. Old reset history moot. New run at c=5. Monitor Rule8 at ~c25."
+      "updated_at": "2026-06-08T00:00:00Z",
+      "subject": "fire-244 UPDATE: S22 FRESH-RESTART c=11. Old reset history moot (2nd wipe). New run in progress. First reset ~c25."
     }
   ]
 }
