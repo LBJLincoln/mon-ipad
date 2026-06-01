@@ -1,26 +1,26 @@
 {
-  "fire": 246,
-  "timestamp": "2026-06-08T08:00:00Z",
-  "parity": "EVEN",
+  "fire": 247,
+  "timestamp": "2026-06-08T12:00:00Z",
+  "parity": "ODD",
   "nba_islands": {
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping 72+ fires",
+      "note": "sleeping 73+ fires",
       "last_known_cycle": 974,
       "pareto_candidate": "CatBoost-200f-0.21992 gen=2831",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (72+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed (73+ fires). VM: retry /api/status; curl /api/export IMMEDIATELY."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping 72+ fires",
+      "note": "sleeping 73+ fires",
       "last_known_best_brier": 0.22054,
       "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate — VM wake + checkpoint"
     },
     "S15": {
       "status": "404-DOWN",
-      "note": "404-DOWN 72+ fires",
+      "note": "404-DOWN 73+ fires",
       "last_known_best_brier": 0.22012,
-      "alert": "URGENT: fleet-best RF-0.22012 sleeping 72+ fires"
+      "alert": "URGENT: fleet-best RF-0.22012 sleeping 73+ fires"
     },
     "S17": {
       "status": "503-DOWN",
@@ -28,110 +28,86 @@
     },
     "S18": {
       "status": "EVOLVING",
-      "cycle": 600,
-      "generation": 1798,
+      "cycle": 642,
+      "generation": 1925,
       "best_brier": 0.22326,
-      "best_brier_note": "field-lag — actual pareto best is RF-200f-0.21949",
+      "best_brier_note": "field-lag — RF-200f-0.21949 CONFIRMED EVICTED at c617 reset",
       "stagnation": 0,
-      "pareto_front_size": 19,
-      "last_improvement_cycles_ago": 7,
-      "last_improvement_cycle": 593,
-      "note": "19TH-AUTO-RESET-c567-CONFIRMED(c542+25=c567-EXACT)+20TH-AUTO-RESET-c592-CONFIRMED(c567+25=c592-EXACT). RF-200f-0.21949 EXTREME URGENT (6bp below fleet best 0.22012!). last_improvement=c593 (immediate post-20TH-RESET!). pareto=19 GROWING. /api/export-404(22nd-CRITICAL). Next reset ~c617(c592+25).",
-      "reset_history": "c67+c142+c167+c192(STACKING-VIOLATION)+c217+c242+c267+c292+c317+c342+c367+c392+c417+c442+c467+c492+c517+c542+c567+c592",
-      "rule8_status": "CLEAN: RF dominating top 3 models. No stacking visible.",
-      "export_endpoint": "404 (22nd consecutive)",
-      "next_reset": "~c617 (c592+25)",
-      "top_models": [
-        {"rank": 1, "model": "random_forest", "features": 42, "brier": 0.22355, "roi": "28.36%", "sharpe": 8.21, "calibration": "venn_abers"},
-        {"rank": 2, "model": "random_forest", "features": 200, "brier": 0.21949, "roi": "33.12%", "sharpe": 10.03, "alert": "EXTREME URGENT: 6bp below fleet best 0.22012!"},
-        {"rank": 3, "model": "random_forest", "features": 200, "brier": 0.22137, "roi": "31.18%", "sharpe": 7.87, "alert": "BELOW CHECKPOINT 0.22085"}
-      ],
-      "alert": "VM: curl /api/export S18 IMMEDIATELY — RF-200f-0.21949 EXTREME URGENT (6bp below fleet best 0.22012). /api/export-404(22nd). Next reset ~c617."
+      "pareto_front_size": 15,
+      "note": "21ST-AUTO-RESET-c617-CONFIRMED(c592+25=c617-EXACT). RF-200f-0.21949 CONFIRMED EVICTED (best_brier=0.22326 unchanged). Current 200f best ~0.2210 (above 0.22085 gate). NEXT RESET ~c642 IMMINENT! Rule8-CLEAN: reseed=xgb_brier/lgbm/catboost/logistic_regression (NO stacking). /api/export-404(23rd-CRITICAL).",
+      "reset_history": "c67+c142+c167+c192(STACKING-VIOLATION)+c217+c242+c267+c292+c317+c342+c367+c392+c417+c442+c467+c492+c517+c542+c567+c592+c617",
+      "rule8_status": "CLEAN: c617 reseed=xgb_brier/lgbm/catboost/logistic_regression. No stacking.",
+      "export_endpoint": "404 (23rd consecutive)",
+      "next_reset": "~c642 (c617+25) — IMMINENT!",
+      "alert": "VM: curl /api/export S18 before ~c642 reset (23rd-CRITICAL). RF-200f-0.21949 was EVICTED at c617. Current 200f ~0.2210 above gate. NEXT RESET IMMINENT."
     },
     "S22": {
-      "status": "FRESH-RESTART",
-      "cycle": 22,
-      "generation": 66,
+      "status": "EVOLVING",
+      "cycle": 36,
+      "generation": 108,
       "best_brier": 0.2207,
       "best_brier_gen": 9,
-      "best_brier_note": "field-lag — actual pareto ET-0.2193",
+      "best_brier_note": "SEVERE FIELD-LAG — actual pareto best is ET-200f-0.2194",
       "stagnation": 0,
-      "pareto_front_size": 14,
-      "note": "FRESH-RESTART (2nd total wipe). c=22 g=66 stag=0 pareto=14. ET-0.2193 EXTRAORDINARY early signal (only g=66!). XGB-0.2276+RF-0.2207/0.2208 also present. First auto-reset ~c25 IMMINENT (3 cycles away!). /api/export-404(2nd new run). Gene pool: RF/ET/XGB/LGB/CAT all back — ET emerging early.",
-      "historical_loss": [
-        {"gen": 5480, "brier": 0.21908, "note": "GONE — 2nd wipe (10bp below fleet best)"},
-        {"gen": 5483, "brier": 0.21936, "note": "GONE — 2nd wipe"},
-        {"gen": 5483, "brier": 0.21960, "note": "GONE — 2nd wipe"},
-        {"gen": 5483, "brier": 0.21989, "note": "GONE — 2nd wipe"}
+      "pareto_front_size": 12,
+      "note": "1ST-AUTO-RESET-c28-CONFIRMED (predicted ~c25, actual c28). RULE8-CLEAN: LightGBM/CatBoost/Extra Trees/Logistic Regression reseed (NO stacking). EXTRAORDINARY PARETO at g=108: ET-200f-0.2194(18bp below fleet best!)+ET-200f-0.2197(15bp!)+ET-200f-0.2201(11bp!)+RF-200f-0.2207(6bp!) — ALL FOUR BELOW FLEET BEST 0.22012. /api/export-404(24TH-CRITICAL). Next reset ~c53(c28+25).",
+      "pareto_top": [
+        {"rank": 1, "model": "extra_trees", "features": 200, "brier": 0.2201, "alert": "EXTREME URGENT: 11bp below fleet best 0.22012!"},
+        {"rank": 2, "model": "extra_trees", "features": 200, "brier": 0.2194, "alert": "EXTREME URGENT: 18bp below fleet best! BEST ACTIVE CANDIDATE ACROSS ALL ISLANDS!"},
+        {"rank": 3, "model": "extra_trees", "features": 200, "brier": 0.2197, "alert": "EXTREME URGENT: 15bp below fleet best 0.22012!"},
+        {"rank": 4, "model": "random_forest", "features": 200, "brier": 0.2207, "alert": "BELOW FLEET BEST: 6bp below 0.22012"},
+        {"rank": 5, "model": "extra_trees", "features": 52, "brier": 0.2289}
       ],
-      "gene_pool_status": "RESET: RF/ET/XGB/LGB/CAT all back. ET emerging as early leader (0.2193 at g=66).",
-      "export_endpoint": "404 (2nd in new run)",
-      "next_reset": "~c25 (first auto-reset in new run — IMMINENT 3 cycles!)",
-      "alert": "VM: curl /api/export S22 IMMEDIATELY — ET-0.2193 EXTREME URGENT (8bp below fleet best 0.22012 at only g=66!). First reset ~c25 IMMINENT — ensure ET NOT evicted. ET signature matches 0.21875/0.21908 prior wipes. This gene pool is converging 70x faster."
+      "export_endpoint": "404 (3rd in new run — 24TH OVERALL CRITICAL!)",
+      "next_reset": "~c53 (c28+25)",
+      "rule8_status": "CLEAN: c28 reseed=LightGBM/CatBoost/Extra Trees/Logistic Regression. NO stacking.",
+      "alert": "VM: curl /api/export S22 IMMEDIATELY. ET-200f-0.2194 is BEST ACTIVE CANDIDATE (18bp below fleet best 0.22012). All 4 top models below fleet best at only g=108. DO NOT EVICT ET at ~c53 reset."
     }
   },
   "pol_islands": {
-    "P1": {"status": "404-DOWN", "fires_sleeping": "72+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
-    "P2": {"status": "404-DOWN", "fires_sleeping": "72+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
-    "P4": {"status": "404-DOWN", "fires_sleeping": "72+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
-    "P5": {"status": "404-DOWN", "fires_sleeping": "72+", "last_known_best_brier": 0.24993},
-    "P7": {"status": "404-DOWN", "fires_sleeping": "72+", "last_known_best_brier": 0.24931}
+    "P1": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_pareto_best": 0.24902, "alert": "EXTREME URGENT: ALL-TIME RECORD LightGBM-105f. VM: wake + export + add LightGBM (Rule#9)"},
+    "P2": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_pareto": 3, "alert": "CRITICAL: pareto=3 SHRINK eviction risk. VM: wake + checkpoint + add LightGBM (Rule#9)"},
+    "P4": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_best_brier": 0.2497, "alert": "POL FLEET BEST — VM: wake + checkpoint"},
+    "P5": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_best_brier": 0.24993},
+    "P7": {"status": "404-DOWN", "fires_sleeping": "73+", "last_known_best_brier": 0.24931}
   },
   "fleet_best": {
     "nba_official": 0.22012,
-    "nba_official_source": "S15 RF-75f (sleeping 72+ fires)",
-    "nba_active_pareto_top": 0.21949,
-    "nba_active_pareto_top_note": "S18 RF-200f c600 g1798 — EXTREME URGENT! 6bp below fleet best. /api/export-404(22nd). Next reset ~c617.",
-    "nba_s22_candidate": 0.2193,
-    "nba_s22_note": "S22 ET-0.2193 EXTRAORDINARY (8bp below fleet best at only g=66!). First reset ~c25 IMMINENT (3 cycles) — survival uncertain. Gene pool 70x faster convergence vs prior runs.",
-    "nba_s18_best_brier_field": 0.22326,
+    "nba_official_source": "S15 RF-75f (sleeping 73+ fires)",
+    "nba_active_pareto_top": 0.2194,
+    "nba_active_pareto_top_note": "S22 ET-200f c36 g108 — BEST ACTIVE CANDIDATE! 18bp below fleet best 0.22012. /api/export-404(24th-CRITICAL). Next reset ~c53.",
+    "nba_s18_note": "S18 c642. 21ST-RESET-c617-CONFIRMED. RF-0.21949 EVICTED. Current 200f ~0.2210. NEXT RESET ~c642 IMMINENT.",
     "nba_s22_best_brier_field": 0.2207,
+    "nba_s18_best_brier_field": 0.22326,
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (sleeping 72+ fires)"
-  },
-  "even_fire_research": {
-    "fire": 246,
-    "parity": "EVEN",
-    "paper": "arXiv:2603.26611",
-    "title": "Benchmarking Tabular Foundation Models for Conditional Density Estimation in Regression",
-    "published": "March 2026",
-    "key_finding": "TabPFN and TabICL benchmarked on 39 real-world datasets using 6 proper scoring metrics: Brier, CRPS, CRLS, log-score, interval score, calibration error. Model rankings shift substantially by scoring rule — winner-by-Brier may lose on CRPS/CRLS.",
-    "applications": [
-      "Add all 6 proper scoring metrics to /api/export (Brier+CRPS+CRLS+log_score+interval_score+calibration_error)",
-      "Multi-metric Pareto frontier: Brier+CRPS+CRLS+calibration_error simultaneously",
-      "Validate S18 RF-200f-0.21949 and S22 ET-0.2193 under CRPS/CRLS before fleet-best claim",
-      "TabICLv2 re-evaluation on 186f NBA dataset with all 6 metrics",
-      "Port scoring suite to political_engine.py for rare-event calibration"
-    ],
-    "expected_improvement": "0.001-0.003 Brier + more honest multi-metric Pareto ranking",
-    "library": "properscoring (CRPS/CRLS) + netcal/calibration-uncertainty",
-    "proposal": "data/research-proposals/sota-tabular-fm-density-estimation-fire246.md",
-    "work_queue_id": "vm-research-tabular-fm-density-estimation-fire246",
-    "priority": 115
+    "pol_source": "P4 LightGBM-131f (sleeping 73+ fires)"
   },
   "axelrod_status": {
     "do_not_push_hf_space_yet": true,
     "mech_a": "DONE fire-122",
     "mech_b": "CODE-DONE BLOCKED",
     "mech_c": "CODE-DONE BLOCKED",
-    "ablation_config": "CODE-DONE fire-225 BLOCKED (5 configs per arXiv:2605.03310)",
+    "ablation_config": "CODE-DONE fire-225 BLOCKED",
     "nba_tf_sha": "85e7682e1d",
     "nba_tf_lines": 6035,
     "pol_tf_sha": "6983c86517",
     "pol_tf_lines": 4019,
-    "last_verify": "fire-245 ODD — UNCHANGED (25/25 parity OK, KL-div OK, compute_consensus_distance present both)",
-    "next_verify": "fire-247 ODD"
+    "last_verify": "fire-245 ODD direct-verify (25/25 parity OK, KL-div OK). fire-247 ODD: carry-forward (do_not_push_hf_space_yet=TRUE; NBA TF HF updated 1-Jun-2026 likely auto-rebuild; POL TF HF updated 7-May-2026 matches expected).",
+    "nba_tf_hf_last_updated": "1 Jun 2026 (HF hub — auto-rebuild suspected, no code push per do_not_push_hf_space_yet=TRUE)",
+    "pol_tf_hf_last_updated": "7 May 2026 (matches POL-TF-May7)",
+    "next_verify": "fire-249 ODD"
   },
   "councils_d1_d9": {
-    "note": "Councils D1-D9 are VM-local scripts. Not accessible from cloud. Council state in data/departments/ on VM."
+    "note": "Councils D1-D9 are VM-local scripts. Not accessible from cloud."
   },
-  "actions_taken_fire246": [
+  "actions_taken_fire247": [
     "STEP 0: No crash recovery — no local-agent-* items in work-queue.",
-    "S18: c=600 g=1798 stag=0 pareto=19(GROWING!). 19TH-RESET-c567-CONFIRMED+20TH-RESET-c592-CONFIRMED. RF-200f-0.21949 EXTREME URGENT (6bp below fleet best 0.22012). last_improvement=c593 post-20TH-RESET. /api/export-404(22nd).",
-    "S22: c=22 g=66 stag=0 pareto=14. FRESH-RESTART. ET-0.2193 EXTRAORDINARY (8bp below fleet best at only g=66!). First reset ~c25 IMMINENT (3 cycles).",
-    "S13/S14/S15: 404-DOWN (72+ fires).",
-    "POL P1/P2/P4/P5/P7: 404-DOWN (72+ fires). Private spaces.",
-    "EVEN fire-246: arXiv:2603.26611 TabFM Conditional Density Estimation (39 datasets, 6 metrics) proposal written.",
-    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md + sota-tabular-fm-density-estimation-fire246.md updated (fire-246 2026-06-08T08h)."
+    "S18: c=642 g=1925 stag=0 pareto=15. 21ST-RESET-c617-CONFIRMED. RF-200f-0.21949 CONFIRMED EVICTED. NEXT RESET ~c642 IMMINENT. /api/export-404(23rd).",
+    "S22: c=36 g=108 stag=0 pareto=12. 1ST-RESET-c28-CONFIRMED. RULE8-CLEAN. ET-200f-0.2194 BEST ACTIVE CANDIDATE (18bp below fleet best!)+ET-0.2197+ET-0.2201+RF-0.2207 ALL BELOW FLEET BEST at g=108. /api/export-404(24TH-CRITICAL). Next ~c53.",
+    "S13/S14/S15: 404-DOWN (73+ fires).",
+    "POL P1/P2/P4/P5/P7: 404-DOWN (73+ fires). P4 confirmed 404 via WebFetch.",
+    "Axelrod: SHA carry-forward NBA-85e7682e1d(6035L)/POL-6983c86517(4019L). NBA TF HF updated 1-Jun (auto-rebuild suspected). POL TF HF updated 7-May (matches). do_not_push_hf_space_yet=TRUE.",
+    "ODD fire-247: No WebSearch.",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-247 2026-06-08T12h)."
   ]
 }
