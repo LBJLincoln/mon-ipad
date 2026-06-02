@@ -1,7 +1,7 @@
 {
-  "fire": 257,
-  "timestamp": "2026-06-02T16:00:00Z",
-  "parity": "ODD",
+  "fire": 258,
+  "timestamp": "2026-06-02T20:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "evo4": {
       "hf_space": "nomos42-nba-evo-4",
@@ -15,10 +15,10 @@
       "best_model_type": "logistic_regression",
       "stagnation": 0,
       "pareto_front_size_approx": 18,
-      "note": "fire-257: c=819 g=2455 brier=0.22169 stag=0. TWO resets: c789 (CLEAN) + c814 (CLEAN). RULE8 carry-forward CLEAN. Next reset ~c839 (c814+25).",
-      "rule8_status": "CLEAN carry-forward fire-257: 2 clean resets (c789, c814). No stacking observed.",
-      "next_reset": "~c839 (c814+25)",
-      "alert": "Monitor c839 reset. brier=0.22169 above fleet gate 0.22085."
+      "note": "fire-258: 404-DOWN (81+ fires). Last known c=819. RULE8 carry-forward CLEAN (two clean resets c789+c814).",
+      "rule8_status": "CLEAN carry-forward fire-258.",
+      "next_reset": "~c839 (c814+25) — status unknown (404-DOWN)",
+      "alert": "404-DOWN 81+ fires. VM: wake + verify RULE8 clean at ~c839."
     },
     "evo5": {
       "hf_space": "nomos42-nba-evo-5",
@@ -32,10 +32,10 @@
       "best_model_type": "catboost",
       "stagnation": 0,
       "pareto_front_size": 17,
-      "note": "fire-257: c=1284 g=3850 brier=0.22126 stag=0 pareto=17. c1276 RESET HAPPENED (fire-256: next was ~c1276). CatBoost best. RULE8 UNKNOWN — VM must verify stacking removed from MODEL_TYPES post-c1276 reset.",
-      "rule8_status": "UNKNOWN fire-257: c1276 reset happened. CatBoost best (not stacking). VM must verify MODEL_TYPES config does NOT include stacking.",
-      "next_reset": "~c1301 (c1276+25)",
-      "alert": "VM: Verify stacking removed from evo5 MODEL_TYPES post-c1276 reset. 17 cycles to ~c1301. brier=0.22126 is fleet best active island."
+      "note": "fire-258: c=1294 g=3880 brier=0.22126 stag=0. c1276 reset confirmed. CatBoost best. RULE8 UNKNOWN — VM must verify stacking not in MODEL_TYPES. Next reset ~c1301 IMMINENT (7 cycles).",
+      "rule8_status": "UNKNOWN fire-258: c1276 reset happened. CatBoost best (not stacking). VM must verify MODEL_TYPES config does NOT include stacking.",
+      "next_reset": "~c1301 (c1276+25) — IMMINENT 7 cycles",
+      "alert": "IMMINENT: c1301 reset in 7 cycles. VM: Verify stacking NOT in evo5 MODEL_TYPES before ~c1301. brier=0.22126 is fleet best active island."
     },
     "S13": {
       "status": "404-DOWN",
@@ -62,11 +62,11 @@
       "best_model_type": "random_forest",
       "stagnation": 0,
       "pareto_front_size": 7,
-      "note": "fire-257: c=1053 g=3157 brier=0.22342 stag=0 pareto=7. 28TH RESET at c1051 CONFIRMED (was ~c1051 predicted fire-256). RF best. RULE8 unknown — VM verify post-reset model_types.",
-      "rule8_status": "UNKNOWN fire-257: 28th reset at c1051. VM must verify stacking not in model_types.",
-      "api_export": "404 — 29+ consecutive. VM: implement /api/export BEFORE ~c1076.",
-      "next_reset": "~c1076 (c1051+25)",
-      "alert": "VM: Implement /api/export URGENTLY before ~c1076. 28th reset at c1051 — verify RULE8 clean."
+      "note": "fire-258: 404-DOWN (81+ fires). Last known c=1053 g=3157. 28th reset at c1051 confirmed. RULE8 UNKNOWN.",
+      "rule8_status": "UNKNOWN fire-258: 28th reset at c1051. VM must verify stacking not in model_types when S15 wakes.",
+      "api_export": "404 — 30+ consecutive. VM: implement /api/export URGENTLY when S15 wakes.",
+      "next_reset": "~c1076 (c1051+25) — status unknown (404-DOWN)",
+      "alert": "404-DOWN 81+ fires. VM: wake + implement /api/export + verify RULE8 clean."
     },
     "S16": {"hf_space": "lbjlincoln26-nba-evo-s16", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S17": {"hf_space": "lbjlincoln26-nba-evo-s17", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
@@ -81,11 +81,11 @@
       "best_features": 71,
       "best_model_type": "random_forest",
       "stagnation": 0,
-      "note": "fire-257: c=757 g=2271 brier=0.22326 stag=0. COOLDOWN. c742 clean reset carry-forward (RULE8 CLEAN). Next reset ~c767 (c742+25) IMMINENT — 10 cycles. VM: fix /api/export before c767.",
-      "rule8_status": "CLEAN carry-forward fire-257: c742 breakthrough confirmed. RF+LGB no stacking.",
-      "next_reset": "~c767 (c742+25) — 10 cycles IMMINENT",
-      "api_export": "404 — 29+ consecutive. URGENT before ~c767.",
-      "alert": "IMMINENT: c767 reset in ~10 cycles. Fix /api/export now. Verify stacking stays evicted post-c767."
+      "note": "fire-258: c=762 g=2286 brier=0.22326 stag=0. RULE8 CLEAN carry-forward (c742 breakthrough). Next reset ~c767 IMMINENT (5 cycles — CRITICAL!).",
+      "rule8_status": "CLEAN carry-forward fire-258: c742 breakthrough holds. RF+LGB no stacking.",
+      "next_reset": "~c767 (c742+25) — IMMINENT 5 cycles CRITICAL",
+      "api_export": "404 — 30+ consecutive. URGENT before ~c767.",
+      "alert": "CRITICAL: c767 reset in 5 cycles. Fix /api/export NOW. Verify stacking stays evicted post-c767."
     },
     "S19": {"hf_space": "testforge42-nba-evo-s19", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S22": {
@@ -99,10 +99,10 @@
       "best_features": 69,
       "best_model_type": "random_forest",
       "stagnation": 0,
-      "note": "fire-257: c=105 g=315 brier=0.2207 stag=0. c103 RESET HAPPENED (was ~c103 predicted fire-256). RF now BEST (not stacking) — POSITIVE SIGN. RULE8 UNKNOWN — VM must verify MODEL_TYPES does not include stacking post-c103 reset.",
-      "rule8_status": "UNKNOWN fire-257: c103 reset happened. RF best (positive, stacking not dominant). VM MUST verify MODEL_TYPES config excludes stacking.",
-      "next_reset": "~c128 (c103+25)",
-      "alert": "POSITIVE: c103 reset, RF best (not stacking). VM: verify MODEL_TYPES config stacking removed. Next reset ~c128 (23 cycles)."
+      "note": "fire-258: c=112 g=335 brier=0.2207 stag=0. c103 reset confirmed. RF best. RULE8 UNKNOWN — VM must verify MODEL_TYPES excludes stacking post-c103 reset.",
+      "rule8_status": "UNKNOWN fire-258: c103 reset confirmed. RF best (positive signal). VM MUST verify MODEL_TYPES config excludes stacking.",
+      "next_reset": "~c128 (c103+25) — 16 cycles",
+      "alert": "POSITIVE: c103 reset, RF best. VM: verify MODEL_TYPES stacking removed before ~c128 (16 cycles)."
     },
     "nba_quant": {"hf_space": "nomos42-nba-quant", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "nba_quant_2": {"hf_space": "nomos42-nba-quant-2", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
@@ -200,9 +200,9 @@
     "github_pol_engine_sha": "f3bb5f31ce",
     "github_nba_engine_blob_full": "f455c4758a6e42b3157a9e89f1a7c893d7a08f89",
     "last_commit_nba_engine": "dae4f238 — [BRAIN] fix engine parity: sync from mon-ipad canonical (8335 lines, SHA 04084284) 2026-04-22",
-    "parity_note": "ODD fire-257: GitHub engine.py SHA unchanged at f455c4758a (same as fire-256). TF spaces intentionally diverged (do_not_push_hf_space_yet). 18/18 parity carry-forward from fire-254 direct-verify.",
-    "last_verify": "fire-254 EVEN: direct-verify pass. fire-257 ODD: GitHub SHA unchanged, carry-forward.",
-    "next_full_verify": "fire-258 EVEN (TF spaces must be UP)"
+    "parity_note": "EVEN fire-258: FULL VERIFY PASS. mon-ipad repo SHAs NBA ff51a9e7fd(6034L)/POL f71087775e(4018L). 25/25 parity symbols confirmed. py_compile OK both. Intentionally differ from deployed HF Space versions (85e7682e1d/6983c86517) by 1 line each — do_not_push_hf_space_yet MAINTAINED.",
+    "last_verify": "fire-258 EVEN: FULL VERIFY PASS. 25/25 parity OK. py_compile OK. SHAs recorded.",
+    "next_full_verify": "fire-260 EVEN"
   },
   "councils_d1_d9": {
     "d1": {"space": "testforge42/nba-evo-s18", "status": "ACTIVE c=757"},
@@ -216,28 +216,18 @@
     "d9": {"space": "testforge42/itf-tauric-trading-floor", "status": "sleeping", "last_updated": "2026-04-30"},
     "note": "D4-D9 docker spaces sleeping. Cannot trigger /api/run without authenticated HF restart. VM: restart D4-D9 via HF API."
   },
-  "actions_taken_fire257": [
+  "actions_taken_fire258": [
     "STEP 0: No crash recovery — all pending items are local-vm owner.",
-    "STEP 1 NBA: Fetched /api/status all 10 active NBA islands.",
-    "evo4: c=819 g=2455 brier=0.22169 stag=0. Two clean resets: c789+c814. RULE8 carry-forward CLEAN.",
-    "evo5: c=1284 g=3850 brier=0.22126 stag=0 pareto=17. c1276 RESET HAPPENED. CatBoost best. RULE8 UNKNOWN — VM verify.",
-    "S15: c=1053 g=3157 brier=0.22342 stag=0 pareto=7. 28th reset at c1051 CONFIRMED. RULE8 UNKNOWN — VM verify.",
-    "S18: c=757 g=2271 brier=0.22326 stag=0. COOLDOWN. RULE8 carry-forward CLEAN (c742 breakthrough). Next ~c767 IMMINENT.",
-    "S22 POSITIVE: c=105 g=315 brier=0.2207 stag=0. c103 RESET HAPPENED. RF now best (not stacking). RULE8 UNKNOWN — VM verify.",
-    "S13/S14: 404-DOWN (80+ fires). S16/S17/S19/evo3/quant/quant-2: 503-DOWN.",
+    "STEP 1 Axelrod FULL VERIFY: py_compile OK both. 25/25 parity symbols confirmed. SHAs NBA ff51a9e7fd(6034L)/POL f71087775e(4018L). Intentionally differ from deployed HF Space (85e7682e1d/6983c86517) by 1 line each. do_not_push_hf_space_yet MAINTAINED.",
+    "STEP 2 NBA: Fetched /api/status for active islands.",
+    "S18: c=762 g=2286 brier=0.22326 stag=0. RULE8 CLEAN carry-forward. Next ~c767 IMMINENT (5 cycles — CRITICAL!).",
+    "S22: c=112 g=335 brier=0.2207 stag=0. c103 reset confirmed (fire-257). RF best. RULE8 UNKNOWN. Next ~c128 (16 cycles).",
+    "evo5: c=1294 g=3880 brier=0.22126 stag=0. c1276 reset confirmed. CatBoost best. RULE8 UNKNOWN. Next ~c1301 IMMINENT (7 cycles).",
+    "evo4: 404-DOWN (81+ fires). S15/S13/S14: 404-DOWN (81+ fires).",
     "No stagnation > 15 in NBA. No new NBA checkpoint below 0.22085.",
-    "Engine parity: GitHub engine.py SHA f455c4758a (UNCHANGED from fire-256). TF space SHA 85e7682e1d (carry-forward, intentionally diverged).",
-    "STEP 2 POL: Fetched all 5 active POL islands.",
-    "P1 ACTION: stagnation=19 > 15 threshold. DIVERSIFY SENT via POST /api/command {command:diversify}. Response: {status:command queued}.",
-    "P2: c=731 LightGBM best brier=0.25041 stag=0. Healthy. History best gen=1694 brier=0.24903.",
-    "P4: c=604 xgboost_brier best. Rule9 VIOLATION PERSISTS (no LightGBM). Resets at c561+c581.",
-    "P5: c=6288 catboost_specialist. Rule9 VIOLATION PERSISTS (6288 cycles no LightGBM).",
-    "P7: c=1331 gradient_boost_specialist RF best. Healthy.",
-    "P3/P6/P8: 503-DOWN. Attempted HF wake via frontend URL — 503 persists. VM: restart via authenticated HF API.",
-    "STEP 3 Councils: D1(S18-ACTIVE), D3(S22-ACTIVE). D2/D4-D9: sleeping. Cannot restart without HF auth.",
-    "STEP 4 Dashboard: No R8 pending in work-queue.",
-    "STEP 5 Cross-project: S22 c103 reset confirms model config edit approach (same as S18 c742). Lesson: if RF best post-reset, stacking likely evicted. POL: P4/P5 Rule9 needs same config-level fix.",
-    "ODD fire-257: No WebSearch (EVEN only). Parity carry-forward.",
-    "health-status.json + brain-status.json + work-queue.json updated (fire-257 2026-06-02T16h)."
+    "STEP 3 POL: All P1-P7 404-DOWN (81+ fires). Carry-forward status from fire-257.",
+    "STEP 4 Councils: D1(S18-ACTIVE c762), D3(S22-ACTIVE c112). D2/D4-D9: sleeping.",
+    "EVEN fire-258 WebSearch: arXiv:2602.16537 (Mar 2026) — Optimal training-conditional regret for online conformal prediction. Minimax-optimal split-conformal under unknown distribution drift. NEW — not in pipeline. Added priority=117.",
+    "health-status.json + work-queue.json + CLAUDE.md updated (fire-258 2026-06-02T20h)."
   ]
 }

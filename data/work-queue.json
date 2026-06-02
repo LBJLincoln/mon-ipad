@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-02T16:00:00Z",
+  "updated_at": "2026-06-02T20:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire258-2026-06-02T20h",
+      "priority": 308,
+      "status": "done",
+      "completed_at": "2026-06-02T20:00:00Z",
+      "completed_by": "cloud-brain-fire-258",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-258 EVEN: Axelrod-verify-25/25-parity-OK-py_compile-OK-SHAs-NBA-ff51a9e7fd(6034L)/POL-f71087775e(4018L)(intentional-1L-diff-from-deployed-HF-Space-versions-85e7682e1d/6983c86517-do_not_push-MAINTAINED); S18-c762-g2286-brier0.22326-stag0-RULE8-CLEAN-carry-forward-next-reset~c767-IMMINENT(5cy!); S22-c112-g335-brier0.2207-stag0-next-reset~c128(16cy); evo5-c1294-g3880-brier0.22126-stag0-next-reset~c1301-IMMINENT(7cy!); evo4/S15/S13/S14-404-DOWN(81+fires); all-POL-404-DOWN(81+fires); EVEN-WebSearch:arXiv:2602.16537-Optimal-training-conditional-regret-online-conformal-prediction-Mar2026-minimax-optimal-split-conformal-drift-detection-new-priority=117; health-status.json+work-queue.json+CLAUDE.md updated (2026-06-02T20h)"
+    },
     {
       "id": "cloud-brain-fire257-2026-06-02T16h",
       "priority": 307,
@@ -69,7 +78,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S22 c=105 — c103 RESET HAPPENED! RF now BEST (not stacking) — POSITIVE SIGN. RULE8 UNKNOWN: cannot confirm stacking evicted from MODEL_TYPES without VM check. VM: (1) Verify MODEL_TYPES config excludes stacking, (2) If yes — BREAKTHROUGH (2nd clean reset after S18). Next reset ~c128."
+      "subject": "fire-258 UPDATE: S22 c=112 stag=0 — c103 RESET CONFIRMED. RF best (not stacking) — POSITIVE. RULE8 UNKNOWN: VM must confirm stacking evicted from MODEL_TYPES. If confirmed — BREAKTHROUGH (2nd clean reset after S18). Next reset ~c128 (16 cycles)."
     },
     {
       "id": "vm-s22-et200f-0.21983-potential-nba-fleet-best-fire249",
@@ -77,7 +86,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S22 c=105 g=315 brier=0.2207 stag=0. c103 reset happened. RF best. ET-0.2207 still above fleet gate 0.22012. VM: verify MODEL_TYPES config. Next reset ~c128."
+      "subject": "fire-258 UPDATE: S22 c=112 g=335 brier=0.2207 stag=0. RF best. brier still above fleet gate 0.22012. VM: verify MODEL_TYPES config excludes stacking. Next reset ~c128 (16 cycles)."
     },
     {
       "id": "vm-s15-evo6-api-export-missing-rf-0.21925-lost-fire253",
@@ -93,7 +102,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S18 c=757 COOLDOWN stag=0. RULE8 carry-forward CLEAN. Next reset ~c767 IMMINENT (10 cycles). VM: (1) Fix /api/export URGENTLY before ~c767, (2) Verify stacking stays evicted post-c767 reset."
+      "subject": "fire-258 UPDATE: S18 c=762 stag=0 RULE8-CLEAN carry-forward. Next reset ~c767 IMMINENT (5 cycles — CRITICAL!). VM: (1) Fix /api/export URGENTLY before ~c767, (2) Verify stacking stays evicted post-c767 reset."
     },
     {
       "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
@@ -101,7 +110,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S18 c=757 RULE8 carry-forward CLEAN. c742 breakthrough holds. Verify permanent (next reset ~c767). If c767 reset also clean → close this item."
+      "subject": "fire-258 UPDATE: S18 c=762 RULE8 carry-forward CLEAN. c742 breakthrough holds. c767 reset IMMINENT (5 cycles). If c767 reset also clean → close this item."
     },
     {
       "id": "vm-evo5-stacking-33f-rule8-fire255",
@@ -109,7 +118,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: evo5 (nomos42-nba-evo-5) c=1284. c1276 RESET HAPPENED (was predicted fire-256). CatBoost now BEST (not stacking) — POSITIVE. RULE8 UNKNOWN: VM must verify MODEL_TYPES config excludes stacking. Next reset ~c1301. Apply same fix as S18 if stacking still in config."
+      "subject": "fire-258 UPDATE: evo5 c=1294 stag=0. c1276 RESET HAPPENED (confirmed). CatBoost best (not stacking) — POSITIVE. RULE8 UNKNOWN: VM must verify MODEL_TYPES config excludes stacking. Next reset ~c1301 IMMINENT (7 cycles). Apply same fix as S18 if stacking still in config."
     },
     {
       "id": "vm-s22-et200f-rule8-violation-checkpoint-fire248",
@@ -125,7 +134,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S18 c=757 RULE8 CLEAN carry-forward. c767 next reset IMMINENT. Verify post-c767 clean to confirm permanent fix."
+      "subject": "fire-258 UPDATE: S18 c=762 RULE8 CLEAN carry-forward. c767 reset IMMINENT (5 cycles). Verify post-c767 clean to confirm permanent fix."
     },
     {
       "id": "vm-remove-stacking-s18",
@@ -133,7 +142,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S18 c=757 RULE8 CLEAN carry-forward. c767 IMMINENT (10cy). Verify post-c767 clean → close this item."
+      "subject": "fire-258 UPDATE: S18 c=762 RULE8 CLEAN carry-forward. c767 IMMINENT (5cy — CRITICAL!). Verify post-c767 clean → close this item."
     },
     {
       "id": "vm-remove-stacking-s22",
@@ -150,6 +159,14 @@
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
       "subject": "fire-257 UPDATE: S15 (evo6) c=1053. 28TH RESET c1051 CONFIRMED. RULE8 UNKNOWN — VM verify. /api/export STILL 404. Next reset ~c1076 (23 cycles). VM: implement /api/export URGENTLY."
+    },
+    {
+      "id": "vm-research-optimal-conformal-regret-fire258",
+      "priority": 117,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T20:00:00Z",
+      "subject": "RESEARCH fire-258 EVEN: Optimal training-conditional regret for online conformal prediction — arXiv:2602.16537 (Mar 2026). Key: minimax-optimal split-conformal algorithm under unknown distribution drift via adaptive drift detection. Directly applicable to NBA/POL non-stationary streams. Application 1: add cv_method='adaptive_drift' param to validate_model() using drift-detection calibration reset. Application 2: add `drift_calibration_regret` as new Pareto objective. Application 3: port to political_engine.py for election-cycle drift. Expected: 0.001-0.003 Brier + more honest temporal calibration. Proposal: data/research-proposals/sota-optimal-conformal-regret-fire258.md"
     },
     {
       "id": "vm-research-agentic-llm-nba-forecasting-fire256",
