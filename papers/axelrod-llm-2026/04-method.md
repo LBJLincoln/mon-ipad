@@ -55,12 +55,14 @@ Society-mean Brier is $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$.
 
 **Strategy.** Agent $i$'s *strategy* is a stochastic function:
 
-$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \mathcal{P}([0,1]^{|\mathcal{B}_d|})$$
+$$\sigma_i : \mathcal{R} \times \mathcal{X} \times \mathcal{H} \;\to\; \bigcup_{m \geq 1} \mathcal{P}\!\left([0,1]^m\right)$$
 
 where $\mathcal{H}$ is the space of agent-private histories and $\mathcal{P}(\cdot)$
-denotes the set of Borel probability measures over its argument (the action space
-$[0,1]^{|\mathcal{B}_d|}$ is continuous; the finite-set notation $\Delta(\mathcal{R})$
-is used below for the discrete archetype simplex). In practice, $\sigma_i$ is implemented by prompting
+denotes the set of Borel probability measures over its argument. The output dimension
+$m = |\mathcal{B}_d|$ (the number of events on day $d$) is encoded in the context
+observation $x_d \in \mathcal{X}$, so $\sigma_i$ is a family of functions parametrised
+by the day's event count; the finite-set notation $\Delta(\mathcal{R})$ is used below
+for the discrete archetype simplex. In practice, $\sigma_i$ is implemented by prompting
 $\mathcal{M}_i$ with the structured prompt $\Pi(r_i, x_d, h_{i,d-1})$, where
 $h_{i,d-1}$ is agent $i$'s private history (own predictions, outcomes seen, bankroll).
 The LLM samples a response, which is parsed into the prediction vector $\mathbf{p}_{i,d}$.
@@ -247,11 +249,11 @@ they add the least diversity and hence the least Ambiguity to the ensemble.
 This is consistent with the empirical finding that poorly calibrated agents
 in correlated prediction markets tend to mirror the favourite rather than
 take differentiated positions [@zhang2026arena].^[*Assumption sequencing note.*
-Assumptions A1, A2, A4, and A5 are used in Lemma 1. Assumption A3 (no
-spontaneous recovery) is not needed until Proposition 2 and is therefore
-introduced after the Lemma 1 proof to preserve narrative flow. Readers who
-notice A4 appearing before A3 in the text should refer to the statement after
-Lemma 1.]
+Assumptions A1, A2, A4, and A5 are used in Lemma 1. Assumptions A3 (no
+spontaneous recovery) and A6 (vacant-archetype expected Brier) are not needed
+until Proposition 2 and are therefore introduced after the Lemma 1 proof to
+preserve narrative flow. Readers who notice A4 appearing before A3 in the text
+should refer to the statement after Lemma 1.]
 
 **Assumption A4 (Archetype-shift event-independence).** The expected absolute
 prediction shift induced by drawing a vacant archetype uniformly at random is
@@ -374,6 +376,20 @@ is at least $\bar{B}_d + \delta_{\text{sac}}/2$ (partial persistence of the perf
 deficit). This assumption excludes pure mean-reversion scenarios and is empirically
 testable via the Sham-SRR control (§4.3).
 
+**Assumption A6 (Vacant-archetype expected Brier).** For a sacrifice-eligible agent
+$i$ at day $d$ drawing archetype $r^* \sim \text{Uniform}(\mathcal{V}_d)$, the
+expected individual Brier satisfies:
+
+$$\mathbb{E}_{r^*}\!\left[B_{i,d+1}^{\text{SRR}}\right] \;\leq\; \bar{B}_d$$
+
+Vacant archetypes are those not currently occupied in the population; because the
+sacrifice-eligible agent's current archetype has been demonstrated to underperform
+($\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$), switching to an as-yet-untested
+strategy is, in expectation, no worse than the current society mean. A6 is pre-registered
+and empirically testable via the within-agent matched-pairs analysis (§4.3, §5.4); if
+violated for a specific agent–archetype pair, the retention test (Definition 2, step 5)
+reverts the assignment, bounding practical impact.
+
 > **Proposition 2 (SRR as equilibrium refinement).** In the LPSG, the strategy
 > profile $(\sigma_i^{\text{SRR}})_{i \in \mathcal{I}}$ — where every
 > sacrifice-eligible agent executes SRR — is a *Strong Nash Equilibrium*
@@ -431,9 +447,10 @@ predictions, which are generated from the archetype in force after SRR.  By Clai
 deviation keeps every eligible agent in the same archetype that produced above-mean
 Brier (A3: the performance deficit persists), so
 $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}] \geq \bar{B}_d + \delta_{\text{sac}}/2 > \bar{B}_d$.
-Under SRR, the reallocated agent adopts a fresh archetype drawn from $\mathcal{V}_d$;
-in expectation, a vacant archetype (absent from the current population) produces
-predictions near the population mean, so $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_{d+1}$.
+Under SRR, the reallocated agent adopts archetype $r^* \sim \text{Uniform}(\mathcal{V}_d)$;
+by Assumption A6, $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$.
+Since $\bar{B}_d < \bar{B}_d + \delta_{\text{sac}}/2 \leq \mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}]$,
+the SRR agent's expected individual Brier strictly undercuts the deviation agent's.
 Therefore:
 
 $$\mathbb{E}\!\left[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}\right] \;\geq\;

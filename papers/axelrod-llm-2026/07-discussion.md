@@ -83,8 +83,9 @@ archetype yields **at least** $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
 individual Brier (A3: partial persistence of the performance deficit —
 the agent's Brier remains above mean, not below it), while accepting
 the reallocation offers a strictly positive probability of improvement
-through the archetype change and strictly improves group fitness through
-the Ambiguity increase from Lemma 1.
+through the archetype change and strictly improves expected group fitness
+via the joint mechanism of Lemma 1 (Ambiguity increase) and Proposition 2
+(individual-Brier stability under A3 and A6).
 The mechanism is therefore individually rational in expectation
 (not unconditionally dominant — an agent whose archetype happens to
 recover spontaneously would rationally resist — but A3 precisely

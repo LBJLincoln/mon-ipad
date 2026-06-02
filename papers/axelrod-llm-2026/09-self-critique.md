@@ -8678,3 +8678,188 @@ and no endogenous SRR-like mechanism.
 10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
 11. Confirm T12 Cerebras rerouting footnote cites the correct date (2026-04-22) in Table 3
 12. Verify A4 slack $\eta_{\text{A4}} < 0.211$ (pilot data must confirm before Conditions B–E)
+13. **NEW — A6 verification:** confirm pilot matched-pairs analysis satisfies A6
+    ($\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$) for all 12 agents before Conditions B–E
+
+---
+
+# Peer-Review Self-Critique — Cycle DDD (2026-06-09, fire-251, ODD)
+
+*Reviewer persona: hostile mathematician, NeurIPS 2026 area chair — formal-correctness focus on the
+proof of Proposition 2. No WebSearch (ODD fire). Three issues identified; all three fixed in this cycle.*
+
+---
+
+## CYCLE CCC STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle CCC. PRE-SUBMISSION checklist items 1, 4–12 remain
+deferred (data-blocked or EVEN-fire network verification required).
+
+---
+
+## NEW ISSUES (Cycle DDD full-manuscript re-read — §3 proof focus)
+
+### DDD1 (Major). Proposition 2 Claim 1 — individual Brier comparison relies on unjustified informal reasoning; source file and compiled manuscript diverge
+
+**Location:** `04-method.md` §3.5 Claim 1 ("Mean individual Brier term"); `paper.md` §3.5 same
+section. Two sub-issues.
+
+**Sub-issue (a) — `04-method.md` version.** The previous text read:
+
+> "Under SRR, the reallocated agent adopts a fresh archetype drawn from $\mathcal{V}_d$;
+> in expectation, a vacant archetype (absent from the current population) produces
+> predictions near the population mean, so $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_{d+1}$."
+
+Two steps here are unjustified by A1–A5:
+1. "vacant archetype produces predictions near the population mean" — A1 ensures
+   distinct predictions (separation from the current archetype), not proximity to
+   $\bar{p}$. A vacant archetype may produce any prediction; "near the mean" requires
+   a separate assumption about the geometry of vacant archetypes.
+2. Even granting step 1, concluding $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_{d+1}$
+   (SRR agent Brier ≤ society mean at day $d+1$) requires the society mean to be at most
+   $\bar{B}_d + \delta_{\text{sac}}/2$; this is not stated as an assumption and is
+   not generally true (the society mean may shift substantially between $d$ and $d+1$).
+
+**Sub-issue (b) — `paper.md` version (inconsistency with source file).** The compiled
+manuscript contained a *different* proof text for the same step:
+
+> "in expectation a vacant archetype produces predictions near the population mean
+> (A1 ensures the new archetype generates distinct, differentiated predictions),
+> so $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \mathbb{E}[B_{i,d+1}^{\text{deviation}}]$."
+
+The `paper.md` conclusion ($\leq \mathbb{E}[B_{i,d+1}^{\text{deviation}}]$) is the
+correct target inequality; however, the justification "(A1 ensures distinct,
+differentiated predictions)" is wrong — A1 guarantees $|\Delta p| \geq \epsilon_{\text{arch}}
+> 0$ (archetype shift magnitude), which has no direct bearing on the sign or magnitude of
+the Brier change. Distinct predictions from a bad archetype are still bad predictions.
+Furthermore, this `paper.md` text diverges from the source file, indicating the two
+were not synchronized at this proof step.
+
+**Root cause.** The proof needs a quantitative bound on the SRR agent's expected Brier
+that is traceable to a stated assumption. No such assumption existed.
+
+**Fix applied.** Added **Assumption A6 (Vacant-archetype expected Brier)**:
+
+$$\mathbb{E}_{r^*}\!\left[B_{i,d+1}^{\text{SRR}}\right] \;\leq\; \bar{B}_d$$
+
+A6 is placed after A3 in both files, following the same post-Lemma-1 narrative ordering
+as A3. With A6, the Claim 1 proof becomes:
+- Deviation: $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}] \geq \bar{B}_d +
+  \delta_{\text{sac}}/2$ (A3) ✓
+- SRR: $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$ (A6) ✓
+- Since $\bar{B}_d < \bar{B}_d + \delta_{\text{sac}}/2$: strict individual-Brier
+  improvement ✓
+
+The sequencing note (footnote after A2) updated to mention A6 alongside A3.
+Both source files now carry identical proof text, resolving the synchronization failure.
+
+*Post-fix verification:*
+`grep -n "predictions near the population mean\|A1 ensures the new archetype generates" 04-method.md paper.md` → zero hits. ✓
+`grep -n "bar{B}_{d+1}\b" 04-method.md paper.md | grep -v "09-self-critique"` → zero hits for the stale intermediate step. ✓
+`grep -n "Assumption A6" 04-method.md paper.md` → two hits each (definition + citation in proof). ✓
+
+---
+
+### DDD2 (Moderate). §6.1 attributes group fitness improvement to "the Ambiguity increase from Lemma 1" — Lemma 1 proves only JSD diversity increase, not ensemble Brier reduction
+
+**Location:** `07-discussion.md` §6.1 line 85–87; `paper.md` §6.1 corresponding line.
+
+**Reviewer:** The previous text read:
+
+> "while accepting the reallocation offers a strictly positive probability of
+> improvement through the archetype change **and strictly improves group fitness
+> through the Ambiguity increase from Lemma 1**."
+
+Lemma 1 establishes $\mathbb{E}[D_{d+1}] > \mathbb{E}[D_d]$ (JSD diversity increases),
+and by the Appendix B.1 JSD–Ambiguity monotonicity result, this implies
+$\mathbb{E}[\text{Amb}_{d+1}]$ increases. By the Brier ambiguity decomposition
+$B_{\text{ens}} = \overline{B}_{\text{indiv}} - \text{Amb}$, increasing Ambiguity
+reduces ensemble Brier *if and only if* mean individual Brier stays constant. Lemma 1
+makes no claim about individual Brier. The full proof that ensemble Brier improves
+requires both:
+(a) Ambiguity increases — established by Lemma 1; and
+(b) Mean individual Brier of the coalition does not worsen — established in Proposition 2
+via Claim 2 (A3) and the DDD1 fix (A6).
+
+Citing Lemma 1 alone therefore overclaims its scope: a reader who follows only the
+Lemma 1 citation will conclude "diversity increase → ensemble Brier improvement"
+without realising this step requires A3 and A6 via Proposition 2.
+
+**Fix applied (`07-discussion.md` §6.1 and `paper.md` §6.1):**
+
+> "...and strictly improves expected group fitness **via the joint mechanism of Lemma 1
+> (Ambiguity increase) and Proposition 2 (individual-Brier stability under A3 and A6)**."
+
+*Post-fix verification:*
+`grep -n "strictly improves.*group fitness\|group fitness.*Lemma 1" 07-discussion.md paper.md | grep -v "09-self-critique"` → both files show the revised phrasing. ✓
+
+---
+
+### DDD3 (Minor). §3.1 Strategy definition — codomain $\mathcal{P}([0,1]^{|\mathcal{B}_d|})$ contains the free variable $d$, making $\sigma_i$ ill-typed
+
+**Location:** `04-method.md` §3.1 Strategy definition; `paper.md` §3.1 same.
+
+**Reviewer:** The previous function signature:
+
+$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \mathcal{P}([0,1]^{|\mathcal{B}_d|})$$
+
+places the free variable $d$ (the day index) in the codomain. Function $\sigma_i$
+is defined for all days $d$, but $|\mathcal{B}_d|$ (the number of events on day $d$)
+varies across days — NBA schedules include 0–15 games per day. The codomain is therefore
+not a fixed set; it changes with each day's game count, making $\sigma_i$ as written a
+*dependent-type* function rather than a standard function between fixed sets. A mathematician
+compiling the paper would immediately note that the function signature is not well-formed
+under standard set-theoretic function notation: the codomain depends on a variable not
+bound in the domain.
+
+**Fix applied (`04-method.md` §3.1 and `paper.md` §3.1):**
+
+$$\sigma_i : \mathcal{R} \times \mathcal{X} \times \mathcal{H} \;\to\; \bigcup_{m \geq 1} \mathcal{P}\!\left([0,1]^m\right)$$
+
+with a note: "The output dimension $m = |\mathcal{B}_d|$ (the number of events on
+day $d$) is encoded in the context observation $x_d \in \mathcal{X}$, so $\sigma_i$
+is a family of functions parametrised by the day's event count."
+
+The union $\bigcup_{m \geq 1} \mathcal{P}([0,1]^m)$ is a well-defined (if not
+complete metrizable) set; the output restriction to the $m$-dimensional component
+is determined by $x_d$ and is thus part of the function's input, not a free variable
+in the codomain. This is the standard resolution for variable-arity prediction
+functions in formal prediction-market treatments.
+
+*Post-fix verification:*
+`grep -n "bigcup.*mathcal{P}" 04-method.md paper.md` → two hits (both files). ✓
+`grep -n "output dimension.*encoded" 04-method.md paper.md` → two hits (both files). ✓
+
+---
+
+## CYCLE DDD SUMMARY
+
+**Fixed this cycle:**
+- DDD1 (Major): Proposition 2 Claim 1 individual Brier proof — unjustified "near population mean" reasoning replaced by Assumption A6 ($\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$); source–manuscript synchronization failure corrected (04-method.md and paper.md previously carried different versions of this proof step); proof now complete under A1–A6.
+- DDD2 (Moderate): §6.1 Lemma 1 attribution — "strictly improves group fitness through the Ambiguity increase from Lemma 1" → "strictly improves expected group fitness via the joint mechanism of Lemma 1 (Ambiguity increase) and Proposition 2 (individual-Brier stability under A3 and A6)."
+- DDD3 (Minor): §3.1 $\sigma_i$ codomain ill-typed (free variable $d$ in codomain) → $\bigcup_{m \geq 1} \mathcal{P}([0,1]^m)$ with output dimension determined by $x_d$.
+
+**Remaining open:** None from prior cycles (CCC closed all prior items).
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. ✓ Verify `@llm_ipd2024` — Fontana, Pierri, Aiello (CCC2)
+3. ✓ Verify `@polyswarm2026` — Barot & Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note
+5. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+6. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+7. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+8. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+9. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+10. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+11. Confirm T12 Cerebras rerouting footnote cites the correct date (2026-04-22)
+12. Verify A4 slack $\eta_{\text{A4}} < 0.211$ (pilot data required before Conditions B–E)
+13. **NEW** Verify A6 via matched-pairs pilot analysis: $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$ for all 12 agents
+
+**Structural changes this cycle:**
+- `04-method.md` §3.1: $\sigma_i$ codomain → $\bigcup_{m \geq 1}\mathcal{P}([0,1]^m)$ with $x_d$-determined output dimension (DDD3)
+- `04-method.md` §3.1 footnote: sequencing note updated to mention A6 alongside A3 (DDD1)
+- `04-method.md` §3.5: A6 added (14 lines, placed after A3 and before Proposition 2) (DDD1)
+- `04-method.md` §3.5 Claim 1: "near population mean" + $\bar{B}_{d+1}$ → A6 citation + exact chain $\leq \bar{B}_d < \bar{B}_d + \delta_{\text{sac}}/2 \leq \mathbb{E}[\cdot]^{\text{deviation}}$ (DDD1)
+- `07-discussion.md` §6.1: Lemma 1 attribution → joint Lemma 1 + Proposition 2 (DDD2)
+- `paper.md`: all five edits mirrored (DDD1 × 3 locations, DDD2, DDD3)

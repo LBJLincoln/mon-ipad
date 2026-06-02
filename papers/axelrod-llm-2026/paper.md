@@ -556,12 +556,14 @@ Society-mean Brier is $\bar{B}_d = \frac{1}{N}\sum_i \overline{B}_{i,d}$.
 
 **Strategy.** Agent $i$'s *strategy* is a stochastic function:
 
-$$\sigma_i : (\mathcal{R} \times \mathcal{X} \times \mathcal{H}) \rightarrow \mathcal{P}([0,1]^{|\mathcal{B}_d|})$$
+$$\sigma_i : \mathcal{R} \times \mathcal{X} \times \mathcal{H} \;\to\; \bigcup_{m \geq 1} \mathcal{P}\!\left([0,1]^m\right)$$
 
 where $\mathcal{H}$ is the space of agent-private histories and $\mathcal{P}(\cdot)$
-denotes the set of Borel probability measures over its argument (the action space
-$[0,1]^{|\mathcal{B}_d|}$ is continuous; the finite-set notation $\Delta(\mathcal{R})$
-is used below for the discrete archetype simplex). In practice, $\sigma_i$ is implemented by prompting
+denotes the set of Borel probability measures over its argument. The output dimension
+$m = |\mathcal{B}_d|$ (the number of events on day $d$) is encoded in the context
+observation $x_d \in \mathcal{X}$, so $\sigma_i$ is a family of functions parametrised
+by the day's event count; the finite-set notation $\Delta(\mathcal{R})$ is used below
+for the discrete archetype simplex. In practice, $\sigma_i$ is implemented by prompting
 $\mathcal{M}_i$ with the structured prompt $\Pi(r_i, x_d, h_{i,d-1})$, where
 $h_{i,d-1}$ is agent $i$'s private history (own predictions, outcomes seen, bankroll).
 The LLM samples a response, which is parsed into the prediction vector $\mathbf{p}_{i,d}$.
@@ -849,6 +851,19 @@ is at least $\bar{B}_d + \delta_{\text{sac}}/2$ (partial persistence of the
 performance deficit). This is a non-trivial claim — it excludes pure mean-reversion
 scenarios — and is empirically testable via the Sham-SRR condition (§4.3, §5.3).
 
+**Assumption A6 (Vacant-archetype expected Brier).** For a sacrifice-eligible agent
+$i$ at day $d$ drawing archetype $r^* \sim \text{Uniform}(\mathcal{V}_d)$, the
+expected individual Brier satisfies:
+
+$$\mathbb{E}_{r^*}\!\left[B_{i,d+1}^{\text{SRR}}\right] \;\leq\; \bar{B}_d$$
+
+Vacant archetypes are those not currently occupied; because the sacrifice-eligible
+agent's current archetype underperforms ($\overline{B}_{i,d} \geq \bar{B}_d +
+\delta_{\text{sac}}$), switching to an as-yet-untested strategy is, in expectation,
+no worse than the current society mean. A6 is pre-registered and testable via the
+within-agent matched-pairs analysis (§4.3, §5.4); if violated, the retention test
+(Definition 2, step 5) reverts the assignment.
+
 > **Proposition 2 (SRR as equilibrium refinement).** In the LPSG, the strategy
 > profile $(\sigma_i^{\text{SRR}})_{i \in \mathcal{I}}$ — where every
 > sacrifice-eligible agent executes SRR — is a *Strong Nash Equilibrium*
@@ -908,9 +923,9 @@ deviation keeps every eligible agent in the same archetype that produced above-m
 Brier (A3: the performance deficit persists at level $\geq \bar{B}_d + \delta_{\text{sac}}/2$),
 so $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}] \geq \bar{B}_d + \delta_{\text{sac}}/2 > \bar{B}_d$.
 Under SRR, the reallocated agent adopts a fresh archetype drawn from $\mathcal{V}_d$;
-in expectation a vacant archetype produces predictions near the population mean
-(A1 ensures the new archetype generates distinct, differentiated predictions),
-so $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \mathbb{E}[B_{i,d+1}^{\text{deviation}}]$.
+by Assumption A6, $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$.
+Since $\bar{B}_d < \bar{B}_d + \delta_{\text{sac}}/2 \leq \mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}]$,
+the SRR agent's expected individual Brier strictly undercuts the deviation agent's.
 Therefore:
 
 $$\mathbb{E}\!\left[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}\right] \;\geq\;
@@ -1819,8 +1834,9 @@ archetype yields **at least** $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
 individual Brier (A3: partial persistence of the performance deficit —
 the agent's Brier remains above mean, not below it), while accepting
 the reallocation offers a strictly positive probability of improvement
-through the archetype change and strictly improves group fitness through
-the Ambiguity increase from Lemma 1.
+through the archetype change and strictly improves expected group fitness
+via the joint mechanism of Lemma 1 (Ambiguity increase) and Proposition 2
+(individual-Brier stability under A3 and A6).
 The mechanism is therefore individually rational in expectation
 (not unconditionally dominant — an agent whose archetype happens to
 recover spontaneously would rationally resist — but A3 precisely
