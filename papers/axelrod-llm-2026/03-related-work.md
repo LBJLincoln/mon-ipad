@@ -257,6 +257,17 @@ evidence for the *silicon-crowd hypothesis* underpinning our approach — but th
 ensemble uses no explicit diversity-maintenance mechanism, leaving the Ambiguity
 term as an unrealised potential gain that SRR is specifically designed to capture.
 
+A concurrent temporal audit, TimeSeek [@lee2026timeseek], evaluates 10 frontier
+LLMs on 150 CFTC-regulated Kalshi binary markets and finds that agentic forecasters
+are most competitive early in a market's lifecycle and on high-uncertainty events,
+but substantially less competitive near resolution or on strong-consensus markets.
+This lifecycle pattern directly supports our pre-tip-off prediction window design
+(§3.6): by restricting agent predictions to the high-uncertainty period before
+tip-off, Axelrod-LLM operates in the regime where Lee et al. find LLM skill is
+maximal. TimeSeek also finds that simple two-model ensembles reduce prediction
+error without surpassing the market aggregate — further motivating the need for
+a diversity-maintenance mechanism (SRR) beyond naive ensemble averaging.
+
 Our work differs from all of these predecessors in three respects.
 First, we study *society-level dynamics* across a multi-agent
 population rather than the performance of individual agents or
@@ -290,6 +301,7 @@ endogenous diversity maintenance via SRR.
 | Prediction Arena [@zhang2026arena] | ✓ | ✓ (Kalshi/Polymarket) | — | — |
 | PolySwarm [@polyswarm2026] | ✓ | ✓ (Polymarket) | — | — (fixed personas) |
 | Silicon Crowd [@schoenegger2024wisdom] | ✓ | ✓ (geo. events) | — | — |
+| TimeSeek [@lee2026timeseek] | ✓ | ✓ (Kalshi) | — | — |
 | **Axelrod-LLM (this work)** | **✓** | **✓ (NBA + Political)** | **✓** | **✓ (SRR, endogenous)** |
 
 *Table 1: Comparison with related work across four key framework properties.

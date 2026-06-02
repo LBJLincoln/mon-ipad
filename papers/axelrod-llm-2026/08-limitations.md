@@ -93,6 +93,16 @@ changes, enabling post-hoc flagging.  A strong signal of contamination
 would be an anomalously large T12-vs-commercial Brier gap in Conditions
 B–E relative to Condition A; we report this comparison explicitly in §5.6.
 
+**Temporal lifecycle scope.** Lee et al. [@lee2026timeseek] find that agentic LLM
+forecasters are most competitive early in a prediction market's lifecycle and on
+high-uncertainty events, but substantially less competitive near resolution or on
+strong-consensus markets. Our pre-tip-off prediction window — sealed predictions
+generated during the 15-minute morning council window (§3.6), always before the
+game begins — places agents exclusively in the early-lifecycle, high-uncertainty
+regime where LLM skill is highest. Results should not be extrapolated to late-lifecycle
+settings (e.g., in-game live markets) where the TimeSeek findings suggest structural
+disadvantage for LLM-based forecasters.
+
 ---
 
 ## 7.3  Virtual Financial Stakes

@@ -316,7 +316,15 @@ can take either sign.  We consider both cases.
 *Case 1* ($\delta_i\Delta p \geq 0$, i.e.\ the new archetype moves the agent's prediction
 away from or orthogonal to the centroid):
 
-$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$$
+$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; 0$$
+
+The second inequality holds in every realization since $(\Delta p)^2 \geq 0$ always.
+Case 1 therefore contributes a non-negative term to $\mathbb{E}[\Delta\text{Amb}_t]$.
+(Note: the step $\geq \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$ would require
+$|\Delta p| \geq \epsilon_{\text{arch}}$ per-realization, which A1 guarantees only
+in expectation; the per-realization lower bound is $0$, which is all that is needed here.
+The strict positivity $\mathbb{E}[\Delta\text{Amb}_t] > 0$ over all events is established
+by the combined bound below, using $\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2$.)
 
 *Case 2* ($\delta_i\Delta p < 0$, i.e.\ the new archetype moves the prediction toward
 the centroid):
@@ -364,10 +372,12 @@ bound tightened from earlier stated 0.22). $\checkmark$
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
 $\bar{p}_t \in [0.24, 0.76]$ and $\text{Amb}_t \leq 0.04$), increasing Ambiguity
-strictly increases JSD. Pilot season data confirm that NBA game-day centroids satisfy
+strictly increases JSD. Pilot-season NBA moneyline data are expected to satisfy
 $\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout
-the 2024–25 season (Table 4, §5.1); the monotonicity regime is therefore satisfied
-throughout the experimental range, and the step applies without qualification.
+the 2024–25 season (pre-registered empirical range; formal verification pending
+Table 4, §5.1, upon pilot backtest completion); the monotonicity regime is therefore
+expected to hold throughout the experimental range, and the step applies under this
+pre-registered empirical constraint.
 Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,

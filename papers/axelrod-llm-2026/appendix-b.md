@@ -39,7 +39,7 @@ Therefore $-\frac{1}{2}H''(\bar{p}) = \frac{1}{2\bar{p}(1-\bar{p})\ln 2} > 0$.
 
 Numerically, at the worst-case boundary of the empirical operating range $\bar{p} = 0.24$:
 
-$$-\frac{1}{2}H''(0.24) = \frac{1}{2 \times 0.24 \times 0.76 \times \ln 2} = \frac{1}{0.2518} \approx 3.97$$
+$$-\frac{1}{2}H''(0.24) = \frac{1}{2 \times 0.24 \times 0.76 \times \ln 2} = \frac{1}{0.25282} \approx 3.955$$
 
 (units: bits per unit Ambiguity; *not* nats$^{-1}$, which would arise from a natural-log JSD)
 and at $\bar{p} = 0.50$, the coefficient is $\frac{1}{2 \times 0.25 \times \ln 2} \approx 2.89$.
@@ -87,13 +87,13 @@ $N = 12$):
 $$\left|\frac{\partial \bar{R}}{\partial \text{Amb}}\right| \leq \frac{3 \times 3.07 \times 22.5}{12}\times\sqrt{0.04}
 = \frac{207.2}{12}\times 0.200 \approx 3.46$$
 
-The leading coefficient at $\bar{p} = 0.24$ is $3.97$.  Hence:
+The leading coefficient at $\bar{p} = 0.24$ is $3.955$.  Hence:
 
-$$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}=0.24,\,\text{Amb}=0.04} \geq 3.97 - 3.46 = 0.51 > 0$$
+$$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}=0.24,\,\text{Amb}=0.04} \geq 3.955 - 3.46 = 0.495 > 0$$
 
 confirming strict monotonicity throughout the empirical operating range. $\square$
 
-*Remark.* The margin (0.51 vs zero) is tightest at the corner $\bar{p} = 0.24$,
+*Remark.* The margin (0.495 vs zero) is tightest at the corner $\bar{p} = 0.24$,
 $\text{Amb} = 0.04$, reflecting the fact that for $\bar{p}$ near the market-boundary
 and $\text{Amb}$ at its pilot maximum, higher-order terms are non-negligible.
 For $\bar{p} \in [0.35, 0.65]$ (the modal game probability regime) and

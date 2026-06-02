@@ -436,6 +436,17 @@ evidence for the *silicon-crowd hypothesis* underpinning our approach — but th
 ensemble uses no explicit diversity-maintenance mechanism, leaving the Ambiguity
 term as an unrealised potential gain that SRR is specifically designed to capture.
 
+A concurrent temporal audit, TimeSeek [@lee2026timeseek], evaluates 10 frontier
+LLMs on 150 CFTC-regulated Kalshi binary markets and finds that agentic forecasters
+are most competitive early in a market's lifecycle and on high-uncertainty events,
+but substantially less competitive near resolution or on strong-consensus markets.
+This lifecycle pattern directly supports our pre-tip-off prediction window design
+(§3.6): by restricting agent predictions to the high-uncertainty period before
+tip-off, Axelrod-LLM operates in the regime where Lee et al. find LLM skill is
+maximal. TimeSeek also finds that simple two-model ensembles reduce prediction
+error without surpassing the market aggregate — further motivating the need for
+a diversity-maintenance mechanism (SRR) beyond naive ensemble averaging.
+
 Our work differs from all of these predecessors in three respects.
 First, we study *society-level dynamics* across a multi-agent
 population rather than the performance of individual agents or
@@ -469,6 +480,7 @@ endogenous diversity maintenance via SRR.
 | Prediction Arena [@zhang2026arena] | ✓ | ✓ (Kalshi/Polymarket) | — | — |
 | PolySwarm [@polyswarm2026] | ✓ | ✓ (Polymarket) | — | — (fixed personas) |
 | Silicon Crowd [@schoenegger2024wisdom] | ✓ | ✓ (geo. events) | — | — |
+| TimeSeek [@lee2026timeseek] | ✓ | ✓ (Kalshi) | — | — |
 | **Axelrod-LLM (this work)** | **✓** | **✓ (NBA + Political)** | **✓** | **✓ (SRR, endogenous)** |
 
 *Table 1: Comparison with related work across four key framework properties.
@@ -800,7 +812,11 @@ can take either sign.  We consider both cases.
 *Case 1* ($\delta_i\Delta p \geq 0$, i.e.\ the new archetype moves the agent's prediction
 away from or orthogonal to the centroid):
 
-$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$$
+$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; 0$$
+
+The second inequality holds in every realization ($(\Delta p)^2 \geq 0$); Case 1 contributes a
+non-negative term to $\mathbb{E}[\Delta\text{Amb}_t]$.  Strict positivity of the full expectation
+is established by the combined bound below using $\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2$ (A1 + Jensen).
 
 *Case 2* ($\delta_i\Delta p < 0$, i.e.\ the new archetype moves the prediction toward
 the centroid):
@@ -839,10 +855,12 @@ Inequality holds iff $\eta_{\text{A4}} < 0.211$; pilot data must confirm this be
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
 $\bar{p}_t \in [0.24, 0.76]$ and $\text{Amb}_t \leq 0.04$), increasing Ambiguity
-strictly increases JSD. Pilot season data confirm that NBA game-day centroids satisfy
+strictly increases JSD. Pilot-season NBA moneyline data are expected to satisfy
 $\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout
-the 2024–25 season (Table 4, §5.1); the monotonicity regime is therefore satisfied
-throughout the experimental range, and the step applies without qualification.
+the 2024–25 season (pre-registered empirical range; formal verification pending
+Table 4, §5.1, upon pilot backtest completion); the monotonicity regime is therefore
+expected to hold throughout the experimental range, and the step applies under this
+pre-registered empirical constraint.
 Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
 **Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
@@ -2210,6 +2228,16 @@ large Qwen-235B sub-group (T1, T2, T12) vs.\ non-Qwen Brier gap in
 Conditions B–E relative to Condition A; we report this comparison explicitly
 in §5.6 as H5 (§4.6).
 
+**Temporal lifecycle scope.** Lee et al. [@lee2026timeseek] find that agentic LLM
+forecasters are most competitive early in a prediction market's lifecycle and on
+high-uncertainty events, but substantially less competitive near resolution or on
+strong-consensus markets. Our pre-tip-off prediction window — sealed predictions
+generated during the 15-minute morning council window (§3.6), always before the
+game begins — places agents exclusively in the early-lifecycle, high-uncertainty
+regime where LLM skill is highest. Results should not be extrapolated to late-lifecycle
+settings (e.g., in-game live markets) where the TimeSeek findings suggest structural
+disadvantage for LLM-based forecasters.
+
 ---
 
 ## 7.3  Virtual Financial Stakes
@@ -2680,7 +2708,7 @@ $$\text{JSD} = -\frac{1}{2}H''(\bar{p})\cdot\text{Amb} - \bar{R} \tag{B.1}$$
 
 **Sign of the leading coefficient.** Since $H''(p) = -\frac{1}{p(1-p)\ln 2} < 0$,
 the coefficient $-\frac{1}{2}H''(\bar{p}) = \frac{1}{2\bar{p}(1-\bar{p})\ln 2} > 0$.
-At the worst-case empirical boundary $\bar{p} = 0.24$: $-\frac{1}{2}H''(0.24) \approx 3.97$; at $\bar{p} = 0.50$: $\approx 2.89$.
+At the worst-case empirical boundary $\bar{p} = 0.24$: $-\frac{1}{2}H''(0.24) \approx 3.955$; at $\bar{p} = 0.50$: $\approx 2.89$.
 
 **Bounding the remainder.** The third derivative satisfies $|H'''(p)| = \frac{|1-2p|}{p^2(1-p)^2 \ln 2}$;
 at the empirical boundary $\bar{p} = 0.24$: $|H'''(0.24)| \approx 22.5$.
@@ -2697,11 +2725,11 @@ $|\partial\bar{R}/\partial\text{Amb}| \leq \frac{3\times 3.07\times|H'''|_{\max}
 $\text{Amb} = 0.04$, $N = 12$):
 
 $$\frac{\partial \text{JSD}}{\partial \text{Amb}}\bigg|_{\bar{p}} \geq
-3.97 - \frac{3 \times 3.07 \times 22.5}{12}\sqrt{0.04} \approx 3.97 - 3.46 = 0.51 > 0$$
+3.955 - \frac{3 \times 3.07 \times 22.5}{12}\sqrt{0.04} \approx 3.955 - 3.46 = 0.495 > 0$$
 
 confirming strict monotonicity throughout the empirical range. $\square$
 
-*Remark.* The margin (0.51 vs zero) is tightest at the corner $\bar{p} = 0.24$,
+*Remark.* The margin (0.495 vs zero) is tightest at the corner $\bar{p} = 0.24$,
 $\text{Amb} = 0.04$.  In the modal experimental regime ($\bar{p} \in [0.35,0.65]$,
 $\text{Amb} \leq 0.02$) the remainder is an order of magnitude smaller than the
 leading term.  The proof is calibrated to the pilot-season empirical range

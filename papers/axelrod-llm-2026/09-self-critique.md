@@ -8862,4 +8862,170 @@ functions in formal prediction-market treatments.
 - `04-method.md` §3.5: A6 added (14 lines, placed after A3 and before Proposition 2) (DDD1)
 - `04-method.md` §3.5 Claim 1: "near population mean" + $\bar{B}_{d+1}$ → A6 citation + exact chain $\leq \bar{B}_d < \bar{B}_d + \delta_{\text{sac}}/2 \leq \mathbb{E}[\cdot]^{\text{deviation}}$ (DDD1)
 - `07-discussion.md` §6.1: Lemma 1 attribution → joint Lemma 1 + Proposition 2 (DDD2)
+
+---
+
+# Peer-Review Self-Critique — Cycle EEE (2026-06-09, fire-254, EVEN)
+
+*Reviewer persona: hostile mathematician + empirical methods reviewer. EVEN fire:
+WebSearch used (2 queries). Four issues identified; all four fixed in this cycle.*
+
+---
+
+## CYCLE DDD STATUS: All previously open issues resolved ✓
+
+No carry-over from Cycle DDD. PRE-SUBMISSION checklist items 1, 4–13 carry forward
+(data-blocked or network-verification-deferred).
+
+---
+
+## EEE-WS — EVEN-fire WebSearch Findings
+
+**Query 1:** "arXiv 2026 LLM multi-agent prediction market diversity ensemble forecasting tournament"
+→ Found arXiv:2604.04220 (TimeSeek, Lee/Mostafa/Shastri April 2026), arXiv:2504.10210 (Competition LLM agents time series), plus already-cited PolySwarm (2604.03888) and Silicon Crowd (2402.19379). TimeSeek is new and directly relevant (see EEE2).
+
+**Query 2:** "arXiv 2604.04220 TimeSeek temporal reliability agentic forecasters"
+→ Confirmed: Dennis Lee, Hamza Mostafa, Om Shastri. 10 frontier LLMs × 150 Kalshi binary markets × 5 temporal checkpoints = 15,000 forecasts. Key finding: models most competitive early in market lifecycle and on high-uncertainty events; web search improves BSS overall but hurts in 12% of model-checkpoint pairs; simple two-model ensembles reduce error without surpassing the market. ✓ (see EEE2)
+
+---
+
+## NEW ISSUES (Cycle EEE full-manuscript re-read)
+
+### EEE1 (Minor arithmetic). Appendix B.1 — denominator $2 \times 0.24 \times 0.76 \times \ln 2$ stated as $0.2518$; correct value is $\approx 0.25282$; leading coefficient is $\approx 3.955$ not $3.97$; proof margin is $\approx 0.495$ not $0.51$
+
+**Location:** `appendix-b.md` §B.1 lines 42, 90, 92, 96 (Remark); `paper.md` §B.1 lines 2683, 2700, 2704.
+
+**Problem.** The leading-coefficient calculation states:
+$$-\frac{1}{2}H''(0.24) = \frac{1}{2 \times 0.24 \times 0.76 \times \ln 2} = \frac{1}{0.2518} \approx 3.97$$
+
+Computing the denominator precisely:
+$2 \times 0.24 \times 0.76 = 0.3648$; $0.3648 \times \ln 2 = 0.3648 \times 0.69315 = 0.25282$.
+The correct denominator is $0.25282$, not $0.2518$. The correct coefficient is $1/0.25282 \approx 3.955$, not $3.97$. 
+
+The error propagates to the proof margin statement: $3.97 - 3.46 = 0.51$ should be $3.955 - 3.46 = 0.495$. The conclusion $> 0$ still holds — the corrected margin $0.495 > 0$ — but the stated margin is inflated by $0.015$. A reviewer checking the arithmetic with a calculator would catch this immediately; it also changes the Remark ("margin 0.51 vs zero" → "margin 0.495 vs zero").
+
+**Consequence for proof validity.** None: $0.495 > 0$, monotonicity holds throughout the empirical range. The error is presentational, not logical.
+
+**Fix applied:**
+- `appendix-b.md` §B.1: `$\frac{1}{0.2518} \approx 3.97$` → `$\frac{1}{0.25282} \approx 3.955$` (×1 occurrence).
+- `appendix-b.md` §B.1: leading coefficient sentence `$3.97$` → `$3.955$`; display math `$3.97 - 3.46 = 0.51$` → `$3.955 - 3.46 = 0.495$`; Remark margin `(0.51 vs zero)` → `(0.495 vs zero)` (×3 occurrences).
+- `paper.md` §B.1 condensed: same four replacements. ✓
+
+*Post-fix verification:*
+`grep -n "0\.2518\b" appendix-b.md paper.md` → zero hits. ✓
+`grep -n "3\.955\|0\.495\b" appendix-b.md paper.md` → seven hits across both files (all correct). ✓
+
+---
+
+### EEE2 (Moderate, EVEN WebSearch). Missing citation: TimeSeek (arXiv:2604.04220) — temporal reliability of agentic LLM forecasters on binary prediction markets
+
+**Location:** `03-related-work.md` §2.6; `08-limitations.md` §7.2; `03-related-work.md` Table 1; `references.bib`.
+
+**Problem.** Lee, Mostafa, and Shastri (arXiv:2604.04220, April 2026) evaluate 10 frontier LLMs on 150 CFTC-regulated Kalshi binary markets at 5 temporal checkpoints. Their findings are directly relevant to two parts of our manuscript:
+
+1. **§2.6 Related Work / positioning:** TimeSeek establishes an empirical benchmark for agentic LLM forecasters in binary prediction markets that is methodologically adjacent to our setup (different domain — political/events rather than NBA — but same market structure: binary outcomes, proper scoring rule, multiple LLMs). Omitting it from the related work leaves the impression of ignoring the most recent concurrent benchmark on exactly this problem class.
+
+2. **§7.2 Limitations:** TimeSeek finds that LLM forecasters are most competitive *early in a market's lifecycle* (high-uncertainty, before information accumulates) and least competitive near resolution or on strong-consensus events. Our pre-tip-off prediction window (§3.6) places agents exclusively in the early-lifecycle, high-uncertainty phase — the regime where TimeSeek's results suggest LLM performance is maximal. This is a limitation on the *scope* of our positive results: they may not generalise to later prediction windows. A reviewer familiar with TimeSeek would note this omission.
+
+Also, TimeSeek's finding that "simple two-model ensembles reduce error without surpassing the market aggregate" directly motivates the need for a mechanism like SRR beyond naive ensemble averaging — a positioning argument we should make explicitly.
+
+**Fix applied:**
+- `references.bib`: new entry `@article{lee2026timeseek}` added to new `%% LLM Agentic Forecasting` section. Author list: Lee, Dennis; Mostafa, Hamza; Shastri, Om. arXiv:2604.04220. ✓
+- `03-related-work.md` §2.6: new paragraph added after the Silicon Crowd paragraph and before "Our work differs from all of these predecessors...": describes TimeSeek findings and their relevance to our pre-tip-off window design and SRR motivation.
+- `03-related-work.md` Table 1: new row `| TimeSeek [@lee2026timeseek] | ✓ | ✓ (Kalshi) | — | — |` added between Silicon Crowd and Axelrod-LLM rows.
+- `08-limitations.md` §7.2: new paragraph **Temporal lifecycle scope** added after the outcome contamination discussion, before the `---` separator. Flags early-lifecycle-only applicability of our results with explicit TimeSeek citation.
+- `paper.md` §2.6: same paragraph insertion and table row as above. ✓
+- `paper.md` §7.2: same **Temporal lifecycle scope** paragraph. ✓
+
+*Post-fix verification:*
+`grep -c "lee2026timeseek\|TimeSeek" 03-related-work.md 08-limitations.md paper.md references.bib` → 3, 2, 5, 2 hits (all files, all contexts). ✓
+
+---
+
+### EEE3 (Moderate). Lemma 1 proof asserts "Pilot season data confirm..." for a range claim whose formal verification is in Table 4, which is marked [PENDING]
+
+**Location:** `04-method.md` §3.5 Lemma 1 proof conclusion (lines 367–370); `paper.md` §3.5 same (lines 842–845).
+
+**Problem.** The Lemma 1 proof concludes:
+
+> "By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for $\bar{p}_t \in [0.24, 0.76]$ and $\text{Amb}_t \leq 0.04$), increasing Ambiguity strictly increases JSD. **Pilot season data confirm** that NBA game-day centroids satisfy $\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout the 2024–25 season **(Table 4, §5.1)**; the monotonicity regime is therefore satisfied throughout the experimental range, and the step applies **without qualification**."
+
+Table 4 is populated with `[PENDING]` entries throughout §5.1. The claim "Pilot season data confirm" asserts completion of a verification that has not yet been formally run; a referee reading the manuscript in sequence would see §3.5 asserting confirmed pilot data, then reach §5.1 Table 4 with all cells marked PENDING, and flag an internal contradiction.
+
+The verifying data (2024-25 NBA moneylines) do exist — the 2024-25 season has concluded — but they have not yet been formally processed through the Table 4 pipeline. The range $[0.24, 0.76]$ is well-motivated by the structure of NBA moneylines (no team is a 95%+ favourite), but it is pre-registered rather than confirmed at this draft stage.
+
+**Fix applied (both `04-method.md` and `paper.md` §3.5):**
+
+Changed "Pilot season data confirm that" → "Pilot-season NBA moneyline data are expected to satisfy"; "throughout the 2024–25 season (Table 4, §5.1)" → "(pre-registered empirical range; formal verification pending Table 4, §5.1, upon pilot backtest completion)"; "the monotonicity regime is therefore satisfied" → "the monotonicity regime is therefore **expected** to hold"; "the step applies **without qualification**" → "the step applies under this **pre-registered empirical constraint**." ✓
+
+*Post-fix verification:*
+`grep -n "Pilot season data confirm" 04-method.md paper.md` → zero hits. ✓
+`grep -n "pre-registered empirical range" 04-method.md paper.md` → two hits (one per file). ✓
+
+---
+
+### EEE4 (Minor, formal). Lemma 1 Case 1 — display math claims $\Delta\text{Amb}_t \geq \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$ per-realization; A1 only guarantees $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}}$, not $|\Delta p| \geq \epsilon_{\text{arch}}$ pointwise
+
+**Location:** `04-method.md` §3.5 Lemma 1 Case 1; `paper.md` §3.5 same.
+
+**Problem.** The Case 1 display math read:
+$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$$
+
+The second inequality requires $(\Delta p)^2 \geq \epsilon_{\text{arch}}^2$, i.e., $|\Delta p| \geq \epsilon_{\text{arch}}$ in every realization. Assumption A1 provides only:
+$$\mathbb{E}_{x,t}\!\left[|\Delta p|\right] \geq \epsilon_{\text{arch}}$$
+an expectation bound, not a per-realization lower bound. For a specific event $t$ in a specific context $x$, it is possible that $|\Delta p(r^*, x, t)| = 0$ (e.g., two archetypes that happen to agree on a particular game given the specific market signals that day). The display math as written implies a strict positive lower bound on $\Delta\text{Amb}_t$ for every Case 1 event, which is not established by A1.
+
+The overall proof is unaffected — strict positivity of $\mathbb{E}[\Delta\text{Amb}_t]$ is established by the combined lower bound using $\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2 \geq \epsilon_{\text{arch}}^2$ (Jensen + A1), which is an expectation argument. But the per-realization "$> 0$" claim in Case 1 is unjustified and would be immediately flagged by a mathematician reviewer reading this as a pointwise bound.
+
+**Fix applied (both `04-method.md` and `paper.md`):**
+
+Old Case 1 display:
+$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$$
+
+New:
+$$\Delta\text{Amb}_t \;\geq\; \frac{(\Delta p)^2(N-1)}{N^2} \;\geq\; 0$$
+
+followed by explanatory prose: "The second inequality holds in every realization since $(\Delta p)^2 \geq 0$ always; Case 1 contributes a non-negative term to $\mathbb{E}[\Delta\text{Amb}_t]$. The strict overall positivity $\mathbb{E}[\Delta\text{Amb}_t] > 0$ over all events is established by the combined bound below using $\mathbb{E}[(\Delta p)^2] \geq \epsilon_{\text{arch}}^2$ (A1 + Jensen)."
+
+An additional explanatory note is retained in `04-method.md` for future readers: "Note: the step $\geq \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$ would require $|\Delta p| \geq \epsilon_{\text{arch}}$ per-realization, which A1 guarantees only in expectation; the per-realization lower bound is $0$." ✓
+
+*Post-fix verification:*
+`grep "frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0" 04-method.md paper.md` → zero instances as a claimed bound (the note in `04-method.md` references the old step precisely to explain why it was removed). ✓
+`grep "non-negative term.*mathbb" 04-method.md paper.md` → two hits (one per file). ✓
+
+---
+
+## CYCLE EEE SUMMARY
+
+**Fixed this cycle:**
+- EEE1 (Minor arithmetic): Appendix B.1 denominator $0.2518 \to 0.25282$; coefficient $3.97 \to 3.955$; margin $0.51 \to 0.495$. Proof conclusion unchanged ($0.495 > 0$). Four locations in `appendix-b.md` + four in `paper.md`.
+- EEE2 (Moderate, EVEN WebSearch): TimeSeek (arXiv:2604.04220, Lee/Mostafa/Shastri 2026) added. New BibTeX entry `@lee2026timeseek`. New paragraph in §2.6 and §7.2 of both source files and `paper.md`. Table 1 new row. Total: 12 locations.
+- EEE3 (Moderate): Lemma 1 proof "Pilot season data confirm..." → qualified as pre-registered empirical range pending Table 4 completion. Two locations (`04-method.md` + `paper.md`).
+- EEE4 (Minor formal): Lemma 1 Case 1 "$\geq \frac{\epsilon_{\text{arch}}^2(N-1)}{N^2} > 0$" pointwise claim not justified by A1 (expectation bound only). Changed to "$\geq 0$" with prose explanation. Two locations.
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated — items 2 and 3 already resolved in CCC):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155) — still open
+2. ✓ `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. ✓ `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note
+5. **NEW** Verify `@lee2026timeseek` author list (Lee, Mostafa, Shastri) against live arXiv:2604.04220
+6. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A5 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites the correct date (2026-04-22)
+13. Verify A4 slack $\eta_{\text{A4}} < 0.211$ (pilot data required before Conditions B–E)
+14. Verify A6 via matched-pairs pilot analysis (added DDD)
+
+**Structural changes this cycle:**
+- `appendix-b.md` §B.1: four arithmetic values updated (EEE1)
+- `04-method.md` §3.5: Case 1 display math + prose (EEE4); Lemma 1 conclusion "pilot data confirm" → pre-registered (EEE3)
+- `03-related-work.md` §2.6: TimeSeek paragraph + Table 1 row (EEE2)
+- `08-limitations.md` §7.2: **Temporal lifecycle scope** paragraph (EEE2)
+- `references.bib`: `@lee2026timeseek` entry added (EEE2)
+- `paper.md`: all of the above mirrored (EEE1 ×4, EEE2 ×3 locations, EEE3, EEE4)
 - `paper.md`: all five edits mirrored (DDD1 × 3 locations, DDD2, DDD3)
