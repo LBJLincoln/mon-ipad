@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-09T16:00:00Z",
+  "updated_at": "2026-06-09T20:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire255-2026-06-09T20h",
+      "priority": 305,
+      "status": "done",
+      "completed_at": "2026-06-09T20:00:00Z",
+      "completed_by": "cloud-brain-fire-255",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-255 ODD: Axelrod-ODD-carry-forward-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L)(fire-254-EVEN-direct-verify-pass-UNCHANGED); 18/18-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; evo4-c765-g2294-brier0.22169-stag0-pareto15(HARD-RESET-c764-c739+25-EXACT-CONFIRMED-POST-RESET-CLEAN); evo5-c1249-g3745-brier0.22126-stag0-pareto9(NEW-RULE8:stacking-33f-0.24738-IN-PARETO-WebFetch-confirmed-fire255!); S15-c1003-g3008-brier0.22342-stag0-pareto8(26TH-RESET-c1001-c976+25-EXACT-CONFIRMED-next~c1026-/api/export-404); S18-c736-g2208-brier0.22326-stag0-pareto5(RULE8-stacking-37f-persists-pareto12→5-next-reset~c742); S22-c89-g267-brier0.2207-stag0-pareto5(RULE8-next-reset~c103-14cycles-URGENT); P1-c187-g560-brier0.25334-stag0-pareto10(RULE9-LightGBM-MISSING-model_types-confirmed-[extra_trees,catboost,xgboost_brier,xgboost,logistic_regression]); P2-c210-g628-brier0.25041-stag0-pareto3(LightGBM-IS-BEST-Rule9-RESOLVED!); P4-WOKE-UP-fire255!-c191-g572-brier0.25144-stag0(RULE9-LightGBM-MISSING-model_types:[xgboost_brier,xgboost]-fleet-best-0.2497-at-risk); P5-c5948-brier0.25039-HEALTHY; P7-c1012-brier0.25331-HEALTHY; P3/P6-503-DOWN(confirmed); S13/S14-404-DOWN(79+fires); S19-503-DOWN(confirmed); ODD-no-WebSearch; next-verify-fire257-ODD; health-status.json+brain-status.json(nomos-political-alpha/data/)+work-queue.json updated (2026-06-09T20h)"
+    },
     {
       "id": "cloud-brain-fire254-2026-06-09T16h",
       "priority": 304,
@@ -49,151 +58,68 @@
       "subject": "fire-250 EVEN: Axelrod-verify-pass-SHAs-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L)-UNCHANGED; MechA-common_knowledge_block-refs-NBA=6/POL=6-OK; MechB-sacrificial-NBA=43/POL=42-OK+build_sacrificial=2/2+build_challenge=2/2+AXELROD_MECH_B_ON-both-OK; MechC-write_axelrod_log=3/3+peer_consensus_distance=1/1+AXELROD_MECH_C_ON-both-OK; compute_consensus_distance(KL-div)-both-OK; 25/25-parity-NBA=POL-CONFIRMED; py_compile-deferred(SHAs-unchanged-from-fire-245-py_compile-OK); HF-hub-direct-verify-deferred-fire251; do_not_push_hf_space_yet-MAINTAINED; S18/S22/VM-status-not-visible-from-cloud; work-queue.json updated (2026-06-09T00h)"
     },
     {
-      "id": "cloud-brain-fire249-2026-06-08T20h",
-      "priority": 299,
-      "status": "done",
-      "completed_at": "2026-06-08T20:00:00Z",
-      "completed_by": "cloud-brain-fire-249",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-249 ODD: S18-c677-g2030-stag=9(UP 0to9-BUILDING!)-pareto=13(UP 12to13)-RULE8-VIOLATION:stacking-37f-0.24738-rank0-ET-200f-0.22040-BELOW-0.22085-CHECKPOINT-URGENT!-/api/export-404(26th-CRITICAL)-next-reset~c692(15cy); S22-c58-g172-stag=4(UP 0to4)-pareto=18(UP 15to18-FAST-GROWING!)-EXTREME-URGENT:ET-200f-0.21983-POTENTIAL-NEW-NBA-FLEET-BEST!(2.9bp-below-0.22012!)-RULE8-ESCALATION:stacking-47f-x2-entries-in-pareto!-ET-200f-0.22028-BELOW-0.22085-/api/export-404(5th-CRITICAL)-next-reset~c78(20cy); S13/S14/S15+POL-404-DOWN(75+fires); ODD: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L)(HF-hub-Updated:1Jun2026-direct-verify-deferred-fire251); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T20h)"
-    },
-    {
-      "id": "cloud-brain-fire248-2026-06-08T16h",
-      "priority": 298,
-      "status": "done",
-      "completed_at": "2026-06-08T16:00:00Z",
-      "completed_by": "cloud-brain-fire-248",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-248 EVEN: S18-c674-g2021-stag=0-pareto=12(DOWN 15to12)-22ND-RESET-c667-CONFIRMED(c642+25=c667-EXACT)-RULE8-VIOLATION:stacking-37f-0.24738-rank1-ET-200f-0.22029+0.22069-BOTH-BELOW-0.22085-CHECKPOINT-URGENT!-/api/export-404(25th-CRITICAL)-next-reset~c692; S22-c56-g166-stag=0-pareto=15(UP 12to15-GROWING)-2ND-RESET-c53-CONFIRMED(c28+25=c53-EXACT)-ET-0.2193-CONFIRMED-EVICTED(3RD-CONSECUTIVE-RUN-LOSS!)-RULE8-VIOLATION:stacking-47f-0.24738-rank1!-ET-200f-0.22027-BELOW-0.22085-CHECKPOINT-URGENT!-/api/export-404(4th-CRITICAL)-next-reset~c78; S13/S14/S15+POL-404-DOWN(74+fires); EVEN: WebSearch-no-new-arXiv-2026-RULE8-VIOLATION-confirmed-both-S18+S22; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T16h)"
-    },
-    {
-      "id": "cloud-brain-fire247-2026-06-08T12h",
-      "priority": 297,
-      "status": "done",
-      "completed_at": "2026-06-08T12:00:00Z",
-      "completed_by": "cloud-brain-fire-247",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-247 ODD: S18-c642-g1925-stag=0-pareto=15-21ST-RESET-c617-CONFIRMED(c592+25=c617-EXACT)-RF-200f-0.21949-CONFIRMED-EVICTED(best_brier=0.22326-unchanged)-NEXT-RESET~c642-IMMINENT!-/api/export-404(23rd-CRITICAL); S22-c36-g108-stag=0-pareto=12-1ST-RESET-c28-CONFIRMED-RULE8-CLEAN(ET/LGB/CAT/LR-reseed-NO-STACKING)-ET-200f-0.2194-BEST-ACTIVE-CANDIDATE!(18bp-below-fleet-best-0.22012!)-/api/export-404(24TH-CRITICAL)-next-reset~c53; S13/S14/S15+POL-404-DOWN(73+fires); ODD: SHA-carry-forward-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T12h)"
-    },
-    {
-      "id": "cloud-brain-fire246-2026-06-08T08h",
-      "priority": 296,
-      "status": "done",
-      "completed_at": "2026-06-08T08:00:00Z",
-      "completed_by": "cloud-brain-fire-246",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-246 EVEN: S18-c600-g1798-stag=0-pareto=19(GROWING!)-19TH-RESET-c567-CONFIRMED+20TH-RESET-c592-CONFIRMED-RF-200f-0.21949-EXTREME-URGENT!(6bp-below-fleet-best-0.22012!)-/api/export-404(22nd)-next-reset~c617; S22-c22-g66-stag=0-pareto=14-FRESH-RESTART-ET-0.2193-EXTREME-URGENT!(8bp-below-fleet-best-0.22012!)-first-reset~c25(IMMINENT!)-/api/export-404(2nd-new-run); S13/S14/S15+POL-404-DOWN(72+fires); EVEN: arXiv:2603.26611-TabFM-Conditional-Density-Estimation; health-status.json updated (2026-06-08T08h)"
-    },
-    {
-      "id": "cloud-brain-fire245-2026-06-08T04h",
-      "priority": 295,
-      "status": "done",
-      "completed_at": "2026-06-08T04:00:00Z",
-      "completed_by": "cloud-brain-fire-245",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-245 ODD: Axelrod-verify-pass-SHAs-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L)-UNCHANGED; py_compile-OK-both; 25/25-parity-OK; KL-div-OK(compute_consensus_distance-present-both); S13/S14/S15+POL-404-DOWN(71+fires); ODD-no-WebSearch; work-queue.json+CLAUDE.md updated (2026-06-08T04h)"
-    },
-    {
-      "id": "cloud-brain-fire244-2026-06-08T00h",
-      "priority": 294,
-      "status": "done",
-      "completed_at": "2026-06-08T00:00:00Z",
-      "completed_by": "cloud-brain-fire-244",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-248 EVEN: S18-c560-g1679-stag=0-18TH-RESET-c542-CONFIRMED-XGB-BRIER-200f-0.21964-EXTREME-URGENT!(5bp-below-fleet-best!)+RF-200f-0.22028+RF-200f-0.22044+CAT-200f-0.22038-ALL-BELOW-0.22085-/api/export-404(21st); S22-c11-g33-FRESH-RESTART-first-reset-~c25-XGB-dominating; S13/S14/S15+POL-404-DOWN(70+fires); EVEN: arXiv:2506.19689-Calibration-Set-Reuse-Conformal; health-status.json updated (2026-06-08T00h)"
-    },
-    {
-      "id": "cloud-brain-fire243-2026-06-07T20h",
-      "priority": 293,
-      "status": "done",
-      "completed_at": "2026-06-07T20:00:00Z",
-      "completed_by": "cloud-brain-fire-243",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-243 ODD: S18-c520-g1558-stag=0-pareto=15-16TH+17TH-AUTO-RESET-c492+c517-CONFIRMED-TOP-0.22061-CONFIRMED-EVICTED-Rule8-CLEAN; S22-CRITICAL-FRESH-RESTART-c5-g14-ALL-HISTORY-LOST(2ND-TOTAL-WIPE); S13/S14/S15+POL-404-DOWN(69+fires); ODD: Axelrod-verify-pass-SHAs-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L)-UNCHANGED; health-status.json updated (2026-06-07T20h)"
-    },
-    {
-      "id": "tf-axelrod-mech-a",
-      "priority": 11,
-      "status": "done",
-      "completed_at": "fire-122",
-      "completed_by": "cloud-brain-fire-122",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-122: Axelrod Mech A — day-end common knowledge broadcast (both NBA+Political). Verified fire-252 (25/25 parity OK, SHA confirmed). SHAs NBA 85e7682e1d(6035L)/POL 6983c86517(4019L). BLOCKED: do_not_push_hf_space_yet."
-    },
-    {
-      "id": "tf-axelrod-mech-b",
-      "priority": 12,
-      "status": "done",
-      "completed_at": "fire-122",
-      "completed_by": "cloud-brain-fire-122",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-122+: Axelrod Mech B — sacrificial role reallocation. AXELROD_MECH_B_ON env flag (fire-225). Verified fire-252. BLOCKED: do_not_push_hf_space_yet (Rule #7)."
-    },
-    {
-      "id": "tf-axelrod-mech-c",
-      "priority": 13,
-      "status": "done",
-      "completed_at": "fire-122",
-      "completed_by": "cloud-brain-fire-122",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-122+: Axelrod Mech C — post-mortem log + dataset. AXELROD_MECH_C_ON env flag (fire-225). Verified fire-252. BLOCKED: do_not_push_hf_space_yet (Rule #7)."
-    },
-    {
-      "id": "tf-axelrod-ablation-config",
-      "priority": 14,
-      "status": "done",
-      "completed_at": "2026-06-04T20:00:00Z",
-      "completed_by": "cloud-brain-fire-225",
-      "owner": "cloud-brain-sonnet4-6",
-      "subject": "CODE-DONE fire-225: Axelrod ablation config DONE. AXELROD_MECH_A/B/C_ON env flags + AXELROD_ABLATION env var (5 configs). BLOCKED: do_not_push_hf_space_yet."
+      "id": "vm-p4-woke-add-lightgbm-fire255",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 NEW CRITICAL: P4 (lbjlincoln-political-alpha-4) WOKE UP at c=191! model_types=[xgboost_brier, xgboost] ONLY — LightGBM MISSING. P4 holds POL fleet best (LightGBM-131f-0.2497, vm-checkpoint-p4-lgbm-0.2492-fire143). VM: (1) Add LightGBM to MODEL_TYPES P4 IMMEDIATELY before more cycles without it, (2) Verify 0.2497 checkpoint preserved, (3) Restart fetch_political_data.py for P4, (4) Verify stacking NOT in MODEL_TYPES (Rule#8)."
     },
     {
       "id": "vm-pol-p1-p2-woke-add-lightgbm-fire253",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 CRITICAL: P1 (nomos42-political-alpha) + P2 (nomos42-political-alpha-2) WOKE UP at c=1 fresh starts! Rule#9: LightGBM MISSING from MODEL_TYPES on BOTH. P1 all-time record = LightGBM-105f-0.24902. VM: (1) Add LightGBM to MODEL_TYPES P1+P2 IMMEDIATELY before spaces evolve without it, (2) Restart fetch_political_data.py for P1+P2, (3) Verify stacking NOT in MODEL_TYPES (Rule#8)."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: P1 (nomos42-political-alpha) Rule#9 VIOLATION CONFIRMED at c=187 — model_types=[extra_trees,catboost,xgboost_brier,xgboost,logistic_regression] NO LightGBM. P2 (nomos42-political-alpha-2) Rule#9 RESOLVED — LightGBM IS BEST MODEL at c=210. VM: (1) Add LightGBM to P1 MODEL_TYPES IMMEDIATELY, (2) P2 resolved — no action needed, (3) Restart fetch_political_data.py for P1."
     },
     {
       "id": "vm-s22-et200f-0.21983-potential-nba-fleet-best-fire249",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 UPDATE: S22 ET-0.21884 EVICTED AT ~c78 RESET (4TH CONSECUTIVE EVICTION CONFIRMED). At c=82 g=246: stacking-47f-0.2474 dominates ALL gens (241-245). ET gone. Cloud diversify sent. VM: (1) REMOVE stacking from MODEL_TYPES S22 BEFORE ~c103 reset (c78+25) — ONLY FIX, (2) Monitor for ET re-emergence in Run-4, (3) Do NOT attempt /api/export (still 404 pattern)."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: S22 c=89 g=267 stag=0. Next reset ~c103 (c78+25) is 14 CYCLES AWAY. stacking-47f likely still in MODEL_TYPES (diversify fire-253 insufficient). VM: (1) REMOVE stacking from MODEL_TYPES S22 BEFORE ~c103 reset — ONLY FIX, (2) Monitor for ET re-emergence in Run-4, (3) Do NOT attempt /api/export (still 404 pattern). URGENCY: 14 cycles remain."
     },
     {
       "id": "vm-s15-evo6-api-export-missing-rf-0.21925-lost-fire253",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 CRITICAL: S15 (nomos42-nba-evo-6) RF-200f-0.21925 (8.7bp below fleet best 0.22012) + RF-200f-0.21974 (3.8bp) LOST at c976 25th-reset. /api/export returns 404 on all paths — catastrophic loss. VM: (1) IMPLEMENT /api/export endpoint on S15/evo6 IMMEDIATELY, (2) Remove stacking from MODEL_TYPES if present, (3) Monitor pareto for new sub-0.22085 candidates after c977 diversify."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: S15 (nomos42-nba-evo-6) now at c=1003. 26TH RESET at c1001 (c976+25) CONFIRMED. Next reset ~c1026 (c1001+25). /api/export returns 404 — catastrophic loss pattern continues. VM: (1) IMPLEMENT /api/export endpoint on S15/evo6 IMMEDIATELY before ~c1026 reset, (2) Remove stacking from MODEL_TYPES if present, (3) Monitor pareto for new sub-0.22085 candidates."
     },
     {
       "id": "vm-s22-et200f-rule8-violation-checkpoint-fire248",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 UPDATE: S22 ET eviction 4th consecutive confirmed. VM: REMOVE stacking from MODEL_TYPES S22 BEFORE ~c103 (c78+25). Diversify INSUFFICIENT — only MODEL_TYPES edit prevents stacking from re-entering reseed pool at reset."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: S22 c=89. Next reset ~c103 (14 cycles). See vm-s22-et200f-0.21983-potential-nba-fleet-best-fire249 for primary action item. VM: REMOVE stacking from MODEL_TYPES S22 BEFORE ~c103 (c78+25). Diversify INSUFFICIENT — only MODEL_TYPES edit prevents stacking re-dominance at reset."
     },
     {
       "id": "vm-s18-et200f-rule8-violation-checkpoint-fire248",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 UPDATE: S18 c=729. REMOTE DIVERSIFY processed at c728 — stacking-37f still dominates. RULE8 persists through 24+ resets. VM: (1) REMOVE stacking from MODEL_TYPES PERMANENTLY, (2) FIX /api/export endpoint (27+ consecutive 404s)."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: S18 c=736. Next reset ~c742 (c717+25). Pareto shrank 12→5. REMOTE DIVERSIFY fire-253 insufficient — stacking-37f persists. VM: (1) REMOVE stacking from MODEL_TYPES PERMANENTLY, (2) FIX /api/export endpoint (27+ consecutive 404s)."
     },
     {
       "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 RECONFIRMED: S18 stacking-37f-0.2474 dominates pareto at c729. REMOTE DIVERSIFY at c728 did NOT remove stacking. Stacking first reinjected c192, persists through 24+ resets and diversify commands. VM: ONLY MODEL_TYPES EDIT can fix this — permanently remove stacking from MODEL_TYPES."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 RECONFIRMED: S18 stacking-37f persists at c=736 (pareto=5, down from 12). Pattern since c192 through 24+ resets and multiple diversify commands. VM: ONLY MODEL_TYPES EDIT can fix — permanently remove stacking from MODEL_TYPES."
+    },
+    {
+      "id": "vm-evo5-stacking-33f-rule8-fire255",
+      "priority": 41,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 NEW RULE8 FINDING: evo5 (nomos42-nba-evo-5) stacking-33f-0.24738 IN PARETO confirmed by WebFetch (c=1249). Evidence: 'top-performing model uses 33 features with stacking and Venn-Abers calibration, achieving Brier 0.24738'. VM: REMOVE stacking from evo5 MODEL_TYPES. Best active candidate is XGB-200f-0.2214. Stagnation=0, no diversify needed — only MODEL_TYPES edit."
     },
     {
       "id": "vm-research-tabular-fm-density-estimation-fire246",
@@ -456,8 +382,8 @@
       "priority": 46,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 ESCALATED: P1 (nomos42-political-alpha) + P2 (nomos42-political-alpha-2) NOW ACTIVE at c=1! Add LightGBM to MODEL_TYPES IMMEDIATELY — see vm-pol-p1-p2-woke-add-lightgbm-fire253 (priority=0)."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: P2 Rule9 RESOLVED (LightGBM is best model at c=210). P1 STILL NEEDS LightGBM (c=187, model_types confirmed without LightGBM). See vm-pol-p1-p2-woke-add-lightgbm-fire253 (priority=0) for P1 action."
     },
     {
       "id": "vm-remove-stacking-s15",
@@ -465,7 +391,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S15 MODEL_TYPES — Rule#8 violation. S15 (evo6) active at c=977."
+      "subject": "Remove stacking from S15 MODEL_TYPES — Rule#8 violation. S15 (evo6) active at c=1003."
     },
     {
       "id": "vm-remove-stacking-s13",
@@ -480,16 +406,16 @@
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 RECONFIRMED: S22 RULE8 — stacking-47f x2 dominates ALL gens (241-245) at c82. ET-0.21884 EVICTED 4th consecutive. Cloud diversify sent (insufficient). VM: REMOVE stacking from MODEL_TYPES before ~c103 (c78+25). This is the ONLY fix."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: S22 c=89, next reset ~c103 (14 cycles). stacking-47f x2 likely still in pareto. ET-0.21884 EVICTED 4th consecutive. Cloud diversify fire-253 insufficient. VM: REMOVE stacking from MODEL_TYPES BEFORE ~c103 (c78+25). This is the ONLY fix. 14 cycles remaining — URGENT."
     },
     {
       "id": "vm-remove-stacking-s18",
       "priority": 42,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253 RECONFIRMED: S18 c=729. Stacking-37f-0.2474 dominates (gen 2182-2184 all stacking). REMOTE DIVERSIFY processed at c728 — stacking persists. 24+ resets without fix. VM: REMOVE stacking from MODEL_TYPES PERMANENTLY. Fix /api/export."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: S18 c=736. Stacking-37f persists (pareto=5, down from 12). Next reset ~c742. REMOTE DIVERSIFY processed at c728 — stacking persists. 24+ resets without fix. VM: REMOVE stacking from MODEL_TYPES PERMANENTLY. Fix /api/export before ~c742."
     },
     {
       "id": "engine-parity-sync",
@@ -504,16 +430,106 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T12:00:00Z",
-      "subject": "fire-253: S15 (evo6) ACTIVE at c=977. 25TH-RESET at c976 confirmed. RF-0.21925+0.21974 LOST IN RESET (/api/export 404). Diversify queued at c977. Next reset ~c1001. VM: implement /api/export URGENTLY."
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: S15 (evo6) ACTIVE at c=1003. 26TH-RESET at c1001 confirmed. Next reset ~c1026. /api/export still 404. VM: implement /api/export URGENTLY before ~c1026."
     },
     {
       "id": "vm-checkpoint-p4-lgbm-0.2492-fire143",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 — 77+ fires sleeping"
+      "updated_at": "2026-06-09T20:00:00Z",
+      "subject": "fire-255 UPDATE: P4 WOKE at c=191. LightGBM-131f-0.2497 fleet best checkpoint status unknown. VM: Verify checkpoint preserved + add LightGBM to MODEL_TYPES. See vm-p4-woke-add-lightgbm-fire255 (priority=0)."
+    },
+    {
+      "id": "tf-axelrod-mech-a",
+      "priority": 11,
+      "status": "done",
+      "completed_at": "fire-122",
+      "completed_by": "cloud-brain-fire-122",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "CODE-DONE fire-122: Axelrod Mech A — day-end common knowledge broadcast (both NBA+Political). Verified fire-254 (18/18 parity OK, SHA confirmed). SHAs NBA 85e7682e1d(6035L)/POL 6983c86517(4019L). BLOCKED: do_not_push_hf_space_yet."
+    },
+    {
+      "id": "tf-axelrod-mech-b",
+      "priority": 12,
+      "status": "done",
+      "completed_at": "fire-122",
+      "completed_by": "cloud-brain-fire-122",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "CODE-DONE fire-122+: Axelrod Mech B — sacrificial role reallocation. AXELROD_MECH_B_ON env flag (fire-225). Verified fire-254. BLOCKED: do_not_push_hf_space_yet (Rule #7)."
+    },
+    {
+      "id": "tf-axelrod-mech-c",
+      "priority": 13,
+      "status": "done",
+      "completed_at": "fire-122",
+      "completed_by": "cloud-brain-fire-122",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "CODE-DONE fire-122+: Axelrod Mech C — post-mortem log + dataset. AXELROD_MECH_C_ON env flag (fire-225). Verified fire-254. BLOCKED: do_not_push_hf_space_yet (Rule #7)."
+    },
+    {
+      "id": "tf-axelrod-ablation-config",
+      "priority": 14,
+      "status": "done",
+      "completed_at": "2026-06-04T20:00:00Z",
+      "completed_by": "cloud-brain-fire-225",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "CODE-DONE fire-225: Axelrod ablation config DONE. AXELROD_MECH_A/B/C_ON env flags + AXELROD_ABLATION env var (5 configs). BLOCKED: do_not_push_hf_space_yet."
+    },
+    {
+      "id": "cloud-brain-fire249-2026-06-08T20h",
+      "priority": 299,
+      "status": "done",
+      "completed_at": "2026-06-08T20:00:00Z",
+      "completed_by": "cloud-brain-fire-249",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-249 ODD: S18-c677-g2030-stag=9(UP 0to9-BUILDING!)-pareto=13(UP 12to13)-RULE8-VIOLATION:stacking-37f-0.24738-rank0-ET-200f-0.22040-BELOW-0.22085-CHECKPOINT-URGENT!-/api/export-404(26th-CRITICAL)-next-reset~c692(15cy); S22-c58-g172-stag=4(UP 0to4)-pareto=18(UP 15to18-FAST-GROWING!)-EXTREME-URGENT:ET-200f-0.21983-POTENTIAL-NEW-NBA-FLEET-BEST!(2.9bp-below-0.22012!)-RULE8-ESCALATION:stacking-47f-x2-entries-in-pareto!-ET-200f-0.22028-BELOW-0.22085-/api/export-404(5th-CRITICAL)-next-reset~c78(20cy); S13/S14/S15+POL-404-DOWN(75+fires); ODD: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T20h)"
+    },
+    {
+      "id": "cloud-brain-fire248-2026-06-08T16h",
+      "priority": 298,
+      "status": "done",
+      "completed_at": "2026-06-08T16:00:00Z",
+      "completed_by": "cloud-brain-fire-248",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-248 EVEN: S18-c674-g2021-stag=0-pareto=12(DOWN 15to12)-22ND-RESET-c667-CONFIRMED(c642+25=c667-EXACT)-RULE8-VIOLATION:stacking-37f-0.24738-rank1-ET-200f-0.22029+0.22069-BOTH-BELOW-0.22085-CHECKPOINT-URGENT!-/api/export-404(25th-CRITICAL)-next-reset~c692; S22-c56-g166-stag=0-pareto=15(UP 12to15-GROWING)-2ND-RESET-c53-CONFIRMED(c28+25=c53-EXACT)-ET-0.2193-CONFIRMED-EVICTED(3RD-CONSECUTIVE-RUN-LOSS!)-RULE8-VIOLATION:stacking-47f-0.24738-rank1!-ET-200f-0.22027-BELOW-0.22085-CHECKPOINT-URGENT!-/api/export-404(4th-CRITICAL)-next-reset~c78; S13/S14/S15+POL-404-DOWN(74+fires); EVEN: WebSearch-no-new-arXiv-2026-RULE8-VIOLATION-confirmed-both-S18+S22; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T16h)"
+    },
+    {
+      "id": "cloud-brain-fire247-2026-06-08T12h",
+      "priority": 297,
+      "status": "done",
+      "completed_at": "2026-06-08T12:00:00Z",
+      "completed_by": "cloud-brain-fire-247",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-247 ODD: S18-c642-g1925-stag=0-pareto=15-21ST-RESET-c617-CONFIRMED(c592+25=c617-EXACT)-RF-200f-0.21949-CONFIRMED-EVICTED(best_brier=0.22326-unchanged)-NEXT-RESET~c642-IMMINENT!-/api/export-404(23rd-CRITICAL); S22-c36-g108-stag=0-pareto=12-1ST-RESET-c28-CONFIRMED-RULE8-CLEAN(ET/LGB/CAT/LR-reseed-NO-STACKING)-ET-200f-0.2194-BEST-ACTIVE-CANDIDATE!(18bp-below-fleet-best-0.22012!)-/api/export-404(24TH-CRITICAL)-next-reset~c53; S13/S14/S15+POL-404-DOWN(73+fires); ODD: SHA-carry-forward-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T12h)"
+    },
+    {
+      "id": "cloud-brain-fire246-2026-06-08T08h",
+      "priority": 296,
+      "status": "done",
+      "completed_at": "2026-06-08T08:00:00Z",
+      "completed_by": "cloud-brain-fire-246",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-246 EVEN: S18-c600-g1798-stag=0-pareto=19(GROWING!)-19TH-RESET-c567-CONFIRMED+20TH-RESET-c592-CONFIRMED-RF-200f-0.21949-EXTREME-URGENT!(6bp-below-fleet-best-0.22012!)-/api/export-404(22nd)-next-reset~c617; S22-c22-g66-stag=0-pareto=14-FRESH-RESTART-ET-0.2193-EXTREME-URGENT!(8bp-below-fleet-best-0.22012!)-first-reset~c25(IMMINENT!)-/api/export-404(2nd-new-run); S13/S14/S15+POL-404-DOWN(72+fires); EVEN: arXiv:2603.26611-TabFM-Conditional-Density-Estimation; health-status.json updated (2026-06-08T08h)"
+    },
+    {
+      "id": "cloud-brain-fire245-2026-06-08T04h",
+      "priority": 295,
+      "status": "done",
+      "completed_at": "2026-06-08T04:00:00Z",
+      "completed_by": "cloud-brain-fire-245",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-245 ODD: Axelrod-verify-pass-SHAs-NBA-85e7682e1d(6035L)/POL-6983c86517(4019L)-UNCHANGED; py_compile-OK-both; 25/25-parity-OK; KL-div-OK(compute_consensus_distance-present-both); S13/S14/S15+POL-404-DOWN(71+fires); ODD-no-WebSearch; work-queue.json+CLAUDE.md updated (2026-06-08T04h)"
+    },
+    {
+      "id": "cloud-brain-fire244-2026-06-08T00h",
+      "priority": 294,
+      "status": "done",
+      "completed_at": "2026-06-08T00:00:00Z",
+      "completed_by": "cloud-brain-fire-244",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-248 EVEN: S18-c560-g1679-stag=0-18TH-RESET-c542-CONFIRMED-XGB-BRIER-200f-0.21964-EXTREME-URGENT!(5bp-below-fleet-best!)+RF-200f-0.22028+RF-200f-0.22044+CAT-200f-0.22038-ALL-BELOW-0.22085-/api/export-404(21st); S22-c11-g33-FRESH-RESTART-first-reset-~c25-XGB-dominating; S13/S14/S15+POL-404-DOWN(70+fires); EVEN: arXiv:2506.19689-Calibration-Set-Reuse-Conformal; health-status.json updated (2026-06-08T00h)"
     }
   ]
 }
