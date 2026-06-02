@@ -1,226 +1,176 @@
 {
-  "fire": 255,
-  "timestamp": "2026-06-09T20:00:00Z",
-  "parity": "ODD",
+  "fire": 256,
+  "timestamp": "2026-06-10T00:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "evo4": {
       "hf_space": "nomos42-nba-evo-4",
       "status": "EVOLVING",
-      "cycle": 765,
-      "generation": 2294,
+      "cycle": 785,
+      "generation": 2355,
       "best_brier": 0.22169,
-      "best_model": "logistic_regression",
       "stagnation": 0,
-      "pareto_front_size": 15,
-      "note": "fire-255: c=765 g=2294 brier=0.22169 stag=0 pareto=15. HARD RESET confirmed at c764 (c739+25-EXACT). Post-reset CLEAN — best_model=logistic_regression (not stacking). Diversify fire-253 + hard reset c764 appear to have stabilized.",
-      "rule8_status": "MONITOR: Hard reset c764 cleaned reseed pool. Verify stacking not re-injected in MODEL_TYPES.",
-      "next_reset": "~c789 (c764+25)",
-      "alert": "Monitor for stacking re-emergence post-c764 reset. Pareto=15 healthy."
+      "pareto_front_size": 7,
+      "model_types": ["xgboost", "xgboost_brier", "lightgbm", "lightgbm_brier", "random_forest", "logistic_regression", "extra_trees"],
+      "note": "fire-256: c=785 g=2355 brier=0.22169 stag=0 pareto=7. RULE8 CLEAN. Next reset ~c789 (4 cycles — IMMINENT).",
+      "rule8_status": "CLEAN fire-256. Verify post-c789 reset.",
+      "next_reset": "~c789 (c764+25) — IMMINENT 4 cycles",
+      "alert": "Monitor: c789 reset imminent. Verify stacking does not re-appear."
     },
     "evo5": {
       "hf_space": "nomos42-nba-evo-5",
       "status": "EVOLVING",
-      "cycle": 1249,
-      "generation": 3745,
+      "cycle": 1266,
+      "generation": 3796,
       "best_brier": 0.22126,
-      "best_model": "catboost",
       "stagnation": 0,
-      "pareto_front_size": 9,
-      "note": "fire-255 NEW FINDING: c=1249 g=3745 brier=0.22126 stag=0 pareto=9. WebFetch confirms stacking-33f-0.24738 IS IN PARETO. Secondary XGB-200f-0.2214 in pareto. RULE8 VIOLATION.",
-      "rule8_status": "VIOLATION CONFIRMED fire-255: stacking-33f-0.24738 in pareto. VM: REMOVE stacking from evo5 MODEL_TYPES.",
-      "stacking_evidence": "fire-255 WebFetch: 'top-performing model uses 33 features with stacking and Venn-Abers calibration, achieving Brier 0.24738'",
-      "alert": "VM: Remove stacking from evo5 MODEL_TYPES. XGB-200f-0.2214 is above 0.22085 gate but healthy direction."
+      "pareto_front_size": 7,
+      "note": "fire-256: c=1266 g=3796 brier=0.22126 stag=0 pareto=7. RULE8 CRITICAL: stacking persists (best uses stacking+Venn-Abers). Hard reset at c1251. Next ~c1276 (10 cycles).",
+      "rule8_status": "CRITICAL fire-256: stacking still present. VM: REMOVE stacking from MODEL_TYPES.",
+      "next_reset": "~c1276 (c1251+25)",
+      "alert": "VM: REMOVE stacking from evo5 MODEL_TYPES. 10 cycles to ~c1276 reset."
     },
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping 79+ fires",
+      "note": "sleeping 80+ fires",
       "last_known_cycle": 974,
-      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (unconfirmed 79+ fires)",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed 79+ fires. VM: retry /api/status + curl /api/export IMMEDIATELY."
+      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (unconfirmed 80+ fires)",
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed 80+ fires. VM: retry /api/status + /api/export IMMEDIATELY."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping 79+ fires",
+      "note": "sleeping 80+ fires",
       "last_known_best_brier": 0.22054,
-      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate (79+ fires unconfirmed). VM: wake + checkpoint."
+      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate (80+ fires unconfirmed). VM: wake + checkpoint."
     },
     "S15": {
       "hf_space": "nomos42-nba-evo-6",
       "status": "EVOLVING",
-      "cycle": 1003,
-      "generation": 3008,
+      "cycle": 1026,
+      "generation": 3078,
       "best_brier": 0.22342,
-      "best_model": "random_forest",
-      "best_features": 62,
       "stagnation": 0,
-      "pareto_front_size": 8,
-      "note": "fire-255: c=1003 g=3008 brier=0.22342 stag=0 pareto=8. 26TH RESET at c1001 (c976+25-EXACT) CONFIRMED by WebFetch ('hard resets at cycles 976 and 1001'). Next ~c1026. /api/export 404.",
-      "reset_history": "25th: c976, 26th: c1001. Pattern: 25-cycle resets. Next ~c1026.",
-      "api_export": "404 — cannot checkpoint from cloud. VM MUST implement /api/export before ~c1026 reset.",
-      "next_reset": "~c1026 (c1001+25)",
-      "alert": "VM: Implement /api/export IMMEDIATELY — S15 loses all sub-gate pareto candidates at every reset (RF-0.21925+0.21974 lost at c976)."
+      "pareto_front_size": 12,
+      "model_types": ["random_forest", "extra_trees", "xgboost", "xgboost_brier", "lightgbm", "lightgbm_brier", "catboost"],
+      "note": "fire-256: c=1026 g=3078 brier=0.22342 stag=0 pareto=12. 27TH RESET at c1026 CONFIRMED. RULE8 CLEAN post-reset! Pareto 8→12.",
+      "rule8_status": "CLEAN fire-256: No stacking in model_types post-c1026 reset.",
+      "api_export": "404 — 28+ consecutive. VM: implement /api/export before ~c1051.",
+      "next_reset": "~c1051 (c1026+25)",
+      "alert": "VM: Implement /api/export IMMEDIATELY — next reset ~c1051."
     },
-    "S16": {
-      "hf_space": "lbjlincoln26-nba-evo-s16",
-      "status": "503-DOWN",
-      "note": "sleeping 77+ fires"
-    },
-    "S17": {
-      "hf_space": "lbjlincoln26-nba-evo-s17",
-      "status": "503-DOWN",
-      "note": "PAUSED 144+d"
-    },
+    "S16": {"hf_space": "lbjlincoln26-nba-evo-s16", "status": "503-DOWN", "note": "sleeping 80+ fires"},
+    "S17": {"hf_space": "lbjlincoln26-nba-evo-s17", "status": "503-DOWN", "note": "PAUSED 144+d"},
     "S18": {
       "hf_space": "testforge42-nba-evo-s18",
       "status": "EVOLVING",
-      "cycle": 736,
-      "generation": 2208,
+      "cycle": 743,
+      "generation": 2227,
       "best_brier": 0.22326,
-      "best_model": "random_forest",
-      "best_features": 71,
       "stagnation": 0,
-      "pareto_front_size": 5,
-      "started_at": "2026-05-29T04:05:22Z",
-      "last_update": "2026-06-02T08:04:45Z",
-      "note": "fire-255: c=736 g=2208 brier=0.22326 stag=0 pareto=5. Pareto shrank 12→5. RULE8: stacking-37f likely still in MODEL_TYPES (REMOTE DIVERSIFY fire-253 insufficient). Next reset ~c742 (c717+25).",
-      "rule8_status": "CRITICAL: stacking-37f-0.2474 persists through 24+ resets + diversify. VM: REMOVE from MODEL_TYPES PERMANENTLY.",
-      "next_reset": "~c742 (c717+25)",
-      "api_export": "404 — 27+ consecutive. VM: fix /api/export URGENTLY.",
-      "alert": "VM: (1) REMOVE stacking from MODEL_TYPES NOW. (2) Fix /api/export before ~c742 reset."
+      "pareto_front_size": 9,
+      "model_types": ["xgboost_brier", "lightgbm_brier", "random_forest", "logistic_regression"],
+      "note": "fire-256 BREAKTHROUGH: c=743 g=2227 brier=0.22326 stag=0 pareto=9. 27TH RESET c742 CONFIRMED. RULE8 CLEAN! model_types=[xgb_brier,lgbm_brier,rf,lr] — NO stacking. Pareto 5→9. VM appears to have removed stacking from MODEL_TYPES config.",
+      "rule8_status": "CLEAN fire-256: No stacking post-c742 reset. BREAKTHROUGH after 24+ violated resets. Confirm VM permanently removed stacking from config.",
+      "next_reset": "~c767 (c742+25)",
+      "api_export": "404 — 28+ consecutive. VM: fix /api/export.",
+      "alert": "POSITIVE: stacking evicted post-c742. Monitor c767 reset to confirm permanent fix. Fix /api/export before ~c767."
     },
-    "S19": {
-      "hf_space": "testforge42-nba-evo-s19",
-      "status": "503-DOWN",
-      "note": "fire-255: 503 confirmed (WebFetch)"
-    },
+    "S19": {"hf_space": "testforge42-nba-evo-s19", "status": "503-DOWN", "note": "carry-forward"},
     "S22": {
       "hf_space": "testforge42-nba-evo-s22",
       "status": "EVOLVING",
-      "cycle": 89,
-      "generation": 267,
+      "cycle": 95,
+      "generation": 283,
       "best_brier": 0.2207,
-      "best_model": "random_forest",
-      "best_features": 69,
       "stagnation": 0,
-      "pareto_front_size": 5,
-      "started_at": "2026-05-31T20:59:11Z",
-      "last_update": "2026-06-02T08:08:28Z",
-      "note": "fire-255: c=89 g=267 brier=0.2207 stag=0 pareto=5. 3RD RESET was ~c78 (fire-253). ET-0.21884 EVICTED (4th consecutive). NEXT RESET ~c103 is 14 CYCLES AWAY. If stacking in MODEL_TYPES, will re-dominate after reset — ET cannot re-emerge.",
-      "rule8_status": "CRITICAL: stacking-47f-0.2474 likely still in MODEL_TYPES. Diversify fire-253 insufficient. VM: REMOVE stacking BEFORE ~c103 (14 cycles).",
-      "et_eviction_history": "Run-3: ET evicted at c53 (2nd reset) + ET evicted at ~c78 (3rd reset). Stacking re-dominates after each reset.",
-      "next_reset": "~c103 (c78+25) — URGENT: 14 cycles from c89",
-      "alert": "VM: REMOVE stacking from MODEL_TYPES IMMEDIATELY — only 14 cycles until ~c103 reset. This is the ONLY fix for ET eviction pattern."
+      "pareto_front_size": 8,
+      "model_types": ["random_forest", "extra_trees", "xgboost", "xgboost_brier", "lightgbm", "lightgbm_brier", "catboost", "stacking", "logistic_regression"],
+      "note": "fire-256: c=95 g=283 brier=0.2207 stag=0 pareto=8. RULE8 CRITICAL: stacking STILL in model_types. Next reset ~c103 (8 cycles — URGENT!).",
+      "rule8_status": "CRITICAL fire-256: stacking IN model_types. 8 cycles to ~c103. VM must REMOVE before reset.",
+      "next_reset": "~c103 (c78+25) — URGENT: 8 cycles from c95",
+      "alert": "VM: REMOVE stacking from S22 MODEL_TYPES IMMEDIATELY — 8 cycles to ~c103 reset. LAST CHANCE."
     },
-    "nba_quant": {
-      "hf_space": "nomos42-nba-quant",
-      "status": "503-DOWN",
-      "note": "sleeping 77+ fires"
-    },
-    "nba_quant_2": {
-      "hf_space": "nomos42-nba-quant-2",
-      "status": "503-DOWN",
-      "note": "sleeping 77+ fires"
-    },
-    "evo3": {
-      "hf_space": "nomos42-nba-evo-3",
-      "status": "503-DOWN",
-      "note": "sleeping 77+ fires"
-    }
+    "nba_quant": {"hf_space": "nomos42-nba-quant", "status": "503-DOWN", "note": "sleeping 80+ fires"},
+    "nba_quant_2": {"hf_space": "nomos42-nba-quant-2", "status": "503-DOWN", "note": "sleeping 80+ fires"},
+    "evo3": {"hf_space": "nomos42-nba-evo-3", "status": "503-DOWN", "note": "sleeping 80+ fires"}
   },
   "pol_islands": {
     "P1": {
       "hf_space": "nomos42-political-alpha",
       "status": "EVOLVING",
-      "cycle": 187,
-      "generation": 560,
+      "cycle": 414,
+      "generation": 1242,
       "best_brier": 0.25334,
-      "best_model": "extra_trees",
       "stagnation": 0,
       "pareto_front_size": 10,
-      "model_types_observed": ["extra_trees", "catboost", "xgboost_brier", "xgboost", "logistic_regression"],
-      "note": "fire-255: c=187 g=560 brier=0.25334 stag=0 pareto=10. Two hard resets at c141 and c161. model_types confirmed from /api/status — NO LightGBM. Rule#9 VIOLATION persists at c=187.",
-      "rule9_status": "VIOLATION CONFIRMED: model_types=[extra_trees,catboost,xgboost_brier,xgboost,logistic_regression] — NO LightGBM. P1 all-time record LightGBM-105f-0.24902. VM: Add LightGBM URGENTLY.",
-      "alert": "URGENT: P1 at c=187 without LightGBM. 187 cycles evolved without P1's best model type. VM: add LightGBM to MODEL_TYPES NOW."
+      "model_types_observed": ["extra_trees", "xgboost_brier", "lightgbm_brier", "lightgbm"],
+      "note": "fire-256 POSITIVE: c=414 g=1242 brier=0.25334 stag=0 pareto=10. RULE9 RESOLVED! LightGBM now in model_types (lightgbm + lightgbm_brier). Hard resets at c361 and c401.",
+      "rule9_status": "RESOLVED fire-256: lightgbm + lightgbm_brier now in model_types.",
+      "alert": "POSITIVE: P1 Rule9 resolved. Monitor for LightGBM becoming best model."
     },
     "P2": {
       "hf_space": "nomos42-political-alpha-2",
       "status": "EVOLVING",
-      "cycle": 210,
-      "generation": 628,
+      "cycle": 444,
+      "generation": 1330,
       "best_brier": 0.25041,
       "best_model": "lightgbm",
-      "best_features": 58,
       "stagnation": 0,
-      "pareto_front_size": 3,
-      "note": "fire-255 POSITIVE: c=210 g=628 brier=0.25041 stag=0 pareto=3. LightGBM IS BEST MODEL (LightGBM-58f-0.25041). Rule#9 APPEARS RESOLVED for P2. Best individual: LightGBM-102f composite 0.45185.",
-      "rule9_status": "RESOLVED: LightGBM is best model at c=210 (was missing at c=1 fire-253). Rule9 compliance confirmed.",
-      "alert": "Monitor — pareto=3 is small. Above POL fleet gate (0.2497). No urgent action needed."
+      "pareto_front_size": 13,
+      "note": "fire-256: c=444 g=1330 brier=0.25041 stag=0 pareto=13. LightGBM-102f composite best. Pareto 3→13. HEALTHY.",
+      "rule9_status": "RESOLVED: LightGBM best model (maintained fire-256).",
+      "alert": "Healthy. Pareto growing well."
     },
-    "P3": {
-      "hf_space": "lbjlincoln-political-alpha-3",
-      "status": "503-DOWN",
-      "note": "sleeping 79+ fires (confirmed WebFetch fire-255)"
-    },
+    "P3": {"hf_space": "lbjlincoln-political-alpha-3", "status": "503-DOWN", "note": "sleeping 80+ fires"},
     "P4": {
       "hf_space": "lbjlincoln-political-alpha-4",
-      "status": "EVOLVING — WOKE UP",
-      "cycle": 191,
-      "generation": 572,
+      "status": "EVOLVING",
+      "cycle": 374,
+      "generation": 1120,
       "best_brier": 0.25144,
       "stagnation": 0,
-      "model_types_observed": ["xgboost_brier", "xgboost"],
-      "note": "fire-255 NEW DISCOVERY: P4 WOKE UP! c=191 g=572 brier=0.25144 stag=0. Was sleeping 77+ fires. model_types=[xgboost_brier, xgboost] — LightGBM MISSING. P4 holds POL fleet best via LightGBM-131f-0.2497 (checkpointed). Current brier 0.25144 above fleet best — evolving without its best model type.",
-      "rule9_status": "VIOLATION: LightGBM NOT in MODEL_TYPES (only xgboost_brier + xgboost confirmed). VM: Add LightGBM to MODEL_TYPES IMMEDIATELY.",
-      "fleet_best_note": "P4 POL fleet best checkpoint: LightGBM-131f-0.2497 (vm-checkpoint-p4-lgbm-0.2492-fire143). Must add LightGBM to MODEL_TYPES for P4 to build on this.",
-      "alert": "NEW WAKEUP fire-255! VM: (1) Add LightGBM to MODEL_TYPES IMMEDIATELY, (2) Verify 0.2497 checkpoint preserved, (3) Restart data pipeline for P4."
+      "pareto_front_size": 10,
+      "model_types_observed": ["xgboost", "xgboost_brier", "logistic_regression", "random_forest"],
+      "note": "fire-256: c=374 g=1120 brier=0.25144 stag=0 pareto=10. RULE9 VIOLATION PERSISTS: LightGBM STILL MISSING. 374 cycles without LightGBM. Fleet best 0.2497 was LightGBM.",
+      "rule9_status": "VIOLATION PERSISTS fire-256: NO LightGBM. 374 cycles lost.",
+      "alert": "URGENT: Add LightGBM to P4 MODEL_TYPES IMMEDIATELY."
     },
     "P5": {
       "hf_space": "lbjlincoln-political-alpha-5",
       "status": "EVOLVING",
-      "cycle": 5948,
-      "generation": 17844,
+      "cycle": 6110,
+      "generation": 18330,
       "best_brier": 0.25039,
       "best_model": "xgboost",
-      "best_features": 70,
-      "role": "catboost_specialist",
       "stagnation": 0,
-      "pareto_front_size": 7,
-      "note": "fire-255: c=5948 g=17844 brier=0.25039 stag=0 pareto=7. Two hard resets at c5901 and c5921. Healthy. Above POL fleet gate (0.2497).",
-      "alert": "Monitor. Healthy. Verify LightGBM in MODEL_TYPES (Rule#9 check needed)."
+      "pareto_front_size": 16,
+      "model_types_observed": ["xgboost", "xgboost_brier", "catboost"],
+      "note": "fire-256 NEW FINDING: c=6110 g=18330 brier=0.25039 stag=0 pareto=16. RULE9 VIOLATION CONFIRMED: model_types=[xgboost, xgboost_brier, catboost] — NO LightGBM.",
+      "rule9_status": "VIOLATION CONFIRMED fire-256: NO LightGBM in 6110+ cycles.",
+      "alert": "NEW RULE9 VIOLATION: Add LightGBM to P5 MODEL_TYPES. 6110 cycles without it."
     },
-    "P6": {
-      "hf_space": "lbjlincoln-political-alpha-6",
-      "status": "503-DOWN",
-      "note": "sleeping 79+ fires (confirmed WebFetch fire-255)"
-    },
+    "P6": {"hf_space": "lbjlincoln-political-alpha-6", "status": "503-DOWN", "note": "sleeping 80+ fires"},
     "P7": {
       "hf_space": "lbjlincoln-political-alpha-7",
       "status": "EVOLVING",
-      "cycle": 1012,
-      "generation": 3035,
+      "cycle": 1133,
+      "generation": 3398,
       "best_brier": 0.25331,
-      "best_model": "random_forest",
-      "best_features": 46,
-      "role": "gradient_boost_specialist",
       "stagnation": 0,
-      "pareto_front_size": 5,
-      "started_at": "2026-06-01T12:23:43Z",
-      "note": "fire-255: c=1012 g=3035 brier=0.25331 stag=0 pareto=5. Healthy. Above POL fleet gate (0.2497).",
-      "alert": "Monitor. Healthy. Verify LightGBM in MODEL_TYPES (Rule#9 check)."
+      "pareto_front_size": 11,
+      "note": "fire-256: c=1133 g=3398 brier=0.25331 stag=0 pareto=11. Historical best 0.24999. Healthy.",
+      "rule9_status": "CHECK NEEDED: LightGBM presence not confirmed fire-256.",
+      "alert": "Monitor. Healthy. Verify LightGBM in MODEL_TYPES."
     },
-    "P8": {
-      "hf_space": "lbjlincoln-political-alpha-8",
-      "status": "503-DOWN",
-      "note": "sleeping 79+ fires (carry-forward, unverified this fire)"
-    }
+    "P8": {"hf_space": "lbjlincoln-political-alpha-8", "status": "503-DOWN", "note": "sleeping 80+ fires"}
   },
   "fleet_best": {
     "nba_official": 0.22012,
-    "nba_official_source": "S15 RF-75f CHECKPOINTED 2026-04-28. S15 active at c=1003 fire-255.",
-    "nba_no_new_checkpoint": "No active pareto candidate confirmed below 0.22012. S22 shows 0.2207 (field-lag RF pre-stacking era). S13 CatBoost-0.21992 unconfirmed 79+ fires.",
-    "nba_lost_candidates": "S15 RF-200f-0.21925+RF-200f-0.21974 LOST at c976 reset. S22 ET-200f-0.21884 EVICTED 4th-consecutive. All due to missing /api/export + stacking Rule8.",
+    "nba_official_source": "S15 RF-75f CHECKPOINTED 2026-04-28. S15 active c=1026 fire-256.",
+    "nba_no_new_checkpoint": "No active pareto candidate confirmed below 0.22012. S18/S15 RULE8 CLEAN post-reset but briers still above gate. S13 CatBoost-0.21992 unconfirmed 80+ fires.",
+    "nba_positive": "S18 RULE8 CLEAN post-c742 — first clean reset in many fires! Path to sub-0.22085 reopened.",
     "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f (P4 WOKE at c=191 but LightGBM MISSING from MODEL_TYPES — Rule#9 violation)"
+    "pol_source": "P4 LightGBM-131f checkpoint. P4 ACTIVE c=374 but RULE9 violation (no LightGBM)."
   },
   "axelrod_status": {
     "do_not_push_hf_space_yet": true,
@@ -230,37 +180,35 @@
     "ablation_config": "CODE-DONE fire-225 BLOCKED",
     "nba_tf_sha": "85e7682e1d",
     "nba_tf_lines": 6035,
-    "nba_tf_lastModified": "2026-06-01T20:09:21Z",
     "pol_tf_sha": "6983c86517",
     "pol_tf_lines": 4019,
-    "pol_tf_lastModified": "2026-06-01T18:33:22Z",
-    "last_verify": "fire-255 ODD CARRY-FORWARD: NBA TF private (TESTforge42 inaccessible from cloud) — SHA carry-forward 85e7682e1d(6035L). POL TF: carry-forward 6983c86517(4019L) — fire-254 EVEN direct-verify-pass-UNCHANGED is current. 18/18 parity carry-forward from fire-254. do_not_push_hf_space_yet MAINTAINED.",
+    "github_nba_engine_sha": "f455c4758a",
+    "github_pol_engine_sha": "f3bb5f31ce",
+    "github_diverged_note": "GitHub dev repos diverged from TF space SHAs. do_not_push_hf_space_yet MAINTAINED. TF spaces unchanged since fire-225.",
+    "last_verify": "fire-256 EVEN: TF spaces DOWN — carry-forward from fire-254 EVEN direct-verify. 18/18 parity carry-forward.",
     "next_verify": "fire-257 ODD"
   },
   "councils_d1_d9": {
-    "note": "TESTforge42 spaces include: nba-evo-s18, nba-evo-s19, nba-evo-s22, qwen3-4b-cpu, llama32-1b-cpu, smollm3-3b-cpu, qwen25-15b-cpu, nomos-browser-qa, itf-tauric-trading-floor. No D1-D9 council spaces confirmed in TESTforge42 namespace — councils may be VM-local scripts. Carry-forward fire-253."
+    "note": "TESTforge42 spaces: nba-evo-s18, s19, s22, qwen3-4b-cpu, llama32-1b-cpu, smollm3-3b-cpu, qwen25-15b-cpu, nomos-browser-qa, itf-tauric-trading-floor. No D1-D9 confirmed. Carry-forward fire-253."
   },
-  "actions_taken_fire255": [
-    "STEP 0: No crash recovery — all pending items are local-vm (no local-agent-* owner).",
+  "actions_taken_fire256": [
+    "STEP 0: No crash recovery — all items local-vm.",
     "STEP 1 NBA: Fetched /api/status for all 10 NBA islands.",
-    "evo4 (nomos42-nba-evo-4): c=765 g=2294 brier=0.22169 stag=0 pareto=15. HARD RESET c764 (c739+25-EXACT) CONFIRMED. Post-reset CLEAN (best=logistic_regression). No action needed.",
-    "evo5 (nomos42-nba-evo-5): c=1249 g=3745 brier=0.22126 stag=0 pareto=9. NEW RULE8: stacking-33f-0.24738 IN PARETO (WebFetch confirmed fire-255). work-queue item added.",
-    "S15 (nomos42-nba-evo-6): c=1003 g=3008 brier=0.22342 stag=0 pareto=8. 26TH RESET c1001 (c976+25) CONFIRMED. Next ~c1026. /api/export 404 persists.",
-    "S18 (testforge42-nba-evo-s18): c=736 g=2208 brier=0.22326 stag=0 pareto=5. Pareto 12→5. RULE8 stacking-37f persists. Next reset ~c742.",
-    "S22 (testforge42-nba-evo-s22): c=89 g=267 brier=0.2207 stag=0 pareto=5. Next reset ~c103 (14 cycles away). RULE8 stacking-47f persists.",
-    "S13/S14: 404-DOWN (79+ fires). S16/S17/evo3/quant/quant-2: 503-DOWN. S19: 503-DOWN (confirmed).",
-    "STEP 2 POL: Fetched /api/status for all accessible POL islands.",
-    "P1 (nomos42-political-alpha): c=187 g=560 brier=0.25334 stag=0 pareto=10. RULE9 VIOLATION CONFIRMED: model_types=[extra_trees,catboost,xgboost_brier,xgboost,logistic_regression] — NO LightGBM.",
-    "P2 (nomos42-political-alpha-2): c=210 g=628 brier=0.25041 stag=0 pareto=3. RULE9 RESOLVED: LightGBM IS BEST MODEL. Positive development.",
-    "P4 (lbjlincoln-political-alpha-4): WOKE UP fire-255! c=191 g=572 brier=0.25144 stag=0. RULE9 VIOLATION: model_types=[xgboost_brier,xgboost] — NO LightGBM. work-queue item added.",
-    "P5 (lbjlincoln-political-alpha-5): c=5948 g=17844 brier=0.25039 stag=0 pareto=7. HEALTHY.",
-    "P7 (lbjlincoln-political-alpha-7): c=1012 g=3035 brier=0.25331 stag=0 pareto=5. HEALTHY.",
-    "P3/P6: 503-DOWN (confirmed). P8: 503-DOWN (carry-forward).",
-    "STEP 3 Councils: No D1-D9 HF spaces confirmed. Carry-forward.",
-    "STEP 4 Dashboard: No R8 pending. No action.",
-    "STEP 5 Cross-project: No new fleet-best improvements this cycle.",
-    "ODD fire-255: No WebSearch.",
-    "Axelrod: ODD carry-forward. SHAs unchanged since fire-254 EVEN direct verify. 18/18 parity carry-forward. do_not_push_hf_space_yet MAINTAINED. Next verify: fire-257 ODD.",
-    "health-status.json + brain-status.json (nomos-political-alpha/data/) + work-queue.json updated (fire-255 2026-06-09T20h)."
+    "evo4: c=785 g=2355 brier=0.22169 stag=0 pareto=7. RULE8 CLEAN. Next reset ~c789 (4cy IMMINENT).",
+    "evo5: c=1266 g=3796 brier=0.22126 stag=0 pareto=7. RULE8 CRITICAL: stacking persists. Next ~c1276.",
+    "S15: c=1026 g=3078 brier=0.22342 stag=0 pareto=12. 27TH RESET c1026 CONFIRMED. RULE8 CLEAN post-reset!",
+    "S18 BREAKTHROUGH: c=743 g=2227 brier=0.22326 stag=0 pareto=9. 27TH RESET c742 CONFIRMED. RULE8 CLEAN! Stacking evicted.",
+    "S22 CRITICAL: c=95 g=283 brier=0.2207 stag=0 pareto=8. Stacking still in model_types. Next reset ~c103 (8cy URGENT!).",
+    "S13/S14: 404-DOWN (80+ fires). S16/S17/S19/evo3/quant/quant-2: 503-DOWN.",
+    "No stagnation > 15 anywhere — no diversify needed.",
+    "No best_brier < 0.22085 confirmed — no new NBA checkpoint.",
+    "STEP 2 POL: P1 c=414 RULE9 RESOLVED!(LGB+LGB_brier now present). P2 c=444 LGB best pareto13. P4 c=374 RULE9 PERSISTS(no-LGB). P5 c=6110 NEW RULE9 VIOLATION(no-LGB). P7 c=1133 healthy. P3/P6/P8 503-DOWN.",
+    "STEP 3 Councils: Carry-forward fire-253.",
+    "STEP 4 Dashboard: No R8 pending.",
+    "STEP 5 Cross-project: S18 RULE8 breakthrough suggests MODEL_TYPES config was fixed by VM. POL lesson: ensure reset_pool excludes stacking.",
+    "EVEN WebSearch: LLM-Agentic-NBA-paper (Apr 2026 ResearchGate) — research proposal written priority=116.",
+    "EVEN: GitHub engine SHAs changed (dev repos diverged from TF space SHAs). do_not_push_hf_space_yet MAINTAINED.",
+    "Axelrod EVEN carry-forward: TF DOWN. 18/18 parity carry-forward from fire-254. Next verify: fire-257 ODD.",
+    "health-status.json + brain-status.json + work-queue.json + research proposal + CLAUDE.md updated (fire-256 2026-06-10T00h)."
   ]
 }
