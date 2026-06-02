@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-09T08:00:00Z",
+  "updated_at": "2026-06-09T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire253-2026-06-09T12h",
+      "priority": 303,
+      "status": "done",
+      "completed_at": "2026-06-09T12:00:00Z",
+      "completed_by": "cloud-brain-fire-253",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-253 ODD: Axelrod-ODD-carry-forward-NBA-85e7682e1d(6035L)-PRIVATE-INACCESSIBLE/POL-6983c86517(4019L)-hub-date-confirmed-2Jun2026-UNCHANGED; 25/25-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; next-verify-fire255-ODD; S22-ET-0.21884-EVICTED-4TH-CONSECUTIVE-at-~c78-reset-CONFIRMED(c82-stacking-47f-dominates-all-gens-241-245); S22-diversify-SENT✓; S18-c729-stacking-37f-dominates-REMOTE-DIVERSIFY-CONFIRMED-PROCESSED-c728; S15(evo6)-c977-25TH-RESET-c976-CONFIRMED-RF-200f-0.21925(8.7bp-below-fleet!)+RF-200f-0.21974(3.8bp)-BOTH-LOST-IN-RESET-api-export-404-CATASTROPHIC-diversify-QUEUED✓; evo4-c738-stacking-RULE8-next-reset-~c739-IMMINENT-diversify-SENT✓; evo5-c1232-brier0.22126-stag0-HEALTHY; POL-P1+P2-WOKE-UP-c=1-fresh-starts-Rule9-LightGBM-MISSING-URGENT; POL-P5-c5792-brier0.25039-P7-c865-brier0.25331-ACTIVE; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json updated (2026-06-09T12h)"
+    },
     {
       "id": "cloud-brain-fire252-2026-06-09T08h",
       "priority": 302,
@@ -130,36 +139,52 @@
       "subject": "CODE-DONE fire-225: Axelrod ablation config DONE. AXELROD_MECH_A/B/C_ON env flags + AXELROD_ABLATION env var (5 configs). BLOCKED: do_not_push_hf_space_yet."
     },
     {
+      "id": "vm-pol-p1-p2-woke-add-lightgbm-fire253",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 CRITICAL: P1 (nomos42-political-alpha) + P2 (nomos42-political-alpha-2) WOKE UP at c=1 fresh starts! Rule#9: LightGBM MISSING from MODEL_TYPES on BOTH. P1 all-time record = LightGBM-105f-0.24902. VM: (1) Add LightGBM to MODEL_TYPES P1+P2 IMMEDIATELY before spaces evolve without it, (2) Restart fetch_political_data.py for P1+P2, (3) Verify stacking NOT in MODEL_TYPES (Rule#8)."
+    },
+    {
       "id": "vm-s22-et200f-0.21983-potential-nba-fleet-best-fire249",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "fire-249 EXTREME URGENT: S22 ET-200f-0.21983 POTENTIAL NEW NBA FLEET BEST (2.9bp below 0.22012). RULE8-ESCALATION: stacking-47f x2 entries BOTH rank-0 in pareto. Next reset ~c78. VM: (1) curl /api/export S22 URGENTLY, (2) REMOVE stacking IMMEDIATELY before ~c78 reset, (3) DO NOT evict ET."
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 UPDATE: S22 ET-0.21884 EVICTED AT ~c78 RESET (4TH CONSECUTIVE EVICTION CONFIRMED). At c=82 g=246: stacking-47f-0.2474 dominates ALL gens (241-245). ET gone. Cloud diversify sent. VM: (1) REMOVE stacking from MODEL_TYPES S22 BEFORE ~c103 reset (c78+25) — ONLY FIX, (2) Monitor for ET re-emergence in Run-4, (3) Do NOT attempt /api/export (still 404 pattern)."
+    },
+    {
+      "id": "vm-s15-evo6-api-export-missing-rf-0.21925-lost-fire253",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 CRITICAL: S15 (nomos42-nba-evo-6) RF-200f-0.21925 (8.7bp below fleet best 0.22012) + RF-200f-0.21974 (3.8bp) LOST at c976 25th-reset. /api/export returns 404 on all paths — catastrophic loss. VM: (1) IMPLEMENT /api/export endpoint on S15/evo6 IMMEDIATELY, (2) Remove stacking from MODEL_TYPES if present, (3) Monitor pareto for new sub-0.22085 candidates after c977 diversify."
     },
     {
       "id": "vm-s22-et200f-rule8-violation-checkpoint-fire248",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "S22 ET-0.2193 EVICTED (3RD CONSECUTIVE RUN LOSS). RULE8-VIOLATION stacking-47f-0.24738 rank-1. ET-200f-0.22027 BELOW 0.22085. VM: (1) curl /api/export S22, (2) REMOVE stacking IMMEDIATELY before ~c78, (3) DO NOT evict ET."
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 UPDATE: S22 ET eviction 4th consecutive confirmed. VM: REMOVE stacking from MODEL_TYPES S22 BEFORE ~c103 (c78+25). Diversify INSUFFICIENT — only MODEL_TYPES edit prevents stacking from re-entering reseed pool at reset."
     },
     {
       "id": "vm-s18-et200f-rule8-violation-checkpoint-fire248",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "S18 RULE8-VIOLATION: stacking-37f-0.24738 rank-0 STILL in pareto. ET-200f-0.22040 BELOW-0.22085. /api/export-404(26th). Next reset ~c692. VM: (1) REMOVE stacking IMMEDIATELY, (2) FIX /api/export endpoint."
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 UPDATE: S18 c=729. REMOTE DIVERSIFY processed at c728 — stacking-37f still dominates. RULE8 persists through 24+ resets. VM: (1) REMOVE stacking from MODEL_TYPES PERMANENTLY, (2) FIX /api/export endpoint (27+ consecutive 404s)."
     },
     {
       "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "S18 RULE8-VIOLATION RECONFIRMED. stacking-37f-0.24738 rank-0 in pareto at c677. Pattern: stacking reinjected c192, persists 22+ resets. VM: PERMANENTLY remove stacking from MODEL_TYPES. Fix /api/export (26th-consecutive 404)."
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 RECONFIRMED: S18 stacking-37f-0.2474 dominates pareto at c729. REMOTE DIVERSIFY at c728 did NOT remove stacking. Stacking first reinjected c192, persists through 24+ resets and diversify commands. VM: ONLY MODEL_TYPES EDIT can fix this — permanently remove stacking from MODEL_TYPES."
     },
     {
       "id": "vm-research-tabular-fm-density-estimation-fire246",
@@ -422,8 +447,8 @@
       "priority": 46,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "PORT NBA->POL: Add lightgbm to P1 and P2 MODEL_TYPES — ALL 5 POL islands LightGBM=pareto_best"
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 ESCALATED: P1 (nomos42-political-alpha) + P2 (nomos42-political-alpha-2) NOW ACTIVE at c=1! Add LightGBM to MODEL_TYPES IMMEDIATELY — see vm-pol-p1-p2-woke-add-lightgbm-fire253 (priority=0)."
     },
     {
       "id": "vm-remove-stacking-s15",
@@ -431,7 +456,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S15 MODEL_TYPES — Rule#8 violation. S15 404-DOWN."
+      "subject": "Remove stacking from S15 MODEL_TYPES — Rule#8 violation. S15 (evo6) active at c=977."
     },
     {
       "id": "vm-remove-stacking-s13",
@@ -446,16 +471,16 @@
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "fire-249 CRITICAL ESCALATION: S22 RULE8-ESCALATION — stacking-47f x2 entries BOTH rank-0 in pareto. ET-200f-0.21983 POTENTIAL NEW FLEET BEST also in pareto. VM: REMOVE stacking IMMEDIATELY before ~c78 reset."
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 RECONFIRMED: S22 RULE8 — stacking-47f x2 dominates ALL gens (241-245) at c82. ET-0.21884 EVICTED 4th consecutive. Cloud diversify sent (insufficient). VM: REMOVE stacking from MODEL_TYPES before ~c103 (c78+25). This is the ONLY fix."
     },
     {
       "id": "vm-remove-stacking-s18",
       "priority": 42,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "fire-249 UPDATE: S18 RULE8-VIOLATION CONFIRMED — stacking-37f-0.24738 rank-0 at c677. stag=9 BUILDING. ET-200f-0.22040 BELOW 0.22085. /api/export-404(26th). Next reset ~c692. VM: (1) REMOVE stacking IMMEDIATELY, (2) FIX /api/export endpoint."
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253 RECONFIRMED: S18 c=729. Stacking-37f-0.2474 dominates (gen 2182-2184 all stacking). REMOTE DIVERSIFY processed at c728 — stacking persists. 24+ resets without fix. VM: REMOVE stacking from MODEL_TYPES PERMANENTLY. Fix /api/export."
     },
     {
       "id": "engine-parity-sync",
@@ -470,8 +495,8 @@
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-09T04:00:00Z",
-      "subject": "fire-251: S15 BACK UP (WOKE!). c=890 g=2670 brier=0.22342 stag=0 RF62f. FLEET BEST RF-75f 0.22012 still held. New run brier=0.22342 BELOW CHECKPOINT GATE 0.22085. VM: monitor S15 for improvement below 0.22085."
+      "updated_at": "2026-06-09T12:00:00Z",
+      "subject": "fire-253: S15 (evo6) ACTIVE at c=977. 25TH-RESET at c976 confirmed. RF-0.21925+0.21974 LOST IN RESET (/api/export 404). Diversify queued at c977. Next reset ~c1001. VM: implement /api/export URGENTLY."
     },
     {
       "id": "vm-checkpoint-p4-lgbm-0.2492-fire143",
@@ -479,7 +504,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-08T20:00:00Z",
-      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 — 404-DOWN 75+ fires"
+      "subject": "VM-CHECKPOINT: P4 LightGBM POL FLEET BEST 0.2497 — 77+ fires sleeping"
     }
   ]
 }
