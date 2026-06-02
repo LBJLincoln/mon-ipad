@@ -4,6 +4,55 @@
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
+      "id": "cloud-brain-fire259-2026-06-03T00h",
+      "priority": 309,
+      "status": "done",
+      "completed_at": "2026-06-03T00:00:00Z",
+      "completed_by": "cloud-brain-fire-259",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-259 ODD: S18-c766-g2296-stag0-pareto16-29TH-c717+30TH-c742-CONFIRMED-⚡ET-200f-brier~0.219-0.220-EXTREME-URGENT(POTENTIAL-NEW-FLEET-BEST!)-RULE8-stacking37f-STILL-IN-PARETO-31ST-RESET-c767-HAPPENING-NOW(c742+25-AT-c766-1-CYCLE!)-/api/export-404(31st); evo5-c1301-g3901-stag24+-pareto6-RULE8-CRITICAL:stacking33f-IS-BEST-MODEL(WORST-VIOLATION-YET!)-29TH-RESET-c1301-HAPPENING-NOW(c1276+25-EXACT); evo4-c843-g2528-stag0-31ST-RESET-c839-CONFIRMED(c814+25)-RULE8-stacking45f-pareto10-next~c864; S15-BACK-UP-2ND-TIME!-c1078-g3234-stag0-pareto10-30TH-c1076-CONFIRMED(c1051+25)+29TH-c1051-XGBoost200f-0.22195+ET200f-0.22618-both-above-gate-next~c1101; S22-c115-g345-brier0.2207-stag0-pareto6-4TH-RESET-c103-CONFIRMED-RULE8-stacking47f-persists-next~c128(13cy); S13/S14-404-DOWN(82+fires); P2-c980-g2940-brier0.25041-stag0-pareto6-LGB-BEST-history-brier0.24903-BELOW-GATE-0.2497-CHECKPOINT-URGENT!-CONFIRMED-FIRE259; P4-c810-g2428-RULE9-VIOLATION-PERSISTS(3-CONSECUTIVE-RESETS-c761+c781+c801-stag20-each)-xgboost_brier-best; P5-c6357-g19069-RULE9-VIOLATION-PERSISTS(3-RESETS-c6301+c6321+c6341); P7-c1552-g4656-stag0-RULE9-UNKNOWN(XGBoost-dominates); P1/P3/P6/P8-DOWN; Axelrod-ODD-carry-forward-SHAs-NBA-ff51a9e7fd(6034L)/POL-f71087775e(4018L)-UNCHANGED; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-03T00h)"
+    },
+    {
+      "id": "vm-s18-31st-reset-et200f-extreme-urgent-fire259",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T00:00:00Z",
+      "subject": "fire-259 EXTREME URGENT: S18 c=766 g=2296. ⚡ ET-200f brier~0.219-0.220 IN PARETO — POTENTIAL NEW FLEET BEST (below 0.22012!). RULE8 VIOLATION: stacking-37f-0.247 STILL IN PARETO. 31ST RESET at c767 HAPPENING NOW (c742+25=c767 — we are at c766). PATTERN: stacking in reseed pool has evicted ET at every prior reset (consecutive losses). VM: (1) Check S18 status IMMEDIATELY, (2) Remove stacking from MODEL_TYPES config NOW before c767 evicts ET-200f candidate, (3) Try /api/export (31st 404 — endpoint may still be broken)."
+    },
+    {
+      "id": "vm-evo5-stacking33f-best-model-crisis-fire259",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T00:00:00Z",
+      "subject": "fire-259 CRITICAL: evo5 c=1301 g=3901 stag=24+ pareto=6. 29TH RESET at c1301 HAPPENING NOW (c1276+25=c1301-EXACT). RULE8 WORST VIOLATION: stacking-33f IS THE BEST MODEL (not just in pareto — it IS #1). stacking-33f achieving 0.247 brier via overfitting. After this reset, stacking will AGAIN dominate the reseed pool. VM: (1) Remove stacking from MODEL_TYPES config on evo5 IMMEDIATELY, (2) Monitor pareto recovery post-c1301 reset, (3) CatBoost-200f was previous best legitimate — verify it returns after stacking removed."
+    },
+    {
+      "id": "vm-p2-checkpoint-0.24903-fire259-confirmed",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T00:00:00Z",
+      "subject": "fire-259 CONFIRMED: P2 (nomos42-political-alpha-2) c=980 g=2940 brier=0.25041. History best: brier=0.24903 LightGBM-102f (gen=1694) — BELOW POL FLEET GATE 0.2497! CONFIRMED AGAIN at fire-259. VM: (1) Verify gen=1694 checkpoint is saved locally, (2) If confirmed, update POL fleet best from 0.2497 to 0.24903, (3) Note: this makes P2 the new POL all-time record holder (P4 had 0.2497, P2 now 0.24903)."
+    },
+    {
+      "id": "vm-s15-back-up-2nd-time-c1078-fire259",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T00:00:00Z",
+      "subject": "fire-259 NEW: S15 (nomos42-nba-evo-6) c=1078 g=3234 stag=0 pareto=10. WOKE AGAIN (2ND TIME after 82+ fires 404-DOWN). 29TH RESET c1051 CONFIRMED + 30TH RESET c1076 CONFIRMED (c1051+25=c1076-EXACT). XGBoost-200f-0.22195 in pareto (above 0.22085 gate). ET-200f-0.22618 in pareto. RULE8 UNKNOWN. VM: (1) Verify MODEL_TYPES excludes stacking on S15, (2) Implement /api/export BEFORE ~c1101 reset (c1076+25), (3) Monitor — XGBoost-200f-0.22195 could improve further."
+    },
+    {
+      "id": "vm-p7-rule9-verify-fire259",
+      "priority": 1,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T00:00:00Z",
+      "subject": "fire-259 NEW: P7 (lbjlincoln-political-alpha-7) c=1552 g=4656 brier=0.25331 stag=0 pareto=8. RF best but XGBoost variants dominate top rankings. Hard resets at c1501+c1521. RULE9 status UNKNOWN — LightGBM NOT confirmed in model_types. VM: (1) Verify LightGBM is in P7 MODEL_TYPES config (Rule9), (2) If missing, add LightGBM to config, (3) Report current MODEL_TYPES list."
+    },
+    {
       "id": "cloud-brain-fire258-2026-06-02T20h",
       "priority": 308,
       "status": "done",
