@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-10T00:00:00Z",
+  "updated_at": "2026-06-02T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire257-2026-06-02T16h",
+      "priority": 307,
+      "status": "done",
+      "completed_at": "2026-06-02T16:00:00Z",
+      "completed_by": "cloud-brain-fire-257",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-257 ODD: P1-stag19-DIVERSIFY-SENT(POST-/api/command-{command:diversify}→queued); evo4-c819-g2455-brier0.22169-stag0-2x-clean-resets(c789+c814-RULE8-CLEAN); evo5-c1284-g3850-brier0.22126-stag0-pareto17-c1276-RESET-HAPPENED(VM-verify-model_types); S15-c1053-g3157-brier0.22342-stag0-pareto7-28th-RESET-c1051-CONFIRMED(VM-verify-RULE8); S18-c757-g2271-brier0.22326-stag0-COOLDOWN-RULE8-CLEAN-carry-forward(next~c767-IMMINENT-10cy); S22-c105-g315-brier0.2207-stag0-c103-RESET-HAPPENED-RF-BEST-POSITIVE(VM-verify-model_types); P2-c731-brier0.25041-LGB-best-history-gen1694-brier0.24903-BELOW-GATE-0.2497!; P4-c604-g1811-brier0.25144-Rule9-VIOLATION-PERSISTS(xgboost_brier-best-no-LGB-604cy); P5-c6288-g18864-brier0.25039-Rule9-VIOLATION-PERSISTS(catboost_specialist-6288cy); P7-c1331-g3993-brier0.25331-stag0-healthy; P3/P6/P8-503-DOWN(80+fires-HF-restart-needed); GitHub-engine-SHA-f455c4758a-UNCHANGED; Axelrod-ODD-carry-forward(parity-f455c4758a-vs-85e7682e1d-intentional); health-status.json+brain-status.json+work-queue.json updated (2026-06-02T16h)"
+    },
     {
       "id": "cloud-brain-fire256-2026-06-10T00h",
       "priority": 306,
@@ -35,112 +44,112 @@
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 NEW CRITICAL: P5 (lbjlincoln-political-alpha-5) RULE9 VIOLATION CONFIRMED at c=6110! model_types=[xgboost, xgboost_brier, catboost] — NO LightGBM after 6110 cycles! P5 best brier 0.25039 above fleet gate 0.2497. VM: Add LightGBM to P5 MODEL_TYPES IMMEDIATELY. Note: P5 was labeled catboost_specialist but Rule9 requires LightGBM in all POL islands."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: P5 (lbjlincoln-political-alpha-5) RULE9 VIOLATION PERSISTS at c=6288 (was c=6110 fire-256). model_types=[xgboost, xgboost_brier, catboost] — NO LightGBM after 6288 cycles! Role: catboost_specialist. VM: Add LightGBM to P5 MODEL_TYPES IMMEDIATELY."
     },
     {
       "id": "vm-p4-woke-add-lightgbm-fire255",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: P4 (lbjlincoln-political-alpha-4) RULE9 VIOLATION PERSISTS at c=374. model_types=[xgboost, xgboost_brier, logistic_regression, random_forest] — LightGBM STILL MISSING. 374 cycles without LightGBM. P4 fleet best 0.2497 was LightGBM-131f. VM: (1) Add LightGBM to P4 MODEL_TYPES IMMEDIATELY, (2) Verify 0.2497 checkpoint preserved."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: P4 (lbjlincoln-political-alpha-4) RULE9 VIOLATION PERSISTS at c=604 (was c=374 fire-256). Resets at c561+c581 did NOT fix (LightGBM still not in top performers). xgboost_brier now best. VM: (1) Add LightGBM to P4 MODEL_TYPES config IMMEDIATELY, (2) Verify 0.2497 checkpoint preserved."
     },
     {
       "id": "vm-pol-p1-p2-woke-add-lightgbm-fire253",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: P1 RULE9 RESOLVED at c=414! LightGBM now in model_types (lightgbm + lightgbm_brier). Monitor for LightGBM becoming best. P2 already resolved. P4 see separate task. VM: No action needed for P1/P2 now — focus on P4 (priority=0 above)."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: P1 DIVERSIFY SENT fire-257 (stag=19). Rule9 RESOLVED since c=414 (fire-256). P2 LightGBM best brier=0.24903 at gen=1694 (below gate 0.2497!) — VM: confirm checkpoint saved."
     },
     {
       "id": "vm-s22-stacking-rule8-critical-fire256",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 CRITICAL UPDATE: S22 c=95, stacking STILL in model_types at c=95. Next reset ~c103 (c78+25) is NOW 8 CYCLES AWAY. CONTRAST: S18 had c742 reset CLEAN (VM fixed MODEL_TYPES). VM MUST fix S22 SAME WAY: REMOVE stacking from S22 MODEL_TYPES configuration file. Do NOT rely on diversify — it's insufficient. 8 cycles remaining."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S22 c=105 — c103 RESET HAPPENED! RF now BEST (not stacking) — POSITIVE SIGN. RULE8 UNKNOWN: cannot confirm stacking evicted from MODEL_TYPES without VM check. VM: (1) Verify MODEL_TYPES config excludes stacking, (2) If yes — BREAKTHROUGH (2nd clean reset after S18). Next reset ~c128."
     },
     {
       "id": "vm-s22-et200f-0.21983-potential-nba-fleet-best-fire249",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: S22 c=95 g=283 stag=0 pareto=8. Next reset ~c103 (8 cycles). Stacking still present. ET-0.2207 best brier (above fleet gate 0.22012). S18 c742 reset proved CLEAN after VM fixed MODEL_TYPES — do same for S22. VM: REMOVE stacking from MODEL_TYPES BEFORE ~c103."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S22 c=105 g=315 brier=0.2207 stag=0. c103 reset happened. RF best. ET-0.2207 still above fleet gate 0.22012. VM: verify MODEL_TYPES config. Next reset ~c128."
     },
     {
       "id": "vm-s15-evo6-api-export-missing-rf-0.21925-lost-fire253",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: S15 (nomos42-nba-evo-6) c=1026. 27TH RESET at c1026 CONFIRMED — RULE8 CLEAN! Next reset ~c1051 (c1026+25). /api/export still 404. VM: IMPLEMENT /api/export BEFORE ~c1051. Without it, every sub-gate pareto candidate is lost at each reset."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S15 (nomos42-nba-evo-6) c=1053. 28TH RESET at c1051 CONFIRMED! RULE8 UNKNOWN — VM verify. /api/export STILL 404 (29+ consecutive). Next reset ~c1076. VM: IMPLEMENT /api/export BEFORE ~c1076 URGENTLY."
     },
     {
       "id": "vm-s18-c742-clean-confirm-fire256",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 BREAKTHROUGH: S18 c742 reset CLEAN — stacking EVICTED! model_types=[xgb_brier,lgbm_brier,rf,lr] post-reset. This means VM DID fix S18 MODEL_TYPES between fire-255 and fire-256. VM: (1) CONFIRM stacking permanently removed from S18 MODEL_TYPES config, (2) Fix /api/export before ~c767 reset, (3) Apply SAME FIX to S22 and evo5 MODEL_TYPES."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S18 c=757 COOLDOWN stag=0. RULE8 carry-forward CLEAN. Next reset ~c767 IMMINENT (10 cycles). VM: (1) Fix /api/export URGENTLY before ~c767, (2) Verify stacking stays evicted post-c767 reset."
     },
     {
       "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: S18 c742 reset CLEAN (BREAKTHROUGH fire-256). Stacking appears to have been removed from MODEL_TYPES config by VM. Verify this is permanent. Original violation started at c192 (fire-230). If MODEL_TYPES config confirmed fixed, this item can be closed."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S18 c=757 RULE8 carry-forward CLEAN. c742 breakthrough holds. Verify permanent (next reset ~c767). If c767 reset also clean → close this item."
     },
     {
       "id": "vm-evo5-stacking-33f-rule8-fire255",
       "priority": 41,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 CONFIRMED: evo5 (nomos42-nba-evo-5) stacking persists at c=1266. Hard reset at c1251 did NOT clean stacking — MODEL_TYPES config not fixed. Next reset ~c1276 (10 cycles). VM: REMOVE stacking from evo5 MODEL_TYPES config (same fix that worked for S18 at c742)."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: evo5 (nomos42-nba-evo-5) c=1284. c1276 RESET HAPPENED (was predicted fire-256). CatBoost now BEST (not stacking) — POSITIVE. RULE8 UNKNOWN: VM must verify MODEL_TYPES config excludes stacking. Next reset ~c1301. Apply same fix as S18 if stacking still in config."
     },
     {
       "id": "vm-s22-et200f-rule8-violation-checkpoint-fire248",
       "priority": 0,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256: See vm-s22-stacking-rule8-critical-fire256 (priority=0 above) for primary action. S22 c=95, stacking present, ~c103 reset 8 cycles away."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S22 c=105. c103 reset happened. RF best. See vm-s22-stacking-rule8-critical-fire256 for primary action. VM: verify MODEL_TYPES."
     },
     {
       "id": "vm-s18-et200f-rule8-violation-checkpoint-fire248",
       "priority": 2,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: S18 c742 reset CLEAN (see vm-s18-c742-clean-confirm-fire256). Apparent RESOLUTION of stacking violation. Verify permanent fix."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S18 c=757 RULE8 CLEAN carry-forward. c767 next reset IMMINENT. Verify post-c767 clean to confirm permanent fix."
     },
     {
       "id": "vm-remove-stacking-s18",
       "priority": 42,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: S18 stacking appears RESOLVED at c743 (clean post-c742 reset). Verify MODEL_TYPES config confirmed fixed by VM."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S18 c=757 RULE8 CLEAN carry-forward. c767 IMMINENT (10cy). Verify post-c767 clean → close this item."
     },
     {
       "id": "vm-remove-stacking-s22",
       "priority": 43,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 CRITICAL: S22 c=95, next reset ~c103 (8 cycles). Stacking STILL in model_types. S18 was fixed by VM removing stacking from MODEL_TYPES config. VM: do SAME for S22 IMMEDIATELY. Do NOT wait for reset."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S22 c=105. c103 reset HAPPENED. RF best (not stacking) — positive. RULE8 UNKNOWN. VM: verify MODEL_TYPES config excludes stacking. If confirmed → this item RESOLVED."
     },
     {
       "id": "vm-s15-403-possibly-waking-fire193",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: S15 (evo6) ACTIVE at c=1026. 27TH RESET c1026 CONFIRMED. RULE8 CLEAN. Next reset ~c1051 (c1026+25). /api/export still 404. VM: implement /api/export URGENTLY before ~c1051."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S15 (evo6) c=1053. 28TH RESET c1051 CONFIRMED. RULE8 UNKNOWN — VM verify. /api/export STILL 404. Next reset ~c1076 (23 cycles). VM: implement /api/export URGENTLY."
     },
     {
       "id": "vm-research-agentic-llm-nba-forecasting-fire256",
@@ -196,7 +205,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-06T16:00:00Z",
-      "subject": "RESEARCH fire-236 EVEN: ScoringBench + Distributional Tabular FM — arXiv:2603.29928 + arXiv:2603.08206 (Mar 2026). Expected: 0.002-0.004 Brier."
+      "subject": "RESEARCH fire-236 EVEN: ScoringBench + Distributional Tabular FM — arXiv:2603.29928 + arXiv:2603.08208 (Mar 2026). Expected: 0.002-0.004 Brier."
     },
     {
       "id": "vm-research-wnba-nba-transfer-learning-fire234",
@@ -303,6 +312,14 @@
       "subject": "Add Elo ratings as feature category to features/engine.py — SHAP #1+#2 (IEEE/MDPI 2026)."
     },
     {
+      "id": "vm-p2-history-best-checkpoint-fire257",
+      "priority": 50,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 NEW: P2 (nomos42-political-alpha-2) history array shows gen=1694 brier=0.24903 composite=0.45185 features=102. brier=0.24903 is BELOW fleet gate 0.2497! VM: (1) Verify gen=1694 checkpoint is saved locally, (2) If brier confirmed, update fleet best from 0.2497 to 0.24903."
+    },
+    {
       "id": "vm-add-logistic-regression-model-pool",
       "priority": 50,
       "status": "pending",
@@ -315,8 +332,8 @@
       "priority": 48,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Add lightgbm to S22 and verify in S13 MODEL_TYPES"
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S22 c=105, c103 reset happened, RF best. Verify LightGBM in S22 MODEL_TYPES. S13 still 404-DOWN."
     },
     {
       "id": "vm-remove-stacking-s14",
@@ -331,16 +348,16 @@
       "priority": 46,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: P1 RULE9 RESOLVED (lightgbm+lgbm_brier in model_types at c=414). P2 also resolved. Focus on P4 (priority=0) and P5 (priority=0) which still lack LightGBM."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: P1 Rule9 RESOLVED (fire-256). Diversify sent fire-257 (stag=19). P2 LightGBM best. Focus on P4 (priority=0) and P5 (priority=0)."
     },
     {
       "id": "vm-remove-stacking-s15",
       "priority": 45,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: S15 c=1026 27TH RESET CLEAN (no stacking in model_types post-reset). May be resolved — verify MODEL_TYPES config does not include stacking."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: S15 c=1053 28th reset c1051 CONFIRMED. RULE8 UNKNOWN — VM must verify MODEL_TYPES config does not include stacking post-c1051 reset."
     },
     {
       "id": "vm-remove-stacking-s13",
@@ -355,16 +372,16 @@
       "priority": 40,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 NOTE: GitHub engine.py SHA changed to f455c4758a (from 85e7682e1d). GitHub political_engine.py SHA changed to f3bb5f31ce (from 6983c86517). Dev repos have diverged from TF space SHAs. do_not_push_hf_space_yet MAINTAINED. Sync task still pending."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: GitHub engine.py SHA f455c4758a UNCHANGED (same as fire-256). GitHub political_engine.py SHA f3bb5f31ce (unchanged). TF spaces intentionally diverged (85e7682e1d / 6983c86517). do_not_push_hf_space_yet MAINTAINED. Sync task still pending."
     },
     {
       "id": "vm-checkpoint-p4-lgbm-0.2492-fire143",
       "priority": 1,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-10T00:00:00Z",
-      "subject": "fire-256 UPDATE: P4 at c=374, RULE9 VIOLATION PERSISTS. LightGBM STILL missing. Fleet best 0.2497 checkpoint status unknown. VM: (1) Verify 0.2497 checkpoint preserved, (2) Add LightGBM to MODEL_TYPES NOW."
+      "updated_at": "2026-06-02T16:00:00Z",
+      "subject": "fire-257 UPDATE: P4 at c=604, RULE9 VIOLATION PERSISTS. LightGBM STILL missing. xgboost_brier now best. Fleet best 0.2497 checkpoint status unknown. VM: (1) Verify 0.2497 checkpoint preserved, (2) Add LightGBM to MODEL_TYPES config NOW."
     },
     {
       "id": "tf-axelrod-mech-a",
