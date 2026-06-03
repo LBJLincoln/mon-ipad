@@ -102,7 +102,7 @@ $\frac{N-1}{N}\hat{\epsilon}_{\text{arch}} > 2 \times 0.014$, i.e., a threshold 
 $\hat{\epsilon}_{\text{arch}} > \frac{12}{11} \times 0.028 \approx 0.031$.  The
 current estimate (0.037) carries a slack of 0.006 above this threshold, so values in
 $(0.031, 0.037)$ would tighten but not break the result; values $\leq 0.031$ would
-require either a tighter A5 bound or an explicit restatement.
+require either a tighter A4 bound or an explicit restatement.
 **[PENDING: held-out half recomputation, scheduled for September 2026 analysis;
 listed in pre-submission checklist as item 12.]**
 

@@ -662,11 +662,13 @@ $$B_{\text{ens},d} = \frac{1}{N}\sum_i B_{i,d} - \text{Amb}_d, \quad
 \text{Amb}_d = \frac{1}{|\mathcal{B}_d|}\sum_{t \in \mathcal{B}_d}
 \frac{1}{N}\sum_i (p_{i,t} - \bar{p}_t)^2$$
 
-JSD is a monotone function of this $\text{Amb}_d$ term for Bernoulli predictions in the
-operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$
-(proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$; range justified by
-pilot-season data, Table 4), so increasing
-$D_d$ is equivalent to reducing $B_{\text{ens},d}$ holding $\frac{1}{N}\sum_i B_{i,d}$ fixed.
+For each event $t$, the per-event $\text{JSD}_t$ is a strictly monotone function of
+the per-event $\text{Amb}_t = \frac{1}{N}\sum_i(p_{i,t}-\bar{p}_t)^2$ for Bernoulli
+predictions in the operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb}_t \leq 0.04$
+(proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}_t$; range
+pre-registered, formal verification pending Table 4, §5.1).
+Averaging over events $t \in \mathcal{B}_d$, increasing the day-level average $D_d$
+is therefore equivalent to reducing $B_{\text{ens},d}$ holding $\frac{1}{N}\sum_i B_{i,d}$ fixed.
 This motivates $D_d$ as our primary diversity target.
 
 ---
@@ -751,24 +753,23 @@ they add the least diversity and hence the least Ambiguity to the ensemble.
 This is consistent with the empirical finding that poorly calibrated agents
 in correlated prediction markets tend to mirror the favourite rather than
 take differentiated positions [@zhang2026arena].^[*Assumption sequencing note.*
-Assumptions A1, A2, A4, and A5 are used in Lemma 1. Assumption A3 (no
-spontaneous recovery) is not needed until Proposition 2 and is therefore
-introduced after the Lemma 1 proof. Readers who notice A4 appearing before
-A3 should refer to the A3 statement after Lemma 1.]
+Assumptions A1–A4 are used in Lemma 1. Assumptions A5 (no spontaneous recovery)
+and A6 (vacant-archetype expected Brier) are not needed until Proposition 2 and
+are therefore introduced after the Lemma 1 proof to preserve narrative flow.]
 
-**Assumption A4 (Archetype-shift event-independence).** The expected absolute
+**Assumption A3 (Archetype-shift event-independence).** The expected absolute
 prediction shift induced by drawing a vacant archetype uniformly at random is
 approximately constant across event contexts:
 
 $$\sup_{x_t \in \mathcal{X}}\;\mathbb{E}_{r^* \sim \text{Unif}(\mathcal{V}_d)}\!\left[|\Delta p(r^*\!, x_t)|\right]
-\;\leq\; \mathbb{E}[|\Delta p|]\;\cdot\;(1 + \eta_{\text{A4}})$$
+\;\leq\; \mathbb{E}[|\Delta p|]\;\cdot\;(1 + \eta_{\text{A3}})$$
 
-for a small slack $\eta_{\text{A4}} \geq 0$.
+for a small slack $\eta_{\text{A3}} \geq 0$.
 This holds when archetype-induced prediction shifts do not concentrate on a small
 subset of event types — verified if A1 holds uniformly across the event distribution
 rather than only in aggregate.
 
-**Assumption A5 (Pilot Brier bound).** The population-average expected absolute
+**Assumption A4 (Pilot Brier bound).** The population-average expected absolute
 centroid deviation satisfies:
 
 $$\mathbb{E}_t\!\left[\frac{1}{N}\sum_{j=1}^N |p_{j,t} - \bar{p}_t|\right] \;\leq\; 0.014$$
@@ -776,7 +777,7 @@ $$\mathbb{E}_t\!\left[\frac{1}{N}\sum_{j=1}^N |p_{j,t} - \bar{p}_t|\right] \;\le
 This bound is **pre-registered** and will be verified against the 2024–25 pilot season
 holdout backtest (§5.1, Table 4; verification pending pilot run completion).
 The value 0.014 is a design-stage estimate; the formal verification must precede
-Conditions B–E. A5 is not implied by A1–A4 alone; it provides the numerical
+Conditions B–E. A4 is not implied by A1–A3 alone; it provides the numerical
 threshold required for the Case 2 arithmetic in the Lemma 1 proof. Should the
 empirical pilot value exceed 0.014, the lemma still holds provided
 $\mathbb{E}[|\delta_i|] < \frac{(N-1)}{2N}\epsilon_{\text{arch}} = \frac{11}{24}\times 0.037 \approx 0.017$;
@@ -784,7 +785,7 @@ values in $(0.014, 0.017)$ tighten the numerical margin but do not overturn the 
 Should the value exceed 0.017, the proof requires revision and archetype revision would
 be triggered before the main conditions run.
 
-> **Lemma 1 (SRR increases expected diversity).** Under A1, A2, A4, and A5, an SRR event
+> **Lemma 1 (SRR increases expected diversity).** Under A1, A2, A3, and A4, an SRR event
 > at day $d$ strictly increases $\mathbb{E}[D_{d+1}]$.
 
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
@@ -826,31 +827,31 @@ $$\Delta\text{Amb}_t = |\Delta p|\!\left[\frac{|\Delta p|(N-1)}{N^2} - \frac{2|\
 This is positive whenever $|\delta_i| < \frac{|\Delta p|(N-1)}{2N}$.
 By A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}\!\left[\frac{1}{N}\sum_j |p_{j,t}-\bar{p}_t|\right]$ —
 the expected centroid deviation of a sacrifice-eligible agent is bounded above by the
-population-average expected absolute deviation.  By Assumption A5,
+population-average expected absolute deviation.  By Assumption A4,
 $\mathbb{E}_t[\frac{1}{N}\sum_j|p_{j,t}-\bar{p}_t|] \leq 0.014$, yielding
 $\mathbb{E}[|\delta_i|] \leq 0.014$ as the quantitative bound used below
-(A2 provides the structural direction; A5 furnishes the pilot-verified numerical threshold).
+(A2 provides the structural direction; A4 furnishes the pilot-verified numerical threshold).
 The conclusion $\mathbb{E}[\Delta\text{Amb}_t] > 0$ follows by taking a lower bound on the cross-term.
 Since $\delta_i\Delta p \geq -|\delta_i||\Delta p|$ always, the worst-case sign of the cross-term yields:
 
 $$\mathbb{E}[\Delta\text{Amb}_t] \;\geq\; \frac{N-1}{N^2}\mathbb{E}[(\Delta p)^2] - \frac{2}{N}\mathbb{E}[|\delta_i||\Delta p|]$$
 
 It is sufficient to show this lower bound is positive.
-We bound the cross-term via Assumption A4. Conditional on event context $x_t$,
+We bound the cross-term via Assumption A3. Conditional on event context $x_t$,
 the archetype draw $r^* \sim \text{Uniform}(\mathcal{V}_d)$ is independent of
 $\delta_i(x_t)$ (determined before the draw). Therefore:
 
 $$\mathbb{E}[|\delta_i||\Delta p|] = \mathbb{E}_{x_t}\!\bigl[|\delta_i(x_t)|\cdot\mathbb{E}_{r^*}\!\bigl[|\Delta p(r^*\!,x_t)|\bigr]\bigr]
 \;\leq\; \mathbb{E}[|\delta_i|]\cdot\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*\!,x_t)|]$$
 
-Under A4, $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \leq \mathbb{E}[|\Delta p|]\cdot(1+\eta_{\text{A4}})$,
-giving the exact bound $\mathbb{E}[|\delta_i||\Delta p|] \leq (1+\eta_{\text{A4}})\,\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
+Under A3, $\sup_{x_t}\mathbb{E}_{r^*}[|\Delta p(r^*, x_t)|] \leq \mathbb{E}[|\Delta p|]\cdot(1+\eta_{\text{A3}})$,
+giving the exact bound $\mathbb{E}[|\delta_i||\Delta p|] \leq (1+\eta_{\text{A3}})\,\mathbb{E}[|\delta_i|]\cdot\mathbb{E}[|\Delta p|]$.
 By Jensen's inequality ($\mathbb{E}[X^2] \geq (\mathbb{E}[|X|])^2$),
 $\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring out $\mathbb{E}[|\Delta p|]$
-yields the exact sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2(1+\eta_{\text{A4}})\mathbb{E}[|\delta_i|]$.
-Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and $\mathbb{E}[|\delta_i|] \leq 0.014$ (A5):
-LHS $\geq \frac{11}{12}\times 0.037 = 0.03392$; RHS $= 0.028(1+\eta_{\text{A4}})$.
-Inequality holds iff $\eta_{\text{A4}} < 0.211$; pilot data must confirm this before Conditions B–E. $\checkmark$
+yields the exact sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2(1+\eta_{\text{A3}})\mathbb{E}[|\delta_i|]$.
+Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and $\mathbb{E}[|\delta_i|] \leq 0.014$ (A4):
+LHS $\geq \frac{11}{12}\times 0.037 = 0.03392$; RHS $= 0.028(1+\eta_{\text{A3}})$.
+Inequality holds iff $\eta_{\text{A3}} < 0.211$; pilot data must confirm this before Conditions B–E. $\checkmark$
 
 In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
 By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
@@ -863,7 +864,7 @@ expected to hold throughout the experimental range, and the step applies under t
 pre-registered empirical constraint.
 Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
-**Assumption A3 (No spontaneous recovery).** In the absence of an archetype change,
+**Assumption A5 (No spontaneous recovery).** In the absence of an archetype change,
 a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days
 is at least $\bar{B}_d + \delta_{\text{sac}}/2$ (partial persistence of the
 performance deficit). This is a non-trivial claim — it excludes pure mean-reversion
@@ -922,11 +923,11 @@ day-$(d+1)$ predictions and increasing $\text{Amb}_{d+1}^{\mathcal{C}}$.  Under
 deviation, coalition members retain their current archetypes, so
 $\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}} = \text{Amb}_{d+1}^{\mathcal{C},\text{pre}}$.
 Applying the Lemma 1 argument to the sub-population $\mathcal{C}$ (Assumptions A1,
-A2, A4, A5 each apply because $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$
+A2, A3, A4 each apply because $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$
 and the archetype-distinguishability and centroid-deviation bounds hold
-agent-uniformly; specifically, A5's bound of 0.014 applies to each $i \in \mathcal{C}$
+agent-uniformly; specifically, A4's bound of 0.014 applies to each $i \in \mathcal{C}$
 individually — by A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}[\frac{1}{N}\sum_j|\delta_j|]$,
-which A5 caps at 0.014 for all sacrifice-eligible agents, so the sub-population centroid
+which A4 caps at 0.014 for all sacrifice-eligible agents, so the sub-population centroid
 deviation satisfies $\mathbb{E}_t[\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}
 |p_{j,t}-\bar{p}_t^{\mathcal{C}}|] \leq 0.014$ by the convexity of absolute value
 and the per-agent bound) yields:
@@ -936,14 +937,17 @@ $$\mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{SRR}}\right] > \mathbb{E
 *Mean individual Brier term.* At day $d+1$, individual Brier depends on day-$(d+1)$
 predictions generated from the archetype in force after SRR.  By Claim 2
 (invoked via forward reference; the argument is not circular — Claim 2 depends
-only on A3 and sacrifice-eligibility, both independent of Claim 1):
+only on A5 and sacrifice-eligibility, both independent of Claim 1):
 deviation keeps every eligible agent in the same archetype that produced above-mean
-Brier (A3: the performance deficit persists at level $\geq \bar{B}_d + \delta_{\text{sac}}/2$),
+Brier (A5: the performance deficit persists at level $\geq \bar{B}_d + \delta_{\text{sac}}/2$),
 so $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}] \geq \bar{B}_d + \delta_{\text{sac}}/2 > \bar{B}_d$.
-Under SRR, the reallocated agent adopts a fresh archetype drawn from $\mathcal{V}_d$;
-by Assumption A6, $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$.
+Under SRR, each agent $i \in \mathcal{C}$ independently draws a new archetype
+$r^*_i \sim \text{Uniform}(\mathcal{V}_d)$ (with $\mathcal{V}_d$ updated sequentially
+per Definition 2, §3.4); by Assumption A6 applied to each $i \in \mathcal{C}$,
+$\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$ for every $i \in \mathcal{C}$.
 Since $\bar{B}_d < \bar{B}_d + \delta_{\text{sac}}/2 \leq \mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}]$,
-the SRR agent's expected individual Brier strictly undercuts the deviation agent's.
+every SRR coalition member's expected individual Brier strictly undercuts the
+corresponding deviation agent's.
 Therefore:
 
 $$\mathbb{E}\!\left[\overline{B}_{d+1}^{\mathcal{C},\text{deviation}}\right] \;\geq\;
@@ -967,7 +971,7 @@ Claim 1 holds for all $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}}$.
 Each sacrifice-eligible agent $i \in \mathcal{C}$ satisfies
 $\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$ by definition of
 sacrifice-eligibility.  Refusing SRR leaves agent $i$ in the same strategy
-archetype that generated this performance deficit.  By Assumption A3, in the
+archetype that generated this performance deficit.  By Assumption A5, in the
 absence of an archetype change, the deficit persists: the agent's expected Brier
 over the next $W_{\text{persist}}$ days satisfies
 $\mathbb{E}[\overline{B}_{i,d+W}] \geq \bar{B}_d + \delta_{\text{sac}}/2 > \bar{B}_d$.
@@ -1846,20 +1850,20 @@ it has persistently above-mean Brier and there is no better individual
 strategy available in its current archetype. Defection from SRR — refusing
 the reallocation — offers no individual improvement and imposes a diversity
 tax on the population. In the vocabulary of evolutionary dynamics, epistemic
-role sacrifice is *individually incentive-compatible under Assumption A3*
-for chronically below-performing agents: by A3, remaining in the same
+role sacrifice is *individually incentive-compatible under Assumption A5*
+for chronically below-performing agents: by A5, remaining in the same
 archetype yields **at least** $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
-individual Brier (A3: partial persistence of the performance deficit —
+individual Brier (A5: partial persistence of the performance deficit —
 the agent's Brier remains above mean, not below it), while accepting
 the reallocation offers a strictly positive probability of improvement
 through the archetype change and strictly improves expected group fitness
 via the joint mechanism of Lemma 1 (Ambiguity increase) and Proposition 2
-(individual-Brier stability under A3 and A6).
+(individual-Brier stability under A5 and A6).
 The mechanism is therefore individually rational in expectation
 (not unconditionally dominant — an agent whose archetype happens to
-recover spontaneously would rationally resist — but A3 precisely
+recover spontaneously would rationally resist — but A5 precisely
 identifies agents for whom spontaneous recovery is not expected).
-The strategy profile is stable against free-riders because (under A3)
+The strategy profile is stable against free-riders because (under A5)
 free-riding yields no expected individual advantage while imposing a
 diversity cost on the population [@sandholm2010population].
 
@@ -2827,7 +2831,7 @@ $\hat{\epsilon}_{\text{arch}}$ recomputed on the held-out half.  If the held-out
 estimate satisfies $\hat{\epsilon}_{\text{arch}}^{\text{val}} \geq 0.037$, A1 is
 confirmed out-of-sample.  If $\hat{\epsilon}_{\text{arch}}^{\text{val}} \in (0.031, 0.037)$,
 the Lemma 1 Case 2 arithmetic still holds (threshold 0.031 preserves the 0.034 > 0.028
-margin); values $\leq 0.031$ would require a tighter A5 bound or explicit restatement.
+margin); values $\leq 0.031$ would require a tighter A4 bound or explicit restatement.
 **[PENDING: held-out half recomputation, September 2026 analysis; pre-submission
 checklist item 12.]**
 

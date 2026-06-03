@@ -77,20 +77,20 @@ it has persistently above-mean Brier and there is no better individual
 strategy available in its current archetype. Defection from SRR — refusing
 the reallocation — offers no individual improvement and imposes a diversity
 tax on the population. In the vocabulary of evolutionary dynamics, epistemic
-role sacrifice is *individually incentive-compatible under Assumption A3*
-for chronically below-performing agents: by A3, remaining in the same
+role sacrifice is *individually incentive-compatible under Assumption A5*
+for chronically below-performing agents: by A5, remaining in the same
 archetype yields **at least** $\bar{B}_d + \delta_{\text{sac}}/2$ in expected
-individual Brier (A3: partial persistence of the performance deficit —
+individual Brier (A5: partial persistence of the performance deficit —
 the agent's Brier remains above mean, not below it), while accepting
 the reallocation offers a strictly positive probability of improvement
 through the archetype change and strictly improves expected group fitness
 via the joint mechanism of Lemma 1 (Ambiguity increase) and Proposition 2
-(individual-Brier stability under A3 and A6).
+(individual-Brier stability under A5 and A6).
 The mechanism is therefore individually rational in expectation
 (not unconditionally dominant — an agent whose archetype happens to
-recover spontaneously would rationally resist — but A3 precisely
+recover spontaneously would rationally resist — but A5 precisely
 identifies agents for whom spontaneous recovery is not expected).
-The strategy profile is stable against free-riders because (under A3)
+The strategy profile is stable against free-riders because (under A5)
 free-riding yields no expected individual advantage while imposing a
 diversity cost on the population [@sandholm2010population].
 

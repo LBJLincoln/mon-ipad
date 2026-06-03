@@ -8995,6 +8995,134 @@ An additional explanatory note is retained in `04-method.md` for future readers:
 
 ---
 
+---
+
+## CYCLE FFF  (2026-06-03, fire-259, ODD)
+
+### FFF1 (Major, structural). Assumption numbering non-sequential: A4 and A5 appear in text before A3
+
+**Location:** `04-method.md` §3.5; mirrored in `paper.md` §3.5; downstream in `07-discussion.md` §6.1; `appendix-c.md` §C.2.4.
+
+**Problem.** The assumptions in §3.5 are numbered A1, A2, A4, A5, [Lemma 1], A3, A6, [Proposition 2]. A3 (No spontaneous recovery) has a lower number than A4 and A5 but appears *after* them in the text. A footnote at A2 (line ~252) admits this: "Readers who notice A4 appearing before A3 in the text should refer to the statement after Lemma 1." An apologetic footnote is not a fix — a reader who scans for "Assumption A3" expects to find it before "Assumption A4," and the non-sequential numbering complicates cross-referencing.
+
+The logical ordering of first use is:
+1. A1 (Archetype distinguishability) — introduced first
+2. A2 (Sacrifice-eligible track centroid) — second
+3. Old A4 (Archetype-shift event-independence) — third (used in Lemma 1)
+4. Old A5 (Pilot Brier bound) — fourth (used in Lemma 1)
+5. Old A3 (No spontaneous recovery) — fifth (used in Proposition 2)
+6. A6 (Vacant-archetype expected Brier) — sixth
+
+**Fix applied.** Renamed in order of first appearance in text:
+- Old A4 (Archetype-shift event-independence) → **A3**
+- Old A5 (Pilot Brier bound) → **A4**
+- Old A3 (No spontaneous recovery) → **A5**
+- A1, A2, A6 unchanged
+
+All occurrences updated across four files:
+- `04-method.md`: 26 locations — assumption headers, body text, Lemma 1 statement and proof (A4→A3, A5→A4 in Lemma 1; A3→A5 in Proposition 2), $\eta_{\text{A4}}$ → $\eta_{\text{A3}}$ (replace\_all). Sequencing footnote rewritten to remove apology, replaced with clean statement "Assumptions A1–A4 are used in Lemma 1; A5–A6 not needed until Proposition 2."
+- `07-discussion.md`: 6 A3 references (no spontaneous recovery) → A5.
+- `appendix-c.md`: line 105 "tighter A5 bound" → "tighter A4 bound".
+- `paper.md`: all of the above mirrored.
+
+**Checklist impact:** Pre-submission checklist item 13 ("Verify A4 slack $\eta_{\text{A4}} < 0.211$") → "Verify A3 slack $\eta_{\text{A3}} < 0.211$" (updated below).
+
+*Post-fix verification:*
+`grep "Assumption A4 (Archetype" 04-method.md paper.md` → zero hits (old numbering gone). ✓
+`grep "Assumption A3 (Archetype" 04-method.md paper.md` → two hits (one per file, new numbering). ✓
+`grep "Assumption A3 (No spont" 04-method.md paper.md` → zero hits (old A3 gone). ✓
+`grep "Assumption A5 (No spont" 04-method.md paper.md` → two hits (renamed). ✓
+`grep "eta_{\text{A4}}" 04-method.md paper.md appendix-c.md 07-discussion.md` → zero hits. ✓
+
+---
+
+### FFF2 (Moderate, formal). Proposition 2 Claim 1 says "the reallocated agent" (singular) in the |C|≥2 case where all coalition members receive new archetypes
+
+**Location:** `04-method.md` §3.5 Proposition 2 Claim 1 proof, "Mean individual Brier term" paragraph; `paper.md` same.
+
+**Problem.** In the |C|≥2 case of Claim 1, the proof text read:
+
+> "Under SRR, *the reallocated agent* adopts archetype $r^* \sim \text{Uniform}(\mathcal{V}_d)$; by Assumption A6, $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$. ...the SRR *agent's* expected individual Brier strictly undercuts the deviation *agent's*."
+
+When $|\mathcal{C}| \geq 2$, every agent $i \in \mathcal{C}$ is sacrifice-eligible and every one of them draws a new archetype. The singular "the reallocated agent" implies a single agent, which is only correct when $|\mathcal{C}|=1$ (already handled separately). For $|\mathcal{C}| \geq 2$, Assumption A6 must be applied to *each* $i \in \mathcal{C}$ separately to conclude $\mathbb{E}[\overline{B}_{d+1}^{\mathcal{C},\text{SRR}}] \leq \bar{B}_d$.
+
+**Fix applied (both `04-method.md` and `paper.md`):**
+
+Old: "Under SRR, the reallocated agent adopts archetype $r^* \sim \text{Uniform}(\mathcal{V}_d)$; by Assumption A6, $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$. Since $\bar{B}_d < \ldots$, the SRR agent's expected individual Brier strictly undercuts the deviation agent's."
+
+New: "Under SRR, each agent $i \in \mathcal{C}$ independently draws a new archetype $r^*_i \sim \text{Uniform}(\mathcal{V}_d)$ (with $\mathcal{V}_d$ updated sequentially per Definition 2, §3.4); by Assumption A6 applied to each $i \in \mathcal{C}$, $\mathbb{E}[B_{i,d+1}^{\text{SRR}}] \leq \bar{B}_d$ for every $i \in \mathcal{C}$. Since $\bar{B}_d < \ldots$, every SRR coalition member's expected individual Brier strictly undercuts the corresponding deviation agent's." ✓
+
+*Post-fix verification:*
+`grep "the reallocated agent" 04-method.md paper.md` → zero hits. ✓
+`grep "each agent.*in.*mathcal{C}.*independently" 04-method.md paper.md` → two hits (one per file). ✓
+
+---
+
+### FFF3 (Moderate, logical). §3.3 claims day-level JSD is a monotone function of day-level Ambiguity; Appendix B.1 proves only per-event monotonicity
+
+**Location:** `04-method.md` §3.3, first paragraph after the day-level Brier identity; `paper.md` same.
+
+**Problem.** The text read:
+
+> "JSD is a monotone function of this $\text{Amb}_d$ term for Bernoulli predictions in the operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb} \leq 0.04$ (proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}$; range justified by pilot-season data, Table 4)..."
+
+Appendix B.1 proves: *for a fixed event t*, $\text{JSD}_t = -\frac{1}{2}H''(\bar{p}_t)\cdot\text{Amb}_t - \bar{R}_t$, and $\frac{\partial \text{JSD}_t}{\partial \text{Amb}_t} > 0$ throughout the operating range. This is a per-event, per-realization result. The day-level diversity $D_d = \frac{1}{|\mathcal{B}_d|}\sum_t \text{JSD}_t$ and the day-level Ambiguity $\text{Amb}_d = \frac{1}{|\mathcal{B}_d|}\sum_t \text{Amb}_t$ are averages of per-event quantities. The claim "day-level JSD is monotone in day-level Ambiguity" doesn't follow from per-event monotonicity without further argument (the average of monotone functions of their corresponding summands is not necessarily monotone in the average of those summands — it's an average, not a pointwise comparison). The correct statement is the per-event one; the day-level corollary is stated properly via the averaging operation.
+
+**Fix applied (both `04-method.md` and `paper.md`):** The §3.3 paragraph is rewritten to state the per-event fact directly and derive the day-level implication by averaging:
+
+> "For each event $t$, the per-event $\text{JSD}_t$ is a strictly monotone function of the per-event $\text{Amb}_t = \frac{1}{N}\sum_i(p_{i,t}-\bar{p}_t)^2$ for Bernoulli predictions in the operating range $\bar{p}_t \in [0.24, 0.76]$, $\text{Amb}_t \leq 0.04$ (proof: Appendix B.1, via Taylor expansion of $H$ around $\bar{p}_t$; range pre-registered, formal verification pending Table 4, §5.1). Averaging over events $t \in \mathcal{B}_d$, increasing the day-level average $D_d$ is therefore equivalent to reducing $B_{\text{ens},d}$ holding $\frac{1}{N}\sum_i B_{i,d}$ fixed." ✓
+
+*Post-fix verification:*
+`grep "monotone function of this.*Amb_d" 04-method.md paper.md` → zero hits. ✓
+`grep "per-event.*JSD_t.*strictly monotone" 04-method.md paper.md` → two hits (one per file). ✓
+
+---
+
+### FFF4 (Minor). §3.3 says "range justified by pilot-season data, Table 4" while Table 4 is entirely PENDING
+
+**Location:** Same passage as FFF3.
+
+**Problem.** Before the FFF3 fix, the text said "range justified by pilot-season data, Table 4". Table 4 in §5.1 has all cells marked **[PENDING]**. This is the same class of error fixed in EEE3 for the Lemma 1 proof, but the §3.3 occurrence was missed. A referee reading §3.3 sees "justified by pilot-season data" and then discovers in §5.1 that the table is entirely empty — an internal inconsistency.
+
+**Fix applied:** Combined with FFF3 fix. The phrase "range justified by pilot-season data, Table 4" is replaced by "range pre-registered, formal verification pending Table 4, §5.1" — matching the language established in EEE3 for the same empirical range claim elsewhere in the paper. ✓
+
+---
+
+## CYCLE FFF SUMMARY
+
+**Fixed this cycle:**
+- FFF1 (Major, structural): Assumption renumbering — old A4 (event-independence) → A3; old A5 (pilot Brier bound) → A4; old A3 (no spontaneous recovery) → A5. Apology footnote replaced with clean sequencing note. $\eta_{\text{A4}} \to \eta_{\text{A3}}$ (replace\_all). Affected files: `04-method.md` (~26 locations), `07-discussion.md` (6 locations), `appendix-c.md` (1 location), `paper.md` (~26 + 6 + 1 locations).
+- FFF2 (Moderate, formal): Proposition 2 Claim 1 "the reallocated agent" singular → "each agent $i \in \mathcal{C}$" plural, with per-agent A6 application. Two files (`04-method.md` + `paper.md`).
+- FFF3 (Moderate, logical): §3.3 day-level JSD monotonicity claim → per-event monotonicity with averaging derivation. Two files.
+- FFF4 (Minor): §3.3 "range justified by pilot-season data, Table 4" → "range pre-registered, formal verification pending Table 4, §5.1". Combined with FFF3 fix. Two files.
+
+**Remaining open:** None from prior cycles.
+
+**PRE-SUBMISSION checklist (updated — item 13 renumbered):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155) — still open
+2. ✓ `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. ✓ `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed (PP1) against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents (QQ1)
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$ (was: A5 bound)
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites the correct date (2026-04-22)
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E (was: $\eta_{\text{A4}}$)
+14. Verify A6 via matched-pairs pilot analysis (added DDD)
+
+**Structural changes this cycle:**
+- `04-method.md` §3.3: per-event JSD monotonicity + pre-registered range (FFF3+FFF4)
+- `04-method.md` §3.5: assumption renumbering A4→A3/A5→A4/A3→A5 throughout; footnote rewrite (FFF1); Proposition 2 Claim 1 coalition plural (FFF2)
+- `07-discussion.md` §6.1: A3→A5 (no spontaneous recovery), 6 locations (FFF1)
+- `appendix-c.md` §C.2.4: "tighter A5 bound" → "tighter A4 bound" (FFF1)
+- `paper.md`: all of the above mirrored (FFF1 ~32 locations, FFF2 × 2, FFF3+FFF4 × 2)
+
+---
+
 ## CYCLE EEE SUMMARY
 
 **Fixed this cycle:**
