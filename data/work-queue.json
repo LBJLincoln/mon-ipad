@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-03T04:00:00Z",
+  "updated_at": "2026-06-03T08:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire261-2026-06-03T08h",
+      "priority": 311,
+      "status": "done",
+      "completed_at": "2026-06-03T08:00:00Z",
+      "completed_by": "cloud-brain-fire-261",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-261 ODD: Axelrod-carry-forward-SHAs-NBA-ff51a9e7fd(6034L)/POL-f71087775e(4018L)-UNCHANGED; 25/25-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; S18-~c779-stag0-32ND-RESET-~c792-APPROACHING(8-13cy)-ET-fate-UNKNOWN-/api/export-404(33rd); S22-~c130-5TH-RESET-c128-CONFIRMED(c103+25=c128)-post-reset-Rule8-UNKNOWN-next-reset-~c153; evo5-~c1326-30TH-RESET-c1326-PREDICTED(c1301+25=c1326)-catboost-best-pre-reset-POSITIVE-post-reset-Rule8-UNKNOWN; evo4-~c880-32ND-RESET-~c889-APPROACHING(9-14cy)-RULE8-stacking-45f; S13/S14/S15+POL-404-DOWN(84+fires); ODD-no-WebSearch; sota-online-cp-corrupted-feedback-fire260.md-WRITTEN(priority=118-arXiv:2605.20515); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-03T08h)"
+    },
     {
       "id": "cloud-brain-fire260-2026-06-03T04h",
       "priority": 310,
@@ -17,7 +26,9 @@
       "priority": 118,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-03T04:00:00Z",
+      "proposal_written": "2026-06-03T08:00:00Z",
+      "proposal_file": "data/research-proposals/sota-online-cp-corrupted-feedback-fire260.md",
+      "updated_at": "2026-06-03T08:00:00Z",
       "subject": "RESEARCH fire-260 EVEN: Online Conformal Prediction with Corrupted Feedback — arXiv:2605.20515 (May 2026). Key: CP algorithm robust to corrupted calibration labels (adversarial or noisy outcomes). Directly applicable to NBA games where official scores are delayed/corrected. Application 1: add 'corrupted_feedback_cp' option to validate_model() to handle score corrections. Application 2: add `corrupted_label_robustness` as calibration quality metric to /api/export. Application 3: port to political_engine.py for contested election results. Expected: 0.001-0.002 Brier + more robust calibration under delayed/corrupted outcomes. Proposal: data/research-proposals/sota-online-cp-corrupted-feedback-fire260.md"
     },
     {

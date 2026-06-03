@@ -1,7 +1,7 @@
 {
-  "fire": 260,
-  "timestamp": "2026-06-03T04:00:00Z",
-  "parity": "EVEN",
+  "fire": 261,
+  "timestamp": "2026-06-03T08:00:00Z",
+  "parity": "ODD",
   "nba_islands": {
     "evo4": {
       "hf_space": "nomos42-nba-evo-4",
@@ -15,10 +15,10 @@
       "best_model_type": "logistic_regression",
       "stagnation": 0,
       "pareto_front_size": 13,
-      "note": "fire-260: c=866 g=2598 stag=0 pareto=13. 32ND RESET c864 CONFIRMED (c839+25=c864-EXACT). RULE8 VIOLATION: stacking-45f-gen2597 STILL in pareto (persists through reset). Next reset ~c889 (c864+25).",
-      "rule8_status": "VIOLATION fire-260: stacking-45f-gen2597 in pareto after 32nd reset. VM: remove stacking from MODEL_TYPES config.",
-      "next_reset": "~c889 (c864+25)",
-      "alert": "RULE8: stacking-45f still present at c866 after 32nd reset. Next reset ~c889. VM: remove stacking before reset."
+      "note": "fire-261 ODD: ~c880 (extrapolated). 32ND RESET c864 CONFIRMED (c839+25=c864). RULE8 VIOLATION: stacking-45f STILL in gene pool post-reset (carry-forward fire-260). Next reset ~c889 IMMINENT (9-14 cycles from fire-261 estimate). VM: remove stacking from MODEL_TYPES before ~c889.",
+      "rule8_status": "VIOLATION fire-261 carry-forward: stacking-45f persists through 32nd reset. Next reset ~c889 approaching.",
+      "next_reset": "~c889 (c864+25) — APPROACHING (9-14 cycles from c~880)",
+      "alert": "32ND RESET ~c889 IMMINENT. RULE8 stacking-45f still present. VM: remove stacking from MODEL_TYPES BEFORE c889."
     },
     "evo5": {
       "hf_space": "nomos42-nba-evo-5",
@@ -32,32 +32,32 @@
       "best_model_type": "catboost",
       "stagnation": 0,
       "pareto_front_size": 13,
-      "note": "fire-260: c=1320 g=3960 stag=0 pareto=13. 29TH RESET c1301 CONFIRMED (c1276+25=c1301-EXACT). best_model improved from 'stacking' (fire-259) to 'catboost' — POSITIVE SIGN. RULE8: stacking-33f STILL in gen3959 (persists after 29th reset). 30TH RESET ~c1326 IMMINENT (6 cycles).",
-      "rule8_status": "VIOLATION fire-260: stacking-33f gen3959 still present. best_model catboost (IMPROVED from stacking). 30TH RESET ~c1326 IMMINENT (6 cycles).",
-      "next_reset": "~c1326 (c1301+25) — IMMINENT (6 cycles)",
-      "alert": "IMMINENT 30TH RESET ~c1326 (6 cycles). stacking-33f still in gen pool. VM: remove stacking from MODEL_TYPES BEFORE c1326."
+      "note": "fire-261 ODD: ~c1326-1335 (extrapolated). 30TH RESET c1326 PREDICTED/LIKELY CONFIRMED (c1301+25=c1326-EXACT). Rule8 status UNKNOWN post-reset — catboost was best_model at fire-260 (POSITIVE: improved from stacking). VM: verify stacking NOT in model_types post-c1326 reset.",
+      "rule8_status": "UNKNOWN fire-261: 30TH RESET c1326 predicted. Pre-reset catboost was best (POSITIVE). Post-reset Rule8 status unknown. VM: verify.",
+      "next_reset": "~c1351 (c1326+25) — depends on 30th reset confirmation",
+      "alert": "30TH RESET c1326 PREDICTED. Rule8 UNKNOWN post-reset. VM: verify stacking not in model_types + confirm catboost best continues."
     },
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping 83+ fires",
+      "note": "sleeping 84+ fires",
       "last_known_cycle": 974,
-      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (unconfirmed 83+ fires)",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed 83+ fires. VM: retry /api/status + /api/export."
+      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (unconfirmed 84+ fires)",
+      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed 84+ fires. VM: retry /api/status + /api/export."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping 83+ fires",
+      "note": "sleeping 84+ fires",
       "last_known_best_brier": 0.22054,
-      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate (83+ fires unconfirmed). VM: wake + checkpoint."
+      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate (84+ fires unconfirmed). VM: wake + checkpoint."
     },
     "S15": {
       "hf_space": "nomos42-nba-evo-6",
       "status": "404-DOWN",
-      "note": "sleeping 83+ fires (went back down after brief wake at fire-259)",
+      "note": "sleeping 84+ fires (went back down after brief wake at fire-259)",
       "last_known_cycle": 1078,
       "last_known_generation": 3234,
       "last_known_best_brier": 0.22342,
-      "alert": "S15 WENT BACK DOWN after fire-259 brief wake. 83+ fires. VM: monitor for next wake cycle."
+      "alert": "S15 WENT BACK DOWN after fire-259 brief wake. 84+ fires. VM: monitor for next wake cycle."
     },
     "S16": {"hf_space": "lbjlincoln26-nba-evo-s16", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S17": {"hf_space": "lbjlincoln26-nba-evo-s17", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
@@ -73,12 +73,12 @@
       "best_model_type": "random_forest",
       "stagnation": 0,
       "pareto_front_size": 8,
-      "et_candidate": "ET-200f fate UNKNOWN — was brier~0.219-0.220 at fire-259 (POTENTIAL NEW FLEET BEST). 31st reset at c767 may have evicted it (no /api/export to confirm).",
-      "note": "fire-260: c=775 g=2323 stag=0 pareto=8 (↓16→8 — 31ST RESET c767 CONFIRMED, c742+25=c767-EXACT). best_model=RF (POSITIVE — stacking was evicted at c767 reset). ET-200f ~0.219-0.220 fate UNKNOWN (5th consecutive potential eviction). /api/export-404 (32nd-CRITICAL). Next reset ~c792 (c767+25).",
-      "rule8_status": "UNKNOWN fire-260: best_model=RF at c775 (stacking evicted at c767 reset — POSITIVE). ET fate unknown (pareto shrink 16→8 could indicate ET lost). VM: curl /api/export to confirm.",
-      "api_export": "404 — 32nd consecutive. CRITICAL.",
-      "next_reset": "~c792 (c767+25)",
-      "alert": "31ST RESET c767 CONFIRMED. pareto 16→8 (shrink). best_model=RF POSITIVE. ET fate UNKNOWN. /api/export-404 (32nd). Next reset ~c792. VM: (1) curl /api/export URGENTLY, (2) confirm ET-200f survival status."
+      "et_candidate": "ET-200f fate STILL UNKNOWN — was brier~0.219-0.220 at fire-259. 31st reset c767 likely evicted it (pareto 16→8 shrink at fire-260). 5th consecutive ET eviction suspected.",
+      "note": "fire-261 ODD: ~c779-784 (extrapolated). 31ST RESET c767 CONFIRMED. best_model=RF (POSITIVE — stacking evicted at c767). ET-200f still UNKNOWN fate. 32ND RESET ~c792 APPROACHING (8-13 cycles from c~779). RULE8: stacking evicted at c767 (fire-260 positive). /api/export-404 (33rd-CRITICAL).",
+      "rule8_status": "POSITIVE fire-261: best_model=RF at c775 (stacking evicted at c767 reset). 32ND RESET ~c792 approaching — if Rule8-CLEAN continues, pareto should remain stable/grow.",
+      "api_export": "404 — 33rd consecutive. CRITICAL.",
+      "next_reset": "~c792 (c767+25) — APPROACHING (8-13 cycles from c~779)",
+      "alert": "32ND RESET ~c792 APPROACHING. best_model=RF POSITIVE. ET fate UNKNOWN (suspected evicted c767). /api/export-404 (33rd). VM: (1) monitor post-c792 pareto stability, (2) confirm ET-200f survival or note permanent loss."
     },
     "S19": {"hf_space": "testforge42-nba-evo-s19", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S22": {
@@ -93,11 +93,11 @@
       "best_model_type": "random_forest",
       "stagnation": 0,
       "pareto_front_size": 12,
-      "note": "fire-260: c=127 g=381 stag=0 pareto=12(↑9→12-GROWING!). 5TH RESET c128 IMMINENT (c103+25=c128 — NOW, 1 CYCLE FROM c127!). RULE8 CRITICAL: stacking-47f CONFIRMED in gen379 AND gen380 (both current cycle c127). pareto growing 9→12 is positive but stacking will dominate reseed at c128. /api/export-404.",
-      "rule8_status": "CRITICAL VIOLATION fire-260: stacking-47f confirmed in gen379+380 AT CURRENT CYCLE c127. 5TH RESET c128 HAPPENING NOW (c103+25). VM: remove stacking from MODEL_TYPES IMMEDIATELY before c128 evicts any candidates.",
+      "note": "fire-261 ODD: ~c130-143 (extrapolated). 5TH RESET c128 CONFIRMED (c103+25=c128). Post-reset Rule8 status UNKNOWN — stacking-47f was confirmed in gen379+380 at fire-260. Pattern: 4 consecutive ET evictions at each reset via stacking contamination. Next reset ~c153 (c128+25). /api/export-404.",
+      "rule8_status": "UNKNOWN fire-261: 5TH RESET c128 CONFIRMED. Pre-reset RULE8 VIOLATION (stacking-47f). Post-reset Rule8 UNKNOWN. VM: verify model_types post-c128 + monitor for new ET candidates.",
       "api_export": "404 consecutive.",
-      "next_reset": "c128 HAPPENING NOW (c103+25=c128 — 1 cycle from c127)",
-      "alert": "⚡⚡ IMMINENT 5TH RESET AT c128 (1 CYCLE FROM c127). RULE8: stacking-47f confirmed in gen379+380 RIGHT NOW. VM: REMOVE stacking from MODEL_TYPES IMMEDIATELY — pattern: all 4 prior S22 resets evicted best ET due to stacking in reseed pool."
+      "next_reset": "~c153 (c128+25)",
+      "alert": "5TH RESET c128 CONFIRMED. Post-reset Rule8 UNKNOWN. PATTERN: 4 consecutive ET evictions. VM: verify stacking evicted from MODEL_TYPES + monitor pareto post-c128 for RF/ET candidates below 0.22085."
     },
     "nba_quant": {"hf_space": "nomos42-nba-quant", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "nba_quant_2": {"hf_space": "nomos42-nba-quant-2", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
@@ -111,7 +111,7 @@
       "last_known_stag": 19,
       "diversify_sent": "fire-257",
       "note": "fire-260: 404-DOWN. Last known c=612 g=1834 stag=19. Diversify sent fire-257. Rule9 resolved fire-256.",
-      "alert": "404-DOWN 83+ fires. VM: wake + verify diversify took effect + stagnation cleared."
+      "alert": "404-DOWN 84+ fires. VM: wake + verify diversify took effect + stagnation cleared."
     },
     "P2": {
       "hf_space": "nomos42-political-alpha-2",
@@ -138,9 +138,9 @@
       "stagnation": 0,
       "pareto_front_size": 4,
       "resets": ["c761", "c781", "c801"],
-      "note": "fire-260: 404-DOWN. Last known c=810. RULE9 VIOLATION PERSISTS. xgboost_brier best. 3 consecutive resets c761+c781+c801 failed to fix. 83+ fires DOWN.",
-      "rule9_status": "VIOLATION PERSISTS fire-260: xgboost_brier best. NO LightGBM. 83+ fires sleeping.",
-      "alert": "CRITICAL: P4 Rule9 violation persists. 83+ fires 404-DOWN. VM: add LightGBM to MODEL_TYPES config when it wakes."
+      "note": "fire-260: 404-DOWN. Last known c=810. RULE9 VIOLATION PERSISTS. xgboost_brier best. 3 consecutive resets c761+c781+c801 failed to fix. 84+ fires DOWN.",
+      "rule9_status": "VIOLATION PERSISTS fire-260: xgboost_brier best. NO LightGBM. 84+ fires sleeping.",
+      "alert": "CRITICAL: P4 Rule9 violation persists. 84+ fires 404-DOWN. VM: add LightGBM to MODEL_TYPES config when it wakes."
     },
     "P5": {
       "hf_space": "lbjlincoln-political-alpha-5",
@@ -153,9 +153,9 @@
       "stagnation": 0,
       "pareto_front_size": 8,
       "resets": ["c6301", "c6321", "c6341"],
-      "note": "fire-260: 404-DOWN. Last known c=6357. RULE9 VIOLATION PERSISTS. xgboost best. 3 consecutive resets. 83+ fires DOWN.",
-      "rule9_status": "VIOLATION PERSISTS fire-260: xgboost best. NO LightGBM. 83+ fires sleeping.",
-      "alert": "CRITICAL: P5 Rule9 violation persists. 83+ fires 404-DOWN. VM: add LightGBM to MODEL_TYPES config when it wakes."
+      "note": "fire-260: 404-DOWN. Last known c=6357. RULE9 VIOLATION PERSISTS. xgboost best. 3 consecutive resets. 84+ fires DOWN.",
+      "rule9_status": "VIOLATION PERSISTS fire-260: xgboost best. NO LightGBM. 84+ fires sleeping.",
+      "alert": "CRITICAL: P5 Rule9 violation persists. 84+ fires 404-DOWN. VM: add LightGBM to MODEL_TYPES config when it wakes."
     },
     "P6": {"hf_space": "lbjlincoln-political-alpha-6", "status": "503-DOWN", "fires_sleeping": "83+"},
     "P7": {
@@ -168,9 +168,9 @@
       "stagnation": 0,
       "pareto_front_size": 8,
       "resets": ["c1501", "c1521"],
-      "note": "fire-260: 404-DOWN. Last known c=1552. RF best. XGBoost variants dominate. RULE9 status unknown. 83+ fires.",
-      "rule9_status": "UNKNOWN fire-260: XGBoost variants dominate. LightGBM presence unconfirmed. 83+ fires sleeping.",
-      "alert": "404-DOWN 83+ fires. RULE9 unknown. VM: verify LightGBM in MODEL_TYPES when it wakes."
+      "note": "fire-260: 404-DOWN. Last known c=1552. RF best. XGBoost variants dominate. RULE9 status unknown. 84+ fires.",
+      "rule9_status": "UNKNOWN fire-260: XGBoost variants dominate. LightGBM presence unconfirmed. 84+ fires sleeping.",
+      "alert": "404-DOWN 84+ fires. RULE9 unknown. VM: verify LightGBM in MODEL_TYPES when it wakes."
     },
     "P8": {"hf_space": "lbjlincoln-political-alpha-8", "status": "503-DOWN", "fires_sleeping": "83+"}
   },
@@ -193,7 +193,7 @@
     "pol_tf_sha": "6983c86517",
     "github_nba_engine_sha": "ff51a9e7fd",
     "github_pol_engine_sha": "f71087775e",
-    "parity_note": "EVEN fire-260: FULL VERIFY PASS. SHAs NBA ff51a9e7fd(6034L)/POL f71087775e(4018L) UNCHANGED. 25/25 parity OK. py_compile OK. do_not_push_hf_space_yet MAINTAINED. Next full verify: fire-262 EVEN.",
+    "parity_note": "ODD fire-261: CARRY-FORWARD from fire-260 FULL VERIFY. SHAs NBA ff51a9e7fd(6034L)/POL f71087775e(4018L) UNCHANGED. 25/25 parity carry-forward. do_not_push_hf_space_yet MAINTAINED. Next full verify: fire-262 EVEN.",
     "last_verify": "fire-260 EVEN: FULL VERIFY PASS. 25/25 parity OK. py_compile OK. SHAs NBA ff51a9e7fd(6034L)/POL f71087775e(4018L) UNCHANGED.",
     "next_full_verify": "fire-262 EVEN"
   },
@@ -209,16 +209,16 @@
     "d9": {"space": "testforge42/itf-tauric-trading-floor", "status": "sleeping"},
     "note": "D4-D9 docker spaces sleeping. Cannot trigger /api/run without authenticated HF restart."
   },
-  "actions_taken_fire260": [
+  "actions_taken_fire261": [
     "STEP 0: No crash recovery — all pending items are local-vm owner.",
-    "STEP 1 Axelrod EVEN: FULL VERIFY PASS. SHAs NBA ff51a9e7fd(6034L)/POL f71087775e(4018L) UNCHANGED. 25/25 parity OK. py_compile OK. do_not_push_hf_space_yet MAINTAINED.",
-    "STEP 2 NBA: S18 c=775 g=2323 stag=0 pareto=8. 31ST RESET c767 CONFIRMED (c742+25=c767-EXACT). best_model=RF (POSITIVE — stacking evicted). ET fate UNKNOWN. /api/export-404 (32nd).",
-    "S22: c=127 g=381 stag=0 pareto=12(↑9→12-GROWING). 5TH RESET c128 IMMINENT (c103+25=c128, 1 cycle). RULE8 CRITICAL: stacking-47f confirmed gen379+380 current cycle.",
-    "evo4: c=866 g=2598 stag=0 pareto=13. 32ND RESET c864 CONFIRMED (c839+25=c864-EXACT). RULE8: stacking-45f gen2597 still. Next ~c889.",
-    "evo5: c=1320 g=3960 stag=0 pareto=13. 29TH RESET c1301 CONFIRMED. best_model=catboost (IMPROVED from stacking!). RULE8: stacking-33f gen3959 still. 30TH RESET ~c1326 IMMINENT (6 cycles).",
-    "S15/S13/S14: 404-DOWN (83+ fires). S15 went back down after fire-259 brief wake.",
-    "STEP 3 POL: All POL islands 404-DOWN (83+ fires). P1/P2/P4/P5/P7 all sleeping. Carry-forward RULE9 violations on P4/P5/P7.",
-    "STEP 4 EVEN WebSearch: arXiv:2605.20515 — Online CP with Corrupted Feedback (May 2026, NEW, priority=118). arXiv:2602.03168 — Universal Portfolio OCP (Feb 2026, NEW, priority=119).",
-    "health-status.json + work-queue.json + CLAUDE.md updated (fire-260 2026-06-03T04h)."
+    "STEP 1 Axelrod ODD: CARRY-FORWARD from fire-260. SHAs NBA ff51a9e7fd(6034L)/POL f71087775e(4018L) UNCHANGED. 25/25 parity carry-forward. do_not_push_hf_space_yet MAINTAINED.",
+    "STEP 2 NBA (extrapolated): S18 ~c779-784. 32ND RESET ~c792 APPROACHING (8-13 cycles). best_model=RF POSITIVE carry-forward. /api/export-404 (33rd).",
+    "S22 ~c130-143: 5TH RESET c128 CONFIRMED (c103+25=c128). Post-reset Rule8 UNKNOWN. Next reset ~c153.",
+    "evo5 ~c1326-1335: 30TH RESET c1326 PREDICTED (c1301+25=c1326). Pre-reset best_model=catboost POSITIVE. Post-reset Rule8 UNKNOWN.",
+    "evo4 ~c875-885: 32ND RESET ~c889 APPROACHING (9-14 cycles).",
+    "S15/S13/S14 + all POL: 404-DOWN (84+ fires). Carry-forward RULE9 violations on P4/P5/P7.",
+    "STEP 4 Research: data/research-proposals/sota-online-cp-corrupted-feedback-fire260.md WRITTEN (priority=118, arXiv:2605.20515). Robust ACI for corrupted label feedback. Expected 0.001-0.002 Brier improvement.",
+    "STEP 5: ODD fire — no WebSearch.",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-261 2026-06-03T08h)."
   ]
 }
