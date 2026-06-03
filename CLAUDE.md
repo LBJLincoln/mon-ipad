@@ -40,17 +40,17 @@ Every 4h: `data/work-queue.json` push from iPad/automation → GitHub Action →
 | S14 | TESTforge42/nba-evo-s14 | 404-DOWN | 0.22054 RF-48f | BELOW THRESHOLD confirmed — SLEEPING fire-249 (75+ fires) |
 | S15 | Nomos42/nba-evo-6 | 404-DOWN | 0.22012★ (checkpointed) | FLEET BEST RF-75f checkpointed nba-oracle-model. Back to 404-DOWN fire-252 (woke briefly fire-251: c=890 g=2670 stag=0 RF-62f). |
 | S17 | LBJLincoln26/nba-evo-s17 | 503 DOWN 144+d | — | PAUSED |
-| S18 | TESTforge42/nba-evo-s18 | EVOLVING | 0.22326 | **fire-252**: c=712 g=2135 stag=0 pareto=12(↓15→12). **24TH-RESET-IMMINENT ~c717(c692+25, 5 cycles)**. **RULE8-VIOLATION: stacking-37f rank-1 in pareto**. CatBoost-200f-0.222 best-legitimate. /api/export-404(27th-CRITICAL). VM: REMOVE stacking from MODEL_TYPES IMMEDIATELY before ~c717. |
-| S22 | TESTforge42/nba-evo-s22 | EVOLVING | 0.21884 | **fire-252**: c=73 g=217 stag=0 pareto=7(↓9→7). **⚡⚡ET-200f-0.21884 REGENERATED — POTENTIAL NEW FLEET BEST (12.8bp below 0.22012!)!** ET was LOST fire-251, NEW candidate emerged. **3RD-RESET ~c78 IMMINENT (5 cycles)**. **RULE8-VIOLATION: stacking×2 ranks 4-5** (stacking-47f-0.24738+stacking-200f-0.249). VM: (1) REMOVE stacking IMMEDIATELY before ~c78, (2) curl /api/export S22 URGENTLY to confirm ET-0.21884. |
+| S18 | TESTforge42/nba-evo-s18 | EVOLVING | 0.22326 | **fire-260**: c=775 g=2323 stag=0 pareto=8(↓16→8). **31ST-RESET-c767-CONFIRMED(c742+25-EXACT)**. **⚡⚡RF-200f-brier=0.21961 rank=2 EXTREME URGENT (5bp below fleet best 0.22012!)**. RULE8-VIOLATION: stacking-37f-0.24738 rank=1. /api/checkpoint saved gen124/0.22326 (field-lag, NOT 0.21961). /api/config model_types REJECTED (not a supported param — VM-only fix). /api/export-404(32nd-CRITICAL). **32ND-RESET ~c792 (c767+25)**. VM: (1) Remove stacking from app.py reseed pool IMMEDIATELY, (2) Save RF-200f-0.21961 model pickle directly before ~c792. |
+| S22 | TESTforge42/nba-evo-s22 | EVOLVING | 0.2207 | **fire-260**: c=127 g=381 stag=0 pareto=12(↑9→12). **5TH-RESET ~c128 HAPPENED (c103+25-EXACT)**. RULE8-VIOLATION: stacking-47f-Feat47 confirmed gen379+380 current cycle. Diversify QUEUED. /api/export-404(5th new run-CRITICAL). **6TH-RESET ~c153 (25 cycles)**. VM: (1) Remove stacking from app.py reseed pool, (2) Monitor post-c128 for RF/ET candidates below 0.22085. |
 
 ### POL Islands (active)
 | Island | HF Repo | Status | Best Brier | Notes |
 |--------|---------|--------|-----------|-------|
-| P1 | TESTforge42/political-evo-p1 | 404-DOWN | pareto_best=0.24902 | LightGBM-105f 3RD-OBSERVE fire-158 ALL-TIME RECORD — SLEEPING fire-249 (75+ fires) |
-| P2 | TESTforge42/political-evo-p2 | 404-DOWN | 0.249 | pareto=3 CRITICAL-SHRINK fire-158 — SLEEPING fire-249 (75+ fires) |
-| P4 | TESTforge42/political-evo-p4 | 404-DOWN | 0.2497★ | POL FLEET BEST pareto=5 oscillation — SLEEPING fire-249 (75+ fires) |
-| P5 | TESTforge42/political-evo-p5 | 404-DOWN | 0.24993 | pareto=6 RECOVERING fire-158 — SLEEPING fire-249 (75+ fires) |
-| P7 | TESTforge42/political-evo-p7 | 404-DOWN | 0.24931 | LightGBM-112f stable pareto=7 — SLEEPING fire-249 (75+ fires) |
+| P1 | TESTforge42/political-evo-p1 | 404-DOWN | pareto_best=0.24902 | RULE9 RESOLVED fire-256. SLEEPING 83+ fires. |
+| P2 | TESTforge42/political-evo-p2 | EVOLVING | 0.24903 | **fire-260**: c=1295 stag=0 LightGBM best. history brier=0.24903 BELOW POL GATE 0.2497 — CHECKPOINT URGENT! (fire-259 confirmed). RULE9 RESOLVED. |
+| P4 | TESTforge42/political-evo-p4 | EVOLVING | 0.2497★ | **fire-260**: c=1026 RULE9-VIOLATION-PERSISTS (5 consecutive resets, xgboost_brier best). VM: add LightGBM to app.py config directly. |
+| P5 | TESTforge42/political-evo-p5 | EVOLVING | 0.24993 | **fire-260**: c=6407 RULE9-VIOLATION (catboost_specialist, no LightGBM). VM: add LightGBM to app.py config directly. |
+| P7 | TESTforge42/political-evo-p7 | EVOLVING | 0.24931 | **fire-260**: c=1809 stag=0. RULE9 UNKNOWN (xgboost_brier dominates). VM: verify LightGBM in MODEL_TYPES. |
 
 ---
 
@@ -158,6 +158,8 @@ fire-251 UPDATE S18: c=696 g=2086 stag=0 pareto=15. **23RD-AUTO-RESET-c692-CONFI
 fire-251 UPDATE S22: c=65 g=194 stag=0 pareto=9(↓18→9). **ET-0.21983 CONFIRMED LOST — 4th consecutive S22 run ET eviction!** PATTERN CONFIRMED: stacking contamination in reseed pool evicts best ET at each reset (runs 1+2+3+4 all lost). XGB-200f-0.22343 best-in-pareto. RULE8-VIOLATION: stacking×2 top-5 (pos4: stacking-47f-0.24738, pos5: stacking-200f-0.249). Next reset ~c78(c53+25, 13 cycles from c65). VM: (1) REMOVE stacking IMMEDIATELY before ~c78, (2) Monitor for new ET candidates below 0.22085.
 fire-252 UPDATE S18: c=712 g=2135 stag=0 pareto=12(↓15→12). **24TH-RESET-IMMINENT ~c717(c692+25, 5 cycles away)**. RULE8-VIOLATION: stacking-37f rank-1 in pareto. CatBoost-200f-0.222 best-legitimate. /api/export-404(27th-CRITICAL). VM: REMOVE stacking from MODEL_TYPES IMMEDIATELY before ~c717 (URGENT — 5 cycles remaining!).
 fire-252 UPDATE S22: c=73 g=217 stag=0 pareto=7(↓9→7). **⚡⚡ET-200f-0.21884 REGENERATED — POTENTIAL NEW NBA FLEET BEST (12.8bp below 0.22012!)!** NEW candidate after ET-0.21983 confirmed lost fire-251. 3rd-run same pattern: ET regenerates post-eviction, then at risk again at next reset. **3RD-RESET ~c78 IMMINENT (5 cycles)**. RULE8-VIOLATION: stacking×2 ranks 4-5 (stacking-47f-0.24738+stacking-200f-0.249). VM: (1) REMOVE stacking IMMEDIATELY before ~c78, (2) curl /api/export S22 URGENTLY to confirm ET-0.21884, (3) Monitor — ET must survive ~c78 reset!
+fire-260 UPDATE S18: c=775 g=2323 stag=0 pareto=8(→16→8-SHRINK!). **31ST-AUTO-RESET-c767-CONFIRMED(c742+25=c767-EXACT)**. **⚡⚡RF-200f-brier=0.21961 rank=2 EXTREME URGENT (5bp below fleet best 0.22012!)**. RULE8-VIOLATION: stacking-37f-0.24738 rank=1 (persists through 31 resets). /api/checkpoint saved 0.22326/gen124 (field-lag — NOT 0.21961). /api/config model_types REJECTED (confirmed not supported — VM-only fix). /api/export-404(32nd-CRITICAL). **32ND-RESET ~c792 (c767+25)**. VM: (1) Remove stacking from reseed pool in app.py IMMEDIATELY, (2) Save RF-0.21961 model pickle directly before ~c792.
+fire-260 UPDATE S22: c=127 g=381 stag=0 pareto=12(↑9→12). **5TH-AUTO-RESET ~c128 CONFIRMED (c103+25=c128)**. RULE8-VIOLATION: stacking-47f-Feat47 in gen379+380 confirmed. Pattern: 4 consecutive ET evictions at each reset via stacking contamination. Diversify QUEUED from cloud. /api/export-404(5th new run-CRITICAL). **6TH-RESET ~c153 (25 cycles)**. VM: (1) Remove stacking from reseed pool in app.py IMMEDIATELY, (2) Monitor post-c128 for RF/ET candidates below 0.22085.
 
 ### Rule #9 — LightGBM First for POL
 All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add LightGBM to MODEL_TYPES on P1+P2 (missing). PORT: vm-add-lightgbm-p1-p2.
@@ -187,8 +189,8 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 - Mech A: DONE (fire-122) — day-end common knowledge broadcast
 - Mech B: CODE-DONE (fire-122+, verified fire-252) — sacrificial role reallocation (BLOCKED: HF push gate)
 - Mech C: CODE-DONE (fire-122+, verified fire-252) — post-mortem log + dataset (BLOCKED: HF push gate)
-- Ablation Config: DONE (fire-225) — AXELROD_MECH_A/B/C_ON flags + AXELROD_ABLATION env var (5 configs per arXiv:2605.03310 §3). NBA(6035L)+POL(4019L). BLOCKED: do_not_push_hf_space_yet.
-- Parity: SHAs NBA 85e7682e1d(6035L)/POL 6983c86517(4019L) verified fire-252 (25/25 parity OK, domain-aware check confirmed). HF hub shows both spaces Updated:1Jun2026. do_not_push_hf_space_yet=TRUE.
+- Ablation Config: DONE (fire-225) — AXELROD_MECH_A/B/C_ON flags + AXELROD_ABLATION env var (5 configs per arXiv:2605.03310 §3). NBA(6034L)+POL(4018L). BLOCKED: do_not_push_hf_space_yet.
+- Parity: SHAs fire-260 carry-forward (ff51a9e7fd/f71087775e per fire-258/259/260-remote). NOTE: fire-260 cloud-2nd-verify computed git hash-object=85e7682e1d(6034L)/6983c86517(4018L) for deployed files — SHA discrepancy under investigation; do_not_push_hf_space_yet=TRUE. 25/25 parity OK. HF hub shows both spaces Updated:1Jun2026.
 
 ---
 
@@ -343,6 +345,36 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
     - Proposal: data/research-proposals/sota-tabular-fm-density-estimation-fire246.md
     - Work-queue: vm-research-tabular-fm-density-estimation-fire246 (priority=115)
 39. **fire-248 EVEN WebSearch** — No new arXiv 2026 paper found beyond those already in pipeline. Search results returned known papers: arXiv:2508.02725 (LSTM NCAA, priority=90), arXiv:2410.21484 (ML Sports Betting, priority=107), MDPI 2079-3197/13/10/230 (WNBA, priority=109). Key finding this fire: RULE8 VIOLATION confirmed on both S18 (stacking-37f rank-1) and S22 (stacking-47f rank-1) — stacking contamination across both active islands despite 22+ resets.
+40. **Online Conformal Prediction under Corrupted Feedback** (fire-260 EVEN WebSearch)
+    - arXiv:2605.20515 (May 2026): "Online Conformal Prediction under Corrupted Feedback"
+    - Key finding: Corrupted label feedback degrades coverage guarantees; robust ACI variant maintains validity even when α-fraction of labels are adversarially corrupted.
+    - Application 1: Use robust ACI for NBA pareto models — label noise from late score corrections, data errors
+    - Application 2: Add `corrupted_feedback_coverage` metric to /api/export
+    - Application 3: Port to political_engine.py — election night reporting errors are a form of corrupted feedback
+    - Library: MAPIE robust ACI + custom corruption-detection wrapper
+    - Expected improvement: 0.001-0.002 Brier under noisy label regimes
+    - Work-queue: vm-research-online-cp-corrupted-feedback-fire260 (priority=118)
+41. **Universal Portfolio Meets Online Conformal Prediction** (fire-260 EVEN WebSearch)
+    - arXiv:2602.03168 (Feb 2026): "Universal Portfolio Meets Online Conformal Prediction"
+    - Key finding: Integrates universal portfolio theory (Cover 1991) with online CP — achieves log-optimal wealth growth while maintaining coverage guarantees; applies directly to multi-model Pareto fusion betting.
+    - Application 1: Replace rank-fusion in predict_today.py with log-optimal universal portfolio weights over Pareto models
+    - Application 2: Add `universal_portfolio_weight` per model to /api/export
+    - Application 3: Kelly sizing bounded by CP coverage guarantee (dual objective: wealth + calibration)
+    - Application 4: Port to political_engine.py for POL alpha betting
+    - Library: universal-portfolios (Python) + nonconformist (CP)
+    - Expected improvement: 0.002-0.004 Brier + improved ROI/Sharpe from better model weighting
+    - Work-queue: vm-research-universal-portfolio-ocp-fire260 (priority=119)
+42. **Shift-Robust Calibrated Prediction for NBA Distribution Shift** (fire-260 EVEN WebSearch — 2nd paper)
+    - arXiv:2603.06733 (Mar 2026): "Calibrated Credit Intelligence: Shift-Robust and Fair Risk Scoring with Bayesian Uncertainty and Gradient Boosting"
+    - Key finding: 3-layer calibration pipeline (Bayesian neural risk scorer + fairness-constrained GB + shift-aware fusion) reduces calibration error by ~15-30% under temporal distribution shift vs. static isotonic calibration.
+    - Application 1: Shift-aware multi-island fusion in predict_today.py (weight islands by inverse KL-div from current game distribution)
+    - Application 2: Add shift_calibration_metrics to /api/export (early/mid/playoffs/back-to-back ECE + drift_magnitude)
+    - Application 3: Bayesian ensemble uncertainty bands for S18/S22 ET/RF candidates
+    - Application 4: Port shift-aware calibration to political_engine.py (election_type × incumbency_status subgroups)
+    - Library: scikit-learn calibration + skshift (drift detection: MMD or KL divergence)
+    - Expected improvement: 0.001-0.002 Brier (especially late-season predictions)
+    - Proposal: data/research-proposals/sota-shift-robust-calibration-fire260.md
+    - Work-queue: vm-research-shift-robust-calibration-fire260 (priority=120)
 
 ---
 
@@ -356,13 +388,13 @@ All 5 POL islands show LightGBM as pareto_best (5/5 confirmed fire-158). Add Lig
 - FEC/SEC features: BLOCKED (vm-fec-sec-political-features priority=61)
 
 ### MODEL_TYPES Status
-| Island | Current (fire-256) | Status |
+| Island | Current (fire-260) | Status |
 |--------|---------|--------|
-| P1 | extra_trees, xgboost_brier, lightgbm_brier, lightgbm | ✅ RULE9 RESOLVED fire-256 |
-| P2 | lightgbm is best (xgboost, lightgbm, catboost, xgboost_brier) | ✅ RESOLVED fire-255 |
-| P4 | xgboost, xgboost_brier, logistic_regression, random_forest | ⚠️ VIOLATION — NO lightgbm |
-| P5 | xgboost, xgboost_brier, catboost | ⚠️ NEW VIOLATION fire-256 — NO lightgbm |
-| P7 | xgboost, xgboost_brier (confirmed) | CHECK NEEDED |
+| P1 | extra_trees, xgboost_brier, lightgbm_brier, lightgbm | ✅ RULE9 RESOLVED fire-256 — SLEEPING |
+| P2 | lightgbm is best (xgboost, lightgbm, catboost, xgboost_brier) | ✅ RESOLVED fire-255 — EVOLVING |
+| P4 | xgboost, xgboost_brier, logistic_regression, random_forest | ⚠️ VIOLATION PERSISTS — NO lightgbm (5 resets failed) |
+| P5 | xgboost, xgboost_brier, catboost_specialist | ⚠️ VIOLATION PERSISTS fire-260 — NO lightgbm (5 resets) |
+| P7 | xgboost, xgboost_brier (confirmed) | ⚠️ UNKNOWN fire-260 — verify LightGBM presence |
 
 ---
 
