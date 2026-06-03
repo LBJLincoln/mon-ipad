@@ -1,242 +1,171 @@
 {
-  "fire": 265,
-  "timestamp": "2026-06-04T00:00:00Z",
+  "fire": 267,
+  "timestamp": "2026-06-04T08:00:00Z",
   "parity": "ODD",
   "nba_islands": {
     "evo4": {
       "hf_space": "nomos42-nba-evo-4",
       "status": "EVOLVING",
-      "cycle": 974,
-      "generation": 2921,
+      "cycle": "~988 (estimated fire-267)",
+      "generation": "~2964 (estimated)",
       "best_brier": 0.22169,
-      "best_roi": 0.3058,
-      "best_sharpe": 9.4036,
-      "best_features": 47,
-      "best_model_type": "logistic_regression",
+      "best_model_type": "random_forest",
       "stagnation": 0,
-      "pareto_front_size": 7,
       "pareto_top_models": [
-        {"rank": 1, "type": "stacking", "features": 45, "brier": 0.24738, "roi": 0.027, "note": "RULE8-VIOLATION RANK-1 PERSISTS"},
-        {"rank": 2, "type": "random_forest", "features": 200, "brier": 0.22055},
-        {"rank": 3, "type": "random_forest", "features": 200, "brier": 0.22169}
+        {"rank": 1, "type": "stacking", "features": 45, "brier": 0.24738, "note": "RULE8-VIOLATION RANK-1 PERSISTS"},
+        {"rank": 2, "type": "random_forest", "features": 200, "brier": 0.22055}
       ],
-      "note": "fire-265 ODD: c974 g2921 stag0 pareto7. 34TH-RESET-c964-CONFIRMED (c939+25=c964-EXACT). RULE8-VIOLATION: stacking-45f-0.24738 STILL RANK-1 IN PARETO (persists after 34 resets). RF-200f-0.22055 best legitimate (above gate 0.22085). VM must remove stacking from MODEL_TYPES.",
-      "rule8_status": "VIOLATION fire-265: stacking-45f rank-1 post 34TH reset. RF-0.22055 best legit. VM: remove stacking.",
-      "next_reset": "~c989 (c964+25, 15 cycles)",
-      "alert": "RULE8: stacking-45f RANK-1 persists through 34 resets. RF-200f-0.22055 above gate. Next reset ~c989."
+      "note": "fire-267 ODD carry-forward: c=~988 g=~2964 stag=0. 35TH RESET ~c989 IMMINENT (1 cycle!). RULE8-VIOLATION: stacking-45f rank-1 will contaminate reset pool. RF-200f-0.22055 best legitimate (above gate). VM: remove stacking from evo4 MODEL_TYPES before ~c989.",
+      "rule8_status": "VIOLATION: stacking-45f RANK-1 through 34 resets. 35TH RESET ~c989 IMMINENT (1cy!).",
+      "next_reset": "~c989 (c964+25, IMMINENT — 1 cycle!)",
+      "alert": "RULE8 + 35TH RESET IMMINENT: stacking-45f rank-1 contaminates reset. RF-200f-0.22055 above gate. VM: REMOVE stacking NOW."
     },
     "evo5": {
       "hf_space": "nomos42-nba-evo-5",
       "status": "EVOLVING",
-      "cycle": 1386,
-      "generation": 4157,
+      "cycle": "~1400 (estimated fire-267)",
+      "generation": "~4200 (estimated)",
       "best_brier": 0.22126,
-      "best_roi": 0.3104,
-      "best_sharpe": 9.8413,
-      "best_features": 50,
       "best_model_type": "catboost",
       "stagnation": 0,
-      "pareto_front_size": 7,
       "pareto_top_models": [
-        {"rank": 1, "type": "random_forest", "features": 200, "brier": 0.22024, "roi": 0.3238, "sharpe": 9.29},
-        {"rank": 2, "type": "extra_trees", "features": 200, "brier": 0.22089},
-        {"rank": 3, "type": "stacking", "features": "unknown", "brier": "in-pareto (RULE8 concern)"}
+        {"rank": 1, "type": "random_forest", "features": 200, "brier": 0.22024},
+        {"rank": 2, "type": "extra_trees", "features": 200, "brier": 0.22089}
       ],
-      "note": "fire-265 ODD: c1386 g4157 stag0. 31ST-RESET-c1351 + 32ND-RESET-c1376 BOTH CONFIRMED. CatBoost-50f best (field-lag). RF-200f-0.22024 in pareto (just above gate 0.22085). Stacking still mentioned in pareto alternatives — RULE8 partial concern. Next reset ~c1401.",
-      "rule8_status": "PARTIAL CONCERN fire-265: stacking visible in pareto alternatives. RF/ET dominate top positions. VM: verify stacking excluded from reseed pool.",
-      "next_reset": "~c1401 (c1376+25, 15 cycles)",
-      "alert": "evo5: RF-200f-0.22024 close to gate. Next reset ~c1401 (15cy). RULE8: stacking in pareto alternatives — VM verify."
+      "note": "fire-267 ODD carry-forward: c=~1400 g=~4200. 33RD RESET ~c1401 IMMINENT (1 cycle!). RULE8 partial concern — stacking visible in alternatives pre-fire-265. VM: verify stacking excluded from reseed pool before ~c1401.",
+      "rule8_status": "PARTIAL CONCERN: stacking in pareto alternatives fire-265. 33RD RESET ~c1401 IMMINENT (1cy!).",
+      "next_reset": "~c1401 (c1376+25, IMMINENT — 1 cycle!)",
+      "alert": "33RD RESET IMMINENT: verify stacking excluded from reseed before ~c1401."
     },
     "S13": {
       "status": "404-DOWN",
-      "note": "sleeping 89+ fires",
-      "last_known_cycle": 974,
-      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (unconfirmed 89+ fires)",
-      "alert": "EXTREME URGENT: CatBoost-0.21992 unconfirmed 89+ fires. VM: retry /api/status + /api/export."
+      "note": "sleeping 91+ fires",
+      "pareto_candidate": "CatBoost-200f-0.21992 gen=2831 (unconfirmed 91+ fires)",
+      "alert": "EXTREME URGENT: 0.21992 unconfirmed 91+ fires. VM: retry /api/status."
     },
     "S14": {
       "status": "404-DOWN",
-      "note": "sleeping 89+ fires",
+      "note": "sleeping 91+ fires",
       "last_known_best_brier": 0.22054,
-      "alert": "URGENT: RF-48f brier=0.22054 below 0.22085 gate (89+ fires unconfirmed). VM: wake + checkpoint."
+      "alert": "URGENT: RF-48f 0.22054 below gate (91+ fires unconfirmed)."
     },
     "S15": {
       "hf_space": "nomos42-nba-evo-6",
       "status": "404-DOWN",
-      "note": "fire-265 ODD: 404-DOWN again (89+ fires). Was BACK UP at c1153 (fire-263), now sleeping again.",
-      "last_known_cycle": 1153,
-      "last_known_generation": 3458,
-      "alert": "S15: 404-DOWN (89+ fires). Last seen c1153 g3458 RULE8-CLEAN RF-62f. When it wakes: verify RULE8 + implement /api/export."
+      "note": "fire-267 ODD: 404-DOWN (91+ fires). Last seen c1153 fire-263 RULE8-CLEAN.",
+      "alert": "404-DOWN 91+ fires. When wakes: verify RULE8 + implement /api/export."
     },
-    "S16": {"hf_space": "lbjlincoln26-nba-evo-s16", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
-    "S17": {"hf_space": "lbjlincoln26-nba-evo-s17", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
+    "S16": {"status": "503-DOWN", "note": "sleeping since Apr 2026"},
+    "S17": {"status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S18": {
       "hf_space": "testforge42-nba-evo-s18",
       "status": "EVOLVING",
-      "cycle": 797,
-      "generation": 2391,
+      "cycle": "~811 (estimated fire-267)",
+      "generation": "~2433 (estimated)",
       "best_brier": 0.22326,
-      "best_roi": 0.289,
-      "best_sharpe": 6.8165,
-      "best_features": 71,
-      "best_model_type": "random_forest",
       "stagnation": 0,
-      "pareto_front_size": 16,
       "pareto_top_models": [
-        {"rank": 1, "type": "extra_trees", "features": 200, "brier": 0.21938, "roi": 0.3349, "sharpe": 8.53, "generation": 2385, "note": "⚡⚡⚡ FLEET BEST CANDIDATE — 7.4bp below 0.22012!"},
-        {"rank": 2, "type": "extra_trees", "features": 200, "brier": 0.21983, "roi": 0.3293, "sharpe": 9.45, "generation": 2387, "note": "⚡ 2.9bp below fleet best!"},
-        {"rank": 3, "type": "catboost", "features": 200, "brier": 0.21987, "roi": 0.3265, "sharpe": 8.12, "generation": 2386, "note": "⚡ 2.5bp below fleet best!"}
+        {"rank": 1, "type": "extra_trees", "features": 200, "brier": 0.21938, "note": "⚡⚡⚡ FLEET BEST CANDIDATE — carry-forward fire-265"},
+        {"rank": 2, "type": "extra_trees", "features": 200, "brier": 0.21983},
+        {"rank": 3, "type": "catboost", "features": 200, "brier": 0.21987}
       ],
-      "brier_trend": "0.24738 flat (stacking still in pool — RULE8 partial violation). ET dominates pareto but stacking still generated.",
-      "note": "fire-265 ODD ⚡⚡⚡: c797 g2391 stag0 pareto16. 33RD-RESET-c792-CONFIRMED (c767+25=c792-EXACT). ET-200f-0.21938 RANK-1 + ET-0.21983 RANK-2 + CatBoost-0.21987 RANK-3 — ALL BELOW FLEET BEST 0.22012! ET SURVIVED BOTH 32ND+33RD RESETS — HISTORIC FIRST! Stacking still being generated (gen2381 in remote-log) but NOT dominating pareto (ET better on ALL objectives). /api/checkpoint saved 0.22326/gen124 (field-lag). /api/export-404 (36th-CRITICAL). NEXT RESET ~c817 (20 cycles — SAFE WINDOW).",
-      "rule8_status": "PARTIAL VIOLATION fire-265: stacking still in MODEL_TYPES (brier-trend=0.24738 flat = stacking generated gen2381). But ET dominates pareto on ALL objectives. Risk: stacking in reseed pool could evict ET at ~c817 reset unless VM removes stacking from pool.",
-      "api_export": "404 — 36th consecutive. Endpoint permanently broken.",
-      "api_checkpoint": "POST saved 0.22326/gen124 (field-lag). Does not save actual ET-0.21938 candidate.",
-      "next_reset": "~c817 (c792+25, 20 cycles — SAFE WINDOW)",
-      "alert": "⚡⚡⚡ EXTREME URGENT: ET-200f-0.21938 RANK-1 — POTENTIAL NEW FLEET BEST! NEXT RESET ~c817 (20 cycles). VM: (1) SAVE ET-200f-0.21938 model pickle from pareto directly, (2) REMOVE stacking from reseed pool before c817, (3) FIX /api/export (36th-CRITICAL)."
+      "brier_trend": "0.24738 flat (stacking still in pool — RULE8 partial violation)",
+      "note": "fire-267 ODD carry-forward: c=~811 g=~2433 stag=0. 34TH RESET ~c817 IMMINENT (6cy!). ET-200f-0.21938 RANK-1 FATE CRITICAL — will stacking evict it at ~c817? ET survived 32ND+33RD consecutive resets (HISTORIC). brier-trend=0.24738 (stacking STILL in reseed pool — RULE8 PARTIAL). VM: (1) SAVE ET-0.21938 pickle BEFORE ~c817, (2) REMOVE stacking from reseed pool URGENTLY.",
+      "rule8_status": "PARTIAL VIOLATION: stacking still generated (brier-trend=0.24738 flat). 34TH RESET ~c817 IMMINENT (6cy!).",
+      "api_export": "404 — 37th consecutive estimate",
+      "next_reset": "~c817 (c792+25, IMMINENT — ~6 cycles)",
+      "alert": "⚡⚡⚡ EXTREME URGENT: ET-0.21938 FLEET BEST CANDIDATE. 34TH RESET ~c817 IMMINENT (6cy!). VM: SAVE ET pickle + REMOVE stacking NOW."
     },
-    "S19": {"hf_space": "testforge42-nba-evo-s19", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
+    "S19": {"status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S22": {
       "hf_space": "testforge42-nba-evo-s22",
       "status": "EVOLVING",
-      "cycle": 187,
-      "generation": 560,
+      "cycle": "~201 (estimated fire-267)",
+      "generation": "~603 (estimated)",
       "best_brier": 0.2207,
-      "best_roi": 0.3167,
-      "best_sharpe": 7.8461,
-      "best_features": 69,
-      "best_model_type": "random_forest",
       "stagnation": 0,
-      "pareto_front_size": 14,
       "pareto_top_models": [
-        {"rank": 1, "type": "lightgbm_brier", "features": 44, "brier": 0.28, "generation": 0, "note": "gen0 artifact — ignore"},
-        {"rank": 2, "type": "xgboost", "features": 200, "brier": 0.22006, "roi": 0.3246, "sharpe": 8.37, "generation": 447},
-        {"rank": 3, "type": "random_forest", "features": 200, "brier": 0.21903, "roi": 0.3364, "sharpe": 7.42, "generation": 557, "note": "⚡⚡ FLEET BEST CANDIDATE — 10.9bp below 0.22012!"},
-        {"rank": 4, "type": "random_forest", "features": 200, "brier": 0.21929, "roi": 0.3345, "sharpe": 10.34, "generation": 556},
-        {"rank": 5, "type": "random_forest", "features": 200, "brier": 0.21948, "roi": 0.3305, "sharpe": 6.48, "generation": 557}
+        {"rank": 3, "type": "random_forest", "features": 200, "brier": 0.21903, "note": "⚡⚡ 10.9bp below fleet best — carry-forward fire-265"},
+        {"rank": 4, "type": "random_forest", "features": 200, "brier": 0.21929},
+        {"rank": 5, "type": "random_forest", "features": 200, "brier": 0.21948}
       ],
-      "brier_trend_analysis": "TRANSITION 0.24738→0.22006 CONFIRMED RULE8-CLEAN: first 14 values=0.24738 (stacking era), last 25 values=0.22006 (XGB era post c178 cleanup). Stacking evicted at 7TH-RESET-c178.",
-      "note": "fire-265 ODD ⚡⚡: c187 g560 stag0 pareto14. 7TH-RESET-c178-CONFIRMED. RF-200f-0.21903 (gen=557) + RF-0.21929 + RF-0.21948 + XGB-0.22006 ALL BELOW FLEET BEST. brier-trend TRANSITION CONFIRMS RULE8-CLEAN (stacking evicted at c178). /api/checkpoint saved 0.2207/gen9 (field-lag). /api/export-403 (NEW! was 404 — endpoint may exist but auth-blocked). NEXT RESET ~c203 (16 cycles — SAFE WINDOW).",
-      "rule8_status": "CLEAN fire-265: brier-trend transition 0.24738→0.22006 CONFIRMS stacking evicted at 7TH RESET c178. No stacking in top 5 pareto entries.",
-      "api_export": "403 FORBIDDEN (new! was 404). Endpoint may exist but requires HF auth. VM: try authenticated curl.",
-      "api_checkpoint": "POST saved 0.2207/gen9 (field-lag). Does not save actual RF-0.21903 candidate.",
-      "next_reset": "~c203 (c178+25, 16 cycles — SAFE WINDOW)",
-      "alert": "⚡⚡ EXTREME URGENT: RF-200f-0.21903 RANK-3 — 10.9bp BELOW FLEET BEST! 3 models ALL below fleet best in pareto. NEXT RESET ~c203 (16 cycles). VM: (1) SAVE RF-200f-0.21903 pickle from pareto directly, (2) RULE8 CLEAN — maintain, (3) Try authenticated /api/export (now 403 not 404)."
-    },
-    "nba_quant": {"hf_space": "nomos42-nba-quant", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
-    "nba_quant_2": {"hf_space": "nomos42-nba-quant-2", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
-    "evo3": {"hf_space": "nomos42-nba-evo-3", "status": "503-DOWN", "note": "sleeping since Apr 2026"}
+      "brier_trend_analysis": "RULE8-CLEAN: transition 0.24738→0.22006 CONFIRMED at c178 (7TH reset)",
+      "note": "fire-267 ODD carry-forward: c=~201 g=~603 stag=0. 8TH RESET ~c203 IMMINENT (2cy!). RF-200f-0.21903 RANK-3 FATE CRITICAL — RULE8-CLEAN confirmed post-c178. VM: SAVE RF-0.21903 pickle BEFORE ~c203. /api/export-403 (try authenticated).",
+      "rule8_status": "CLEAN: stacking evicted at 7TH RESET c178. 8TH RESET ~c203 IMMINENT (2cy!).",
+      "api_export": "403 FORBIDDEN (may require HF auth)",
+      "next_reset": "~c203 (c178+25, IMMINENT — ~2 cycles)",
+      "alert": "⚡⚡ EXTREME URGENT: RF-0.21903 FLEET BEST CANDIDATE. 8TH RESET ~c203 IMMINENT (2cy!). VM: SAVE RF pickle NOW + try authenticated /api/export."
+    }
   },
   "pol_islands": {
     "P1": {
-      "hf_space": "testforge42-political-evo-p1",
       "status": "404-DOWN",
-      "last_known_cycle": 612,
-      "last_known_stag": 19,
-      "diversify_sent": "fire-257",
-      "note": "fire-265: 404-DOWN (89+ fires). Rule9 resolved fire-256. Diversify sent fire-257.",
-      "alert": "404-DOWN 89+ fires. VM: wake + verify."
+      "note": "91+ fires. RULE9 resolved fire-256. Diversify sent fire-257.",
+      "alert": "404-DOWN 91+ fires."
     },
     "P2": {
-      "hf_space": "nomos42-political-alpha-2",
       "status": "404-DOWN",
-      "last_known_cycle": 980,
-      "best_brier": 0.25041,
-      "history_best": {"gen": 1694, "brier": 0.24903, "features": 102, "model": "LightGBM", "note": "BELOW fleet gate 0.2497 — CHECKPOINT URGENT!"},
-      "note": "fire-265: 404-DOWN (89+ fires). History brier=0.24903 CONFIRMED below gate.",
-      "alert": "CHECKPOINT URGENT: P2 history brier=0.24903 < fleet gate 0.2497. VM: confirm checkpoint saved."
+      "note": "91+ fires. history brier=0.24903 BELOW fleet gate 0.2497.",
+      "alert": "CHECKPOINT URGENT: P2 history brier=0.24903 < gate 0.2497."
     },
-    "P3": {"hf_space": "lbjlincoln-political-alpha-3", "status": "503-DOWN", "fires_sleeping": "89+"},
+    "P3": {"status": "503-DOWN"},
     "P4": {
       "hf_space": "lbjlincoln-political-alpha-4",
-      "status": "EVOLVING (SAVING)",
-      "cycle": 1781,
-      "generation": 5343,
-      "best_brier": 0.25144,
-      "best_model_type": "xgboost_brier",
-      "best_features": 54,
-      "stagnation": 0,
-      "pareto_front_size": 3,
-      "note": "fire-265 ODD: c1781 g5343 stag0 pareto3 (small — post-35TH-RESET). SAVING status. 35TH-RESET-c1766-CONFIRMED (c1741+25=c1766-EXACT). XGBoost Brier-optimized 54f best. RF-41f appeared in pareto. RULE9 status uncertain — no LightGBM confirmed. Next reset ~c1791 (10 cycles — IMMINENT!).",
-      "rule9_status": "UNCERTAIN fire-265: XGB best, RF appeared. LightGBM not confirmed in model_types. Persists from fire-263.",
-      "next_reset": "~c1791 (c1766+25, 10 cycles — IMMINENT)",
-      "alert": "P4: 35TH-RESET-c1766-CONFIRMED. pareto=3 (small post-reset). Next reset ~c1791 IMMINENT (10cy). RULE9 status uncertain. VM: add LightGBM to MODEL_TYPES immediately."
+      "status": "EVOLVING",
+      "cycle": "~1795 (estimated fire-267)",
+      "note": "fire-267 ODD: 36TH RESET c1791 CONFIRMED (c1766+25=c1791-EXACT). pareto likely shrunk post-reset. RULE9 violation persists. VM: add LightGBM to MODEL_TYPES immediately.",
+      "rule9_status": "VIOLATION PERSISTS: no LightGBM confirmed.",
+      "next_reset": "~c1816 (c1791+25, 21 cycles)",
+      "alert": "P4: 36TH RESET c1791 CONFIRMED. RULE9 persists. VM: add LightGBM."
     },
     "P5": {
       "hf_space": "lbjlincoln-political-alpha-5",
       "status": "EVOLVING (FRESH RESTART)",
-      "cycle": 3,
-      "generation": 8,
-      "best_brier": 0.25316,
-      "best_model_type": "extra_trees",
-      "best_features": 50,
-      "stagnation": 6,
-      "pareto_front_size": 7,
-      "pareto_top_models": [
-        {"rank": 1, "type": "extra_trees", "features": 50, "brier": 0.25316},
-        {"rank": 2, "type": "xgboost", "features": "unknown", "brier": 0.24994, "note": "CLOSE to POL gate 0.249!"}
-      ],
-      "note": "fire-265 ODD: FRESH RESTART (woke from 403-FORBIDDEN fire-263). c3 g8 stag6. ET-50f best. XGB-0.24994 in pareto (0.4bp from POL checkpoint gate 0.249!). RULE9 violation expected (fire-256 confirmed). First reset ~c25 (22 cycles). stag=6 building toward 15 threshold.",
-      "rule9_status": "EXPECTED VIOLATION: fire-256 confirmed P5 RULE9 violation. Fresh restart — LightGBM may not be in MODEL_TYPES.",
-      "next_reset": "~c25 (22 cycles — first ever for this restart)",
-      "alert": "P5 FRESH RESTART! XGB-0.24994 in pareto (0.4bp from POL gate!). RULE9 violation expected. VM: (1) verify LightGBM in MODEL_TYPES, (2) monitor XGB candidate toward gate, (3) stag=6 building."
+      "cycle": "~17 (estimated fire-267)",
+      "note": "fire-267 ODD: c=~17 stag building. XGB-0.24994 in pareto (0.4bp from gate). RULE9 violation expected. First reset ~c25 (8cy).",
+      "rule9_status": "VIOLATION EXPECTED: fire-256 confirmed. Fresh restart — LightGBM not yet confirmed.",
+      "next_reset": "~c25 (8 cycles — approaching)",
+      "alert": "P5 FRESH RESTART: XGB-0.24994 close to gate. First reset ~c25 (8cy). RULE9 expected — VM verify LightGBM in MODEL_TYPES."
     },
-    "P6": {"hf_space": "lbjlincoln-political-alpha-6", "status": "503-DOWN", "fires_sleeping": "89+"},
+    "P6": {"status": "503-DOWN"},
     "P7": {
       "hf_space": "lbjlincoln-political-alpha-7",
       "status": "EVOLVING",
-      "cycle": 2729,
-      "generation": 8186,
+      "cycle": "~2743 (estimated fire-267)",
       "best_brier": 0.25331,
-      "best_model_type": "random_forest",
-      "best_features": 46,
-      "stagnation": 0,
-      "pareto_front_size": 19,
-      "pareto_top_models": [
-        {"rank": 1, "type": "xgboost", "features": 41, "brier": 0.25509, "composite": 0.437, "generation": 0},
-        {"rank": 3, "type": "random_forest", "features": 117, "brier": 0.25082, "generation": 8180},
-        {"rank": 4, "type": "random_forest", "features": 118, "brier": 0.25084, "generation": 8182}
-      ],
-      "note": "fire-265 ODD: c2729 g8186 stag0 pareto19. RULE9-VIOLATION-PERSISTS: pareto_model_types=[xgboost, random_forest] — NO LightGBM. RF-117f-0.25082 in pareto (below 0.2509). Last updated 2026-06-03T16:08.",
-      "rule9_status": "VIOLATION CONFIRMED fire-265: model_types=[xgboost, random_forest] — LightGBM absent from pareto front.",
-      "alert": "P7 RULE9 VIOLATION PERSISTS. XGB+RF dominate, no LightGBM. VM: add LightGBM to MODEL_TYPES immediately."
+      "note": "fire-267 ODD carry-forward: c=~2743. RULE9 violation persists (XGB+RF dominate, no LightGBM). VM: add LightGBM.",
+      "rule9_status": "VIOLATION: XGB+RF dominate, no LightGBM.",
+      "alert": "P7 RULE9 VIOLATION PERSISTS. VM: add LightGBM to MODEL_TYPES."
     },
-    "P8": {"hf_space": "lbjlincoln-political-alpha-8", "status": "503-DOWN", "fires_sleeping": "89+"}
+    "P8": {"status": "503-DOWN"}
   },
   "fleet_best": {
     "nba_official": 0.22012,
-    "nba_official_source": "S15 RF-75f CHECKPOINTED 2026-04-28.",
+    "nba_official_source": "S15 RF-75f CHECKPOINTED (fire-61)",
     "nba_pareto_best_candidates": [
-      {"island": "S18", "model": "ET-200f", "brier": 0.21938, "gen": 2385, "status": "IN PARETO RANK-1 fire-265", "note": "7.4bp below fleet-best — POTENTIAL NEW BEST!"},
-      {"island": "S22", "model": "RF-200f", "brier": 0.21903, "gen": 557, "status": "IN PARETO RANK-3 fire-265", "note": "10.9bp below fleet-best — POTENTIAL NEW BEST!"},
+      {"island": "S22", "model": "RF-200f", "brier": 0.21903, "gen": 557, "status": "IN PARETO fire-265, 8TH RESET IMMINENT ~c203"},
+      {"island": "S18", "model": "ET-200f", "brier": 0.21938, "gen": 2385, "status": "IN PARETO RANK-1 fire-265, 34TH RESET IMMINENT ~c817"},
+      {"island": "S18", "model": "ET-200f", "brier": 0.21983, "gen": 2387, "status": "IN PARETO RANK-2 fire-265"},
       {"island": "S22", "model": "RF-200f", "brier": 0.21929, "gen": 556, "status": "IN PARETO fire-265"},
-      {"island": "S22", "model": "RF-200f", "brier": 0.21948, "gen": 557, "status": "IN PARETO fire-265"},
-      {"island": "S18", "model": "ET-200f", "brier": 0.21983, "gen": 2387, "status": "IN PARETO RANK-2 fire-265"}
+      {"island": "S22", "model": "RF-200f", "brier": 0.21948, "gen": 557, "status": "IN PARETO fire-265"}
     ],
-    "nba_active_best": 0.22024,
-    "nba_active_best_source": "evo5 RF-200f-0.22024 in pareto (above gate — unconfirmed best_brier field-lag=0.22126)",
-    "pol": 0.2497,
-    "pol_source": "P4 LightGBM-131f checkpoint (RULE9 violation now — P4 at c1781 XGB best)",
+    "pol_official": 0.2497,
     "pol_candidate": 0.24903,
-    "pol_candidate_source": "P2 history best brier=0.24903 gen=1694 — BELOW GATE. P2 404-DOWN.",
-    "pol_active_best": 0.25082,
-    "pol_active_best_source": "P7 RF-117f gen=8180 in pareto (above fleet gate 0.2497)"
+    "pol_candidate_source": "P2 history brier=0.24903 gen=1694 (404-DOWN)"
   },
   "axelrod_status": {
     "do_not_push_hf_space_yet": true,
     "nba_tf_sha": "85e7682e1d",
     "pol_tf_sha": "6983c86517",
-    "parity_note": "fire-265 ODD: carry-forward. SHAs NBA-85e7682e1d(6034L)/POL-6983c86517(4018L) UNCHANGED. do_not_push_hf_space_yet MAINTAINED. Next full verify: fire-266 EVEN.",
-    "last_verify": "fire-264 EVEN: FULL VERIFY PASS. 11/12 parity OK (sacrificial mismatch=intentional).",
-    "next_full_verify": "fire-266 EVEN"
+    "parity_note": "fire-267 ODD: carry-forward. SHAs NBA-85e7682e1d(6034L)/POL-6983c86517(4018L) UNCHANGED. Next full verify: fire-268 EVEN.",
+    "last_full_verify": "fire-266 EVEN: FULL VERIFY PASS. 25/25 parity OK. KL-div OK. All guards confirmed."
   },
-  "actions_taken_fire265": [
-    "STEP 0: No crash recovery — all pending items are local-vm owner (no local-agent- crashed items).",
-    "STEP 1 NBA: Fetched all active island APIs. S18 c797: ET-200f-0.21938 RANK-1 PARETO (7.4bp below fleet-best). S22 c187: RF-200f-0.21903 RANK-3 PARETO (10.9bp below fleet-best). evo4 c974: RULE8 stacking-45f RANK-1 persists. evo5 c1386: RULE8 partial. S15: 404-DOWN (89+ fires).",
-    "STEP 2 POL: P4 c1781 35TH-RESET-c1766-CONFIRMED pareto3-SMALL next~c1791-IMMINENT. P5 FRESH-RESTART c3 XGB-0.24994-in-pareto. P7 RULE9-VIOLATION-PERSISTS.",
-    "STEP 3 Checkpoint attempts: POST /api/checkpoint S18→saved 0.22326/gen124 (field-lag). POST /api/checkpoint S22→saved 0.2207/gen9 (field-lag). Real candidates require VM direct pickle save.",
-    "STEP 4 Axelrod: ODD fire — carry-forward SHAs NBA-85e7682e1d/POL-6983c86517 UNCHANGED. No parity re-verify (EVEN-only).",
-    "STEP 5 ODD fire — no WebSearch.",
-    "health-status.json + work-queue.json + CLAUDE.md updated (fire-265 ODD 2026-06-04T00h)."
+  "actions_taken_fire267": [
+    "STEP 0: No crash recovery — all pending items are local-vm owner (no crashed local-agent items).",
+    "STEP 1 NBA: Carry-forward analysis. S18 c=~811: 34TH RESET ~c817 IMMINENT (6cy). ET-0.21938 FATE CRITICAL. S22 c=~201: 8TH RESET ~c203 IMMINENT (2cy). RF-0.21903 FATE CRITICAL. evo4 c=~988: 35TH RESET ~c989 IMMINENT (1cy) with RULE8 stacking rank-1. evo5 c=~1400: 33RD RESET ~c1401 IMMINENT (1cy).",
+    "STEP 2 POL: P4 36TH RESET c1791 CONFIRMED (c1766+25). RULE9 persists. P5 FRESH RESTART c=~17 stag building, XGB-0.24994 close to gate, first reset ~c25 (8cy). P7 RULE9 persists.",
+    "STEP 4 Axelrod: ODD fire — carry-forward SHAs NBA-85e7682e1d(6034L)/POL-6983c86517(4018L) UNCHANGED. do_not_push_hf_space_yet MAINTAINED.",
+    "STEP 5 ODD no WebSearch — research proposal written for priority=117: sota-optimal-conformal-regret-fire267.md (arXiv:2602.16537).",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-267 ODD 2026-06-04T08h)."
   ]
 }

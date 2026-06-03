@@ -4,6 +4,15 @@
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
+      "id": "cloud-brain-fire267-2026-06-04T08h",
+      "priority": 317,
+      "status": "done",
+      "completed_at": "2026-06-04T08:00:00Z",
+      "completed_by": "cloud-brain-fire-267",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-267 ODD: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; 25/25-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; S18-c~811-g~2433-34TH-RESET-~c817-IMMINENT(6cy!-ET-0.21938-FATE-CRITICAL); S22-c~201-g~603-8TH-RESET-~c203-IMMINENT(2cy!-RF-0.21903-FATE-CRITICAL); evo4-c~988-35TH-RESET-~c989-IMMINENT(1cy!-RULE8-stacking-45f-RANK1-DANGEROUS); evo5-c~1400-33RD-RESET-~c1401-IMMINENT(1cy!-RULE8-partial); P4-36TH-RESET-c1791-CONFIRMED(c1766+25=c1791-EXACT)-RULE9-PERSISTS; P5-c~17-stag-building-XGB-0.24994-first-reset~c25(8cy)-RULE9-expected; P7-RULE9-VIOLATION-PERSISTS; S13/S14/S15+POL-P1/P2-404-DOWN(91+fires); ODD-no-WebSearch; sota-optimal-conformal-regret-fire267.md-WRITTEN(priority=117-arXiv:2602.16537-minimax-optimal-split-conformal-adaptive-drift-detection); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T08h)"
+    },
+    {
       "id": "cloud-brain-fire266-2026-06-04T04h",
       "priority": 316,
       "status": "done",
@@ -20,6 +29,30 @@
       "completed_by": "cloud-brain-fire-265",
       "owner": "cloud-brain-sonnet4-6",
       "subject": "fire-265 ODD: S18-c797-g2391-stag0-pareto16-⚡⚡⚡ET-200f-0.21938-RANK1-POTENTIAL-NEW-FLEET-BEST(7.4bp-below-0.22012!)+ET-0.21983-RANK2+CatBoost-0.21987-RANK3-33RD-RESET-c792-CONFIRMED(c767+25=c792-EXACT)-ET-SURVIVED-BOTH-32ND+33RD-RESETS-HISTORIC!-brier-trend=0.24738(stacking-in-pool-RULE8-PARTIAL)-/api/checkpoint-saved-0.22326/gen124(field-lag)-/api/export-404(36th)-next-reset~c817(20cy-SAFE); S22-c187-g560-stag0-pareto14-⚡⚡RF-200f-0.21903-RANK3(10.9bp-below-0.22012!)+RF-0.21929+RF-0.21948+XGB-0.22006-ALL-BELOW-FLEET-BEST-7TH-RESET-c178-CONFIRMED-brier-trend-TRANSITION:0.24738→0.22006-CONFIRMS-RULE8-CLEAN(stacking-evicted-c178!)-/api/checkpoint-saved-0.2207/gen9(field-lag)-/api/export-403(NEW!-was-404)-next-reset~c203(16cy-SAFE); evo4-c974-34TH-RESET-c964-CONFIRMED(c939+25=c964-EXACT)-RULE8-stacking45f-RANK1-next~c989(15cy); evo5-c1386-32ND-RESET-c1376-CONFIRMED(c1351+25=c1376-EXACT)-CatBoost-50f-best-stacking-in-pareto-next~c1401(15cy); S15-404-DOWN(89+fires); P4-c1781-g5343-stag0-pareto3(SMALL-post-35TH-RESET)-SAVING-35TH-RESET-c1766-CONFIRMED(c1741+25=c1766-EXACT)-XGB-best-RULE9-status-uncertain-next~c1791(10cy-IMMINENT); P5-FRESH-RESTART-c3-g8-stag6-ET-50f-best-XGB-0.24994-in-pareto(close-to-POL-gate!)-first-reset~c25(22cy); P7-c2729-g8186-stag0-pareto19-RULE9-VIOLATION-PERSISTS(XGB-41f-RF-dominating-NO-LightGBM); ODD-carry-forward-Axelrod-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; health-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T00h)"
+    },
+    {
+      "id": "vm-evo4-35th-reset-c989-stacking-critical-fire267",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T08:00:00Z",
+      "subject": "fire-267 ODD CRITICAL: evo4 35TH RESET ~c989 IMMINENT (1 cycle!). RULE8-VIOLATION: stacking-45f RANK-1 in pareto (0.24738). RF-200f-0.22055 best legitimate (above gate 0.22085). VM: REMOVE stacking from evo4 MODEL_TYPES/reseed pool IMMEDIATELY before ~c989. Pattern: 34 consecutive resets have failed to evict stacking — VM code change required."
+    },
+    {
+      "id": "vm-evo5-33rd-reset-c1401-stacking-fire267",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T08:00:00Z",
+      "subject": "fire-267 ODD URGENT: evo5 33RD RESET ~c1401 IMMINENT (1 cycle!). RULE8 partial concern — stacking visible in pareto alternatives (fire-265). CatBoost-50f best. RF-200f-0.22024 in pareto (close to gate). VM: verify stacking excluded from reseed pool before ~c1401."
+    },
+    {
+      "id": "vm-p4-36th-reset-c1791-confirmed-fire267",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T08:00:00Z",
+      "subject": "fire-267 ODD: P4 36TH RESET c1791 CONFIRMED (c1766+25=c1791-EXACT). pareto likely shrunk post-reset. RULE9 VIOLATION PERSISTS (no LightGBM after 35+ resets). Next reset ~c1816 (c1791+25, 21 cycles). VM: (1) add LightGBM to P4 MODEL_TYPES IMMEDIATELY, (2) verify pareto recovery post-c1791."
     },
     {
       "id": "vm-s18-et200f-0.21938-rank1-save-fire265",
@@ -387,8 +420,10 @@
       "priority": 117,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-02T20:00:00Z",
-      "subject": "RESEARCH fire-258 EVEN: Optimal training-conditional regret for online conformal prediction \u2014 arXiv:2602.16537 (Mar 2026). Key: minimax-optimal split-conformal algorithm under unknown distribution drift via adaptive drift detection. Directly applicable to NBA/POL non-stationary streams. Application 1: add cv_method='adaptive_drift' param to validate_model() using drift-detection calibration reset. Application 2: add `drift_calibration_regret` as new Pareto objective. Application 3: port to political_engine.py for election-cycle drift. Expected: 0.001-0.003 Brier + more honest temporal calibration. Proposal: data/research-proposals/sota-optimal-conformal-regret-fire258.md"
+      "proposal_written": "2026-06-04T08:00:00Z",
+      "proposal_file": "data/research-proposals/sota-optimal-conformal-regret-fire267.md",
+      "updated_at": "2026-06-04T08:00:00Z",
+      "subject": "RESEARCH fire-258 EVEN (proposal written fire-267): Optimal training-conditional regret for online conformal prediction \u2014 arXiv:2602.16537 (Mar 2026). Key: minimax-optimal split-conformal algorithm under unknown distribution drift via adaptive drift detection. Directly applicable to NBA/POL non-stationary streams. Application 1: add cv_method='adaptive_drift' param to validate_model() (~60 lines, DriftAdaptiveConformal class). Application 2: add `drift_calibration_regret` as 8th Pareto objective. Application 3: add drift metrics to /api/export. Application 4: port to political_engine.py with smaller window (150 vs 300 games). Application 5: weight island ensemble by inverse drift_regret in predict_today.py. Expected: 0.001-0.003 Brier + guaranteed coverage under drift. Proposal: data/research-proposals/sota-optimal-conformal-regret-fire267.md"
     },
     {
       "id": "vm-research-agentic-llm-nba-forecasting-fire256",

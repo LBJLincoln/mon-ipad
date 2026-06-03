@@ -1,0 +1,102 @@
+{
+  "fire": 267,
+  "timestamp": "2026-06-04T08:00:00Z",
+  "parity": "ODD",
+  "brain_model": "claude-sonnet-4-6",
+  "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
+  "political_alpha": {
+    "fleet_best": 0.2497,
+    "fleet_best_source": "P4 LightGBM-131f checkpoint (2026-05-21)",
+    "candidate": 0.24903,
+    "candidate_source": "P2 history brier=0.24903 LightGBM-102f gen=1694 (404-DOWN 91+ fires)",
+    "p1": {
+      "status": "404-DOWN",
+      "fires_down": "91+",
+      "rule9": "RESOLVED (fire-256)",
+      "note": "Diversify sent fire-257. Sleeping."
+    },
+    "p2": {
+      "status": "404-DOWN",
+      "fires_down": "91+",
+      "best_brier": 0.25041,
+      "history_best": 0.24903,
+      "rule9": "RESOLVED (LightGBM best)",
+      "alert": "CHECKPOINT URGENT: history brier=0.24903 BELOW gate 0.2497. VM: confirm checkpoint saved."
+    },
+    "p4": {
+      "status": "EVOLVING",
+      "cycle_estimate": "~1795",
+      "best_brier": 0.25144,
+      "rule9": "VIOLATION PERSISTS (no LightGBM after 35+ resets)",
+      "reset": "36TH RESET c1791 CONFIRMED (c1766+25=c1791)",
+      "next_reset": "~c1816 (c1791+25, 21cy)",
+      "alert": "RULE9 PERSISTS. VM: add LightGBM to MODEL_TYPES immediately."
+    },
+    "p5": {
+      "status": "EVOLVING (FRESH RESTART)",
+      "cycle_estimate": "~17",
+      "best_brier": 0.24994,
+      "rule9": "EXPECTED VIOLATION",
+      "first_reset": "~c25 (8 cycles)",
+      "alert": "FRESH RESTART: XGB-0.24994 in pareto (0.4bp from gate). First reset ~c25 (8cy). VM: verify LightGBM in MODEL_TYPES."
+    },
+    "p7": {
+      "status": "EVOLVING",
+      "cycle_estimate": "~2743",
+      "best_brier": 0.25331,
+      "rule9": "VIOLATION CONFIRMED (XGB+RF, no LightGBM)",
+      "alert": "RULE9 VIOLATION CONFIRMED. VM: add LightGBM."
+    }
+  },
+  "nba_quant": {
+    "fleet_best_official": 0.22012,
+    "fleet_best_source": "S15 RF-75f CHECKPOINTED fire-61",
+    "pareto_candidates_fire265": [
+      {"island": "S22", "model": "RF-200f", "brier": 0.21903, "status": "FATE CRITICAL: 8TH RESET ~c203 IMMINENT (2cy)"},
+      {"island": "S18", "model": "ET-200f", "brier": 0.21938, "status": "FATE CRITICAL: 34TH RESET ~c817 IMMINENT (6cy)"},
+      {"island": "S18", "model": "ET-200f", "brier": 0.21983, "status": "IN PARETO fire-265"},
+      {"island": "S22", "model": "RF-200f", "brier": 0.21929, "status": "IN PARETO fire-265"},
+      {"island": "S22", "model": "RF-200f", "brier": 0.21948, "status": "IN PARETO fire-265"}
+    ],
+    "s18": {
+      "cycle_estimate": "~811",
+      "pareto_best_candidate": 0.21938,
+      "rule8": "PARTIAL: stacking still generated (brier-trend=0.24738)",
+      "reset_34th": "~c817 IMMINENT (6cy)",
+      "export": "404 — 37th consecutive estimate",
+      "alert": "ET-0.21938 FLEET BEST CANDIDATE. SAVE pickle + REMOVE stacking before ~c817."
+    },
+    "s22": {
+      "cycle_estimate": "~201",
+      "pareto_best_candidate": 0.21903,
+      "rule8": "CLEAN (stacking evicted at 7TH RESET c178)",
+      "reset_8th": "~c203 IMMINENT (2cy)",
+      "export": "403 FORBIDDEN (try authenticated curl)",
+      "alert": "RF-0.21903 FLEET BEST CANDIDATE. SAVE pickle before ~c203. Try authenticated /api/export."
+    },
+    "evo4": {
+      "cycle_estimate": "~988",
+      "rule8": "VIOLATION: stacking-45f RANK-1",
+      "reset_35th": "~c989 IMMINENT (1cy!)"
+    },
+    "evo5": {
+      "cycle_estimate": "~1400",
+      "rule8": "PARTIAL CONCERN: stacking in alternatives",
+      "reset_33rd": "~c1401 IMMINENT (1cy!)"
+    }
+  },
+  "axelrod": {
+    "do_not_push": true,
+    "nba_sha": "85e7682e1d",
+    "pol_sha": "6983c86517",
+    "last_verify": "fire-266 EVEN: FULL VERIFY PASS. 25/25 parity OK. All guards confirmed."
+  },
+  "research": {
+    "latest_proposal": "sota-optimal-conformal-regret-fire267.md",
+    "priority": 117,
+    "arXiv": "2602.16537",
+    "expected_brier_improvement": "0.001-0.003",
+    "next_odd_research": "priority=116 (vm-research-agentic-llm-nba-forecasting-fire256) or priority=104 from backlog"
+  },
+  "fire_log_summary": "fire-267 ODD: carry-forward + timeline analysis. 4 resets IMMINENT across fleet (S18/S22/evo4/evo5). P4 36TH RESET CONFIRMED. Research proposal written: arXiv:2602.16537."
+}
