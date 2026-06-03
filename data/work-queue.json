@@ -1,8 +1,33 @@
 {
   "version": 1,
-  "updated_at": "2026-06-03T20:00:00Z",
+  "updated_at": "2026-06-04T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire265-2026-06-04T00h",
+      "priority": 315,
+      "status": "done",
+      "completed_at": "2026-06-04T00:00:00Z",
+      "completed_by": "cloud-brain-fire-265",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-265 ODD: S18-c797-g2391-stag0-pareto16-⚡⚡⚡ET-200f-0.21938-RANK1-POTENTIAL-NEW-FLEET-BEST(7.4bp-below-0.22012!)+ET-0.21983-RANK2+CatBoost-0.21987-RANK3-33RD-RESET-c792-CONFIRMED(c767+25=c792-EXACT)-ET-SURVIVED-BOTH-32ND+33RD-RESETS-HISTORIC!-brier-trend=0.24738(stacking-in-pool-RULE8-PARTIAL)-/api/checkpoint-saved-0.22326/gen124(field-lag)-/api/export-404(36th)-next-reset~c817(20cy-SAFE); S22-c187-g560-stag0-pareto14-⚡⚡RF-200f-0.21903-RANK3(10.9bp-below-0.22012!)+RF-0.21929+RF-0.21948+XGB-0.22006-ALL-BELOW-FLEET-BEST-7TH-RESET-c178-CONFIRMED-brier-trend-TRANSITION:0.24738→0.22006-CONFIRMS-RULE8-CLEAN(stacking-evicted-c178!)-/api/checkpoint-saved-0.2207/gen9(field-lag)-/api/export-403(NEW!-was-404)-next-reset~c203(16cy-SAFE); evo4-c974-34TH-RESET-c964-CONFIRMED(c939+25=c964-EXACT)-RULE8-stacking45f-RANK1-next~c989(15cy); evo5-c1386-32ND-RESET-c1376-CONFIRMED(c1351+25=c1376-EXACT)-CatBoost-50f-best-stacking-in-pareto-next~c1401(15cy); S15-404-DOWN(89+fires); P4-c1781-g5343-stag0-pareto3(SMALL-post-35TH-RESET)-SAVING-35TH-RESET-c1766-CONFIRMED(c1741+25=c1766-EXACT)-XGB-best-RULE9-status-uncertain-next~c1791(10cy-IMMINENT); P5-FRESH-RESTART-c3-g8-stag6-ET-50f-best-XGB-0.24994-in-pareto(close-to-POL-gate!)-first-reset~c25(22cy); P7-c2729-g8186-stag0-pareto19-RULE9-VIOLATION-PERSISTS(XGB-41f-RF-dominating-NO-LightGBM); ODD-carry-forward-Axelrod-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; health-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T00h)"
+    },
+    {
+      "id": "vm-s18-et200f-0.21938-rank1-save-fire265",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T00:00:00Z",
+      "subject": "fire-265 ODD ⚡⚡⚡ EXTREME URGENT: S18 c=797 g=2391. ET-200f-0.21938 RANK-1 IN PARETO (gen=2385) — 7.4bp BELOW FLEET BEST 0.22012! + ET-200f-0.21983 RANK-2 (gen=2387) + CatBoost-0.21987 RANK-3. 33RD-RESET-c792-CONFIRMED (c767+25=c792-EXACT). ET SURVIVED BOTH 32ND+33RD CONSECUTIVE RESETS — HISTORIC FIRST! brier-trend=0.24738 (stacking STILL in pool — RULE8 PARTIAL VIOLATION). /api/checkpoint saved 0.22326/gen124 (field-lag — NOT the candidate). /api/export-404 (36th-CRITICAL). NEXT-RESET ~c817 (c792+25, 20 CYCLES — SAFE WINDOW). VM MUST: (1) SAVE ET-200f-0.21938 pickle directly from pareto BEFORE ~c817 (20 cycles!), (2) REMOVE stacking from MODEL_TYPES/reseed pool (brier-trend=0.24738 proves stacking still in pool — risk at ~c817 reset), (3) Try authenticated /api/export."
+    },
+    {
+      "id": "vm-s22-rf200f-0.21903-rank3-save-fire265",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T00:00:00Z",
+      "subject": "fire-265 ODD ⚡⚡ EXTREME URGENT: S22 c=187 g=560. RF-200f-0.21903 RANK-3 IN PARETO (gen=557) — 10.9bp BELOW FLEET BEST 0.22012! + RF-200f-0.21929 (8.3bp below) + RF-200f-0.21948 (6.4bp below) + XGB-200f-0.22006 (< gate) ALL IN PARETO. 7TH-RESET-c178-CONFIRMED (c153+25=c178-EXACT). brier-trend TRANSITION: 0.24738→0.22006 CONFIRMS RULE8-CLEAN (stacking evicted at c178 reset — BREAKTHROUGH!). /api/checkpoint saved 0.2207/gen9 (field-lag). /api/export-403 (NEW — was 404; try authenticated). NEXT-RESET ~c203 (c178+25, 16 CYCLES — SAFE WINDOW). VM MUST: (1) SAVE RF-200f-0.21903 pickle directly from pareto BEFORE ~c203, (2) RULE8 CONFIRMED CLEAN — maintain stacking-free config, (3) Try authenticated /api/export S22 (403 suggests endpoint exists but auth-blocked)."
+    },
     {
       "id": "cloud-brain-fire264-2026-06-03T20h",
       "priority": 314,
