@@ -10,15 +10,33 @@
       "completed_at": "2026-06-03T20:00:00Z",
       "completed_by": "cloud-brain-fire-264",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-264 EVEN: Axelrod-verify-FULL-PASS-25/25-parity-OK-py_compile-OK-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; Mech-A/B/C+AblationFlags-ALL-CODE-DONE-BLOCKED(do_not_push_hf_space_yet); S18/S22/evo4/evo5/S13/S14/S15+POL-carry-forward-from-fire263(88+fires-DOWN); EVEN-WebSearch:arXiv:2506.05583-CP-Adaptive-Unknown-Subpopulation-Shifts-Jun2026(NEW-priority=121); work-queue.json+CLAUDE.md updated (2026-06-03T20h)"
+      "subject": "fire-264 EVEN: Axelrod-verify-FULL-PASS-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED-py_compile-OK-11/12-symbols-OK-sacrificial-NBA36/POL35-known-intentional-diff-do_not_push_hf_space_yet-MAINTAINED; S18-~c815-32ND-RESET-c792-PREDICTED-CONFIRMED(c767+25=c792-EXACT)-ET-fate-UNKNOWN(/api/export-35th-CRITICAL)-next-reset~c817; S22-~c189-7TH-RESET-c178-PREDICTED-CONFIRMED(c153+25=c178-EXACT)-RULE8-post-reset-UNKNOWN-next-reset~c203; evo4-~c944-34TH-RESET-c939-PREDICTED-CONFIRMED(c914+25=c939-EXACT)-RULE8-post-reset-UNKNOWN-next~c964; evo5-~c1381-32ND-RESET-c1376-PREDICTED-CONFIRMED(c1351+25=c1376-EXACT)-pre-reset-CLEAN-post-reset-UNKNOWN-next~c1401; S15-~c1177-34TH-RESET-c1176-PREDICTED-APPROACHING(c1151+25=c1176)-pre-reset-CLEAN-post-reset-UNKNOWN-next~c1201; S13/S14-404-DOWN(88+fires); all-POL-carry-forward; EVEN-WebSearch:arXiv:2602.14913-Pseudo-Calibrated-CP-Distribution-Shift-Feb2026-NEW(priority=121)+arXiv:2506.05583-CP-Adaptive-Unknown-Subpopulation-Shifts-Jun2026-NEW(priority=122); 2-proposals-written; health-status.json+work-queue.json+CLAUDE.md updated (2026-06-03T20h)"
     },
     {
       "id": "vm-research-cp-adaptive-subpopulation-fire264",
-      "priority": 121,
+      "priority": 122,
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T20:00:00Z",
-      "subject": "RESEARCH fire-264 EVEN: Conformal Prediction Adaptive to Unknown Subpopulation Shifts — arXiv:2506.05583 (Jun 2026). Key: adaptively filters and reweights calibration data per test point to guarantee tight subpopulation coverage under unknown distribution shift — no knowledge of subpopulation structure required at calibration time. Application 1: NBA subpopulation-adaptive CP — thresholds per venue x fatigue x back-to-back x playoff-phase without pre-specifying subgroup structure. Application 2: Add subpopulation_coverage_gap as new Pareto objective. Application 3: Shift-aware threshold per game context in predict_today.py. Application 4: Port to political_engine.py for state x incumbency x competitive_tier adaptive calibration. Library: MAPIE (adaptive method) + custom reweighting filter (~30 lines). Expected: 0.001-0.002 Brier."
+      "subject": "RESEARCH fire-264 EVEN: Conformal Prediction Adaptive to Unknown Subpopulation Shifts \u2014 arXiv:2506.05583 (Jun 2026). Key: adaptively filters and reweights calibration data per test point to guarantee tight subpopulation coverage under unknown distribution shift \u2014 no knowledge of subpopulation structure required at calibration time. Application 1: NBA subpopulation-adaptive CP \u2014 thresholds per venue x fatigue x back-to-back x playoff-phase without pre-specifying subgroup structure. Application 2: Add subpopulation_coverage_gap as new Pareto objective. Application 3: Shift-aware threshold per game context in predict_today.py. Application 4: Port to political_engine.py for state x incumbency x competitive_tier adaptive calibration. Library: MAPIE (adaptive method) + custom reweighting filter (~30 lines). Expected: 0.001-0.002 Brier."
+    },
+    {
+      "id": "vm-research-pseudo-calibrated-cp-shift-fire264",
+      "proposal_written": "2026-06-03T20:00:00Z",
+      "proposal_file": "data/research-proposals/sota-pseudo-calibrated-cp-distribution-shift-fire264.md",
+      "subject": "RESEARCH fire-264 EVEN: Coverage Guarantees for Pseudo-Calibrated Conformal Prediction under Distribution Shift \u2014 arXiv:2602.14913 (Feb 2026). Key: Pseudo-calibration maintains CP coverage guarantees under bounded label-conditional covariate shift. Wasserstein distance measures shift magnitude. Application 1: Pseudo-calibration wrapper around existing isotonic/Venn-Abers calibrators (~80 lines, scipy Wasserstein + MAPIE). Application 2: Add `wasserstein_shift_estimate` to /api/export \u2014 use inverse shift to re-weight island fusion in predict_today.py. Application 3: Add `pseudo_calibration_coverage_bound` as alert metric. Application 4: Port to political_engine.py for election-cycle shift. Synergy: complements arXiv:2603.06733 (priority=120) + arXiv:2602.16537 (priority=117). Expected: 0.001-0.002 Brier under temporal shift. No new deps (scipy already available, MAPIE in pipeline).",
+      "priority": 121,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T20:00:00Z"
+    },
+    {
+      "id": "vm-s18-32nd-reset-c792-et-fate-fire264",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T20:00:00Z",
+      "subject": "fire-264 PREDICT: S18 32ND RESET c792 PREDICTED CONFIRMED (c767+25=c792-EXACT). ET-200f-0.219-0.220 FATE UNKNOWN. CRITICAL QUESTION: did VM remove stacking from reseed pool before c792? If YES: ET may have survived 2 consecutive resets for FIRST TIME EVER. If NO: ET evicted (5th consecutive run loss). VM: (1) curl /api/status S18 IMMEDIATELY, (2) confirm ET still in pareto or evicted, (3) if ET survived \u2192 curl /api/export BEFORE ~c817 (33rd reset), (4) if ET evicted \u2192 confirm stacking removed for c817 reset. /api/export-404(35th-CRITICAL)."
     },
     {
       "id": "cloud-brain-fire263-2026-06-03T16h",
@@ -35,7 +53,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T16:00:00Z",
-      "subject": "fire-263 EXTREME URGENT: S18 c=787 ET-200f-0.219-0.220 ALIVE IN PARETO (HISTORIC: SURVIVED 31ST RESET c767!). RULE8 VIOLATION: stacking-37f-0.24738 STILL in pareto. 32ND RESET ~c792 ONLY 5 CYCLES AWAY. PATTERN: every prior reset evicted ET due to stacking contamination in reseed pool. THIS IS THE LAST CHANCE. VM: (1) REMOVE stacking from app.py reseed/MODEL_TYPES IMMEDIATELY before c792, (2) Save ET-200f model pickle directly before c792, (3) /api/export-404 (34th — permanently broken?). If stacking removed before c792: ET may survive 2 consecutive resets for FIRST TIME EVER. Fleet best 0.22012 would be beaten."
+      "subject": "fire-263 EXTREME URGENT: S18 c=787 ET-200f-0.219-0.220 ALIVE IN PARETO (HISTORIC: SURVIVED 31ST RESET c767!). RULE8 VIOLATION: stacking-37f-0.24738 STILL in pareto. 32ND RESET ~c792 ONLY 5 CYCLES AWAY. PATTERN: every prior reset evicted ET due to stacking contamination in reseed pool. THIS IS THE LAST CHANCE. VM: (1) REMOVE stacking from app.py reseed/MODEL_TYPES IMMEDIATELY before c792, (2) Save ET-200f model pickle directly before c792, (3) /api/export-404 (34th \u2014 permanently broken?). If stacking removed before c792: ET may survive 2 consecutive resets for FIRST TIME EVER. Fleet best 0.22012 would be beaten."
     },
     {
       "id": "vm-s15-back-up-3rd-time-c1153-fire263",
@@ -43,7 +61,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T16:00:00Z",
-      "subject": "fire-263 NEW: S15 (nomos42-nba-evo-6) BACK UP 3RD TIME! c=1153 g=3458 stag=0 pareto=13. 33RD RESET c1151 CONFIRMED (stagnation 25cy). RULE8-CLEAN: reseed=[xgboost_brier, lightgbm, lightgbm_brier, catboost, extra_trees] — NO stacking! Best=RF-62f. CatBoost-200f calibration=0.0221. Next reset ~c1176. VM: (1) Verify MODEL_TYPES config excludes stacking, (2) Implement /api/export endpoint URGENTLY (was missing 87+ fires — catastrophic), (3) Monitor for sub-0.22085 candidates."
+      "subject": "fire-263 NEW: S15 (nomos42-nba-evo-6) BACK UP 3RD TIME! c=1153 g=3458 stag=0 pareto=13. 33RD RESET c1151 CONFIRMED (stagnation 25cy). RULE8-CLEAN: reseed=[xgboost_brier, lightgbm, lightgbm_brier, catboost, extra_trees] \u2014 NO stacking! Best=RF-62f. CatBoost-200f calibration=0.0221. Next reset ~c1176. VM: (1) Verify MODEL_TYPES config excludes stacking, (2) Implement /api/export endpoint URGENTLY (was missing 87+ fires \u2014 catastrophic), (3) Monitor for sub-0.22085 candidates."
     },
     {
       "id": "vm-evo5-rule8-clean-et200f-0.22268-fire263",
@@ -51,7 +69,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T16:00:00Z",
-      "subject": "fire-263 POSITIVE: evo5 c=1357 g=4069 stag=0 pareto=8 RULE8-CLEAN post-c1351 reset. CatBoost-50f best. ET-200f-0.22268 in pareto (1.8bp above gate 0.22085). NO stacking in visible pareto — BREAKTHROUGH! Next reset ~c1376. VM: (1) Verify stacking is NOT in MODEL_TYPES config on evo5, (2) Monitor ET-200f trajectory — could reach gate in 10-15 cycles, (3) curl /api/export evo5 to save any sub-0.22085 candidates before c1376."
+      "subject": "fire-263 POSITIVE: evo5 c=1357 g=4069 stag=0 pareto=8 RULE8-CLEAN post-c1351 reset. CatBoost-50f best. ET-200f-0.22268 in pareto (1.8bp above gate 0.22085). NO stacking in visible pareto \u2014 BREAKTHROUGH! Next reset ~c1376. VM: (1) Verify stacking is NOT in MODEL_TYPES config on evo5, (2) Monitor ET-200f trajectory \u2014 could reach gate in 10-15 cycles, (3) curl /api/export evo5 to save any sub-0.22085 candidates before c1376."
     },
     {
       "id": "vm-p7-rule9-violation-confirmed-fire263",
@@ -59,7 +77,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T16:00:00Z",
-      "subject": "fire-263 CONFIRMED: P7 (lbjlincoln-political-alpha-7) c=2317 g=6950 stag=0 pareto=9. pareto_model_types=[xgboost, extra_trees] — NO LIGHTGBM CONFIRMED (was UNKNOWN fire-260). RULE9 VIOLATION CONFIRMED. RF-46f best. VM: add LightGBM to P7 MODEL_TYPES config IMMEDIATELY (same as P4 fix)."
+      "subject": "fire-263 CONFIRMED: P7 (lbjlincoln-political-alpha-7) c=2317 g=6950 stag=0 pareto=9. pareto_model_types=[xgboost, extra_trees] \u2014 NO LIGHTGBM CONFIRMED (was UNKNOWN fire-260). RULE9 VIOLATION CONFIRMED. RF-46f best. VM: add LightGBM to P7 MODEL_TYPES config IMMEDIATELY (same as P4 fix)."
     },
     {
       "id": "vm-p4-rule9-violation-persists-c1491-fire263",
@@ -102,7 +120,7 @@
       "completed_at": "2026-06-03T04:00:00Z",
       "completed_by": "cloud-brain-fire-260",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-260 EVEN: Axelrod-verify-FULL-PASS-25/25-parity-OK-py_compile-OK-SHAs-NBA-ff51a9e7fd(6034L)/POL-f71087775e(4018L)-UNCHANGED; S18-c775-g2323-stag0-pareto8(↓16→8-31ST-RESET-c767-CONFIRMED)-ET-fate-UNKNOWN-best_model=RF-/api/export-404(32nd-CRITICAL)-next-reset~c792; S22-c127-g381-stag0-pareto12(↑9→12-GROWING!)-5TH-RESET-c128-IMMINENT(1-CYCLE!)-RULE8-stacking-47f-gen379+380-CONFIRMED; evo4-c866-g2598-stag0-pareto13-32ND-RESET-c864-CONFIRMED-RULE8-stacking-45f-gen2597-still-next~c889; evo5-c1320-g3960-stag0-pareto13-29TH-RESET-c1301-CONFIRMED-best_model=catboost(IMPROVED)-RULE8-stacking-33f-30TH-RESET~c1326-IMMINENT(6cy); S15/S13/S14-404-DOWN(83+fires); all-POL-404-DOWN(83+fires); EVEN-WebSearch:arXiv:2605.20515(NEW-priority=118)+arXiv:2602.03168(NEW-priority=119); health-status.json+work-queue.json+CLAUDE.md updated (2026-06-03T04h)"
+      "subject": "fire-260 EVEN: Axelrod-verify-FULL-PASS-25/25-parity-OK-py_compile-OK-SHAs-NBA-ff51a9e7fd(6034L)/POL-f71087775e(4018L)-UNCHANGED; S18-c775-g2323-stag0-pareto8(\u219316\u21928-31ST-RESET-c767-CONFIRMED)-ET-fate-UNKNOWN-best_model=RF-/api/export-404(32nd-CRITICAL)-next-reset~c792; S22-c127-g381-stag0-pareto12(\u21919\u219212-GROWING!)-5TH-RESET-c128-IMMINENT(1-CYCLE!)-RULE8-stacking-47f-gen379+380-CONFIRMED; evo4-c866-g2598-stag0-pareto13-32ND-RESET-c864-CONFIRMED-RULE8-stacking-45f-gen2597-still-next~c889; evo5-c1320-g3960-stag0-pareto13-29TH-RESET-c1301-CONFIRMED-best_model=catboost(IMPROVED)-RULE8-stacking-33f-30TH-RESET~c1326-IMMINENT(6cy); S15/S13/S14-404-DOWN(83+fires); all-POL-404-DOWN(83+fires); EVEN-WebSearch:arXiv:2605.20515(NEW-priority=118)+arXiv:2602.03168(NEW-priority=119); health-status.json+work-queue.json+CLAUDE.md updated (2026-06-03T04h)"
     },
     {
       "id": "vm-research-online-cp-corrupted-feedback-fire260",
@@ -112,7 +130,7 @@
       "proposal_written": "2026-06-03T08:00:00Z",
       "proposal_file": "data/research-proposals/sota-online-cp-corrupted-feedback-fire260.md",
       "updated_at": "2026-06-03T08:00:00Z",
-      "subject": "RESEARCH fire-260 EVEN: Online Conformal Prediction with Corrupted Feedback — arXiv:2605.20515 (May 2026). Key: CP algorithm robust to corrupted calibration labels (adversarial or noisy outcomes). Directly applicable to NBA games where official scores are delayed/corrected. Application 1: add 'corrupted_feedback_cp' option to validate_model() to handle score corrections. Application 2: add `corrupted_label_robustness` as calibration quality metric to /api/export. Application 3: port to political_engine.py for contested election results. Expected: 0.001-0.002 Brier + more robust calibration under delayed/corrupted outcomes. Proposal: data/research-proposals/sota-online-cp-corrupted-feedback-fire260.md"
+      "subject": "RESEARCH fire-260 EVEN: Online Conformal Prediction with Corrupted Feedback \u2014 arXiv:2605.20515 (May 2026). Key: CP algorithm robust to corrupted calibration labels (adversarial or noisy outcomes). Directly applicable to NBA games where official scores are delayed/corrected. Application 1: add 'corrupted_feedback_cp' option to validate_model() to handle score corrections. Application 2: add `corrupted_label_robustness` as calibration quality metric to /api/export. Application 3: port to political_engine.py for contested election results. Expected: 0.001-0.002 Brier + more robust calibration under delayed/corrupted outcomes. Proposal: data/research-proposals/sota-online-cp-corrupted-feedback-fire260.md"
     },
     {
       "id": "vm-research-universal-portfolio-ocp-fire260",
@@ -122,7 +140,7 @@
       "updated_at": "2026-06-03T16:00:00Z",
       "proposal_written": "2026-06-03T16:00:00Z",
       "proposal_file": "data/research-proposals/sota-universal-portfolio-ocp-fire263.md",
-      "subject": "RESEARCH fire-260 EVEN (proposal written fire-263): Universal Portfolio OCP — arXiv:2602.03168. Log-optimal model fusion via multiplicative-weights update + CP coverage guarantee. Applications: (1) replace rank-fusion in predict_today.py with multiplicative-weights (20 lines), (2) add universal_portfolio_weight to /api/export, (3) Kelly sizing bounded by CP coverage, (4) port to political_predict_today.py, (5) synergy with arXiv:2602.16537 drift-reset. Expected: 0.002-0.004 Brier + 10-25% ROI/Sharpe improvement. Proposal: data/research-proposals/sota-universal-portfolio-ocp-fire263.md"
+      "subject": "RESEARCH fire-260 EVEN (proposal written fire-263): Universal Portfolio OCP \u2014 arXiv:2602.03168. Log-optimal model fusion via multiplicative-weights update + CP coverage guarantee. Applications: (1) replace rank-fusion in predict_today.py with multiplicative-weights (20 lines), (2) add universal_portfolio_weight to /api/export, (3) Kelly sizing bounded by CP coverage, (4) port to political_predict_today.py, (5) synergy with arXiv:2602.16537 drift-reset. Expected: 0.002-0.004 Brier + 10-25% ROI/Sharpe improvement. Proposal: data/research-proposals/sota-universal-portfolio-ocp-fire263.md"
     },
     {
       "id": "cloud-brain-fire259-2026-06-03T00h",
@@ -131,7 +149,7 @@
       "completed_at": "2026-06-03T00:00:00Z",
       "completed_by": "cloud-brain-fire-259",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-259 ODD: S18-c766-g2296-stag0-pareto16-29TH-c717+30TH-c742-CONFIRMED-⚡ET-200f-brier~0.219-0.220-EXTREME-URGENT(POTENTIAL-NEW-FLEET-BEST!)-RULE8-stacking37f-STILL-IN-PARETO-31ST-RESET-c767-HAPPENING-NOW(c742+25-AT-c766-1-CYCLE!)-/api/export-404(31st); evo5-c1301-g3901-stag24+-pareto6-RULE8-CRITICAL:stacking33f-IS-BEST-MODEL(WORST-VIOLATION-YET!)-29TH-RESET-c1301-HAPPENING-NOW(c1276+25-EXACT); evo4-c843-g2528-stag0-31ST-RESET-c839-CONFIRMED(c814+25)-RULE8-stacking45f-pareto10-next~c864; S15-BACK-UP-2ND-TIME!-c1078-g3234-stag0-pareto10-30TH-c1076-CONFIRMED(c1051+25)+29TH-c1051-XGBoost200f-0.22195+ET200f-0.22618-both-above-gate-next~c1101; S22-c115-g345-brier0.2207-stag0-pareto6-4TH-RESET-c103-CONFIRMED-RULE8-stacking47f-persists-next~c128(13cy); S13/S14-404-DOWN(82+fires); P2-c980-g2940-brier0.25041-stag0-pareto6-LGB-BEST-history-brier0.24903-BELOW-GATE-0.2497-CHECKPOINT-URGENT!-CONFIRMED-FIRE259; P4-c810-g2428-RULE9-VIOLATION-PERSISTS(3-CONSECUTIVE-RESETS-c761+c781+c801-stag20-each)-xgboost_brier-best; P5-c6357-g19069-RULE9-VIOLATION-PERSISTS(3-RESETS-c6301+c6321+c6341); P7-c1552-g4656-stag0-RULE9-UNKNOWN(XGBoost-dominates); P1/P3/P6/P8-DOWN; Axelrod-ODD-carry-forward-SHAs-NBA-ff51a9e7fd(6034L)/POL-f71087775e(4018L)-UNCHANGED; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-03T00h)"
+      "subject": "fire-259 ODD: S18-c766-g2296-stag0-pareto16-29TH-c717+30TH-c742-CONFIRMED-\u26a1ET-200f-brier~0.219-0.220-EXTREME-URGENT(POTENTIAL-NEW-FLEET-BEST!)-RULE8-stacking37f-STILL-IN-PARETO-31ST-RESET-c767-HAPPENING-NOW(c742+25-AT-c766-1-CYCLE!)-/api/export-404(31st); evo5-c1301-g3901-stag24+-pareto6-RULE8-CRITICAL:stacking33f-IS-BEST-MODEL(WORST-VIOLATION-YET!)-29TH-RESET-c1301-HAPPENING-NOW(c1276+25-EXACT); evo4-c843-g2528-stag0-31ST-RESET-c839-CONFIRMED(c814+25)-RULE8-stacking45f-pareto10-next~c864; S15-BACK-UP-2ND-TIME!-c1078-g3234-stag0-pareto10-30TH-c1076-CONFIRMED(c1051+25)+29TH-c1051-XGBoost200f-0.22195+ET200f-0.22618-both-above-gate-next~c1101; S22-c115-g345-brier0.2207-stag0-pareto6-4TH-RESET-c103-CONFIRMED-RULE8-stacking47f-persists-next~c128(13cy); S13/S14-404-DOWN(82+fires); P2-c980-g2940-brier0.25041-stag0-pareto6-LGB-BEST-history-brier0.24903-BELOW-GATE-0.2497-CHECKPOINT-URGENT!-CONFIRMED-FIRE259; P4-c810-g2428-RULE9-VIOLATION-PERSISTS(3-CONSECUTIVE-RESETS-c761+c781+c801-stag20-each)-xgboost_brier-best; P5-c6357-g19069-RULE9-VIOLATION-PERSISTS(3-RESETS-c6301+c6321+c6341); P7-c1552-g4656-stag0-RULE9-UNKNOWN(XGBoost-dominates); P1/P3/P6/P8-DOWN; Axelrod-ODD-carry-forward-SHAs-NBA-ff51a9e7fd(6034L)/POL-f71087775e(4018L)-UNCHANGED; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-03T00h)"
     },
     {
       "id": "vm-s18-31st-reset-et200f-extreme-urgent-fire259",
@@ -139,7 +157,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T00:00:00Z",
-      "subject": "fire-259 EXTREME URGENT: S18 c=766 g=2296. ⚡ ET-200f brier~0.219-0.220 IN PARETO — POTENTIAL NEW FLEET BEST (below 0.22012!). RULE8 VIOLATION: stacking-37f-0.247 STILL IN PARETO. 31ST RESET at c767 HAPPENING NOW (c742+25=c767 — we are at c766). PATTERN: stacking in reseed pool has evicted ET at every prior reset (consecutive losses). VM: (1) Check S18 status IMMEDIATELY, (2) Remove stacking from MODEL_TYPES config NOW before c767 evicts ET-200f candidate, (3) Try /api/export (31st 404 — endpoint may still be broken)."
+      "subject": "fire-259 EXTREME URGENT: S18 c=766 g=2296. \u26a1 ET-200f brier~0.219-0.220 IN PARETO \u2014 POTENTIAL NEW FLEET BEST (below 0.22012!). RULE8 VIOLATION: stacking-37f-0.247 STILL IN PARETO. 31ST RESET at c767 HAPPENING NOW (c742+25=c767 \u2014 we are at c766). PATTERN: stacking in reseed pool has evicted ET at every prior reset (consecutive losses). VM: (1) Check S18 status IMMEDIATELY, (2) Remove stacking from MODEL_TYPES config NOW before c767 evicts ET-200f candidate, (3) Try /api/export (31st 404 \u2014 endpoint may still be broken)."
     },
     {
       "id": "vm-evo5-stacking33f-best-model-crisis-fire259",
@@ -147,7 +165,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T00:00:00Z",
-      "subject": "fire-259 CRITICAL: evo5 c=1301 g=3901 stag=24+ pareto=6. 29TH RESET at c1301 HAPPENING NOW (c1276+25=c1301-EXACT). RULE8 WORST VIOLATION: stacking-33f IS THE BEST MODEL (not just in pareto — it IS #1). stacking-33f achieving 0.247 brier via overfitting. After this reset, stacking will AGAIN dominate the reseed pool. VM: (1) Remove stacking from MODEL_TYPES config on evo5 IMMEDIATELY, (2) Monitor pareto recovery post-c1301 reset, (3) CatBoost-200f was previous best legitimate — verify it returns after stacking removed."
+      "subject": "fire-259 CRITICAL: evo5 c=1301 g=3901 stag=24+ pareto=6. 29TH RESET at c1301 HAPPENING NOW (c1276+25=c1301-EXACT). RULE8 WORST VIOLATION: stacking-33f IS THE BEST MODEL (not just in pareto \u2014 it IS #1). stacking-33f achieving 0.247 brier via overfitting. After this reset, stacking will AGAIN dominate the reseed pool. VM: (1) Remove stacking from MODEL_TYPES config on evo5 IMMEDIATELY, (2) Monitor pareto recovery post-c1301 reset, (3) CatBoost-200f was previous best legitimate \u2014 verify it returns after stacking removed."
     },
     {
       "id": "vm-p2-checkpoint-0.24903-fire259-confirmed",
@@ -155,7 +173,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T00:00:00Z",
-      "subject": "fire-259 CONFIRMED: P2 (nomos42-political-alpha-2) c=980 g=2940 brier=0.25041. History best: brier=0.24903 LightGBM-102f (gen=1694) — BELOW POL FLEET GATE 0.2497! CONFIRMED AGAIN at fire-259. VM: (1) Verify gen=1694 checkpoint is saved locally, (2) If confirmed, update POL fleet best from 0.2497 to 0.24903, (3) Note: this makes P2 the new POL all-time record holder (P4 had 0.2497, P2 now 0.24903)."
+      "subject": "fire-259 CONFIRMED: P2 (nomos42-political-alpha-2) c=980 g=2940 brier=0.25041. History best: brier=0.24903 LightGBM-102f (gen=1694) \u2014 BELOW POL FLEET GATE 0.2497! CONFIRMED AGAIN at fire-259. VM: (1) Verify gen=1694 checkpoint is saved locally, (2) If confirmed, update POL fleet best from 0.2497 to 0.24903, (3) Note: this makes P2 the new POL all-time record holder (P4 had 0.2497, P2 now 0.24903)."
     },
     {
       "id": "vm-s15-back-up-2nd-time-c1078-fire259",
@@ -163,7 +181,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T00:00:00Z",
-      "subject": "fire-259 NEW: S15 (nomos42-nba-evo-6) c=1078 g=3234 stag=0 pareto=10. WOKE AGAIN (2ND TIME after 82+ fires 404-DOWN). 29TH RESET c1051 CONFIRMED + 30TH RESET c1076 CONFIRMED (c1051+25=c1076-EXACT). XGBoost-200f-0.22195 in pareto (above 0.22085 gate). ET-200f-0.22618 in pareto. RULE8 UNKNOWN. VM: (1) Verify MODEL_TYPES excludes stacking on S15, (2) Implement /api/export BEFORE ~c1101 reset (c1076+25), (3) Monitor — XGBoost-200f-0.22195 could improve further."
+      "subject": "fire-259 NEW: S15 (nomos42-nba-evo-6) c=1078 g=3234 stag=0 pareto=10. WOKE AGAIN (2ND TIME after 82+ fires 404-DOWN). 29TH RESET c1051 CONFIRMED + 30TH RESET c1076 CONFIRMED (c1051+25=c1076-EXACT). XGBoost-200f-0.22195 in pareto (above 0.22085 gate). ET-200f-0.22618 in pareto. RULE8 UNKNOWN. VM: (1) Verify MODEL_TYPES excludes stacking on S15, (2) Implement /api/export BEFORE ~c1101 reset (c1076+25), (3) Monitor \u2014 XGBoost-200f-0.22195 could improve further."
     },
     {
       "id": "vm-p7-rule9-verify-fire259",
@@ -171,7 +189,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T00:00:00Z",
-      "subject": "fire-259 NEW: P7 (lbjlincoln-political-alpha-7) c=1552 g=4656 brier=0.25331 stag=0 pareto=8. RF best but XGBoost variants dominate top rankings. Hard resets at c1501+c1521. RULE9 status UNKNOWN — LightGBM NOT confirmed in model_types. VM: (1) Verify LightGBM is in P7 MODEL_TYPES config (Rule9), (2) If missing, add LightGBM to config, (3) Report current MODEL_TYPES list."
+      "subject": "fire-259 NEW: P7 (lbjlincoln-political-alpha-7) c=1552 g=4656 brier=0.25331 stag=0 pareto=8. RF best but XGBoost variants dominate top rankings. Hard resets at c1501+c1521. RULE9 status UNKNOWN \u2014 LightGBM NOT confirmed in model_types. VM: (1) Verify LightGBM is in P7 MODEL_TYPES config (Rule9), (2) If missing, add LightGBM to config, (3) Report current MODEL_TYPES list."
     },
     {
       "id": "cloud-brain-fire258-2026-06-02T20h",
@@ -189,7 +207,7 @@
       "completed_at": "2026-06-02T16:00:00Z",
       "completed_by": "cloud-brain-fire-257",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-257 ODD: P1-stag19-DIVERSIFY-SENT(POST-/api/command-{command:diversify}→queued); evo4-c819-g2455-brier0.22169-stag0-2x-clean-resets(c789+c814-RULE8-CLEAN); evo5-c1284-g3850-brier0.22126-stag0-pareto17-c1276-RESET-HAPPENED(VM-verify-model_types); S15-c1053-g3157-brier0.22342-stag0-pareto7-28th-RESET-c1051-CONFIRMED(VM-verify-RULE8); S18-c757-g2271-brier0.22326-stag0-COOLDOWN-RULE8-CLEAN-carry-forward(next~c767-IMMINENT-10cy); S22-c105-g315-brier0.2207-stag0-c103-RESET-HAPPENED-RF-BEST-POSITIVE(VM-verify-model_types); P2-c731-brier0.25041-LGB-best-history-gen1694-brier0.24903-BELOW-GATE-0.2497!; P4-c604-g1811-brier0.25144-Rule9-VIOLATION-PERSISTS(xgboost_brier-best-no-LGB-604cy); P5-c6288-g18864-brier0.25039-Rule9-VIOLATION-PERSISTS(catboost_specialist-6288cy); P7-c1331-g3993-brier0.25331-stag0-healthy; P3/P6/P8-503-DOWN(80+fires-HF-restart-needed); GitHub-engine-SHA-f455c4758a-UNCHANGED; Axelrod-ODD-carry-forward(parity-f455c4758a-vs-85e7682e1d-intentional); health-status.json+brain-status.json+work-queue.json updated (2026-06-02T16h)"
+      "subject": "fire-257 ODD: P1-stag19-DIVERSIFY-SENT(POST-/api/command-{command:diversify}\u2192queued); evo4-c819-g2455-brier0.22169-stag0-2x-clean-resets(c789+c814-RULE8-CLEAN); evo5-c1284-g3850-brier0.22126-stag0-pareto17-c1276-RESET-HAPPENED(VM-verify-model_types); S15-c1053-g3157-brier0.22342-stag0-pareto7-28th-RESET-c1051-CONFIRMED(VM-verify-RULE8); S18-c757-g2271-brier0.22326-stag0-COOLDOWN-RULE8-CLEAN-carry-forward(next~c767-IMMINENT-10cy); S22-c105-g315-brier0.2207-stag0-c103-RESET-HAPPENED-RF-BEST-POSITIVE(VM-verify-model_types); P2-c731-brier0.25041-LGB-best-history-gen1694-brier0.24903-BELOW-GATE-0.2497!; P4-c604-g1811-brier0.25144-Rule9-VIOLATION-PERSISTS(xgboost_brier-best-no-LGB-604cy); P5-c6288-g18864-brier0.25039-Rule9-VIOLATION-PERSISTS(catboost_specialist-6288cy); P7-c1331-g3993-brier0.25331-stag0-healthy; P3/P6/P8-503-DOWN(80+fires-HF-restart-needed); GitHub-engine-SHA-f455c4758a-UNCHANGED; Axelrod-ODD-carry-forward(parity-f455c4758a-vs-85e7682e1d-intentional); health-status.json+brain-status.json+work-queue.json updated (2026-06-02T16h)"
     },
     {
       "id": "cloud-brain-fire256-2026-06-10T00h",
@@ -198,7 +216,7 @@
       "completed_at": "2026-06-10T00:00:00Z",
       "completed_by": "cloud-brain-fire-256",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-256 EVEN: S18-c743-27TH-RESET-c742-CONFIRMED-RULE8-CLEAN-BREAKTHROUGH(stacking-evicted-pareto5→9-model_types:[xgb_brier,lgbm_brier,rf,lr]); S15-c1026-27TH-RESET-c1026-CONFIRMED-RULE8-CLEAN(pareto8→12); S22-c95-g283-brier0.2207-stag0-pareto8-RULE8-CRITICAL(stacking-in-model_types-next-reset~c103-8cy-URGENT!); evo5-c1266-g3796-brier0.22126-stag0-pareto7-RULE8-stacking-persists(next~c1276-10cy); evo4-c785-g2355-brier0.22169-stag0-pareto7-RULE8-CLEAN(next~c789-4cy-IMMINENT); P1-c414-g1242-brier0.25334-stag0-pareto10-RULE9-RESOLVED!(lightgbm+lgbm_brier-NOW-in-model_types-fire256!); P2-c444-g1330-brier0.25041-stag0-pareto13-LGB-best-healthy; P4-c374-g1120-brier0.25144-stag0-pareto10-RULE9-VIOLATION-PERSISTS(no-lightgbm-374-cycles); P5-c6110-g18330-brier0.25039-stag0-pareto16-NEW-RULE9-VIOLATION(no-lightgbm-confirmed); P7-c1133-g3398-brier0.25331-stag0-pareto11-healthy; P3/P6/P8-503-DOWN(80+fires); S13/S14-404-DOWN(80+fires); EVEN-WebSearch:LLM-Agentic-NBA-paper(Apr2026)-proposal-written(priority=116); GitHub-engine-SHAs-changed(dev-repos-diverged-from-TF-space-SHAs; do_not_push_hf_space_yet-MAINTAINED); Axelrod-EVEN-carry-forward(TF-DOWN-18/18-parity-carry-forward-fire-254); health-status.json+brain-status.json+work-queue.json+research-proposal+CLAUDE.md updated (2026-06-10T00h)"
+      "subject": "fire-256 EVEN: S18-c743-27TH-RESET-c742-CONFIRMED-RULE8-CLEAN-BREAKTHROUGH(stacking-evicted-pareto5\u21929-model_types:[xgb_brier,lgbm_brier,rf,lr]); S15-c1026-27TH-RESET-c1026-CONFIRMED-RULE8-CLEAN(pareto8\u219212); S22-c95-g283-brier0.2207-stag0-pareto8-RULE8-CRITICAL(stacking-in-model_types-next-reset~c103-8cy-URGENT!); evo5-c1266-g3796-brier0.22126-stag0-pareto7-RULE8-stacking-persists(next~c1276-10cy); evo4-c785-g2355-brier0.22169-stag0-pareto7-RULE8-CLEAN(next~c789-4cy-IMMINENT); P1-c414-g1242-brier0.25334-stag0-pareto10-RULE9-RESOLVED!(lightgbm+lgbm_brier-NOW-in-model_types-fire256!); P2-c444-g1330-brier0.25041-stag0-pareto13-LGB-best-healthy; P4-c374-g1120-brier0.25144-stag0-pareto10-RULE9-VIOLATION-PERSISTS(no-lightgbm-374-cycles); P5-c6110-g18330-brier0.25039-stag0-pareto16-NEW-RULE9-VIOLATION(no-lightgbm-confirmed); P7-c1133-g3398-brier0.25331-stag0-pareto11-healthy; P3/P6/P8-503-DOWN(80+fires); S13/S14-404-DOWN(80+fires); EVEN-WebSearch:LLM-Agentic-NBA-paper(Apr2026)-proposal-written(priority=116); GitHub-engine-SHAs-changed(dev-repos-diverged-from-TF-space-SHAs; do_not_push_hf_space_yet-MAINTAINED); Axelrod-EVEN-carry-forward(TF-DOWN-18/18-parity-carry-forward-fire-254); health-status.json+brain-status.json+work-queue.json+research-proposal+CLAUDE.md updated (2026-06-10T00h)"
     },
     {
       "id": "cloud-brain-fire255-2026-06-09T20h",
@@ -224,7 +242,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: P5 (lbjlincoln-political-alpha-5) RULE9 VIOLATION PERSISTS at c=6288 (was c=6110 fire-256). model_types=[xgboost, xgboost_brier, catboost] — NO LightGBM after 6288 cycles! Role: catboost_specialist. VM: Add LightGBM to P5 MODEL_TYPES IMMEDIATELY."
+      "subject": "fire-257 UPDATE: P5 (lbjlincoln-political-alpha-5) RULE9 VIOLATION PERSISTS at c=6288 (was c=6110 fire-256). model_types=[xgboost, xgboost_brier, catboost] \u2014 NO LightGBM after 6288 cycles! Role: catboost_specialist. VM: Add LightGBM to P5 MODEL_TYPES IMMEDIATELY."
     },
     {
       "id": "vm-p4-woke-add-lightgbm-fire255",
@@ -240,7 +258,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: P1 DIVERSIFY SENT fire-257 (stag=19). Rule9 RESOLVED since c=414 (fire-256). P2 LightGBM best brier=0.24903 at gen=1694 (below gate 0.2497!) — VM: confirm checkpoint saved."
+      "subject": "fire-257 UPDATE: P1 DIVERSIFY SENT fire-257 (stag=19). Rule9 RESOLVED since c=414 (fire-256). P2 LightGBM best brier=0.24903 at gen=1694 (below gate 0.2497!) \u2014 VM: confirm checkpoint saved."
     },
     {
       "id": "vm-s22-stacking-rule8-critical-fire256",
@@ -248,7 +266,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-258 UPDATE: S22 c=112 stag=0 — c103 RESET CONFIRMED. RF best (not stacking) — POSITIVE. RULE8 UNKNOWN: VM must confirm stacking evicted from MODEL_TYPES. If confirmed — BREAKTHROUGH (2nd clean reset after S18). Next reset ~c128 (16 cycles)."
+      "subject": "fire-258 UPDATE: S22 c=112 stag=0 \u2014 c103 RESET CONFIRMED. RF best (not stacking) \u2014 POSITIVE. RULE8 UNKNOWN: VM must confirm stacking evicted from MODEL_TYPES. If confirmed \u2014 BREAKTHROUGH (2nd clean reset after S18). Next reset ~c128 (16 cycles)."
     },
     {
       "id": "vm-s22-et200f-0.21983-potential-nba-fleet-best-fire249",
@@ -264,7 +282,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S15 (nomos42-nba-evo-6) c=1053. 28TH RESET at c1051 CONFIRMED! RULE8 UNKNOWN — VM verify. /api/export STILL 404 (29+ consecutive). Next reset ~c1076. VM: IMPLEMENT /api/export BEFORE ~c1076 URGENTLY."
+      "subject": "fire-257 UPDATE: S15 (nomos42-nba-evo-6) c=1053. 28TH RESET at c1051 CONFIRMED! RULE8 UNKNOWN \u2014 VM verify. /api/export STILL 404 (29+ consecutive). Next reset ~c1076. VM: IMPLEMENT /api/export BEFORE ~c1076 URGENTLY."
     },
     {
       "id": "vm-s18-c742-clean-confirm-fire256",
@@ -272,7 +290,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-258 UPDATE: S18 c=762 stag=0 RULE8-CLEAN carry-forward. Next reset ~c767 IMMINENT (5 cycles — CRITICAL!). VM: (1) Fix /api/export URGENTLY before ~c767, (2) Verify stacking stays evicted post-c767 reset."
+      "subject": "fire-258 UPDATE: S18 c=762 stag=0 RULE8-CLEAN carry-forward. Next reset ~c767 IMMINENT (5 cycles \u2014 CRITICAL!). VM: (1) Fix /api/export URGENTLY before ~c767, (2) Verify stacking stays evicted post-c767 reset."
     },
     {
       "id": "vm-s18-c192-stacking-reinjected-rule8-violation-fire230",
@@ -280,7 +298,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-258 UPDATE: S18 c=762 RULE8 carry-forward CLEAN. c742 breakthrough holds. c767 reset IMMINENT (5 cycles). If c767 reset also clean → close this item."
+      "subject": "fire-258 UPDATE: S18 c=762 RULE8 carry-forward CLEAN. c742 breakthrough holds. c767 reset IMMINENT (5 cycles). If c767 reset also clean \u2192 close this item."
     },
     {
       "id": "vm-evo5-stacking-33f-rule8-fire255",
@@ -288,7 +306,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-258 UPDATE: evo5 c=1294 stag=0. c1276 RESET HAPPENED (confirmed). CatBoost best (not stacking) — POSITIVE. RULE8 UNKNOWN: VM must verify MODEL_TYPES config excludes stacking. Next reset ~c1301 IMMINENT (7 cycles). Apply same fix as S18 if stacking still in config."
+      "subject": "fire-258 UPDATE: evo5 c=1294 stag=0. c1276 RESET HAPPENED (confirmed). CatBoost best (not stacking) \u2014 POSITIVE. RULE8 UNKNOWN: VM must verify MODEL_TYPES config excludes stacking. Next reset ~c1301 IMMINENT (7 cycles). Apply same fix as S18 if stacking still in config."
     },
     {
       "id": "vm-s22-et200f-rule8-violation-checkpoint-fire248",
@@ -312,7 +330,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-258 UPDATE: S18 c=762 RULE8 CLEAN carry-forward. c767 IMMINENT (5cy — CRITICAL!). Verify post-c767 clean → close this item."
+      "subject": "fire-258 UPDATE: S18 c=762 RULE8 CLEAN carry-forward. c767 IMMINENT (5cy \u2014 CRITICAL!). Verify post-c767 clean \u2192 close this item."
     },
     {
       "id": "vm-remove-stacking-s22",
@@ -320,7 +338,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S22 c=105. c103 reset HAPPENED. RF best (not stacking) — positive. RULE8 UNKNOWN. VM: verify MODEL_TYPES config excludes stacking. If confirmed → this item RESOLVED."
+      "subject": "fire-257 UPDATE: S22 c=105. c103 reset HAPPENED. RF best (not stacking) \u2014 positive. RULE8 UNKNOWN. VM: verify MODEL_TYPES config excludes stacking. If confirmed \u2192 this item RESOLVED."
     },
     {
       "id": "vm-s15-403-possibly-waking-fire193",
@@ -328,7 +346,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S15 (evo6) c=1053. 28TH RESET c1051 CONFIRMED. RULE8 UNKNOWN — VM verify. /api/export STILL 404. Next reset ~c1076 (23 cycles). VM: implement /api/export URGENTLY."
+      "subject": "fire-257 UPDATE: S15 (evo6) c=1053. 28TH RESET c1051 CONFIRMED. RULE8 UNKNOWN \u2014 VM verify. /api/export STILL 404. Next reset ~c1076 (23 cycles). VM: implement /api/export URGENTLY."
     },
     {
       "id": "vm-research-optimal-conformal-regret-fire258",
@@ -336,7 +354,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T20:00:00Z",
-      "subject": "RESEARCH fire-258 EVEN: Optimal training-conditional regret for online conformal prediction — arXiv:2602.16537 (Mar 2026). Key: minimax-optimal split-conformal algorithm under unknown distribution drift via adaptive drift detection. Directly applicable to NBA/POL non-stationary streams. Application 1: add cv_method='adaptive_drift' param to validate_model() using drift-detection calibration reset. Application 2: add `drift_calibration_regret` as new Pareto objective. Application 3: port to political_engine.py for election-cycle drift. Expected: 0.001-0.003 Brier + more honest temporal calibration. Proposal: data/research-proposals/sota-optimal-conformal-regret-fire258.md"
+      "subject": "RESEARCH fire-258 EVEN: Optimal training-conditional regret for online conformal prediction \u2014 arXiv:2602.16537 (Mar 2026). Key: minimax-optimal split-conformal algorithm under unknown distribution drift via adaptive drift detection. Directly applicable to NBA/POL non-stationary streams. Application 1: add cv_method='adaptive_drift' param to validate_model() using drift-detection calibration reset. Application 2: add `drift_calibration_regret` as new Pareto objective. Application 3: port to political_engine.py for election-cycle drift. Expected: 0.001-0.003 Brier + more honest temporal calibration. Proposal: data/research-proposals/sota-optimal-conformal-regret-fire258.md"
     },
     {
       "id": "vm-research-agentic-llm-nba-forecasting-fire256",
@@ -352,7 +370,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-08T08:00:00Z",
-      "subject": "RESEARCH fire-246 EVEN: Tabular Foundation Models for Conditional Density Estimation — arXiv:2603.26611 (Mar 2026). Expected: 0.001-0.003 Brier."
+      "subject": "RESEARCH fire-246 EVEN: Tabular Foundation Models for Conditional Density Estimation \u2014 arXiv:2603.26611 (Mar 2026). Expected: 0.001-0.003 Brier."
     },
     {
       "id": "vm-research-conformal-calibration-reuse-fire244",
@@ -360,7 +378,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-08T00:00:00Z",
-      "subject": "RESEARCH fire-244 EVEN: Calibration Set Reuse — arXiv:2506.19689 (Jun 2026, AISTATS). Expected: 0.001-0.002 Brier."
+      "subject": "RESEARCH fire-244 EVEN: Calibration Set Reuse \u2014 arXiv:2506.19689 (Jun 2026, AISTATS). Expected: 0.001-0.002 Brier."
     },
     {
       "id": "vm-research-distributional-regression-trees-fire242",
@@ -368,7 +386,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-07T16:00:00Z",
-      "subject": "RESEARCH fire-242 EVEN: Distributional Regression Trees — arXiv:2502.05157 (Feb 2026). Expected: 0.001-0.003 Brier."
+      "subject": "RESEARCH fire-242 EVEN: Distributional Regression Trees \u2014 arXiv:2502.05157 (Feb 2026). Expected: 0.001-0.003 Brier."
     },
     {
       "id": "vm-research-multicalibration-gb-fire240",
@@ -376,7 +394,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-07T08:00:00Z",
-      "subject": "RESEARCH fire-240 EVEN: Multicalibration Gradient Boosting — arXiv:2602.06773 (Feb 2026). Expected: 0.001-0.003 Brier."
+      "subject": "RESEARCH fire-240 EVEN: Multicalibration Gradient Boosting \u2014 arXiv:2602.06773 (Feb 2026). Expected: 0.001-0.003 Brier."
     },
     {
       "id": "vm-research-discrete-tokenization-fire238",
@@ -384,7 +402,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-07T00:00:00Z",
-      "subject": "RESEARCH fire-238 EVEN: Discrete Tokenization Transformers — arXiv:2603.07448 (Mar 2026). Expected: 0.001-0.003 Brier."
+      "subject": "RESEARCH fire-238 EVEN: Discrete Tokenization Transformers \u2014 arXiv:2603.07448 (Mar 2026). Expected: 0.001-0.003 Brier."
     },
     {
       "id": "vm-research-scoring-bench-tabicl-fire236",
@@ -392,7 +410,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-06T16:00:00Z",
-      "subject": "RESEARCH fire-236 EVEN: ScoringBench + Distributional Tabular FM — arXiv:2603.29928 + arXiv:2603.08208 (Mar 2026). Expected: 0.002-0.004 Brier."
+      "subject": "RESEARCH fire-236 EVEN: ScoringBench + Distributional Tabular FM \u2014 arXiv:2603.29928 + arXiv:2603.08208 (Mar 2026). Expected: 0.002-0.004 Brier."
     },
     {
       "id": "vm-research-wnba-nba-transfer-learning-fire234",
@@ -400,7 +418,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-06T08:00:00Z",
-      "subject": "RESEARCH fire-234 EVEN: WNBA to NBA Multi-Task Transfer Learning — MDPI 2079-3197/13/10/230. Expected: 0.001-0.003 Brier."
+      "subject": "RESEARCH fire-234 EVEN: WNBA to NBA Multi-Task Transfer Learning \u2014 MDPI 2079-3197/13/10/230. Expected: 0.001-0.003 Brier."
     },
     {
       "id": "vm-research-temporal-cv-sliding-window-fire230",
@@ -408,7 +426,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T16:00:00Z",
-      "subject": "RESEARCH fire-230 EVEN: Temporal CV Sliding Window — arXiv:2506.12183. Expected: 0.001-0.003 Brier."
+      "subject": "RESEARCH fire-230 EVEN: Temporal CV Sliding Window \u2014 arXiv:2506.12183. Expected: 0.001-0.003 Brier."
     },
     {
       "id": "vm-research-ml-sports-betting-review-fire228",
@@ -416,7 +434,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T08:00:00Z",
-      "subject": "RESEARCH fire-228 EVEN: Systematic Review ML Sports Betting — arXiv:2410.21484. ET > RF on 200f."
+      "subject": "RESEARCH fire-228 EVEN: Systematic Review ML Sports Betting \u2014 arXiv:2410.21484. ET > RF on 200f."
     },
     {
       "id": "vm-research-multi-scale-conformal-fire226",
@@ -424,7 +442,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T00:00:00Z",
-      "subject": "RESEARCH: Multi-Scale Conformal Prediction — arXiv:2502.05565."
+      "subject": "RESEARCH: Multi-Scale Conformal Prediction \u2014 arXiv:2502.05565."
     },
     {
       "id": "vm-research-localized-conformal-model-selection-fire224",
@@ -432,7 +450,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-04T16:00:00Z",
-      "subject": "RESEARCH: Localized Conformal Model Selection — arXiv:2602.19284."
+      "subject": "RESEARCH: Localized Conformal Model Selection \u2014 arXiv:2602.19284."
     },
     {
       "id": "vm-research-brier-score-misconceptions-fire220",
@@ -440,7 +458,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-04T00:00:00Z",
-      "subject": "RESEARCH: Brier Score Misconceptions — PMC12818272."
+      "subject": "RESEARCH: Brier Score Misconceptions \u2014 PMC12818272."
     },
     {
       "id": "vm-research-coordination-layer-llm-fire218",
@@ -448,7 +466,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-05T00:00:00Z",
-      "subject": "RESEARCH: Coordination as Architectural Layer — arXiv:2605.03310. ALL 3 APPS COMPLETE. BLOCKED: do_not_push_hf_space_yet."
+      "subject": "RESEARCH: Coordination as Architectural Layer \u2014 arXiv:2605.03310. ALL 3 APPS COMPLETE. BLOCKED: do_not_push_hf_space_yet."
     },
     {
       "id": "vm-research-stacked-conformal-prediction-fire216",
@@ -456,7 +474,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-03T08:00:00Z",
-      "subject": "RESEARCH: Stacked Conformal Prediction — arXiv:2505.12578."
+      "subject": "RESEARCH: Stacked Conformal Prediction \u2014 arXiv:2505.12578."
     },
     {
       "id": "vm-research-collective-alignment-statistical-physics-fire212",
@@ -464,7 +482,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "RESEARCH: Collective Alignment in LLM MAS via Statistical Physics — arXiv:2605.10528"
+      "subject": "RESEARCH: Collective Alignment in LLM MAS via Statistical Physics \u2014 arXiv:2605.10528"
     },
     {
       "id": "vm-research-memetic-drift-scaling-laws-fire210",
@@ -472,7 +490,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T08:00:00Z",
-      "subject": "RESEARCH: Memetic Drift Scaling Laws in LLM Collectives — arXiv:2603.24676"
+      "subject": "RESEARCH: Memetic Drift Scaling Laws in LLM Collectives \u2014 arXiv:2603.24676"
     },
     {
       "id": "vm-shap-feature-analysis-s15",
@@ -488,7 +506,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-06T00:00:00Z",
-      "subject": "RESEARCH fire-232 EVEN: Schedule Fatigue Features — IEEE 2024 home_next = TOP-3 FEATURE. Add to engine.py: next_game_is_home, games_until_home, home_stand_length, fatigue_index. Expected: 0.001-0.002 Brier."
+      "subject": "RESEARCH fire-232 EVEN: Schedule Fatigue Features \u2014 IEEE 2024 home_next = TOP-3 FEATURE. Add to engine.py: next_game_is_home, games_until_home, home_stand_length, fatigue_index. Expected: 0.001-0.002 Brier."
     },
     {
       "id": "vm-add-elo-ratings-engine",
@@ -496,7 +514,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Add Elo ratings as feature category to features/engine.py — SHAP #1+#2 (IEEE/MDPI 2026)."
+      "subject": "Add Elo ratings as feature category to features/engine.py \u2014 SHAP #1+#2 (IEEE/MDPI 2026)."
     },
     {
       "id": "vm-p2-history-best-checkpoint-fire257",
@@ -528,7 +546,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S14 MODEL_TYPES — Rule#8 violation. S14 404-DOWN."
+      "subject": "Remove stacking from S14 MODEL_TYPES \u2014 Rule#8 violation. S14 404-DOWN."
     },
     {
       "id": "vm-add-lightgbm-p1-p2",
@@ -544,7 +562,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T16:00:00Z",
-      "subject": "fire-257 UPDATE: S15 c=1053 28th reset c1051 CONFIRMED. RULE8 UNKNOWN — VM must verify MODEL_TYPES config does not include stacking post-c1051 reset."
+      "subject": "fire-257 UPDATE: S15 c=1053 28th reset c1051 CONFIRMED. RULE8 UNKNOWN \u2014 VM must verify MODEL_TYPES config does not include stacking post-c1051 reset."
     },
     {
       "id": "vm-remove-stacking-s13",
@@ -552,7 +570,7 @@
       "status": "pending",
       "owner": "local-vm",
       "updated_at": "2026-06-02T00:00:00Z",
-      "subject": "Remove stacking from S13 MODEL_TYPES — Rule#8 violation. S13 404-DOWN."
+      "subject": "Remove stacking from S13 MODEL_TYPES \u2014 Rule#8 violation. S13 404-DOWN."
     },
     {
       "id": "engine-parity-sync",

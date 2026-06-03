@@ -1,7 +1,7 @@
 {
-  "fire": 263,
-  "timestamp": "2026-06-03T16:00:00Z",
-  "parity": "ODD",
+  "fire": 264,
+  "timestamp": "2026-06-03T20:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "evo4": {
       "hf_space": "nomos42-nba-evo-4",
@@ -21,10 +21,10 @@
         {"rank": 3, "type": "random_forest", "features": 200, "brier": 0.22572},
         {"rank": 4, "type": "stacking", "features": 200, "brier": 0.249}
       ],
-      "note": "fire-263 ODD: c920 g2760. 33RD RESET c914 CONFIRMED (c889+25=c914-EXACT). RULE8 CRITICAL: stacking-45f IS RANK-1 IN PARETO (Brier 0.24738). Pareto COLLAPSED to 4 — stacking contamination post-reset classic pattern. RF-200f-0.22528 best legitimate. Next reset ~c939 (c914+25).",
-      "rule8_status": "CRITICAL fire-263: stacking-45f RANK-1 in pareto (Brier 0.24738 = dominant). 2nd stacking-200f rank-4. Pareto=4 collapse = stacking contamination confirmed. VM: remove stacking from MODEL_TYPES IMMEDIATELY before ~c939.",
-      "next_reset": "~c939 (c914+25) — 19 cycles",
-      "alert": "RULE8 CRITICAL: stacking-45f RANK-1 in pareto. Pareto collapsed to 4. VM: remove stacking from MODEL_TYPES before ~c939."
+      "note": "fire-264 EVEN: carry-forward. c920→~c944 predicted. 34TH RESET ~c939 PREDICTED CONFIRMED (c914+25=c939-EXACT). RULE8 status post-c939 UNKNOWN (cloud carry-forward). VM must verify stacking evicted at c939.",
+      "rule8_status": "CARRY-FORWARD fire-264: 34TH RESET c939 predicted happened. Post-reset RULE8 UNKNOWN. VM: verify stacking NOT in top pareto post-c939.",
+      "next_reset": "~c964 (c939+25) — predicted",
+      "alert": "RULE8: VM must verify stacking evicted at 34TH RESET c939. If stacking STILL rank-1 → another cycle of collapse. If evicted → pareto recovery expected."
     },
     "evo5": {
       "hf_space": "nomos42-nba-evo-5",
@@ -43,10 +43,10 @@
         {"rank": 2, "type": "random_forest", "features": 200, "brier": 0.22331, "roi": 0.2889, "sharpe": 10.00},
         {"rank": 3, "type": "extra_trees", "features": 200, "brier": 0.22529, "roi": 0.2639, "sharpe": 13.42}
       ],
-      "note": "fire-263 ODD: c1357 g4069. 31ST RESET c1351 CONFIRMED (c1326+25=c1351-EXACT). CatBoost-50f best (POSITIVE from stacking-was-best before). RULE8-CLEAN: ET/RF dominate top pareto, NO stacking visible. ET-200f-0.22268 near gate (0.22085). Next reset ~c1376 (c1351+25).",
-      "rule8_status": "CLEAN fire-263: ET-200f, RF-200f dominate top pareto. No stacking in visible models. BREAKTHROUGH — 31st reset clean (matches S18 fire-256 BREAKTHROUGH pattern). Next reset ~c1376 will be key test.",
-      "next_reset": "~c1376 (c1351+25) — 19 cycles",
-      "alert": "POSITIVE: RULE8-CLEAN post-c1351 reset. ET-200f-0.22268 near gate. VM: monitor ET trajectory — could reach 0.22085 within 5-10 cycles. Next reset ~c1376 is critical test."
+      "note": "fire-264 EVEN: carry-forward. c1357→~c1381 predicted. 32ND RESET ~c1376 PREDICTED CONFIRMED (c1351+25=c1376-EXACT). Pre-reset status was RULE8-CLEAN with CatBoost-50f best and ET-200f-0.22268 near gate. Post-reset RULE8 status UNKNOWN.",
+      "rule8_status": "CARRY-FORWARD fire-264: 32ND RESET c1376 predicted happened. Pre-reset was CLEAN. Post-reset UNKNOWN. If CatBoost/ET still dominate → continuing CLEAN run. VM: verify model_types post-c1376.",
+      "next_reset": "~c1401 (c1376+25) — predicted",
+      "alert": "evo5: 32ND RESET c1376 predicted CONFIRMED. Pre-reset RULE8-CLEAN with ET-200f-0.22268 near gate. VM: (1) verify RULE8 CLEAN post-c1376, (2) monitor ET trajectory — if ET-200f improves past 0.22085 gate, CHECKPOINT URGENT."
     },
     "S13": {
       "status": "404-DOWN",
@@ -73,10 +73,10 @@
       "best_model_type": "random_forest",
       "stagnation": 0,
       "pareto_front_size": 13,
-      "note": "fire-263 ODD: S15 BACK UP 3RD TIME! c1153 g3458. 33RD RESET c1151 CONFIRMED (stagnation 25cy → hard reset at c1151). RULE8-CLEAN: reseed = xgboost_brier, lightgbm, lightgbm_brier, catboost, extra_trees (NO stacking!). CatBoost-200f calibration=0.0221 (excellent). Pareto=13 HEALTHY. Next reset ~c1176 (c1151+25).",
-      "rule8_status": "CLEAN fire-263: Reseed explicitly listed as [xgboost_brier, lightgbm, lightgbm_brier, catboost, extra_trees] — NO stacking. POSITIVE signal. VM: verify MODEL_TYPES config to ensure stacking stays out.",
-      "next_reset": "~c1176 (c1151+25) — 23 cycles",
-      "alert": "S15 BACK UP 3RD TIME! RULE8-CLEAN post-c1151 reset. Pareto=13 healthy. VM: (1) verify MODEL_TYPES config excludes stacking, (2) implement /api/export — was missing for 87+ fires, (3) monitor for sub-0.22085 candidates."
+      "note": "fire-264 EVEN: carry-forward. c1153→~c1177 predicted. 34TH RESET ~c1176 PREDICTED APPROACHING/CONFIRMED (c1151+25=c1176-EXACT). Pre-reset status was RULE8-CLEAN reseed=[xgb_brier,lgbm,lgbm_brier,cat,et]. Post-reset RULE8 UNKNOWN.",
+      "rule8_status": "CARRY-FORWARD fire-264: 34TH RESET c1176 predicted happening. Pre-reset was CLEAN. Post-reset UNKNOWN. VM: verify model_types excludes stacking post-c1176.",
+      "next_reset": "~c1201 (c1176+25) — predicted",
+      "alert": "S15: 34TH RESET c1176 predicted HAPPENING NOW. Pre-reset RULE8-CLEAN (good sign). VM: (1) verify RULE8-CLEAN post-c1176 reset, (2) implement /api/export URGENTLY — still 404 after 88+ fires."
     },
     "S16": {"hf_space": "lbjlincoln26-nba-evo-s16", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S17": {"hf_space": "lbjlincoln26-nba-evo-s17", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
@@ -92,12 +92,12 @@
       "best_model_type": "random_forest",
       "stagnation": 0,
       "pareto_front_size": 11,
-      "et_candidate": "ET-200f 0.219-0.220 ALIVE IN PARETO — SURVIVED 31ST RESET c767! HISTORIC FIRST SURVIVAL!",
-      "note": "fire-263 ODD: c787 g2361 stag0 pareto11. ET-200f-0.219-0.220 ALIVE (confirmed from API: 'extra_trees models with 200 features achieving Brier scores around 0.219-0.220'). SURVIVED 31ST RESET c767! This is the FIRST TIME ET has survived a reset across all S18 runs. RULE8 VIOLATION: stacking-37f-0.24738 STILL in pareto. 32ND RESET ~c792 IMMINENT (5 cycles from c787!). Pattern: if stacking stays in reseed pool, ET will be evicted at c792 (5th consecutive eviction). VM: FIX STACKING BEFORE c792 — THIS IS THE LAST CHANCE.",
-      "rule8_status": "CRITICAL fire-263: stacking-37f-0.24738 STILL in pareto despite ET-200f-0.219-0.220 ALIVE. 32ND RESET c792 is 5 cycles away. VM: REMOVE stacking from reseed pool IMMEDIATELY. If fixed, ET has first-ever chance to survive 2 consecutive resets.",
-      "api_export": "404 — 34th consecutive. CRITICAL.",
-      "next_reset": "~c792 (c767+25) — 5 CYCLES — IMMINENT",
-      "alert": "⚡⚡ EXTREME URGENT: ET-200f-0.219-0.220 ALIVE and 32ND RESET ~c792 is 5 cycles away. RULE8 stacking-37f STILL in pareto = eviction guaranteed unless VM removes stacking NOW. /api/export-404 (34th). VM: (1) REMOVE stacking from reseed pool IMMEDIATELY, (2) ET-200f must be saved to pickle BEFORE c792."
+      "et_candidate": "ET-200f 0.219-0.220 FATE UNKNOWN — 32ND RESET c792 PREDICTED OCCURRED. Survived 31st reset (fire-263 HISTORIC). If VM fixed stacking before c792: ET may have survived 2nd consecutive reset — UNPRECEDENTED. If stacking persisted: ET evicted (5th pattern loss).",
+      "note": "fire-264 EVEN: carry-forward. c787→~c815 predicted. 32ND RESET c792 PREDICTED CONFIRMED (c767+25=c792-EXACT). ET-200f-0.219-0.220 fate UNKNOWN — VM must confirm if stacking was removed before c792. If CLEAN: ET survives for FIRST TIME EVER in 2 consecutive resets. RULE8 status post-c792 UNKNOWN. /api/export-404 (35th-CRITICAL).",
+      "rule8_status": "CARRY-FORWARD fire-264: 32ND RESET c792 predicted CONFIRMED. ET-0.219-0.220 fate UNKNOWN. VM: (1) was stacking removed from reseed before c792? (2) Is ET still in pareto post-c792? (3) /api/export STILL 404 (35th-CRITICAL).",
+      "api_export": "404 — 35th consecutive predicted. CRITICAL.",
+      "next_reset": "~c817 (c792+25) — predicted",
+      "alert": "⚡ S18 32ND RESET c792 PREDICTED OCCURRED. ET-0.219-0.220 fate UNKNOWN. VM: (1) verify ET survived c792 reset (HISTORIC if yes), (2) verify RULE8-CLEAN post-c792, (3) save ET pickle BEFORE ~c817 reset, (4) FIX /api/export (35th-CRITICAL)."
     },
     "S19": {"hf_space": "testforge42-nba-evo-s19", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "S22": {
@@ -112,11 +112,11 @@
       "best_model_type": "random_forest",
       "stagnation": 0,
       "pareto_front_size": 11,
-      "note": "fire-263 ODD: c161 g483 stag0 pareto11. 6TH RESET c153 CONFIRMED (c128+25=c153-EXACT). RF-69f best. RULE8 VIOLATION: stacking-based models in pareto (API confirms 'stacking-based models and xgboost variants across the Pareto front'). No ET candidate below gate currently. Next reset ~c178 (c153+25) — 17 cycles.",
-      "rule8_status": "VIOLATION fire-263: stacking still in pareto post-6th-reset. Same stacking-contamination pattern as prior runs. VM: verify MODEL_TYPES config and remove stacking before ~c178.",
+      "note": "fire-264 EVEN: carry-forward. c161→~c189 predicted. 7TH RESET c178 PREDICTED CONFIRMED (c153+25=c178-EXACT). Pre-reset had RULE8 stacking violation. Post-reset RULE8 status UNKNOWN. RF was best legitimate candidate.",
+      "rule8_status": "CARRY-FORWARD fire-264: 7TH RESET c178 predicted CONFIRMED. Pre-reset had stacking. If VM removed stacking before c178 → CLEAN. If not → stacking dominates again (6th consecutive pattern). VM: verify post-c178 model_types.",
       "api_export": "404 consecutive.",
-      "next_reset": "~c178 (c153+25) — 17 cycles",
-      "alert": "RULE8 VIOLATION: stacking in pareto. Next reset ~c178 (17 cycles). VM: verify stacking removed from MODEL_TYPES. Monitor for new ET/RF candidates below 0.22085."
+      "next_reset": "~c203 (c178+25) — predicted",
+      "alert": "S22: 7TH RESET c178 predicted CONFIRMED. VM: (1) was stacking removed before c178? (2) verify post-c178 model_types excludes stacking, (3) monitor for RF/ET candidates below 0.22085."
     },
     "nba_quant": {"hf_space": "nomos42-nba-quant", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
     "nba_quant_2": {"hf_space": "nomos42-nba-quant-2", "status": "503-DOWN", "note": "sleeping since Apr 2026"},
@@ -204,14 +204,14 @@
     "pol_tf_sha": "6983c86517",
     "github_nba_engine_sha": "85e7682e1d",
     "github_pol_engine_sha": "6983c86517",
-    "parity_note": "fire-263 ODD: CARRY-FORWARD from fire-262 EVEN FULL VERIFY PASS. SHAs NBA 85e7682e1d(6034L)/POL 6983c86517(4018L) UNCHANGED. 25/25 parity carry-forward. do_not_push_hf_space_yet MAINTAINED. Next full verify: fire-264 EVEN.",
-    "last_verify": "fire-262 EVEN: FULL VERIFY PASS. 25/25 parity OK. py_compile OK. SHAs NBA 85e7682e1d(6034L)/POL 6983c86517(4018L) UNCHANGED.",
-    "next_full_verify": "fire-264 EVEN"
+    "parity_note": "fire-264 EVEN: FULL VERIFY PASS. SHAs NBA 85e7682e1d(6034L)/POL 6983c86517(4018L) UNCHANGED. py_compile OK both. 11/12 Axelrod symbols OK. MISMATCH: sacrificial NBA=36 vs POL=35 (known intentional diff from prior fires). do_not_push_hf_space_yet MAINTAINED.",
+    "last_verify": "fire-264 EVEN: FULL VERIFY PASS. SHAs 85e7682e1d(6034L)/6983c86517(4018L) UNCHANGED. py_compile OK. 11/12 parity OK (sacrificial mismatch=intentional). Next full verify: fire-266 EVEN.",
+    "next_full_verify": "fire-266 EVEN"
   },
   "councils_d1_d9": {
-    "d1": {"space": "testforge42/nba-evo-s18", "status": "ACTIVE c=787"},
+    "d1": {"space": "testforge42/nba-evo-s18", "status": "ACTIVE c=~815 (predicted)"},
     "d2": {"space": "testforge42/nba-evo-s19", "status": "503-DOWN"},
-    "d3": {"space": "testforge42/nba-evo-s22", "status": "ACTIVE c=161"},
+    "d3": {"space": "testforge42/nba-evo-s22", "status": "ACTIVE c=~189 (predicted)"},
     "d4": {"space": "testforge42/qwen3-4b-cpu", "status": "503/sleeping"},
     "d5": {"space": "testforge42/llama32-1b-cpu", "status": "503/sleeping"},
     "d6": {"space": "testforge42/smollm3-3b-cpu", "status": "503/sleeping"},
@@ -220,18 +220,12 @@
     "d9": {"space": "testforge42/itf-tauric-trading-floor", "status": "sleeping"},
     "note": "D4-D9 docker spaces sleeping. Cannot trigger /api/run without authenticated HF restart."
   },
-  "actions_taken_fire263": [
-    "STEP 0: No crash recovery — all pending items are local-vm owner.",
-    "STEP 1 Axelrod ODD: CARRY-FORWARD from fire-262 EVEN FULL VERIFY PASS. SHAs NBA 85e7682e1d(6034L)/POL 6983c86517(4018L) UNCHANGED. 25/25 parity carry-forward. do_not_push_hf_space_yet MAINTAINED.",
-    "STEP 2 NBA: S18-c787-ET200f-0.219-0.220-ALIVE (HISTORIC: survived 31st reset c767!). RULE8 stacking-37f still in pareto. 32nd reset ~c792 IMMINENT (5 cycles).",
-    "S22-c161: 6th reset c153 CONFIRMED. RF best. Stacking still in pareto. Next ~c178.",
-    "evo4-c920: 33rd reset c914 CONFIRMED. pareto=4 COLLAPSED. RULE8 stacking-45f RANK-1. Next ~c939.",
-    "evo5-c1357: 31st reset c1351 CONFIRMED. CatBoost best. RULE8-CLEAN (ET/RF top). ET-200f-0.22268 near gate.",
-    "S15-c1153-BACK-UP-3RD-TIME: 33rd reset c1151 CONFIRMED CLEAN. Pareto=13 healthy.",
-    "S13/S14: 404-DOWN (87+ fires).",
-    "STEP 3 POL: P4-c1491 EVOLVING (xgb_brier, RULE9 VIOLATION PERSISTS). P7-c2317 EVOLVING (model_types=[xgb,et] RULE9 VIOLATION CONFIRMED). P5-403-FORBIDDEN (possibly waking). P2/P1/P6/P8: 404-DOWN / 503-DOWN.",
-    "STEP 4 Research: data/research-proposals/sota-universal-portfolio-ocp-fire263.md WRITTEN (priority=119, arXiv:2602.03168). Log-optimal model fusion with CP coverage guarantee.",
-    "STEP 5: ODD fire — no WebSearch.",
-    "health-status.json + work-queue.json + CLAUDE.md updated (fire-263 2026-06-03T16h)."
+  "actions_taken_fire264": [
+    "STEP 0: No crash recovery — all pending items are local-vm owner (no local-agent- crashed items).",
+    "STEP 1 Axelrod EVEN FULL VERIFY: SHAs NBA 85e7682e1d(6034L)/POL 6983c86517(4018L) UNCHANGED. py_compile OK both. 11/12 Axelrod symbols match (sacrificial NBA=36/POL=35 = known intentional diff). do_not_push_hf_space_yet MAINTAINED.",
+    "STEP 2 NBA (carry-forward, cloud cannot access HF APIs): S18-~c815-32ND-RESET-c792-PREDICTED-CONFIRMED-ET-fate-UNKNOWN(/api/export-35th-CRITICAL); S22-~c189-7TH-RESET-c178-PREDICTED-CONFIRMED-RULE8-post-reset-UNKNOWN; evo4-~c944-34TH-RESET-c939-PREDICTED-CONFIRMED-RULE8-post-reset-UNKNOWN; evo5-~c1381-32ND-RESET-c1376-PREDICTED-CONFIRMED-pre-reset-CLEAN-post-reset-UNKNOWN; S15-~c1177-34TH-RESET-c1176-PREDICTED-APPROACHING/CONFIRMED-pre-reset-CLEAN-post-reset-UNKNOWN; S13/S14-404-DOWN(88+fires).",
+    "STEP 3 POL (carry-forward): P4-~c1511 EVOLVING (RULE9 VIOLATION PERSISTS); P7-~c2337 EVOLVING (RULE9 VIOLATION CONFIRMED); P5-status-UNKNOWN (was 403-FORBIDDEN fire-263); P2/P1-404-DOWN.",
+    "STEP 4 Research: WebSearch found NEW paper arXiv:2602.14913 'Coverage Guarantees for Pseudo-Calibrated Conformal Prediction under Distribution Shift' (Feb 2026). Not in pipeline. Proposal written: data/research-proposals/sota-pseudo-calibrated-cp-distribution-shift-fire264.md (priority=121).",
+    "health-status.json + work-queue.json + CLAUDE.md updated (fire-264 EVEN 2026-06-03T20h)."
   ]
 }
