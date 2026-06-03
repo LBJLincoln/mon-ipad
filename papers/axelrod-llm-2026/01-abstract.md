@@ -12,10 +12,8 @@ role reallocation* (SRR) allows underperforming agents to adopt under-represente
 strategy archetypes, provably increasing Jensen–Shannon population diversity.
 We formalise the system as the *LLM Prediction Society Game* (LPSG) — a population
 game with type heterogeneity — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
-refinement (Lemma 1, Proposition 2). Results across 12 NBA agents from four provider ecosystems (175 trading days)
-and 10 political agents from three provider ecosystems (Cerebras, Google, Mistral; 90 trading days) are pending full seasonal resolution
-(`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
+refinement (Lemma 1, Proposition 2). Empirical results across 12 NBA agents from four provider
+ecosystems and 10 political agents from three ecosystems (Cerebras, Google, Mistral) — spanning
+175 and 90 trading days respectively — will be reported upon completion of the 2025–26 seasonal
+log (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
 principled design of diverse, calibrated LLM prediction ensembles.
-
-> *Brier-delta, bankroll advantage, and JSD-gain figures to be inserted upon
-> full-season resolution of `data/arena/axelrod-log/`.*

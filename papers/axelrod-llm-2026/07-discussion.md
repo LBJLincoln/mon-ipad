@@ -289,7 +289,7 @@ The Prediction Arena findings [@zhang2026arena] — LLM agents losing
 16–30.8% on Kalshi despite sophisticated reasoning — are consistent with
 a failure of calibration at the agent level that is not corrected by the
 market-feedback signal alone. In our system, the evidence-based Kelly cap
-($\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$, cf. §3.6) creates
+($\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i^{\text{pilot}} \times 0.50)$, cf. §3.6) creates
 an automatic damping: agents with high Brier receive smaller stakes
 irrespective of the confidence expressed in their predictions, preventing
 a poorly calibrated agent from dominating the ensemble.
@@ -300,22 +300,22 @@ the Kelly mechanism provides a *within-system* calibration discipline that
 real-money implementations would strengthen: an agent that systematically
 overestimates its edge will experience higher Brier, which directly reduces
 its cap fraction $\kappa_i$ via the formula $\kappa_i = \max(0.01,\, 0.30 -
-\overline{B}_i \times 0.50)$, and compounding bankroll drawdown, which further
+\overline{B}_i^{\text{pilot}} \times 0.50)$, and compounding bankroll drawdown, which further
 reduces the absolute dollar stake even at a fixed cap fraction — a dual
 feedback loop absent from consequence-free benchmark evaluations.
 
 **Formula derivation and inverse-calibration probation criterion.** The
-specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$
+specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i^{\text{pilot}} \times 0.50)$
 (§3.6) was derived by cross-validation on the 2024–25 pilot season targeting
 three anchor points: $\kappa_i = 0.20$ for a pilot-best agent at
-$\overline{B}_i = 0.20$ (near current NBA prediction state-of-the-art);
-$\kappa_i \approx 0.175$ at the observed population mean $\overline{B}_i \approx 0.25$;
-and the floor $\kappa_i = 0.01$ activating at $\overline{B}_i \geq 0.58$.
+$\overline{B}_i^{\text{pilot}} = 0.20$ (near current NBA prediction state-of-the-art);
+$\kappa_i \approx 0.175$ at the observed population mean $\overline{B}_i^{\text{pilot}} \approx 0.25$;
+and the floor $\kappa_i = 0.01$ activating at $\overline{B}_i^{\text{pilot}} \geq 0.58$.
 The slope coefficient $0.50$ reflects the design requirement that halving Brier
 roughly doubles the Kelly allocation, creating a linearly increasing reward for
 calibration improvement.
 
-The inverse-calibration probation threshold $\overline{B}_i > 0.32$ (§3.6)
+The inverse-calibration probation threshold $\overline{B}_i^{\text{pilot}} > 0.32$ (§3.6)
 is grounded in comparison with the random-Bernoulli baseline. A predictor that
 always outputs $p = 0.5$ achieves Brier $= 0.25$ for any binary outcome
 ($\omega \in \{0, 1\}$, since $(0.5 - 0)^2 = (0.5 - 1)^2 = 0.25$).

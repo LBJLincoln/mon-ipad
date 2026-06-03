@@ -32,9 +32,10 @@ role reallocation* (SRR) allows underperforming agents to adopt under-represente
 strategy archetypes, provably increasing Jensen–Shannon population diversity.
 We formalise the system as the *LLM Prediction Society Game* (LPSG) — a population
 game with type heterogeneity — and prove SRR constitutes a diversity-improving Strong Nash equilibrium
-refinement (Lemma 1, Proposition 2). Results across 12 NBA agents from four provider ecosystems (175 trading days)
-and 10 political agents from three provider ecosystems (Cerebras, Google, Mistral; 90 trading days) are pending full seasonal resolution
-(`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
+refinement (Lemma 1, Proposition 2). Empirical results across 12 NBA agents from four provider
+ecosystems and 10 political agents from three ecosystems (Cerebras, Google, Mistral) — spanning
+175 and 90 trading days respectively — will be reported upon completion of the 2025–26 seasonal
+log (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
 principled design of diverse, calibrated LLM prediction ensembles.
 
 ---
@@ -696,6 +697,11 @@ Let $\mathcal{V}_d = \{r \in \mathcal{R} : x_{r,d} < \tau_{\text{vac}}\}$ denote
 the vacancy set. *Note (experimental parameters):* With $N = 12$ and $K = 20$,
 $\tau_{\text{vac}} = 0.025 < 1/N$, so vacancy $\equiv$ zero occupants
 (see Appendix A, §A.5).
+Since $N = 12 < K = 20$, at least $K - N = 8$ archetypes are always vacant regardless of the
+current archetype distribution; the prerequisite $\mathcal{V}_d \neq \emptyset$ in Definition 2
+is therefore *guaranteed* throughout our experimental regime. The conditional "if
+$\mathcal{V}_d \neq \emptyset$" in Definition 2 is retained for notational completeness in the
+general-population ($N \geq K$) case.
 
 **SRR rule.**
 
@@ -1027,12 +1033,15 @@ no agent can observe another's current-day output until the end-of-day broadcast
 **Bankroll and Kelly allocation.** Each agent maintains a virtual bankroll
 initialised at \$100,000 USD-equivalent. Stake sizing is governed by three
 distinct parameters: (a) the **Kelly cap** $\kappa_i = \max(0.01,\, 0.30 -
-\overline{B}_i \times 0.50)$, a Brier-derived per-agent ceiling on the
+\overline{B}_i^{\text{pilot}} \times 0.50)$, a Brier-derived per-agent ceiling on the
 stake fraction^[The formula's mathematical range is $[0.01, 0.30]$ (maximum
-at $\overline{B}_i = 0$); the empirical operating range is $[0.01, 0.20]$ given
-our observed pilot Brier $\overline{B}_i \geq 0.20$. Derivation and inverse-calibration
-probation criterion in §6.5.], where $\overline{B}_i$ is the rolling 28-day
-Brier from the pilot season;
+at $\overline{B}_i^{\text{pilot}} = 0$); the empirical operating range is $[0.01, 0.20]$ given
+our observed pilot Brier $\overline{B}_i^{\text{pilot}} \geq 0.20$. Derivation and inverse-calibration
+probation criterion in §6.5.], where $\overline{B}_i^{\text{pilot}}$ is the agent's mean Brier
+over the final $W_\kappa = 28$ days of the held-out 2024–25 pilot season (see Table 2 for
+$W_\kappa$) — a *static pre-season constant*, fixed before the 2025–26 season begins and not
+updated in-season. Note: $\overline{B}_i^{\text{pilot}}$ is distinct from the live rolling Brier
+$\overline{B}_{i,d}$ (window $W = 7$; §3.1, §3.4), which drives sacrifice-eligibility evaluation;
 (b) the **personality risk weight** $\rho_i \in (0, 1]$, an agent-specific
 scalar that scales realised stake between the archetype floor and the Kelly
 ceiling (values in Table 3, §4.1); and (c) the **archetype minimum floor**
@@ -1131,9 +1140,11 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $K$ | Strategy archetypes | 20 |
 | $T$ | Total events (NBA / political) | 1,257 / 1,120 |
 | $D$ | Total trading days (NBA / political) | 175 / 90 |
-| $\kappa_i$ | Agent Kelly cap (Brier-derived) | $\max(0.01,\; 0.30 - 0.50\overline{B}_i)$; empirical range $[0.01, 0.20]$ (§3.6) |
+| $V_0$ | Initial virtual bankroll per agent | \$100,000 |
+| $\kappa_i$ | Agent Kelly cap (pilot Brier-derived, static) | $\max(0.01,\; 0.30 - 0.50\overline{B}_i^{\text{pilot}})$; empirical range $[0.01, 0.20]$ (§3.6) |
+| $W_\kappa$ | Pilot rolling window for Kelly cap (days) | 28 |
 | $\delta_{\text{sac}}$ | Sacrifice threshold (Brier above mean) | 0.02 |
-| $W$ | Patience window (days) | 7 |
+| $W$ | Patience window / live rolling Brier window (days) | 7 |
 | $W_{\text{persist}}$ | Reallocation persistence (days) | 14 |
 | $\tau_{\text{vac}}$ | Vacancy threshold | $1/(2K) = 0.025$ |
 | $\rho_i$ | Personality risk weight (agent-level) | $[0.35, 0.70]$ (actual per Table 3; design floor: 0.30) |
@@ -1141,9 +1152,11 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $\epsilon_{\text{keep}}$ | Retain threshold (Brier improvement) | 0.005 |
 | $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (empirical) |
 
-*Table 2: LPSG hyperparameters. Values for $\delta_{\text{sac}}$, $W$, and
-$\tau_{\text{vac}}$ were selected on a held-out 2024–25 season pilot;
-see Appendix C.2 for sensitivity analysis.*
+*Table 2: LPSG hyperparameters. Values for $\delta_{\text{sac}}$, $W$, and $\tau_{\text{vac}}$ were
+selected on a held-out 2024–25 season pilot; see Appendix C.2 for sensitivity analysis.
+Notation note: $\overline{B}_i^{\text{pilot}}$ (Kelly cap) is a static pre-season constant
+computed over a $W_\kappa = 28$-day pilot window; distinct from $\overline{B}_{i,d}$
+(live rolling Brier, $W = 7$ days), which drives sacrifice-eligibility evaluation (§3.4).*
 
 ---
 
@@ -1213,8 +1226,8 @@ configuration.
 
 *Table 3: NBA LLM agent cohort ($N = 12$). $\rho_i \in (0,1]$ is the agent's
 personality risk weight governing willingness to commit to high-edge opportunities;
-the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
-\times 0.50)$ (§3.6), empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i \in [0.20, 0.58]$, is computed from each agent's pilot-season
+the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i^{\text{pilot}}
+\times 0.50)$ (§3.6), empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i^{\text{pilot}} \in [0.20, 0.58]$, is computed from each agent's pilot-season
 Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
 Model sizes range from 235B (T1–T2, and T12 as rerouted) to undisclosed (Google Gemini,
 Mistral variants); the original T12 design used a 4B parameter model.
@@ -2061,7 +2074,7 @@ The Prediction Arena findings [@zhang2026arena] — LLM agents losing
 16–30.8% on Kalshi despite sophisticated reasoning — are consistent with
 a failure of calibration at the agent level that is not corrected by the
 market-feedback signal alone. In our system, the evidence-based Kelly cap
-($\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$, cf. §3.6) creates
+($\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i^{\text{pilot}} \times 0.50)$, cf. §3.6) creates
 an automatic damping: agents with high Brier receive smaller stakes
 irrespective of the confidence expressed in their predictions, preventing
 a poorly calibrated agent from dominating the ensemble.
@@ -2072,21 +2085,21 @@ the Kelly mechanism provides a *within-system* calibration discipline that
 real-money implementations would strengthen: an agent that systematically
 overestimates its edge will experience higher Brier, which directly reduces
 its cap fraction $\kappa_i$ via the formula $\kappa_i = \max(0.01,\, 0.30 -
-\overline{B}_i \times 0.50)$, and compounding bankroll drawdown, which further
+\overline{B}_i^{\text{pilot}} \times 0.50)$, and compounding bankroll drawdown, which further
 reduces the absolute dollar stake even at a fixed cap fraction — a dual
 feedback loop absent from consequence-free benchmark evaluations.
 
 **Formula derivation and inverse-calibration probation criterion.** The
-specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i \times 0.50)$
+specific formula $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i^{\text{pilot}} \times 0.50)$
 (§3.6) was derived by cross-validation on the 2024–25 pilot season targeting
 three anchor points: $\kappa_i = 0.20$ for a pilot-best agent at
-$\overline{B}_i = 0.20$ (near current NBA prediction state-of-the-art);
-$\kappa_i \approx 0.175$ at the observed population mean $\overline{B}_i \approx 0.25$;
-and the floor $\kappa_i = 0.01$ activating at $\overline{B}_i \geq 0.58$.
+$\overline{B}_i^{\text{pilot}} = 0.20$ (near current NBA prediction state-of-the-art);
+$\kappa_i \approx 0.175$ at the observed population mean $\overline{B}_i^{\text{pilot}} \approx 0.25$;
+and the floor $\kappa_i = 0.01$ activating at $\overline{B}_i^{\text{pilot}} \geq 0.58$.
 The slope coefficient $0.50$ reflects the design requirement that halving Brier
 roughly doubles the Kelly allocation.
 
-The inverse-calibration probation threshold $\overline{B}_i > 0.32$ (§3.6)
+The inverse-calibration probation threshold $\overline{B}_i^{\text{pilot}} > 0.32$ (§3.6)
 is grounded in comparison with the random-Bernoulli baseline. A predictor that
 always outputs $p = 0.5$ achieves Brier $= 0.25$ for any binary outcome
 ($\omega \in \{0, 1\}$, since $(0.5 - 0)^2 = (0.5 - 1)^2 = 0.25$).

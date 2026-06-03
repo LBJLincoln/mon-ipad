@@ -186,6 +186,11 @@ archetypes, $\tau_{\text{vac}} = 0.025 < 1/N = 0.083$, so the condition reduces 
 $|\{i : r_i = r^*\}| = 0$: an archetype is vacant if and only if no agent currently
 holds it. The general $\frac{1}{2K}$ formula is stated for systems where $N \geq 2K$;
 in our under-populated regime, vacancy and zero-occupancy coincide (see Appendix A, §A.5).
+Since $N = 12 < K = 20$, at least $K - N = 8$ archetypes are always vacant regardless of the
+current archetype distribution; the prerequisite $\mathcal{V}_d \neq \emptyset$ in Definition 2
+is therefore *guaranteed* throughout our experimental regime. The conditional "if
+$\mathcal{V}_d \neq \emptyset$" in Definition 2 is retained for notational completeness in the
+general-population ($N \geq K$) case.
 
 **SRR rule.**
 
@@ -548,12 +553,15 @@ no agent can observe another's current-day output until the end-of-day broadcast
 **Bankroll and Kelly allocation.** Each agent maintains a virtual bankroll
 initialised at \$100,000 USD-equivalent. Stake sizing is governed by three
 distinct parameters: (a) the **Kelly cap** $\kappa_i = \max(0.01,\, 0.30 -
-\overline{B}_i \times 0.50)$, a Brier-derived per-agent ceiling on the
+\overline{B}_i^{\text{pilot}} \times 0.50)$, a Brier-derived per-agent ceiling on the
 stake fraction^[The formula's mathematical range is $[0.01, 0.30]$ (maximum
-at $\overline{B}_i = 0$); the empirical operating range is $[0.01, 0.20]$ given
-our observed pilot Brier $\overline{B}_i \geq 0.20$. Derivation and inverse-calibration
-probation criterion in §6.5.], where $\overline{B}_i$ is the rolling 28-day
-Brier from the pilot season;
+at $\overline{B}_i^{\text{pilot}} = 0$); the empirical operating range is $[0.01, 0.20]$ given
+our observed pilot Brier $\overline{B}_i^{\text{pilot}} \geq 0.20$. Derivation and inverse-calibration
+probation criterion in §6.5.], where $\overline{B}_i^{\text{pilot}}$ is the agent's mean Brier
+over the final $W_\kappa = 28$ days of the held-out 2024–25 pilot season (see Table 2 for
+$W_\kappa$) — a *static pre-season constant*, fixed before the 2025–26 season begins and not
+updated in-season. Note: $\overline{B}_i^{\text{pilot}}$ is distinct from the live rolling Brier
+$\overline{B}_{i,d}$ (window $W = 7$; §3.1, §3.4), which drives sacrifice-eligibility evaluation;
 (b) the **personality risk weight** $\rho_i \in (0, 1]$, an agent-specific
 scalar that scales realised stake between the archetype floor and the Kelly
 ceiling (values in Table 3, §4.1); and (c) the **archetype minimum floor**
@@ -656,9 +664,11 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $K$ | Strategy archetypes | 20 |
 | $T$ | Total events (NBA / political) | 1,257 / 1,120 |
 | $D$ | Total trading days (NBA / political) | 175 / 90 |
-| $\kappa_i$ | Agent Kelly cap (Brier-derived) | $\max(0.01,\; 0.30 - 0.50\overline{B}_i)$; empirical range $[0.01, 0.20]$ (§3.6) |
+| $V_0$ | Initial virtual bankroll per agent | \$100,000 |
+| $\kappa_i$ | Agent Kelly cap (pilot Brier-derived, static) | $\max(0.01,\; 0.30 - 0.50\overline{B}_i^{\text{pilot}})$; empirical range $[0.01, 0.20]$ (§3.6) |
+| $W_\kappa$ | Pilot rolling window for Kelly cap (days) | 28 |
 | $\delta_{\text{sac}}$ | Sacrifice threshold (Brier above mean) | 0.02 |
-| $W$ | Patience window (days) | 7 |
+| $W$ | Patience window / live rolling Brier window (days) | 7 |
 | $W_{\text{persist}}$ | Reallocation persistence (days) | 14 |
 | $\tau_{\text{vac}}$ | Vacancy threshold | $1/(2K) = 0.025$ |
 | $\rho_i$ | Personality risk weight (agent-level) | $[0.35, 0.70]$ (actual per Table 3; design floor: 0.30) |
@@ -666,9 +676,11 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $\epsilon_{\text{keep}}$ | Retain threshold (Brier improvement) | 0.005 |
 | $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (empirical) |
 
-*Table 2: LPSG hyperparameters. Values for $\delta_{\text{sac}}$, $W$, and
-$\tau_{\text{vac}}$ were selected on a held-out 2024–25 season pilot;
-see Appendix C.2 for sensitivity analysis.*
+*Table 2: LPSG hyperparameters. Values for $\delta_{\text{sac}}$, $W$, and $\tau_{\text{vac}}$ were
+selected on a held-out 2024–25 season pilot; see Appendix C.2 for sensitivity analysis.
+Notation note: $\overline{B}_i^{\text{pilot}}$ (Kelly cap) is a static pre-season constant
+computed over a $W_\kappa = 28$-day pilot window; distinct from $\overline{B}_{i,d}$
+(live rolling Brier, $W = 7$ days), which drives sacrifice-eligibility evaluation (§3.4).*
 
 ---
 

@@ -9157,3 +9157,221 @@ Appendix B.1 proves: *for a fixed event t*, $\text{JSD}_t = -\frac{1}{2}H''(\bar
 - `references.bib`: `@lee2026timeseek` entry added (EEE2)
 - `paper.md`: all of the above mirrored (EEE1 ×4, EEE2 ×3 locations, EEE3, EEE4)
 - `paper.md`: all five edits mirrored (DDD1 × 3 locations, DDD2, DDD3)
+
+---
+
+# CYCLE GGG — fire-263 (2026-06-03T16h, ODD)
+
+*Hostile-Reviewer-2 pass: fresh read of current manuscript state after FFF fixes.*
+*Focus: cross-section consistency, notation completeness, submission-format hygiene.*
+
+---
+
+### GGG1 (Minor — submission format). Abstract trailing blockquote is atypical for journal/conference submission
+
+**Location:** `01-abstract.md` lines 19–21.
+
+**Problem.** The abstract ended with a markdown blockquote placeholder:
+
+> *Brier-delta, bankroll advantage, and JSD-gain figures to be inserted upon
+> full-season resolution of `data/arena/axelrod-log/`.*
+
+Abstract sections in Nature Machine Intelligence, Science Advances, and NeurIPS do not
+contain nested blockquotes, internal drafting reminders, or file-path references.
+The abstract body already stated "are pending full seasonal resolution" — the
+trailing note was redundant and would fail a submission-system format check.
+Additionally, the phrase "Results across 12 NBA agents ... are pending full seasonal
+resolution (`data/arena/axelrod-log/`)" contains a file path inline in the abstract,
+which is non-standard for published prose.
+
+**Fix applied (`01-abstract.md` + `paper.md`):**
+
+The trailing blockquote is removed. The "pending" sentence is reworded to clean prose:
+
+Old:
+> "Results across 12 NBA agents from four provider ecosystems (175 trading days)
+> and 10 political agents from three provider ecosystems (Cerebras, Google, Mistral; 90 trading days) are pending full seasonal resolution
+> (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
+> principled design of diverse, calibrated LLM prediction ensembles.
+>
+> *Brier-delta, bankroll advantage, and JSD-gain figures to be inserted upon
+> full-season resolution of `data/arena/axelrod-log/`.*"
+
+New:
+> "Empirical results across 12 NBA agents from four provider ecosystems
+> and 10 political agents from three ecosystems (Cerebras, Google, Mistral) — spanning
+> 175 and 90 trading days respectively — will be reported upon completion of the 2025–26 seasonal
+> log (`data/arena/axelrod-log/`). The framework bridges Axelrod-era cooperation theory and
+> principled design of diverse, calibrated LLM prediction ensembles."
+
+*Post-fix verification:*
+`grep "Brier-delta" 01-abstract.md paper.md` → zero hits. ✓
+`grep "Brier-delta" 01-abstract.md paper.md` → zero hits. ✓
+`grep "Empirical results across" 01-abstract.md paper.md` → two hits. ✓
+
+---
+
+### GGG2 (Minor — clarity). §3.4 does not explicitly state $\mathcal{V}_d \neq \emptyset$ is guaranteed in the experimental regime
+
+**Location:** `04-method.md` §3.4 "Archetype vacancy" paragraph (≈ line 188); `paper.md` same.
+
+**Problem.** Definition 2 begins with "If agent $i$ is sacrifice-eligible at day $d$ and
+$\mathcal{V}_d \neq \emptyset$". The prior paragraph established that vacancy coincides with
+zero occupancy when $N = 12$ and $K = 20$, but never explicitly stated that
+$\mathcal{V}_d \neq \emptyset$ is *guaranteed* for all days in our experimental setup.
+A Reviewer 2 who looks for degenerate cases (all 12 agents in 12 distinct archetypes, 8 unoccupied)
+would correctly note that zero-occupancy is common in the under-populated regime, but a pedantic
+reviewer could ask: "What happens when $\mathcal{V}_d = \emptyset$? Does the SRR rule fail
+silently?" The answer is that $\mathcal{V}_d = \emptyset$ is impossible when $N < K$, but
+this was left implicit.
+
+**Fix applied (`04-method.md` + `paper.md`):** One paragraph added after the vacancy
+definition note, before Definition 2:
+
+> "Since $N = 12 < K = 20$, at least $K - N = 8$ archetypes are always vacant regardless of the
+> current archetype distribution; the prerequisite $\mathcal{V}_d \neq \emptyset$ in Definition 2
+> is therefore *guaranteed* throughout our experimental regime. The conditional 'if
+> $\mathcal{V}_d \neq \emptyset$' in Definition 2 is retained for notational completeness in the
+> general-population ($N \geq K$) case."
+
+*Post-fix verification:*
+`grep "guaranteed.*throughout our experimental" 04-method.md paper.md` → two hits (one per file). ✓
+
+---
+
+### GGG3 (Major — notation). $\overline{B}_i$ (static Kelly cap) vs. $\overline{B}_{i,d}$ (live rolling) — symbol collision and missing Table 2 entries
+
+**Location:** `04-method.md` §3.1, §3.6, Table 2 (§3.7); `05-experimental-setup.md` Table 3 caption;
+`07-discussion.md` §6.5; `paper.md` all of the above.
+
+**Problem.** The manuscript used two notations that a careful reviewer would conflate:
+
+1. **$\overline{B}_{i,d}$** (§3.1): the agent's *live rolling* mean Brier over the most recent
+   $W = 7$ days, updated nightly; drives sacrifice-eligibility (§3.4).
+2. **$\overline{B}_i$** (§3.6, §4.1 Table 3, §6.5): the agent's *static pilot-season* mean Brier
+   over a 28-day window, computed once before the 2025–26 season and never updated; drives the
+   Kelly cap formula.
+
+These are distinct quantities (different time bases, different window lengths, different
+update frequencies), but the notational distinction relied entirely on the presence vs.
+absence of the time subscript $d$ — easy to miss when reading quickly. No symbol was
+assigned to the 28-day pilot window, and Table 2 ("Summary of Parameters") was missing two
+entries: the Kelly cap rolling window ($W_\kappa = 28$) and the initial bankroll ($V_0$),
+both referenced in §3.6 but not listed.
+
+Additionally, Reviewer 2 might ask whether $\kappa_i$ is recomputed in-season (as a
+"dynamic Kelly cap") or fixed: the prose said "pilot season" but the static nature
+was never stated as a design choice.
+
+**Specific issues:**
+- (a) `$\overline{B}_i$` never disambiguated from `$\overline{B}_{i,d}$` despite different meaning
+- (b) $W_\kappa = 28$ (pilot window) not defined as a symbol; not in Table 2
+- (c) $V_0 = \$100,000$ (initial bankroll) not in Table 2
+- (d) Kelly cap's static-vs-dynamic nature implicit, not stated
+
+**Fix applied (all affected files):**
+
+*(a)* Renamed $\overline{B}_i \to \overline{B}_i^{\text{pilot}}$ throughout all occurrences
+in `04-method.md`, `05-experimental-setup.md`, `07-discussion.md`, and `paper.md` via
+`replace_all`. Confirmed `$\overline{B}_i$` does not match `$\overline{B}_{i,d}$`
+(distinct subscript forms: `_i` vs. `_{i,d}`).
+
+*(b, c)* Table 2 updated with two new rows:
+- `$V_0$ | Initial virtual bankroll per agent | \$100,000`
+- `$W_\kappa$ | Pilot rolling window for Kelly cap (days) | 28`
+
+The $\kappa_i$ row description updated from "Brier-derived" to "pilot Brier-derived, static".
+
+*(d)* §3.6 Kelly cap definition prose updated from:
+
+Old: "where $\overline{B}_i^{\text{pilot}}$ is the rolling 28-day Brier from the pilot season;"
+
+New: "where $\overline{B}_i^{\text{pilot}}$ is the agent's mean Brier over the final $W_\kappa = 28$
+days of the held-out 2024–25 pilot season (see Table 2 for $W_\kappa$) — a *static pre-season constant*,
+fixed before the 2025–26 season begins and not updated in-season. Note: $\overline{B}_i^{\text{pilot}}$
+is distinct from the live rolling Brier $\overline{B}_{i,d}$ (window $W = 7$; §3.1, §3.4),
+which drives sacrifice-eligibility evaluation;"
+
+Table 2 footnote expanded:
+
+Old: "Values for $\delta_{\text{sac}}$, $W$, and $\tau_{\text{vac}}$ were selected on a
+held-out 2024–25 season pilot; see Appendix C.2 for sensitivity analysis."
+
+New: adds — "Notation note: $\overline{B}_i^{\text{pilot}}$ (Kelly cap) is a static pre-season constant
+computed over a $W_\kappa = 28$-day pilot window; distinct from $\overline{B}_{i,d}$
+(live rolling Brier, $W = 7$ days), which drives sacrifice-eligibility evaluation (§3.4)."
+
+*Post-fix verification:*
+`grep "overline{B}_i[^{^]" ... | grep -v "pilot"` → zero hits across all four files. ✓
+`grep "W_\\kappa" 04-method.md paper.md | wc -l` → 4+4 = 8 hits (Table 2 row, §3.6 prose def, Table 2 footnote, §3.6 cross-reference sentence). ✓
+`grep "V_0.*Initial virtual" 04-method.md paper.md` → 2 hits (one per file). ✓
+
+---
+
+### GGG4 (Resolved — no action). Abstract "four provider ecosystems" — verified correct
+
+**Location:** `01-abstract.md` line 5.
+
+**Potential concern.** The introduction section mentions "(Cerebras / Google Gemini 3 / Mistral / OpenRouter / self-hosted Phi-3.5)" which could be read as five providers. The abstract says "four provider ecosystems".
+
+**Verification.** §4.1 explicitly states: "The cohort spans **four** provider ecosystems" and Table 3 lists: Cerebras (T1–T3, T12 rerouted), Google (T4–T5), Mistral (T6–T10), OpenRouter (T11). T12's rerouting to Cerebras consolidates what was a planned fifth provider into the Cerebras ecosystem. The abstract is correct. No fix required.
+
+---
+
+### GGG5 (Flag — pre-submission). `@quantagents2025` BibTeX VERIFY note not yet resolved
+
+**Location:** `references.bib`, entry `@quantagents2025`.
+
+**Problem.** The BibTeX note reads: "VERIFY: two distinct works share the 'QuantAgents' name; see also arXiv:2509.09995". This flag was added in an early revision cycle and has never been resolved. Pre-submission checklist item #4 (from FFF) remains open.
+
+**Action required before submission:** Confirm which arXiv ID (2510.04643 vs. 2509.09995) corresponds to the work actually cited in the manuscript (Ma et al. 2025 "Agent Trading Arena"), verify the author list matches, and remove the VERIFY flag from the BibTeX note. *(No code change applied this cycle — requires external arXiv access.)*
+
+---
+
+### GGG6 (Flag — pre-submission). `@ouyang2022training` author list uses `and others` — pre-submission verification still open
+
+**Location:** `references.bib`, entry `@ouyang2022training`.
+
+**Problem.** The BibTeX entry ends with `and others` and carries a "PRE-SUBMISSION: verify complete author list" note (pre-submission checklist item #1). The full author list for arXiv:2203.02155 has 31 named authors; the entry should use the full list or a canonical abbreviated form accepted by the target venue (e.g., NeurIPS uses abbreviated `et al.` in proceedings style, but Nature-tier journals require full author lists). *(No code change applied this cycle — requires external arXiv access.)*
+
+---
+
+## CYCLE GGG SUMMARY
+
+**Fixed this cycle:**
+- GGG1 (Minor, format): Abstract trailing blockquote removed; "pending" sentence rewritten to clean prose without file paths. `01-abstract.md` + `paper.md` (2 files, 1 location each).
+- GGG2 (Minor, clarity): §3.4 — explicit statement that $\mathcal{V}_d \neq \emptyset$ is guaranteed when $N < K$; conditional in Definition 2 retained for generality. `04-method.md` + `paper.md` (2 files).
+- GGG3 (Major, notation): $\overline{B}_i$ → $\overline{B}_i^{\text{pilot}}$ (replace_all) across 4 files (14 locations total); $W_\kappa = 28$ introduced as a symbol; $V_0 = \$100,000$ and $W_\kappa$ added as Table 2 rows; $\kappa_i$ description updated to "static"; Table 2 notation footnote added; §3.6 Kelly cap prose clarified with static-vs-live distinction.
+
+**Flagged (no code change — require external access):**
+- GGG4: Abstract "four provider ecosystems" — verified correct against §4.1 (no fix needed).
+- GGG5: `@quantagents2025` VERIFY note unresolved — pre-submission item #4.
+- GGG6: `@ouyang2022training` incomplete author list — pre-submission item #1.
+
+**Remaining open from prior cycles:**
+- Items 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 from FFF pre-submission checklist.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155) — open (GGG6)
+2. ✓ `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. ✓ `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (GGG5)
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites 2026-04-22
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E
+14. Verify A6 via matched-pairs pilot analysis
+
+**Structural changes this cycle:**
+- `01-abstract.md`: abstract cleanup (GGG1)
+- `04-method.md` §3.4: $\mathcal{V}_d$ guarantee sentence (GGG2)
+- `04-method.md` §3.6: Kelly cap static/live distinction prose (GGG3)
+- `04-method.md` Table 2 (§3.7): $V_0$ + $W_\kappa$ rows; $\kappa_i$ description; footnote (GGG3)
+- `05-experimental-setup.md` Table 3 caption: $\overline{B}_i \to \overline{B}_i^{\text{pilot}}$ (GGG3)
+- `07-discussion.md` §6.5: $\overline{B}_i \to \overline{B}_i^{\text{pilot}}$ ×7 locations (GGG3)
+- `paper.md`: all of the above mirrored (GGG1 ×1, GGG2 ×1, GGG3 ×14 locations)

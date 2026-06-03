@@ -46,8 +46,8 @@ configuration.
 
 *Table 3: NBA LLM agent cohort ($N = 12$). $\rho_i \in (0,1]$ is the agent's
 personality risk weight governing willingness to commit to high-edge opportunities;
-the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i
-\times 0.50)$ (§3.6), empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i \in [0.20, 0.58]$, is computed from each agent's pilot-season
+the formula-derived Kelly stake cap $\kappa_i = \max(0.01,\, 0.30 - \overline{B}_i^{\text{pilot}}
+\times 0.50)$ (§3.6), empirical range $[0.01, 0.20]$ for pilot $\overline{B}_i^{\text{pilot}} \in [0.20, 0.58]$, is computed from each agent's pilot-season
 Brier and multiplied by $\rho_i$ to produce the realised stake fraction.
 Model sizes range from 235B (T1–T2, and T12 as rerouted) to undisclosed (Google Gemini,
 Mistral variants); the original T12 design used a 4B parameter model.
