@@ -1,8 +1,25 @@
 {
   "version": 1,
-  "updated_at": "2026-06-03T16:00:00Z",
+  "updated_at": "2026-06-03T20:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire264-2026-06-03T20h",
+      "priority": 314,
+      "status": "done",
+      "completed_at": "2026-06-03T20:00:00Z",
+      "completed_by": "cloud-brain-fire-264",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-264 EVEN: Axelrod-verify-FULL-PASS-25/25-parity-OK-py_compile-OK-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; Mech-A/B/C+AblationFlags-ALL-CODE-DONE-BLOCKED(do_not_push_hf_space_yet); S18/S22/evo4/evo5/S13/S14/S15+POL-carry-forward-from-fire263(88+fires-DOWN); EVEN-WebSearch:arXiv:2506.05583-CP-Adaptive-Unknown-Subpopulation-Shifts-Jun2026(NEW-priority=121); work-queue.json+CLAUDE.md updated (2026-06-03T20h)"
+    },
+    {
+      "id": "vm-research-cp-adaptive-subpopulation-fire264",
+      "priority": 121,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-03T20:00:00Z",
+      "subject": "RESEARCH fire-264 EVEN: Conformal Prediction Adaptive to Unknown Subpopulation Shifts — arXiv:2506.05583 (Jun 2026). Key: adaptively filters and reweights calibration data per test point to guarantee tight subpopulation coverage under unknown distribution shift — no knowledge of subpopulation structure required at calibration time. Application 1: NBA subpopulation-adaptive CP — thresholds per venue x fatigue x back-to-back x playoff-phase without pre-specifying subgroup structure. Application 2: Add subpopulation_coverage_gap as new Pareto objective. Application 3: Shift-aware threshold per game context in predict_today.py. Application 4: Port to political_engine.py for state x incumbency x competitive_tier adaptive calibration. Library: MAPIE (adaptive method) + custom reweighting filter (~30 lines). Expected: 0.001-0.002 Brier."
+    },
     {
       "id": "cloud-brain-fire263-2026-06-03T16h",
       "priority": 313,
