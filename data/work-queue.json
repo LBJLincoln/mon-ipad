@@ -1,8 +1,33 @@
 {
   "version": 1,
-  "updated_at": "2026-06-04T12:00:00Z",
+  "updated_at": "2026-06-04T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire269-2026-06-04T16h",
+      "priority": 319,
+      "status": "done",
+      "completed_at": "2026-06-04T16:00:00Z",
+      "completed_by": "cloud-brain-fire-269",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-269 ODD: S18-c851-g2552-stag0-35TH-RESET-c842-CONFIRMED(c817+25=c842-EXACT)-CatBoost-0.2191-EVICTED-stacking37f-STILL-DOMINATES(diversify-c848-INEFFECTIVE)-next-reset~c867(16cy); S22-c233-g699-stag0-9TH-RESET-c228-CONFIRMED(c203+25=c228-EXACT)-⚡CLEAN-REBUILD:lightgbm_brier-44f(NO-stacking!-gen691-698)-XGBoost-0.21985-EVICTED-pareto7→17-GROWING-next-reset~c253(20cy); evo4-c1093-g3278-stag0-38TH-RESET-c1064-CONFIRMED+39TH-RESET-c1089-CONFIRMED-⚡lightgbm-43f-0.2353(NO-stacking!)-best_brier=0.22169-pareto=13-next-reset~c1114(21cy); evo5-c1450-g4350-stag0-35TH-RESET-~c1451-IMMINENT(1cy!)-stacking33f-STILL-DOMINATES-cycle-stag=23; P4-c2355-RULE9-VIOLATION(logistic_regression-gen7061-7063-no-LightGBM); P5-c760-xgboost_brier-0.2499-115f(2bp-from-POL-gate-0.2497!); P7-c3445-RULE9-VIOLATION-CONFIRMED(xgboost-41f-gen10333-10335-was-LIKELY-RESOLVED-fire268); P1/P2/S13/S14/S15-404-DOWN(93+fires); Axelrod-ODD-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED-do_not_push_hf_space_yet-MAINTAINED; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T16h)"
+    },
+    {
+      "id": "vm-evo5-35th-reset-c1451-imminent-fire269",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T16:00:00Z",
+      "subject": "fire-269 ODD CRITICAL: evo5 35TH RESET ~c1451 IMMINENT (1 CYCLE!). RULE8-VIOLATION: stacking-33f rank-0 STILL DOMINATES gen4348-4349. cycle-stag=23 approaching diversify threshold. PATTERN: 34 previous resets have all failed to evict stacking — stacking returns at each reseed because it is in MODEL_TYPES/reseed pool. See S18 for proof: remote diversify c848 CONFIRMED EXECUTED but stacking immediately re-dominated (diversify INEFFECTIVE with stacking in reseed pool). VM: REMOVE stacking from evo5 app.py MODEL_TYPES/reseed pool IMMEDIATELY before ~c1451. This requires a code-level fix — remote commands WILL NOT fix RULE8. After stacking removal, island will rebuild cleanly (see S22 lightgbm_brier-44f and evo4 lightgbm-43f clean rebuild patterns starting fire-269)."
+    },
+    {
+      "id": "vm-p5-pol-gate-monitor-fire269",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T16:00:00Z",
+      "subject": "fire-269 ODD URGENT: P5 xgboost_brier-0.2499-115f at gen2278-2279 — ONLY 2bp FROM POL GATE 0.2497! P5 RULE9 was RESOLVED fire-268 (LGB dominant at c502). If xgboost_brier-0.2499 persists or improves below 0.2497 at next fire, it qualifies as new POL fleet-best candidate. VM: (1) Monitor P5 /api/status closely — if xgboost_brier in pareto at or below 0.2497, run /api/checkpoint IMMEDIATELY, (2) Current P5 best_brier=0.25316 is field-lag — actual pareto 0.2499 is 17bp better, (3) Rule #5: POL fleet-best gate brier < 0.2497 → EXTREME URGENT checkpoint."
+    },
     {
       "id": "cloud-brain-fire268-2026-06-04T12h",
       "priority": 318,
