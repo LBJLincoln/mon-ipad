@@ -26,66 +26,72 @@
     "p4": {
       "status": "EVOLVING",
       "cycle_estimate": "~2169",
-      "rule9": "VIOLATION PERSISTS (no LightGBM — logistic_regression+xgboost_brier+catboost top-5)",
-      "alert": "RULE9 PERSISTS at c2169. VM: add LightGBM to MODEL_TYPES immediately."
+      "best_brier": 0.25144,
+      "rule9": "VIOLATION PERSISTS (no LightGBM after 36+ resets, 2169+ cycles)",
+      "alert": "RULE9 PERSISTS. VM: add LightGBM to MODEL_TYPES immediately."
     },
     "p5": {
       "status": "EVOLVING",
       "cycle_estimate": "~502",
-      "rule9": "RESOLVED (fire-268 confirmed — LightGBM top-3: LGB-76f/94f/97f brier=0.25036)",
-      "note": "FRESH RESTART from c=3 (fire-265) → now c=502. Cycle speed ~1.5min/cycle."
+      "best_brier": 0.24994,
+      "rule9": "RESOLVED (fire-268 LGB-dominant top-3 all LGB at c502)",
+      "alert": "RULE9 RESOLVED fire-268! 0.24994 approaching POL gate 0.2497 — monitor."
     },
     "p7": {
       "status": "EVOLVING",
       "cycle_estimate": "~3225",
       "best_brier": 0.25331,
-      "rule9": "LIKELY RESOLVED (LightGBM in top-5 model_types at c3225)",
-      "alert": "VM: verify LightGBM definitively in MODEL_TYPES config to close RULE9 violation."
+      "rule9": "LIKELY RESOLVED (LightGBM in top-5 at c3225 — was VIOLATION fire-267)",
+      "alert": "RULE9 LIKELY RESOLVED. Monitor confirmation next fire."
     }
   },
   "nba_quant": {
     "fleet_best_official": 0.22012,
     "fleet_best_source": "S15 RF-75f CHECKPOINTED fire-61",
-    "triple_fleet_best_breakthrough": {
-      "note": "FIRE-268 TRIPLE FLEET-BEST BREAKTHROUGH: 3 simultaneous candidates below 0.22012",
-      "candidates": [
-        {"island": "S18", "model": "CatBoost-200f", "brier": 0.2191, "gap_bp": 8.2, "next_reset": "~c842 (10cy)"},
-        {"island": "S22", "model": "XGBoost-200f", "brier": 0.21985, "gap_bp": 2.7, "next_reset": "~c228 (5cy — CRITICAL)"},
-        {"island": "evo4", "model": "RF-200f", "brier": 0.21985, "gap_bp": 2.7, "next_reset": "~c1064 (5cy — CRITICAL)"}
-      ]
-    },
+    "triple_fleet_best_breakthrough": "HISTORIC FIRST fire-268: 3 simultaneous candidates below 0.22012!",
+    "pareto_candidates_fire268": [
+      {"island": "S18", "model": "CatBoost-200f", "brier": 0.2191, "status": "FATE CRITICAL: 35TH RESET ~c842 IMMINENT (10cy), stag=15 AT DIVERSIFY THRESHOLD"},
+      {"island": "S22", "model": "XGBoost-200f", "brier": 0.21985, "status": "FATE CRITICAL: 9TH RESET ~c228 IMMINENT (5cy! CRITICAL!)"},
+      {"island": "evo4", "model": "RF-200f", "brier": 0.21985, "status": "FATE CRITICAL: 38TH RESET ~c1064 IMMINENT (5cy! CRITICAL!)"},
+      {"island": "evo5", "model": "RF-200f", "brier": 0.22042, "status": "CHECKPOINT URGENT: 34TH RESET c1426 HAPPENING NOW"}
+    ],
     "s18": {
       "cycle_estimate": "~832",
       "stagnation": 15,
       "pareto_best_candidate": 0.2191,
-      "rule8": "VIOLATION: stacking-45f RANK-0 (brier-trend flat 43gen)",
-      "reset_34th": "c817 CONFIRMED (c792+25=c817-EXACT). ET-0.21938 EVICTED.",
-      "next_reset": "~c842 (c817+25, 10cy)",
-      "alert": "⚡⚡ CatBoost-200f-0.2191 FLEET BEST CANDIDATE (8.2bp below 0.22012!). stag=15 (diversify threshold!). VM: SAVE CatBoost pickle BEFORE ~c842 + REMOVE stacking NOW."
+      "pareto_best_model": "CatBoost-200f",
+      "et_0.21938": "EVICTED at 34TH RESET c817 (c792+25=c817-EXACT)",
+      "rule8": "VIOLATION: stacking-45f rank-0 brier-trend=0.24738 flat 43gen (stacking in reseed pool)",
+      "reset_35th": "~c842 IMMINENT (10cy!)",
+      "export": "404 — 38th consecutive estimate",
+      "alert": "CatBoost-0.2191 FLEET BEST CANDIDATE (8.2bp below 0.22012). stag=15 AT THRESHOLD. VM: SAVE pickle BEFORE ~c842. If stag>15: checkpoint FIRST then diversify (Rule#3 override)."
     },
     "s22": {
       "cycle_estimate": "~223",
       "pareto_best_candidate": 0.21985,
-      "rule8": "VIOLATION: stacking in model_types",
-      "reset_8th": "c203 CONFIRMED (c178+25=c203-EXACT). RF-0.21903 EVICTED.",
+      "pareto_best_model": "XGBoost-200f",
+      "rf_0.21903": "EVICTED at 8TH RESET c203 — 5th consecutive S22 eviction pattern",
+      "rule8": "VIOLATION: stacking still in model_types (evicts best candidate at each reset)",
       "reset_9th": "~c228 IMMINENT (5cy! CRITICAL!)",
       "export": "403 FORBIDDEN (try authenticated curl)",
-      "alert": "⚡⚡ XGBoost-200f-0.21985 FLEET BEST CANDIDATE (2.7bp below!). 9TH RESET ~c228 IMMINENT (5cy!). VM: SAVE XGBoost pickle NOW + REMOVE stacking."
+      "alert": "XGBoost-0.21985 FLEET BEST CANDIDATE (2.7bp below 0.22012). 9TH RESET ~c228 IMMINENT (5cy! CRITICAL!). VM: SAVE pickle NOW. REMOVE stacking. Try authenticated /api/export."
     },
     "evo4": {
       "cycle_estimate": "~1059",
       "pareto_best_candidate": 0.21985,
-      "rule8": "VIOLATION: stacking-45f RANK-0 (brier-trend flat 50gen)",
-      "resets_confirmed": "35TH(c989)+36TH(c1014)+37TH(c1039) all CONFIRMED",
-      "next_reset": "~c1064 (c1039+25, 5cy! CRITICAL!)",
-      "alert": "⚡⚡ RF-200f-0.21985 FLEET BEST CANDIDATE (2.7bp below!). 38TH RESET ~c1064 IMMINENT (5cy!). VM: SAVE RF pickle NOW + REMOVE stacking."
+      "pareto_best_model": "RF-200f",
+      "rule8": "VIOLATION: stacking-45f rank-0 persists through 37 resets (brier-trend=0.24738 flat 50gen)",
+      "reset_38th": "~c1064 IMMINENT (5cy! CRITICAL!)",
+      "confirmed_resets": "35TH c989 + 36TH c1014 + 37TH c1039 (all c+25=c-EXACT)",
+      "export": "not tracked",
+      "alert": "RF-0.21985 FLEET BEST CANDIDATE (2.7bp below 0.22012). 38TH RESET ~c1064 IMMINENT (5cy! CRITICAL!). VM: SAVE pickle BEFORE ~c1064. 37 RULE8 violations — requires direct app.py fix."
     },
     "evo5": {
       "cycle_estimate": "~1426",
-      "rule8": "VIOLATION: stacking in top-5",
-      "reset_34th": "~c1426 HAPPENING NOW (c1401+25=c1426-EXACT)",
-      "rank1_brier": 0.22042,
-      "alert": "34TH RESET HAPPENING NOW: rank_1=0.22042 BELOW GATE 0.22085. VM: SAVE rank_1 pickle before eviction."
+      "pareto_best_candidate": 0.22042,
+      "rule8": "PARTIAL: stacking in top-5 pareto",
+      "reset_34th": "c1426 HAPPENING NOW (c1401+25=c1426-EXACT)",
+      "alert": "CHECKPOINT URGENT: rank_1=0.22042 BELOW GATE. 34TH RESET HAPPENING NOW. VM: SAVE pickle IMMEDIATELY. Verify stacking excluded from reseed post-c1426."
     }
   },
   "axelrod": {
@@ -93,18 +99,18 @@
     "nba_sha": "85e7682e1d",
     "pol_sha": "6983c86517",
     "last_verify": "fire-266 EVEN: FULL VERIFY PASS. 25/25 parity OK. All guards confirmed.",
-    "this_fire": "fire-268 EVEN: carry-forward from fire-266 full verify. No new verify needed until fire-270 EVEN."
+    "fire268_note": "EVEN carry-forward — SHAs UNCHANGED (no local verify needed this fire, last full verify fire-266)"
   },
   "research": {
-    "latest_proposal_1": "sota-parameter-free-group-conditional-ocp-fire268.md",
-    "priority_1": 123,
-    "arXiv_1": "2606.00419",
-    "expected_brier_improvement_1": "0.001-0.002",
-    "latest_proposal_2": "sota-postprocessing-cp-conditional-coverage-fire268.md",
-    "priority_2": 124,
-    "arXiv_2": "2605.25852",
-    "expected_brier_improvement_2": "0.001-0.003",
-    "next_odd_research": "priority=116 (vm-research-agentic-llm-nba-forecasting-fire256) or priority=104 from backlog"
+    "latest_proposals": [
+      "sota-multi-agent-conformal-prediction-fire268.md (arXiv:2606.00717, priority=123, from VM)",
+      "sota-collectively-miscalibrated-fire268.md (arXiv:2605.18858, priority=124, from VM)",
+      "sota-parameter-free-group-conditional-ocp-fire268.md (arXiv:2606.00419, priority=125, from cloud)",
+      "sota-postprocessing-cp-conditional-coverage-fire268.md (arXiv:2605.25852, priority=126, from cloud)"
+    ],
+    "priority_next_odd": 116,
+    "arXiv_fire268": ["2606.00717", "2605.18858", "2606.00419", "2605.25852"],
+    "expected_brier_improvement": "0.001-0.003 per paper"
   },
-  "fire_log_summary": "fire-268 EVEN: TRIPLE FLEET-BEST BREAKTHROUGH (S18-CatBoost-0.2191 + S22-XGBoost-0.21985 + evo4-RF-0.21985). evo5 34TH RESET HAPPENING NOW at c1426. P5 RULE9 RESOLVED at c502. P7 RULE9 LIKELY RESOLVED at c3225. P4 RULE9 PERSISTS. 2 new arXiv proposals written (priority=123,124). ET-0.21938 EVICTED at S18 34TH RESET c817. RF-0.21903 EVICTED at S22 8TH RESET c203."
+  "fire_log_summary": "fire-268 EVEN: TRIPLE FLEET-BEST BREAKTHROUGH (historic first — 3 simultaneous below 0.22012): S18 CatBoost-0.2191 + S22 XGBoost-0.21985 + evo4 RF-0.21985. evo5 34TH RESET HAPPENING NOW rank1=0.22042 BELOW GATE. P5 RULE9 RESOLVED (LGB dominant c502). P7 RULE9 LIKELY RESOLVED. 4 WebSearch papers: arXiv:2606.00717+2605.18858+2606.00419+2605.25852. 4 research proposals written."
 }

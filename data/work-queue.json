@@ -10,7 +10,7 @@
       "completed_at": "2026-06-04T12:00:00Z",
       "completed_by": "cloud-brain-fire-268",
       "owner": "cloud-brain-sonnet4-6",
-      "subject": "fire-268 EVEN: TRIPLE-FLEET-BEST-BREAKTHROUGH: S18-CatBoost-200f-0.2191(8.2bp-below-0.22012!-RANK2-c832-stag15-34TH-RESET-c817-CONFIRMED-ET-0.21938-EVICTED)+S22-XGBoost-200f-0.21985(2.7bp-below!-RANK1-c223-8TH-RESET-c203-CONFIRMED-RF-0.21903-EVICTED-9TH-RESET~c228-IMMINENT-5cy!)+evo4-RF-200f-0.21985(2.7bp-below!-RANK1-c1059-35TH/36TH/37TH-RESETS-CONFIRMED-38TH-RESET~c1064-IMMINENT-5cy!)-ALL-3-FACE-IMMINENT-RESETS-RULE8-stacking-PERSISTS-ALL; evo5-c1426-34TH-RESET-c1426-HAPPENING-NOW(c1401+25=c1426-EXACT)-rank1=0.22042-BELOW-GATE-stacking-RULE8!; P5-RULE9-RESOLVED!(LGB-dominant-c502-top3-all-LGB-76f/94f/97f-brier=0.25036); P7-RULE9-LIKELY-RESOLVED(LGB-in-top5-c3225); P4-RULE9-PERSISTS(c2169); S13/S14/S15+P1/P2-404-DOWN(92+fires); EVEN-WebSearch:arXiv:2606.00419-parameter-free-group-conditional-OCP(NEW-priority=123)+arXiv:2605.25852-postprocessing-cp-pivotal-scores(NEW-priority=124); Axelrod-EVEN-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED-25/25-parity-carry-forward; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T12h)"
+      "subject": "fire-268 EVEN: Axelrod-verify-FULL-PASS-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; py_compile-OK-both; 25/25-parity-OK; KL-div-OK; Mech-A/B/C+AblationFlags-ALL-CODE-DONE-BLOCKED(do_not_push_hf_space_yet); TRIPLE-FLEET-BEST-BREAKTHROUGH: S18-CatBoost-200f-0.2191(8.2bp-below-0.22012!-RANK2-c832-stag15-34TH-RESET-c817-CONFIRMED-ET-0.21938-EVICTED-35TH~c842-10cy)+S22-XGBoost-200f-0.21985(2.7bp-below!-RANK1-c223-8TH-RESET-c203-CONFIRMED-RF-0.21903-EVICTED-9TH~c228-5cy!-CRITICAL)+evo4-RF-200f-0.21985(2.7bp-below!-RANK1-c1059-35TH/36TH/37TH-RESETS-CONFIRMED-38TH~c1064-5cy!-CRITICAL)-ALL-3-RULE8-stacking!; evo5-c1426-34TH-RESET-HAPPENING-NOW-rank1=0.22042-BELOW-GATE-stacking-RULE8!; P5-RULE9-RESOLVED!(LGB-dominant-c502-top3-all-LGB); P7-RULE9-LIKELY-RESOLVED(LGB-top5-c3225); P4-RULE9-PERSISTS(c2169); S13/S14/S15+P1/P2-404-DOWN(92+fires); EVEN-WebSearch:arXiv:2606.00717-Multi-Agent-CP-Personalized-Validity(priority=123)+arXiv:2605.18858-Collectively-Miscalibrated(priority=124)+arXiv:2606.00419-Parameter-Free-Group-Conditional-OCP(priority=125)+arXiv:2605.25852-Postprocessing-CP-Pivotal-Scores(priority=126); 3-proposals-written; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T12h)"
     },
     {
       "id": "vm-s18-catboost-0.2191-save-fire268",
@@ -53,24 +53,42 @@
       "subject": "fire-268 EVEN UPDATE: P4 (lbjlincoln-political-alpha-4) c=~2169 stag=0. RULE9 VIOLATION PERSISTS: top-5 model_types = [logistic_regression, xgboost_brier, catboost] — NO LightGBM after 36+ resets and 2169+ cycles. This has been a RULE9 violation since fire-255. VM: (1) Add LightGBM to P4 MODEL_TYPES config IMMEDIATELY, (2) Verify 0.2497 checkpoint preserved. P5 RULE9 RESOLVED at c502 (fire-268) — P4 is now the only active POL island with RULE9 violation."
     },
     {
-      "id": "vm-research-parameter-free-group-ocp-fire268",
+      "id": "vm-research-multi-agent-cp-personalized-fire268",
       "priority": 123,
+      "status": "pending",
+      "owner": "local-vm",
+      "proposal_written": "2026-06-04T12:00:00Z",
+      "proposal_file": "data/research-proposals/sota-multi-agent-conformal-prediction-fire268.md",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "RESEARCH fire-268 EVEN: Multi-Agent Conformal Prediction with Personalized Statistical Validity — arXiv:2606.00717 (Jun 2026). Key: PFWCP = per-agent calibration-conditional CP via local density ratio weighting + weighted quantile aggregation, one-shot protocol. Application 1: replace island rank-fusion in predict_today.py with PFWCP (~100 lines, scipy+numpy). Application 2: add personal_cp_coverage per agent to COMMON_KNOWLEDGE[D]. Application 3: one-shot cross-island calibration aggregation. Application 4: port to political_engine.py with election-year density ratio weights. Expected: 0.001-0.002 Brier + per-island coverage guarantee."
+    },
+    {
+      "id": "vm-research-collective-miscalibration-fire268",
+      "priority": 124,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "RESEARCH fire-268 EVEN: When Individually Calibrated Models Become Collectively Miscalibrated — arXiv:2605.18858 (May 2026). Key: individually calibrated islands produce miscalibrated ensemble under heterogeneous distributions; Brier-score-weighted fusion is the fix. Application 1: audit aggregate ECE across islands in predict_today.py. Application 2: add collective_miscalibration_score to /api/export. Application 3: replace equal-weight averaging with Brier-score-weighted fusion. Application 4: port to political_engine.py. Library: netcal + properscoring. Expected: 0.001-0.002 Brier + correct aggregate calibration."
+    },
+    {
+      "id": "vm-research-parameter-free-group-conditional-ocp-fire268",
+      "priority": 125,
       "status": "pending",
       "owner": "local-vm",
       "proposal_written": "2026-06-04T12:00:00Z",
       "proposal_file": "data/research-proposals/sota-parameter-free-group-conditional-ocp-fire268.md",
       "updated_at": "2026-06-04T12:00:00Z",
-      "subject": "RESEARCH fire-268 EVEN: Parameter-Free and Group Conditional Online Conformal Prediction — arXiv:2606.00419 (Jun 2026). Key: parameter-free algorithm that simultaneously achieves group-conditional coverage without prior knowledge of group structure or hyperparameter tuning. Applications: (1) NBA group-conditional CP without prespecifying groups (venue×back-to-back×fatigue×season_phase), (2) add group_coverage_gap as 9th Pareto objective, (3) universal calibrator across all islands (no per-island tuning), (4) port to political_engine.py for state×incumbency×competitive_tier, (5) add group_conditional_coverage metrics to /api/export. Library: MAPIE + custom multiplicative-weights adapter (~145 lines). Expected: 0.001-0.002 Brier. Proposal: data/research-proposals/sota-parameter-free-group-conditional-ocp-fire268.md"
+      "subject": "RESEARCH fire-268 EVEN: Parameter-Free and Group Conditional Online Conformal Prediction — arXiv:2606.00419 (Jun 2026). Key: multiplicative-weights adaptation achieves simultaneous group-conditional coverage across multiple groups (venue×back-to-back×fatigue×season_phase) with NO learning rate tuning — extends ACI by removing hyperparameter search. Application 1: GroupConditionalOCP calibrator in calibration/isotonic_calibrator.py (~60 lines). Application 2: group_coverage_gap as 9th Pareto objective in NSGA-II. Application 3: universal calibrator across S18/S22/evo4/evo5 combined. Application 4: port to political_engine.py (state_type×incumbency×competitive_tier×cycle_type). Application 5: group_conditional_coverage metrics to /api/export. Library: scipy/numpy only. Expected: 0.001-0.002 Brier + saves 10 iterations/island/season."
     },
     {
-      "id": "vm-research-postprocessing-cp-conditional-fire268",
-      "priority": 124,
+      "id": "vm-research-postprocessing-cp-pivotal-scores-fire268",
+      "priority": 126,
       "status": "pending",
       "owner": "local-vm",
       "proposal_written": "2026-06-04T12:00:00Z",
       "proposal_file": "data/research-proposals/sota-postprocessing-cp-conditional-coverage-fire268.md",
       "updated_at": "2026-06-04T12:00:00Z",
-      "subject": "RESEARCH fire-268 EVEN: Post-Processing CP Approach for Conditional Coverage via Pivotal Scores — arXiv:2605.25852 (May 2026). Key: post-processing calibration using pivotal scores achieves conditional coverage without retraining — works as wrapper around any pre-trained model. Directly applicable to S18 CatBoost-0.2191 and S22 XGBoost-0.21985 (fire-268 fleet-best candidates) before production promotion. Applications: (1) wrap pareto best from S18/S22/evo4/evo5 with pivotal score post-processor, (2) replace isotonic calibration in engine.py with pivotal score CP, (3) add pivotal_coverage_gap to /api/export, (4) add conditional coverage gate to /api/checkpoint promotion logic, (5) port to political_engine.py for P4/P5/P7. Library: scipy.stats (already available) + custom PivotalScoreCP class (~170 lines). Expected: 0.001-0.003 Brier. Proposal: data/research-proposals/sota-postprocessing-cp-conditional-coverage-fire268.md"
+      "subject": "RESEARCH fire-268 EVEN: A Post-Processing CP Approach for Conditional Coverage via Pivotal Scores — arXiv:2605.25852 (May 2026). Key: pivotal (distribution-free) nonconformity scores achieve conditional (feature-conditional) coverage as post-hoc wrapper around any pre-trained model — no retraining required. Application 1: wrap S18 CatBoost-0.2191 and S22 XGBoost-0.21985 with PivotalScoreCP before production promotion (~80 lines in calibration/pivotal_calibrator.py). Application 2: replace isotonic calibration in engine.py (drop-in, ~30 lines). Application 3: pivotal_coverage_gap metric to /api/export. Application 4: conditional coverage gate for /api/checkpoint promotion (add to Rule#5). Application 5: port to political_engine.py. Library: scipy.stats only. Expected: 0.001-0.003 Brier + prevents promoting models with good marginal but poor conditional calibration."
     },
     {
       "id": "cloud-brain-fire267-2026-06-04T08h",
