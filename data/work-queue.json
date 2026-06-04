@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-05T08:00:00Z",
+  "updated_at": "2026-06-05T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire274-2026-06-05T12h",
+      "priority": 324,
+      "status": "done",
+      "completed_at": "2026-06-05T12:00:00Z",
+      "completed_by": "cloud-brain-fire-274",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-274 EVEN: Axelrod-verify-FULL-PASS-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; py_compile-OK-both; 13/13-parity-OK; KL-div-OK(epsilon=1e-9-smoothed-both); Mech-C-line5092(NBA)/3282(POL)+Mech-B-line5100(NBA)/3290(POL)+Mech-A-line5111(NBA)/3301(POL)-CONFIRMED; order-C→B→A-CORRECT; approx_tokens_d+cost_per_alpha_unit-present-both; AXELROD_ABLATION-5-configs-confirmed-both; do_not_push_hf_space_yet-MAINTAINED; S18/S22/POL-carry-forward-from-fire273; EVEN-WebSearch:arXiv:2605.12341-Multi-Variable-CP-No-Data-Split-May2026-NEW(priority=130); work-queue.json+CLAUDE.md updated (2026-06-05T12h)"
+    },
     {
       "id": "cloud-brain-fire273-2026-06-05T08h",
       "priority": 323,
@@ -142,6 +151,14 @@
       "proposal_file": "data/research-proposals/sota-mopi-shape-adaptive-conditional-cp-fire272.md",
       "updated_at": "2026-06-05T04:00:00Z",
       "subject": "RESEARCH fire-272 EVEN: Shape-Adaptive Conditional Calibration via Minimax Optimization (MOPI) — arXiv:2603.23374 (Mar 2026, AISTATS 2026, Tangier Morocco). Key: MOPI solves min_C max_{g in G} CondCovGap(g, C) for shape-adaptive conditional CP coverage — post-hoc wrapper for any pre-trained model, no retraining. Application 1: wrap evo4 ET-0.21831 and S18 ET-0.21943 with MOPI before promotion (~60 lines in calibration/mopi_calibrator.py). Application 2: add calibration_method='mopi' to validate_model() in engine.py. Application 3: add mopi_conditional_gap as 10th Pareto objective in NSGA-II. Application 4: complement PFGCP (priority=125) — MOPI shape-adaptive + PFGCP group-conditional combined. Application 5: port to political_engine.py with state_competitive_tier x incumbency x election_type subgroups. Library: cvxpy/scipy.optimize + sklearn.tree.DecisionTreeClassifier. Expected: 0.001-0.002 Brier + eliminates systematic miscalibration on playoff back-to-back games."
+    },
+    {
+      "id": "vm-research-multi-variable-cp-no-split-fire274",
+      "priority": 130,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T12:00:00Z",
+      "subject": "RESEARCH fire-274 EVEN: Multi-Variable Conformal Prediction: Optimizing Prediction Sets without Data Splitting — arXiv:2605.12341 (May 2026). Key: MV-CP extends CP to vector-valued score functions (RemMCP + RelMCP variants); eliminates data-splitting overhead while preserving finite-sample coverage; produces smaller prediction sets than split-CP baseline. Direct complement to fire-244 calibration-set-reuse (priority=114). Application 1: replace split-CP calibration in engine.py validate_model() with MV-CP RemMCP variant — eliminates held-out calibration split (recovering ~15% training data). Application 2: multi-metric Pareto calibration across all k island models simultaneously using RelMCP variant (replaces sequential per-model calibration loops). Application 3: add mvcp_coverage_gap metric to /api/export — monitors vector-score coverage validity across Brier+CRPS+CRLS jointly. Application 4: port to political_engine.py — rare-event elections have few calibration samples; no-split MV-CP trades none for coverage. Library: MAPIE + scipy.optimize (~80 lines). Expected: 0.001-0.002 Brier + more data-efficient calibration under small-N regime (late-season playoffs, rare POL events)."
     },
     {
       "id": "cloud-brain-fire271-2026-06-05T00h",
