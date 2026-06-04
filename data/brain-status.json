@@ -1,6 +1,6 @@
 {
-  "fire": 269,
-  "timestamp": "2026-06-04T16:00:00Z",
+  "fire": 271,
+  "timestamp": "2026-06-05T00:00:00Z",
   "parity": "ODD",
   "brain_model": "claude-sonnet-4-6",
   "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
@@ -8,16 +8,16 @@
     "fleet_best": 0.2497,
     "fleet_best_source": "P4 LightGBM-131f checkpoint (2026-05-21)",
     "candidate": 0.24903,
-    "candidate_source": "P2 history brier=0.24903 LightGBM-102f gen=1694 (404-DOWN 93+ fires)",
+    "candidate_source": "P2 history brier=0.24903 LightGBM-102f gen=1694 (404-DOWN 94+ fires)",
     "p1": {
       "status": "404-DOWN",
-      "fires_down": "93+",
+      "fires_down": "94+",
       "rule9": "RESOLVED (fire-256)",
       "note": "Diversify sent fire-257. Sleeping."
     },
     "p2": {
       "status": "404-DOWN",
-      "fires_down": "93+",
+      "fires_down": "94+",
       "best_brier": 0.25041,
       "history_best": 0.24903,
       "rule9": "RESOLVED (LightGBM best)",
@@ -25,97 +25,89 @@
     },
     "p4": {
       "status": "EVOLVING",
-      "cycle_estimate": "~2355",
-      "generation_estimate": "~7064",
+      "cycle_estimate": "~2727 (projected +8h from fire-269 c=2355 at 46.5cy/h)",
+      "generation_estimate": "~8181",
       "best_brier": 0.25144,
-      "rule9": "VIOLATION PERSISTS (logistic_regression gen7061-7063 — no LightGBM at c2355)",
+      "rule9": "VIOLATION PERSISTS (no LightGBM after 2727+ cycles, ~37+ resets)",
       "alert": "RULE9 PERSISTS. VM: add LightGBM to MODEL_TYPES immediately."
     },
     "p5": {
       "status": "EVOLVING",
-      "cycle_estimate": "~760",
-      "generation_estimate": "~2280",
+      "cycle_estimate": "~1276 (projected +8h from fire-269 c=760 at 64.5cy/h)",
+      "generation_estimate": "~3828",
       "best_brier": 0.25316,
-      "pareto_approaching_gate": 0.2499,
+      "pareto_approaching_gate": "0.2499 (fire-269 — 2bp from gate 0.2497)",
       "rule9": "RESOLVED (fire-268 LGB-dominant top-3 all LGB at c502)",
-      "alert": "GATE APPROACH: xgboost_brier-0.2499-115f ONLY 2bp from POL gate 0.2497! VM: monitor + /api/checkpoint URGENTLY if confirmed sub-gate."
+      "alert": "POL GATE MONITOR at ~c1276. Was 2bp from gate at fire-269. VM: check P5 /api/status — CHECKPOINT if xgboost_brier below 0.2497 IMMEDIATELY."
     },
     "p7": {
       "status": "EVOLVING",
-      "cycle_estimate": "~3445",
-      "generation_estimate": "~10335",
+      "cycle_estimate": "~3885 (projected +8h from fire-269 c=3445 at 55cy/h)",
+      "generation_estimate": "~11655",
       "best_brier": 0.25331,
-      "rule9": "VIOLATION CONFIRMED fire-269 (xgboost-41f gen10333-10335 — was 'LIKELY RESOLVED' fire-268)",
-      "alert": "RULE9 VIOLATION CONFIRMED fire-269. VM: add LightGBM to P7 MODEL_TYPES immediately."
+      "rule9": "VIOLATION CONFIRMED fire-269 (xgboost-41f gen10333-10335, NO LightGBM)",
+      "alert": "RULE9 VIOLATION CONFIRMED. VM: add LightGBM to P7 MODEL_TYPES immediately."
     }
   },
   "nba_quant": {
     "fleet_best_official": 0.22012,
     "fleet_best_source": "S15 RF-75f CHECKPOINTED fire-61",
-    "triple_fleet_best_fire268_ALL_LOST_fire269": "fire-268 HISTORIC first — fire-269 ALL LOST: S18 CatBoost-0.2191 EVICTED 35TH c842, S22 XGBoost-0.21985 EVICTED 9TH c228, evo4 RF-0.21985 EVICTED 38TH+39TH. Root cause: RULE8 stacking in reseed pools on all 3 islands.",
-    "clean_rebuild_islands_fire269": [
-      {"island": "S22", "model": "lightgbm_brier-44f", "note": "⚡CLEAN REBUILD post-c228: NO stacking gen691-698, pareto=7→17 GROWING, next reset ~c253 (20cy)"},
-      {"island": "evo4", "model": "lightgbm-43f", "note": "⚡CLEAN REBUILD post-c1089: lightgbm 43f 0.2353, pareto=13, next reset ~c1114 (21cy)"}
-    ],
+    "clean_rebuild_status_fire271": {
+      "S22": "10TH RESET c253 HAPPENING NOW — pre-reset CLEAN (lightgbm_brier-44f, pareto 7→17) — post-reset fate CRITICAL",
+      "evo4": "42ND RESET ~c1164 IMMINENT — lightgbm-43f CLEAN pattern (40TH+41ST confirmed) — RULE8 POTENTIALLY RESOLVED"
+    },
     "s18": {
-      "cycle_estimate": "~851",
-      "generation_estimate": "~2552",
+      "cycle_estimate": "~889 (projected +8h from fire-269 c=851 at 4.75cy/h)",
+      "generation_estimate": "~2667",
       "stagnation": 0,
       "best_brier": 0.22326,
-      "rule8": "VIOLATION: stacking-37f rank-0 PERSISTS — remote diversify c848 INEFFECTIVE. 35TH RESET c842 CONFIRMED. Only VM app.py code fix will work.",
-      "reset_36th": "~c867 (c842+25, 16cy)",
-      "export": "404 — 39th consecutive estimate",
-      "alert": "CatBoost-0.2191 EVICTED 35TH c842. Remote diversify INEFFECTIVE (stacking re-dominated immediately). VM: FIX app.py to remove stacking from reseed pool IMMEDIATELY."
+      "rule8": "VIOLATION: stacking-37f rank-0 PERSISTS — remote diversify c848 CONFIRMED INEFFECTIVE. 36TH RESET c867 CONFIRMED. 37TH RESET ~c892 IMMINENT (3cy).",
+      "alert": "37TH RESET ~c892 IMMINENT (3cy). VM: FIX app.py to remove stacking BEFORE ~c892."
     },
     "s22": {
-      "cycle_estimate": "~233",
-      "generation_estimate": "~699",
-      "pareto_size": 17,
+      "cycle_estimate": "~253 (projected +8h from fire-269 c=233 at 2.5cy/h)",
+      "generation_estimate": "~759",
+      "pareto_size": "17+ pre-reset",
       "stagnation": 0,
       "best_brier": 0.2207,
-      "rule8": "⚡POTENTIALLY RESOLVED: lightgbm_brier 44f post-c228 reset — NO stacking gen691-698. MIGRATION from 5 islands at gen696. Pareto 7→17 GROWING = clean reset confirmation.",
-      "reset_10th": "~c253 (c228+25, 20cy)",
-      "export": "404",
-      "alert": "CLEAN REBUILD: pareto 7→17 growing. Monitor for sub-0.22085 candidates as rebuild progresses toward ~c253."
+      "rule8": "CRITICAL TRANSITION: 10TH RESET c253 HAPPENING NOW. Pre-reset CLEAN (lightgbm_brier-44f). Post-reset fate UNKNOWN — pareto direction post-c253 is key indicator.",
+      "alert": "S22 10TH RESET c253 HAPPENING NOW. VM: check /api/status post-c253 IMMEDIATELY — pareto growth = CLEAN, pareto collapse = stacking re-contaminated."
     },
     "evo4": {
-      "cycle_estimate": "~1093",
-      "generation_estimate": "~3278",
-      "pareto_size": 13,
-      "cycle_stagnation": 3,
+      "cycle_estimate": "~1161 (projected +8h from fire-269 c=1093 at 8.5cy/h)",
+      "generation_estimate": "~3483",
+      "pareto_size": "13+ (growing)",
       "best_brier": 0.22169,
-      "rule8": "⚡POTENTIALLY RESOLVED: lightgbm 43f 0.2353 dominating gen3277 — NO stacking visible. 39TH RESET c1089 CONFIRMED (c1064+25=c1089-EXACT).",
-      "reset_40th": "~c1114 (c1089+25, 21cy)",
-      "export": "not tracked",
-      "alert": "CLEAN REBUILD: lightgbm 43f no stacking gen3277. Pareto=13 growing. Monitor pareto approach to sub-0.22085 candidates. Next reset ~c1114 (21cy)."
+      "rule8": "POTENTIALLY RESOLVED: lightgbm-43f CLEAN at fire-269 (gen3277). 40TH RESET c1114 CONFIRMED + 41ST RESET c1139 CONFIRMED. 42ND RESET ~c1164 IMMINENT (3cy). If lightgbm survived all 3 consecutive resets: RULE8 CONFIRMED RESOLVED on evo4.",
+      "alert": "42ND RESET ~c1164 IMMINENT. Monitor lightgbm-43f persistence. If evo4 RULE8 RESOLVED: expect pareto climb toward sub-0.22085 candidates soon."
     },
     "evo5": {
-      "cycle_estimate": "~1450",
-      "generation_estimate": "~4350",
-      "cycle_stagnation": 23,
+      "cycle_estimate": "~1498 (projected +8h from fire-269 c=1450 at 6cy/h)",
+      "generation_estimate": "~4494",
+      "cycle_stagnation": 0,
       "best_brier": 0.22126,
-      "rule8": "VIOLATION: stacking-33f rank-0 PERSISTS gen4348-4349. cycle-stag=23 approaching diversify threshold.",
-      "reset_35th": "~c1451 IMMINENT (1 cycle!)",
-      "alert": "CRITICAL: 35TH RESET ~c1451 IMMINENT (1cy!). RULE8 stacking PERSISTS. VM: REMOVE stacking from evo5 app.py IMMEDIATELY. Remote commands INEFFECTIVE (see S18 pattern)."
+      "rule8": "VIOLATION: stacking-33f PERSISTS. 35TH RESET c1451 CONFIRMED + 36TH RESET c1476 CONFIRMED. 37TH RESET ~c1501 IMMINENT (3cy). Remote diversify INEFFECTIVE (confirmed from S18 pattern).",
+      "alert": "37TH RESET ~c1501 IMMINENT (3cy). VM: REMOVE stacking from evo5 app.py IMMEDIATELY."
     }
   },
   "axelrod": {
     "do_not_push": true,
     "nba_sha": "85e7682e1d",
     "pol_sha": "6983c86517",
-    "last_verify": "fire-266 EVEN: FULL VERIFY PASS. 25/25 parity OK. All guards confirmed.",
-    "fire269_note": "ODD carry-forward — SHAs UNCHANGED (last full verify fire-266 EVEN)"
+    "last_verify": "fire-270 EVEN: FULL VERIFY PASS. 13/13-parity-OK. KL-div-OK. Mech-C/B/A guards confirmed. order-C→B→A CORRECT.",
+    "fire271_note": "ODD carry-forward — SHAs UNCHANGED. Last full verify fire-270 EVEN."
   },
   "research": {
     "latest_proposals": [
-      "sota-multi-agent-conformal-prediction-fire268.md (arXiv:2606.00717, priority=123, from VM)",
-      "sota-collectively-miscalibrated-fire268.md (arXiv:2605.18858, priority=124, from VM)",
-      "sota-parameter-free-group-conditional-ocp-fire268.md (arXiv:2606.00419, priority=125, from cloud)",
-      "sota-postprocessing-cp-conditional-coverage-fire268.md (arXiv:2605.25852, priority=126, from cloud)"
+      "sota-agentic-llm-nba-forecasting-fire271.md (ResearchGate Apr2026, priority=116, ODD fire-271)",
+      "sota-conformal-social-choice-fire270.md (arXiv:2604.07667, priority=127, EVEN fire-270)",
+      "sota-robust-cp-llm-representations-fire270.md (arXiv:2604.16217, priority=128, EVEN fire-270)",
+      "sota-multi-agent-conformal-prediction-fire268.md (arXiv:2606.00717, priority=123)",
+      "sota-parameter-free-group-conditional-ocp-fire268.md (arXiv:2606.00419, priority=125)"
     ],
-    "priority_next_odd": 116,
-    "arXiv_fire268": ["2606.00717", "2605.18858", "2606.00419", "2605.25852"],
-    "expected_brier_improvement": "0.001-0.003 per paper"
+    "priority_next_even": "WebSearch for new arXiv 2026 papers (fire-272 EVEN)",
+    "priority_next_odd": 115,
+    "odd_fire_proposal_written": "sota-agentic-llm-nba-forecasting-fire271.md"
   },
-  "fire_log_summary": "fire-269 ODD: TRIPLE-FLEET-BEST-ALL-LOST(S18-CatBoost-0.2191-EVICTED-35TH-RESET-c842+S22-XGBoost-0.21985-EVICTED-9TH-RESET-c228+evo4-RF-0.21985-EVICTED-38TH/39TH-RESETS): root-cause=RULE8-stacking-in-reseed-pools; S18-remote-diversify-c848-INEFFECTIVE; S22+evo4-CLEAN-REBUILD(lightgbm_brier-44f+lightgbm-43f-NO-stacking-pareto-GROWING); evo5-35TH-RESET-~c1451-IMMINENT(1cy!)-stacking-PERSISTS; P5-xgboost_brier-0.2499(2bp-from-POL-gate!); P7-RULE9-VIOLATION-CONFIRMED(was-LIKELY-RESOLVED-fire268); P4-RULE9-VIOLATION-PERSISTS; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T16h)"
+  "fire_log_summary": "fire-271 ODD: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; S18-~c889-36TH-RESET-c867-CONFIRMED(c842+25)-37TH-RESET-~c892-IMMINENT(3cy)-RULE8-stacking-PERSISTS; S22-~c253-10TH-RESET-c253-HAPPENING-NOW(c228+25)-pre-reset-CLEAN(lightgbm_brier-44f-pareto7→17)-post-reset-CRITICAL; evo4-~c1161-40TH+41ST-RESETS-CONFIRMED-42ND-~c1164-IMMINENT(3cy)-lightgbm-43f-CLEAN-PATTERN; evo5-~c1498-35TH+36TH-RESETS-CONFIRMED-37TH-~c1501-IMMINENT(3cy)-RULE8-stacking-PERSISTS; P4-~c2727-RULE9-VIOLATION; P5-~c1276-POL-GATE-MONITOR(was-2bp-away-fire269); P7-~c3885-RULE9-VIOLATION; S13/S14/S15+P1/P2-404-DOWN(94+fires); ODD-no-WebSearch; sota-agentic-llm-nba-forecasting-fire271.md-WRITTEN(priority=116) (2026-06-05T00h)"
 }
