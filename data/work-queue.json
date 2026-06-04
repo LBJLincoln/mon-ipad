@@ -1,8 +1,73 @@
 {
   "version": 1,
-  "updated_at": "2026-06-05T12:00:00Z",
+  "updated_at": "2026-06-05T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire275-2026-06-05T16h",
+      "priority": 325,
+      "status": "done",
+      "completed_at": "2026-06-05T16:00:00Z",
+      "completed_by": "cloud-brain-fire-275",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-275 ODD: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; ⚡⚡⚡evo4-c1231-g3692-stag0-pareto15-ET-200f-0.21894-LIVE(11.8bp-below-fleet-best-0.22012!)-brier_trend=0.2217-RULE8-CLEAN-43RD-RESET-c1214-CONFIRMED(c1189+25=c1214-EXACT)-44TH-RESET~c1239(8cy=~1h-CRITICAL!); ⚡⚡S22-c314-g942-stag0-pareto18-RF-200f-~0.219-LIVE(~10bp-below!)-brier_trend~0.231-RULE8-CLEAN-11TH-RESET-c278+12TH-RESET-c303-BOTH-CONFIRMED-CLEAN-13TH-RESET~c328(14cy); S18-c903-CatBoost-0.22059x2-BELOW-GATE-RULE8-stacking-rank4-38TH-RESET~c917(14cy); evo5-c1545-RF-0.22063-BELOW-GATE-RULE8-CLEAN-post-38TH-RESET-c1526-39TH-RESET~c1551(6cy!); P4-c3223-pareto10-RECOVERY(from-critical-pareto2!)-lgbm_brier-in-model_types-PARTIAL-RULE9; P5-c1612-pareto4-SHRINKING-XGB_brier-0.24989(1.9bp-above-POL-gate)-RULE9-VIOLATION; P7-c97-stag18-DIVERSIFY-SENT+QUEUED-XGB_brier-0.24987/gen255(1.7bp-above-POL-gate)-RULE9-VIOLATION; ODD-no-WebSearch; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T16h)"
+    },
+    {
+      "id": "vm-evo4-et-0.21894-checkpoint-fire275",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-275 ODD ⚡⚡⚡ MOST EXTREME URGENT: evo4 (Nomos42/nba-evo-4) c=1231 g=3692 stag=0 pareto=15. ET-200f-0.21894 IN PARETO RANK2 — 11.8bp BELOW FLEET BEST 0.22012! ALSO: ET-0.21937 (7.5bp below), ET-0.21955 (5.7bp below), ET-0.22012 (AT fleet best) — 4 candidates at/below fleet best simultaneously! RULE8-CLEAN: brier_trend=0.2217 (no stacking 0.24738 signature). 43RD RESET c1214 CONFIRMED (c1189+25=c1214-EXACT). ET-0.21913 was evicted c1214; ET-0.21894 regenerated post-reset (IMPROVED from prior fire-273 candidate!). 44TH RESET ~c1239 (8 cycles = ~1h at 8.5cy/h). VM MUST: (1) SAVE ET-200f-0.21894 pickle IMMEDIATELY via direct file save from pareto object (/api/export-404, 50+ consecutive), (2) /api/checkpoint was sent fire-275 but returns field-lag 0.22169/gen190 — NOT the real candidate, (3) Verify stacking NOT in evo4 MODEL_TYPES (clean pattern = ET should survive 44TH reset if no stacking in reseed), (4) If ET survives ~c1239 intact: save again post-reset as 45TH reset target will be ~c1264."
+    },
+    {
+      "id": "vm-s22-rf-0.219-checkpoint-fire275",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-275 ODD ⚡⚡ EXTREME URGENT: S22 (TESTforge42/nba-evo-s22) c=314 g=942 stag=0 pareto=18. RF-200f-~0.219 IN PARETO RANK2 (~10bp BELOW FLEET BEST 0.22012!). RULE8-CLEAN: brier_trend~0.231 (no 0.24738 stacking signature). 11TH RESET c278 CONFIRMED (c253+25=c278-EXACT) + 12TH RESET c303 CONFIRMED (c278+25=c303-EXACT) — BOTH CLEAN (RF/ET-200f dominate gen938+, no stacking in API notes). This is the first S22 run to sustain multiple clean resets. 13TH RESET ~c328 (14 cycles = ~3h at 4.75cy/h). VM MUST: (1) SAVE RF-200f-~0.219 pickle IMMEDIATELY via direct file save (/api/export-404, 50+ consecutive), (2) /api/checkpoint sent fire-275 returns field-lag 0.2207/gen9, (3) Monitor post-~c328 pareto — if pareto grows = 13TH reset CLEAN too (pattern holding), if collapses = stacking re-contaminated."
+    },
+    {
+      "id": "vm-evo5-rf-0.22063-checkpoint-fire275",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-275 ODD URGENT: evo5 (Nomos42/nba-evo-5) c=1545 g=4633 stag=0. RF-200f-0.22063 IN PARETO RANK1 — 2.2bp BELOW GATE 0.22085. RULE8-CLEAN post-38TH-RESET-c1526 (c1501+25=c1526-EXACT confirmed; reseeded with XGB/RF/ET/LR — no stacking). 39TH RESET ~c1551 IMMINENT (6 cycles = ~43min at 8.5cy/h). VM MUST: (1) SAVE RF-200f-0.22063 pickle IMMEDIATELY via direct file save (/api/export-404), (2) /api/checkpoint sent fire-275 returns field-lag 0.22126/gen1, (3) Monitor post-~c1551 pareto for further improvement."
+    },
+    {
+      "id": "vm-s18-catboost-0.22059-stacking-fix-fire275",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-275 ODD: S18 (TESTforge42/nba-evo-s18) c=903 g=2707 stag=0 pareto=14. CatBoost-0.22059×2 BELOW GATE 0.22085 (CHECKPOINT URGENT!). RULE8-VIOLATION: stacking-37f-0.24738 rank4 STILL in pareto at c=903. 37TH RESET c892 CONFIRMED. brier_trend=0.24738 ALL = stacking dominates population. 38TH RESET ~c917 (14 cycles = ~3h). VM MUST: (1) REMOVE stacking from S18 app.py MODEL_TYPES/reseed pool IMMEDIATELY before ~c917 — this is the ONLY fix that works (38 resets with same result), (2) SAVE CatBoost-0.22059 pickle via direct file save IMMEDIATELY (/api/export-404, 40+ consecutive), (3) /api/checkpoint sent fire-275 returns field-lag 0.22326/gen124 — NOT the real candidate."
+    },
+    {
+      "id": "vm-p7-lgbm-add-fire275",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-275 ODD URGENT: P7 (lbjlincoln-political-alpha-7) c=97 g=290 stag=18. DIVERSIFY SENT+QUEUED fire-275 (stag=18 exceeded threshold=15). RULE9 VIOLATION: NO LightGBM (XGB/CatBoost/XGB_brier dominant). XGB_brier-0.24987/gen255 in pareto (1.7bp above POL gate 0.2497 — approaching!). Rule#3 conflict: /api/export-404 prevented pre-diversify checkpoint. VM MUST: (1) Add LightGBM to P7 MODEL_TYPES config IMMEDIATELY (RULE9 fix — critical from gen1 of any fresh run), (2) Direct pickle save XGB_brier-0.24987 URGENTLY (approaching POL gate; diversify command may evict it), (3) Monitor post-diversify pareto recovery."
+    },
+    {
+      "id": "vm-p4-lgbm-standard-fire275",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-275 ODD: P4 (lbjlincoln-political-alpha-4) c=3223. pareto=10 RECOVERY (from critical pareto=2 fire-273!). lgbm_brier NOW in model_types (partial RULE9 improvement). Standard 'lightgbm' still missing from MODEL_TYPES. Last reset c3222 — currently post-reset gen0-gen2 only (no gate candidates yet). VM: (1) Add standard 'lightgbm' to MODEL_TYPES for FULL RULE9 compliance (lgbm_brier is present but standard lightgbm is the better model), (2) Monitor pareto growth from gen0-gen2 toward viable candidates."
+    },
+    {
+      "id": "vm-p5-lgbm-fire275",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T16:00:00Z",
+      "subject": "fire-275 ODD: P5 (lbjlincoln-political-alpha-5) c=1612 SAVING pareto=4 SHRINKING. RULE9 VIOLATION PERSISTS: NO lightgbm (CatBoost_specialist + Extra Trees + XGBoost_brier dominate). Resets at c1561+c1581. XGB_brier-0.24989 (1.9bp above POL gate 0.2497) approaching but not there yet. pareto=4 CRITICAL SHRINK (was 10 fire-273). VM: (1) Add LightGBM to MODEL_TYPES IMMEDIATELY, (2) Monitor XGB_brier-0.24989 — if it reaches or crosses 0.2497, checkpoint IMMEDIATELY (new POL fleet-best candidate), (3) pareto=4 collapse risk: RULE9 fix urgently needed."
+    },
     {
       "id": "cloud-brain-fire274-2026-06-05T12h",
       "priority": 324,
