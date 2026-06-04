@@ -111,10 +111,23 @@ a strictly proper scoring rule rather than a payoff matrix — this ensures that
 no agent can improve expected score by misreporting beliefs, giving the game
 its *truth-inducing* character [@gneiting2007strictly].
 
-**Relation to the Axelrod IPD.** The classical IPD is recovered as the degenerate
-case $K = 1$ (all agents in a single archetype), $|\mathcal{B}_d| = 1$ (single binary
-event per round), $T = $ finite tournament length, and strategies restricted to the
-two actions $\{0, 1\}$. Our framework generalises along all four dimensions simultaneously.
+**Relation to the Axelrod IPD.** The LPSG shares the population-dynamics framing
+of Axelrod's tournament — fitness-ranked strategy competition in a repeated multi-agent
+setting under selection pressure for collective performance — but it does not contain the
+classical IPD as a literal degenerate case. In the IPD, the payoff matrix satisfies
+$T > R > P > S$ [@axelrod1980effective], creating a bilateral cooperation–defection
+tension absent from any proper-scoring-rule game: under the Brier score (or any
+strictly proper rule), truthful belief reporting is individually dominant regardless
+of peer actions [@gneiting2007strictly], so the defection incentive that drives the
+IPD's Nash equilibrium at mutual defection does not arise in the LPSG.
+Our Lemma 1 and Proposition 2 therefore require proofs tailored to the
+proper-scoring-rule setting, and do not follow from classical IPD cooperation results.
+The two frameworks are best understood as *complementary generalisations* of Axelrod's
+tournament: the LPSG extends its scope from static automata and matrix payoffs to
+reasoning LLM agents and proper-scoring-rule payoffs, while retaining the
+population-diversity concern that motivated Axelrod's original enquiry into which
+strategy archetypes survive co-evolution. (§2.1 notes two further limiting features of
+the original tournament that prevent direct transfer: binary action space and fixed automata.)
 
 ---
 
@@ -374,16 +387,36 @@ $\eta_{\text{A3}} < 0.03392/0.028 - 1 = 0.211$; pilot data must confirm
 $\eta_{\text{A3}} < 0.211$ before Conditions B–E (pre-submission checklist item 12,
 bound tightened from earlier stated 0.22). $\checkmark$
 
-In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
-By the JSD–Ambiguity monotonicity result (Appendix B.1, valid for
-$\bar{p}_t \in [0.24, 0.76]$ and $\text{Amb}_t \leq 0.04$), increasing Ambiguity
-strictly increases JSD. Pilot-season NBA moneyline data are expected to satisfy
-$\bar{p}_t \in [0.24, 0.76]$ and day-level Ambiguity $\text{Amb}_d \leq 0.04$ throughout
-the 2024–25 season (pre-registered empirical range; formal verification pending
-Table 4, §5.1, upon pilot backtest completion); the monotonicity regime is therefore
-expected to hold throughout the experimental range, and the step applies under this
-pre-registered empirical constraint.
-Averaging over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
+Combining Cases 1 and 2: taking the expectation over the joint distribution of
+$(r^*, \delta_i)$ — which mixes Case 1 realisations ($\delta_i\Delta p \geq 0$,
+each contributing a non-negative per-realisation term) and Case 2 realisations
+($\delta_i\Delta p < 0$, whose negative cross-term is bounded by the combined
+expression above) — the established lower bound yields $\mathbb{E}[\Delta\text{Amb}_t] > 0$.
+
+Appendix B.1 establishes a *pointwise derivative lower bound* on the JSD–Ambiguity
+relationship throughout the pre-registered operating range
+$\bar{p}_t \in [0.24, 0.76]$, $\text{Amb}_t \leq 0.04$ (formal verification pending Table 4, §5.1):
+
+$$\frac{\partial\,\text{JSD}_t}{\partial\,\text{Amb}_t}\bigg|_{\bar{p}_t} \;\geq\; 0.495 \;>\; 0$$
+
+This bound yields a *pathwise* inequality that holds for *every* realisation of the
+archetype draw $r^*$, regardless of the sign of $\Delta\text{Amb}_t$:
+
+$$\Delta\text{JSD}_t \;\geq\; 0.495\;\Delta\text{Amb}_t$$
+
+because $\text{JSD}_t$ moves from $\text{Amb}_t$ to $\text{Amb}_t + \Delta\text{Amb}_t$ along
+a path where $\frac{\partial\,\text{JSD}}{\partial s} \geq 0.495$ everywhere in the
+operating range.^[This invocation of B.1 is stronger than pointwise monotonicity alone:
+monotonicity gives $\text{JSD}(\text{Amb}') > \text{JSD}(\text{Amb})$ when $\text{Amb}' > \text{Amb}$,
+but cannot bound $\mathbb{E}[\text{JSD}(\text{Amb}')]$ from a bound on $\mathbb{E}[\text{Amb}']$
+without convexity of JSD in Amb (which holds only locally). The derivative lower bound,
+by contrast, yields $\Delta\text{JSD}_t \geq 0.495\,\Delta\text{Amb}_t$ pathwise — valid
+for all realisations, including those where $\Delta\text{Amb}_t < 0$.]
+Taking expectations over the archetype draw:
+
+$$\mathbb{E}[\Delta\text{JSD}_t] \;\geq\; 0.495\;\mathbb{E}[\Delta\text{Amb}_t] \;>\; 0$$
+
+Averaging linearly over events $t \in \mathcal{B}_d$ gives $\mathbb{E}[\Delta D_{d+1}] > 0$. $\square$
 
 **Assumption A5 (No spontaneous recovery).** In the absence of an archetype change,
 a sacrifice-eligible agent's expected Brier over the next $W_{\text{persist}}$ days

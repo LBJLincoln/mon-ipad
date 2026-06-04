@@ -9375,3 +9375,225 @@ computed over a $W_\kappa = 28$-day pilot window; distinct from $\overline{B}_{i
 - `05-experimental-setup.md` Table 3 caption: $\overline{B}_i \to \overline{B}_i^{\text{pilot}}$ (GGG3)
 - `07-discussion.md` §6.5: $\overline{B}_i \to \overline{B}_i^{\text{pilot}}$ ×7 locations (GGG3)
 - `paper.md`: all of the above mirrored (GGG1 ×1, GGG2 ×1, GGG3 ×14 locations)
+
+---
+
+# CYCLE HHH — fire-268 (2026-06-04T12h, EVEN)
+
+*Full manuscript re-read. Three proof/framing defects identified and fixed; one new
+citation added from EVEN WebSearch (arXiv:2604.23897). Zero carry-forward from GGG
+that are actionable without external access.*
+
+---
+
+## CYCLE GGG STATUS: All GGG-actionable items resolved ✓
+
+No carry-over from GGG that can be fixed without external access.
+PRE-SUBMISSION checklist items 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 carry forward
+(no change from GGG).
+
+---
+
+## NEW ISSUES (Cycle HHH full-manuscript re-read, §3.2 + §3.5 focus)
+
+---
+
+### HHH1 (Major, correctness): Lemma 1 — invalid inference from $\mathbb{E}[\Delta\text{Amb}] > 0$ to $\mathbb{E}[\Delta\text{JSD}] > 0$ via monotonicity alone
+
+**Location:** `04-method.md` (and `paper.md` mirror), Lemma 1 proof final paragraph.
+
+**Problem.** The penultimate sentence of the Lemma 1 proof read:
+
+> "By the JSD–Ambiguity monotonicity result (Appendix B.1 …), *increasing Ambiguity
+> strictly increases JSD* … the monotonicity regime is therefore expected to hold
+> throughout the experimental range, and the step applies under this pre-registered
+> empirical constraint. Averaging over events $t \in \mathcal{B}_d$ gives
+> $\mathbb{E}[\Delta D_{d+1}] > 0$."
+
+This argument is logically defective. Monotonicity of $f$ (here, JSD as a function
+of Amb) means: $\text{Amb}' > \text{Amb} \Rightarrow \text{JSD}' > \text{JSD}$.
+But the Lemma only establishes $\mathbb{E}[\Delta\text{Amb}_t] > 0$, **not**
+$\Delta\text{Amb}_t > 0$ almost surely (there exist realisations where $\delta_i\Delta p < 0$
+and $|\delta_i|$ is large, yielding $\Delta\text{Amb}_t < 0$). The inference
+$\mathbb{E}[\Delta\text{JSD}] > 0$ from $\mathbb{E}[\Delta\text{Amb}] > 0$ and
+monotone $f$ requires $f$ to be convex (Jensen's inequality). From equation (B.1),
+JSD is approximately $c(\bar{p}) \cdot \text{Amb} - O(\text{Amb}^{3/2})$, which is
+locally **concave** in Amb (the $O(\text{Amb}^{3/2})$ correction is negative-semi-definite).
+For concave $f$, Jensen gives $\mathbb{E}[f(X')] \leq f(\mathbb{E}[X'])$,
+providing an upper bound, not the required lower bound. The monotonicity invocation
+is therefore insufficient to complete the proof.
+
+**Fix.** The correct argument uses the *derivative lower bound* from Appendix B.1,
+which is a strictly stronger result than pointwise monotonicity. Appendix B.1 proves:
+
+$$\frac{\partial\,\text{JSD}_t}{\partial\,\text{Amb}_t}\bigg|_{\bar{p}_t} \;\geq\; 0.495 \;>\; 0$$
+
+everywhere in the operating range. This gives a **pathwise inequality** valid for every
+realisation of the archetype draw:
+
+$$\Delta\text{JSD}_t \;\geq\; 0.495\;\Delta\text{Amb}_t$$
+
+(because $\text{JSD}_t$ traces a path from $\text{Amb}_t$ to $\text{Amb}_t'$ on which the
+integrand $\frac{\partial\,\text{JSD}}{\partial s} \geq 0.495$ everywhere, so
+$\Delta\text{JSD}_t = \int_{\text{Amb}_t}^{\text{Amb}_t'} \frac{\partial\,\text{JSD}}{\partial s}\,ds
+\geq 0.495\,\Delta\text{Amb}_t$). Taking expectations:
+
+$$\mathbb{E}[\Delta\text{JSD}_t] \;\geq\; 0.495\;\mathbb{E}[\Delta\text{Amb}_t] \;>\; 0$$
+
+This inference is valid regardless of the convexity of JSD in Amb, and regardless of
+the sign distribution of $\Delta\text{Amb}_t$ across realisations.
+
+**Author response:** Lemma 1 final paragraph rewritten in both `04-method.md` and
+`paper.md`. The monotonicity invocation is replaced by the derivative-lower-bound
+pathwise argument, with a footnote explaining why monotonicity alone was insufficient.
+The conclusion $\mathbb{E}[\Delta D_{d+1}] > 0$ is unchanged; only the justification
+for the $\text{JSD}$–$\text{Amb}$ step is corrected. ✓
+
+---
+
+### HHH2 (Minor, clarity): "In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$" — misleading phrasing implying per-case positivity
+
+**Location:** `04-method.md` (and `paper.md` mirror), Lemma 1 proof, sentence immediately
+before the (now replaced) final paragraph.
+
+**Problem.** The sentence "In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$" was
+read after Case 1 (which shows $\Delta\text{Amb}_t \geq 0$ per-realization) and Case 2
+(which shows a combined bound under the cross-term). The phrase "In both cases" implies
+that *each case individually* yields a positive expectation. Case 2 does not: Case 2
+corresponds to realisations where $\delta_i\Delta p < 0$, which can individually produce
+$\Delta\text{Amb}_t < 0$. The positive expectation is a property of the **mixture** of
+Case 1 and Case 2 realisations, not of each case separately.
+
+**Fix.** "In both cases, $\mathbb{E}[\Delta\text{Amb}_t] > 0$." replaced by:
+"Combining Cases 1 and 2: taking the expectation over the joint distribution of
+$(r^*, \delta_i)$ — which mixes Case 1 realisations (…each contributing a non-negative
+per-realisation term) and Case 2 realisations (…whose negative cross-term is bounded
+by the combined expression above) — the established lower bound yields
+$\mathbb{E}[\Delta\text{Amb}_t] > 0$." ✓
+
+---
+
+### HHH3 (Major, conceptual): §3.2 claims the classical IPD is recovered as the degenerate case $K=1$ — this is structurally incorrect
+
+**Location:** `04-method.md` §3.2 (and `paper.md` mirror), "Relation to the Axelrod IPD" paragraph.
+
+**Problem.** The paragraph read:
+
+> "The classical IPD is recovered as the degenerate case $K = 1$ (all agents in a single
+> archetype), $|\mathcal{B}_d| = 1$ (single binary event per round), $T = $ finite
+> tournament length, and strategies restricted to the two actions $\{0, 1\}$."
+
+This claim is structurally incorrect for two reasons.
+
+*(a) K=1 produces a monomorphic population, not the IPD.* With $K=1$, all agents share
+the same archetype and — in expectation — predict identically. There is no heterogeneity,
+so no cooperation–defection tension arises. The IPD requires at least $K=2$ (two distinct
+strategy dispositions), and in Axelrod's original tournament, $K=63$ distinct strategies
+competed [@axelrod1980effective; @axelrod1980more].
+
+*(b) Proper scoring rules eliminate the IPD's payoff structure entirely.* The IPD payoff
+matrix satisfies the ordering $T > R > P > S$ (Temptation > Reward > Punishment > Sucker),
+creating the defection incentive. Under any strictly proper scoring rule (including the
+Brier score), truthful belief reporting is individually dominant regardless of peer actions
+[@gneiting2007strictly]: there is no payoff advantage to "defecting" (misreporting beliefs).
+The cooperation–defection tension is therefore absent from the LPSG by construction.
+Consequently, the LPSG does not "recover" the IPD as a degenerate case — not for any
+value of $K$, $|\mathcal{B}_d|$, or $T$.
+
+*(c) The incorrect claim self-contradicts §2.1.* Section 2.1 already correctly identifies
+two limiting features: "First, the action space was binary (cooperate/defect), whereas
+real-world prediction markets require agents to report probabilities in $[0,1]$, scored
+by a strictly proper rule." This observation already explains why the IPD cannot be
+embedded in the LPSG. The §3.2 paragraph contradicted §2.1.
+
+**Fix.** The "degenerate case" claim is replaced by a precise characterisation of the
+relationship between the LPSG and IPD as *complementary generalisations* of Axelrod's
+tournament, with an explicit note that Lemma 1 and Proposition 2 require new proofs
+appropriate to the proper-scoring-rule setting. Cross-reference to §2.1 added to
+avoid redundancy. Applied to both `04-method.md` and `paper.md`. ✓
+
+---
+
+### HHH4 (New, WebSearch — EVEN fire): MarketBench (arXiv:2604.23897) — new relevant citation
+
+**Location:** `03-related-work.md` §2.6, `paper.md` §2, Table 1, `references.bib`.
+
+**Finding.** EVEN-fire WebSearch (fire-268) returns **MarketBench** (Fradkin & Krishnan,
+arXiv:2604.23897, April 26, 2026): "Evaluating AI Agents as Market Participants."
+93-task SWE-bench subset with 6 frontier LLMs. Key finding: *"The scaffold benefits from
+using a diversity of agents, but is limited by the weak self-assessment of these agents."*
+
+This finding corroborates our Lemma 1 from an independent empirical angle: (i) diversity
+of agents improves scaffold market performance (supporting H2 of our paper), and (ii) weak
+self-assessment (poor individual calibration) limits the diversity gain — exactly the
+co-requirement our paper identifies: SRR increases diversity, but individual calibration
+(enforced by the proper scoring rule) is necessary for the diversity gain to translate
+to ensemble accuracy improvement. MarketBench provides the first independent empirical
+evidence (non-NBA, non-political domain) for this joint condition.
+
+**Action.** New BibTeX entry `@fradkin2026marketbench` added. New paragraph added to
+§2.6 ("LLM Agents in Financial/Prediction Markets") in `03-related-work.md` and mirrored
+in `paper.md`. MarketBench row added to Table 1 (positioning table) in both files. ✓
+
+---
+
+### HHH5 (Carry-forward): `@quantagents2025` VERIFY note — pre-submission item 4 (GGG5 carry)
+
+*(No code change — requires external arXiv access.)*
+
+---
+
+### HHH6 (Carry-forward): `@ouyang2022training` incomplete author list — pre-submission item 1 (GGG6 carry)
+
+*(No code change — requires external arXiv access.)*
+
+---
+
+## CYCLE HHH SUMMARY
+
+**Fixed this cycle:**
+- HHH1 (Major, correctness): Lemma 1 final step — replaced invalid monotonicity invocation
+  with derivative-lower-bound pathwise argument ($\Delta\text{JSD}_t \geq 0.495\,\Delta\text{Amb}_t$
+  per realisation). `04-method.md` + `paper.md` (2 files).
+- HHH2 (Minor, clarity): "In both cases" → "Combining Cases 1 and 2" with explicit
+  mixture-distribution framing. `04-method.md` + `paper.md` (2 files).
+- HHH3 (Major, conceptual): §3.2 IPD degenerate-case claim removed; replaced with
+  accurate characterisation of LPSG–IPD as complementary generalisations (not containment).
+  `04-method.md` + `paper.md` (2 files).
+- HHH4 (New citation): MarketBench (arXiv:2604.23897, Fradkin & Krishnan 2026) added.
+  `references.bib` + `03-related-work.md` §2.6 + Table 1 + `paper.md` mirrored (4 files).
+
+**Flagged (no code change — require external access):**
+- HHH5: `@quantagents2025` VERIFY note — pre-submission item 4 (carry from GGG5).
+- HHH6: `@ouyang2022training` incomplete author list — pre-submission item 1 (carry from GGG6).
+
+**Remaining open from prior cycles:**
+- Items 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 from FFF/GGG pre-submission checklist.
+
+**PRE-SUBMISSION checklist (updated):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155) — open (GGG6/HHH6)
+2. ✓ `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. ✓ `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (GGG5/HHH5)
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites 2026-04-22
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E
+14. Verify A6 via matched-pairs pilot analysis
+15. NEW (HHH4): Verify `@fradkin2026marketbench` author list against live arXiv:2604.23897 record
+
+**Structural changes this cycle:**
+- `04-method.md` §3.2: IPD paragraph replaced (HHH3)
+- `04-method.md` §3.5 Lemma 1 proof: "In both cases" + final paragraph replaced (HHH1, HHH2)
+- `paper.md` §3.2: IPD paragraph replaced (HHH3 mirror)
+- `paper.md` §3.5 Lemma 1 proof: same replacements (HHH1, HHH2 mirror)
+- `03-related-work.md` §2.6: MarketBench paragraph added (HHH4)
+- `03-related-work.md` Table 1: MarketBench row added (HHH4)
+- `paper.md` §2.6: MarketBench paragraph added (HHH4 mirror)
+- `paper.md` Table 1: MarketBench row added (HHH4 mirror)
+- `references.bib`: `@fradkin2026marketbench` entry added (HHH4)
