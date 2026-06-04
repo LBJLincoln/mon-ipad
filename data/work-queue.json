@@ -1,8 +1,35 @@
 {
   "version": 1,
-  "updated_at": "2026-06-04T04:00:00Z",
+  "updated_at": "2026-06-04T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire268-2026-06-04T12h",
+      "priority": 318,
+      "status": "done",
+      "completed_at": "2026-06-04T12:00:00Z",
+      "completed_by": "cloud-brain-fire-268",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-268 EVEN: Axelrod-verify-FULL-PASS-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; py_compile-OK-both; 25/25-parity-OK(all-symbols-NBA=POL-count-match); KL-div-OK(compute_consensus_distance-present-both); Mech-A/B/C+AblationFlags-ALL-CODE-DONE-BLOCKED(do_not_push_hf_space_yet); S18-c~820-34TH-RESET-c817-PREDICTED(c792+25=c817-ET-0.21938-fate-UNKNOWN); S22-c~220-8TH-RESET-c203-PREDICTED(c178+25=c203-RF-0.21903-fate-UNKNOWN); evo4-c~1005-35TH-RESET-c989-PREDICTED(c964+25=c989); evo5-c~1415-33RD-RESET-c1401-PREDICTED(c1376+25=c1401); S13/S14/S15+POL-404-DOWN(92+fires); EVEN-WebSearch:arXiv:2606.00717-Multi-Agent-CP-Personalized-Validity-Jun2026-NEW(priority=123)+arXiv:2605.18858-Collectively-Miscalibrated-May2026-NEW(priority=124); proposal-written:sota-multi-agent-conformal-prediction-fire268.md; work-queue.json+CLAUDE.md updated (2026-06-04T12h)"
+    },
+    {
+      "id": "vm-research-multi-agent-cp-personalized-fire268",
+      "priority": 123,
+      "status": "pending",
+      "owner": "local-vm",
+      "proposal_written": "2026-06-04T12:00:00Z",
+      "proposal_file": "data/research-proposals/sota-multi-agent-conformal-prediction-fire268.md",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "RESEARCH fire-268 EVEN: Multi-Agent Conformal Prediction with Personalized Statistical Validity — arXiv:2606.00717 (Jun 2026). Key: PFWCP = per-agent calibration-conditional CP via local density ratio weighting + weighted quantile aggregation, one-shot protocol. Application 1: replace island rank-fusion in predict_today.py with PFWCP (~100 lines, scipy+numpy). Application 2: add personal_cp_coverage per agent to COMMON_KNOWLEDGE[D]. Application 3: one-shot cross-island calibration aggregation. Application 4: port to political_engine.py with election-year density ratio weights. Expected: 0.001-0.002 Brier + per-island coverage guarantee."
+    },
+    {
+      "id": "vm-research-collective-miscalibration-fire268",
+      "priority": 124,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "RESEARCH fire-268 EVEN: When Individually Calibrated Models Become Collectively Miscalibrated — arXiv:2605.18858 (May 2026). Key: individually calibrated islands produce miscalibrated ensemble under heterogeneous distributions; Brier-score-weighted fusion is the fix. Application 1: audit aggregate ECE across islands in predict_today.py. Application 2: add collective_miscalibration_score to /api/export. Application 3: replace equal-weight averaging with Brier-score-weighted fusion. Application 4: port to political_engine.py. Library: netcal + properscoring. Expected: 0.001-0.002 Brier + correct aggregate calibration."
+    },
     {
       "id": "cloud-brain-fire267-2026-06-04T08h",
       "priority": 317,
