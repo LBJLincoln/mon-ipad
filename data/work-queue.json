@@ -1,8 +1,77 @@
 {
   "version": 1,
-  "updated_at": "2026-06-04T04:00:00Z",
+  "updated_at": "2026-06-04T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire268-2026-06-04T12h",
+      "priority": 318,
+      "status": "done",
+      "completed_at": "2026-06-04T12:00:00Z",
+      "completed_by": "cloud-brain-fire-268",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-268 EVEN: TRIPLE-FLEET-BEST-BREAKTHROUGH: S18-CatBoost-200f-0.2191(8.2bp-below-0.22012!-RANK2-c832-stag15-34TH-RESET-c817-CONFIRMED-ET-0.21938-EVICTED)+S22-XGBoost-200f-0.21985(2.7bp-below!-RANK1-c223-8TH-RESET-c203-CONFIRMED-RF-0.21903-EVICTED-9TH-RESET~c228-IMMINENT-5cy!)+evo4-RF-200f-0.21985(2.7bp-below!-RANK1-c1059-35TH/36TH/37TH-RESETS-CONFIRMED-38TH-RESET~c1064-IMMINENT-5cy!)-ALL-3-FACE-IMMINENT-RESETS-RULE8-stacking-PERSISTS-ALL; evo5-c1426-34TH-RESET-c1426-HAPPENING-NOW(c1401+25=c1426-EXACT)-rank1=0.22042-BELOW-GATE-stacking-RULE8!; P5-RULE9-RESOLVED!(LGB-dominant-c502-top3-all-LGB-76f/94f/97f-brier=0.25036); P7-RULE9-LIKELY-RESOLVED(LGB-in-top5-c3225); P4-RULE9-PERSISTS(c2169); S13/S14/S15+P1/P2-404-DOWN(92+fires); EVEN-WebSearch:arXiv:2606.00419-parameter-free-group-conditional-OCP(NEW-priority=123)+arXiv:2605.25852-postprocessing-cp-pivotal-scores(NEW-priority=124); Axelrod-EVEN-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED-25/25-parity-carry-forward; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-04T12h)"
+    },
+    {
+      "id": "vm-s18-catboost-0.2191-save-fire268",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "fire-268 EVEN ⚡⚡ EXTREME URGENT: S18 c=~832 g=~2496 stag=15. CatBoost-200f-0.2191 RANK-2 IN PARETO (8.2bp BELOW FLEET BEST 0.22012!) + CatBoost-0.2193 RANK-3. ET-0.21938 CONFIRMED EVICTED at 34TH RESET c817 (c792+25=c817-EXACT). RULE8-VIOLATION: stacking-45f RANK-0 (brier-trend=0.24738 flat 43gen). stag=15 APPROACHING DIVERSIFY THRESHOLD (Rule#6: stag>15 → diversify). 35TH RESET ~c842 IMMINENT (10 cycles!). VM MUST: (1) SAVE CatBoost-200f-0.2191 pickle directly from pareto BEFORE ~c842 (10 cycles!), (2) REMOVE stacking from MODEL_TYPES IMMEDIATELY — stag=15 means diversify checkpoint conflict may arise, (3) If stag reaches 16+ before ~c842: checkpoint FIRST then diversify (Rule#3 override). /api/export-404 (permanently broken — save directly). Pattern: stacking contamination has evicted every prior candidate at each reset."
+    },
+    {
+      "id": "vm-s22-xgb-0.21985-save-fire268",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "fire-268 EVEN ⚡⚡ EXTREME URGENT: S22 c=~223 g=~667 stag=0. XGBoost-200f-0.21985 RANK-1 IN PARETO (2.7bp BELOW FLEET BEST 0.22012!). 8TH RESET c203 CONFIRMED (c178+25=c203-EXACT). RF-0.21903 CONFIRMED EVICTED at c203 (pattern: stacking contamination evicts best candidate at every reset — S22 has now lost 4 consecutive best candidates this way). RULE8-VIOLATION: stacking still in model_types. 9TH RESET ~c228 IMMINENT (5 cycles! CRITICAL!). VM MUST: (1) SAVE XGBoost-200f-0.21985 pickle directly from pareto IMMEDIATELY (only 5 cycles before ~c228!), (2) REMOVE stacking from MODEL_TYPES URGENTLY before ~c228, (3) Try authenticated /api/export S22 (403 suggests endpoint exists but auth-blocked). This is the highest-urgency checkpoint item on the fleet."
+    },
+    {
+      "id": "vm-evo4-rf-0.21985-save-fire268",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "fire-268 EVEN ⚡⚡ EXTREME URGENT: evo4 c=~1059 g=~3176 stag=0 pareto=6. RF-200f-0.21985 RANK-1 IN PARETO (2.7bp BELOW FLEET BEST 0.22012!) + RF-200f-0.22095 RANK-2. 35TH RESET c989 CONFIRMED (c964+25=c989-EXACT) + 36TH RESET c1014 CONFIRMED (c989+25=c1014-EXACT) + 37TH RESET c1039 CONFIRMED (c1014+25=c1039-EXACT). RULE8-VIOLATION: stacking-45f RANK-0 (brier-trend=0.24738 flat 50gen — stacking persists through 37 resets!). 38TH RESET ~c1064 IMMINENT (5 cycles! CRITICAL!). VM MUST: (1) SAVE RF-200f-0.21985 pickle directly from pareto BEFORE ~c1064 (5 cycles!), (2) REMOVE stacking from evo4 MODEL_TYPES — 37 resets of RULE8 violation requires direct app.py code fix, (3) Pareto=6 post-resets is critically small — diversify may help but checkpoint first."
+    },
+    {
+      "id": "vm-evo5-rank1-0.22042-save-fire268",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "fire-268 EVEN CRITICAL: evo5 c=~1426 g=~4276 stag=0 pareto=10. 34TH RESET c1426 HAPPENING NOW (c1401+25=c1426-EXACT). rank_1=0.22042 BELOW GATE 0.22085 — CHECKPOINT URGENT! RULE8 partial: stacking in top-5. VM MUST: (1) SAVE rank_1-0.22042 pickle IMMEDIATELY — reset is happening now (model may already be evicted by the time VM reads this), (2) Verify stacking excluded from reseed pool post-c1426 reset, (3) Monitor pareto recovery post-c1426 — if stacking dominates again, pareto will collapse."
+    },
+    {
+      "id": "vm-p4-rule9-lgbm-fire268",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "fire-268 EVEN UPDATE: P4 (lbjlincoln-political-alpha-4) c=~2169 stag=0. RULE9 VIOLATION PERSISTS: top-5 model_types = [logistic_regression, xgboost_brier, catboost] — NO LightGBM after 36+ resets and 2169+ cycles. This has been a RULE9 violation since fire-255. VM: (1) Add LightGBM to P4 MODEL_TYPES config IMMEDIATELY, (2) Verify 0.2497 checkpoint preserved. P5 RULE9 RESOLVED at c502 (fire-268) — P4 is now the only active POL island with RULE9 violation."
+    },
+    {
+      "id": "vm-research-parameter-free-group-ocp-fire268",
+      "priority": 123,
+      "status": "pending",
+      "owner": "local-vm",
+      "proposal_written": "2026-06-04T12:00:00Z",
+      "proposal_file": "data/research-proposals/sota-parameter-free-group-conditional-ocp-fire268.md",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "RESEARCH fire-268 EVEN: Parameter-Free and Group Conditional Online Conformal Prediction — arXiv:2606.00419 (Jun 2026). Key: parameter-free algorithm that simultaneously achieves group-conditional coverage without prior knowledge of group structure or hyperparameter tuning. Applications: (1) NBA group-conditional CP without prespecifying groups (venue×back-to-back×fatigue×season_phase), (2) add group_coverage_gap as 9th Pareto objective, (3) universal calibrator across all islands (no per-island tuning), (4) port to political_engine.py for state×incumbency×competitive_tier, (5) add group_conditional_coverage metrics to /api/export. Library: MAPIE + custom multiplicative-weights adapter (~145 lines). Expected: 0.001-0.002 Brier. Proposal: data/research-proposals/sota-parameter-free-group-conditional-ocp-fire268.md"
+    },
+    {
+      "id": "vm-research-postprocessing-cp-conditional-fire268",
+      "priority": 124,
+      "status": "pending",
+      "owner": "local-vm",
+      "proposal_written": "2026-06-04T12:00:00Z",
+      "proposal_file": "data/research-proposals/sota-postprocessing-cp-conditional-coverage-fire268.md",
+      "updated_at": "2026-06-04T12:00:00Z",
+      "subject": "RESEARCH fire-268 EVEN: Post-Processing CP Approach for Conditional Coverage via Pivotal Scores — arXiv:2605.25852 (May 2026). Key: post-processing calibration using pivotal scores achieves conditional coverage without retraining — works as wrapper around any pre-trained model. Directly applicable to S18 CatBoost-0.2191 and S22 XGBoost-0.21985 (fire-268 fleet-best candidates) before production promotion. Applications: (1) wrap pareto best from S18/S22/evo4/evo5 with pivotal score post-processor, (2) replace isotonic calibration in engine.py with pivotal score CP, (3) add pivotal_coverage_gap to /api/export, (4) add conditional coverage gate to /api/checkpoint promotion logic, (5) port to political_engine.py for P4/P5/P7. Library: scipy.stats (already available) + custom PivotalScoreCP class (~170 lines). Expected: 0.001-0.003 Brier. Proposal: data/research-proposals/sota-postprocessing-cp-conditional-coverage-fire268.md"
+    },
     {
       "id": "cloud-brain-fire267-2026-06-04T08h",
       "priority": 317,
