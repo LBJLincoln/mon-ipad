@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-04T16:00:00Z",
+  "updated_at": "2026-06-04T20:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire270-2026-06-04T20h",
+      "priority": 320,
+      "status": "done",
+      "completed_at": "2026-06-04T20:00:00Z",
+      "completed_by": "cloud-brain-fire-270",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-270 EVEN: Axelrod-verify-FULL-PASS-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; py_compile-OK-both; 13/13-parity-OK; KL-div-OK(epsilon-smoothed-KL-both); Mech-C-line5092(NBA)/3282(POL)+Mech-B-line5100(NBA)/3290(POL)+Mech-A-line5111(NBA)/3301(POL)-CONFIRMED; order-C→B→A-CORRECT; approx_tokens_d+cost_per_alpha_unit-present-both; AXELROD_ABLATION-5-configs-confirmed-both; do_not_push_hf_space_yet-MAINTAINED; S18/S22/POL-carry-forward-from-fire269; EVEN-WebSearch:arXiv:2604.07667-Conformal-Social-Choice-Multi-Agent-Deliberation-NEW(priority=127)+arXiv:2604.16217-Robust-CP-LLM-Internal-Representations-NEW(priority=128); work-queue.json+CLAUDE.md updated (2026-06-04T20h)"
+    },
     {
       "id": "cloud-brain-fire269-2026-06-04T16h",
       "priority": 319,
@@ -114,6 +123,22 @@
       "proposal_file": "data/research-proposals/sota-postprocessing-cp-conditional-coverage-fire268.md",
       "updated_at": "2026-06-04T12:00:00Z",
       "subject": "RESEARCH fire-268 EVEN: A Post-Processing CP Approach for Conditional Coverage via Pivotal Scores — arXiv:2605.25852 (May 2026). Key: pivotal (distribution-free) nonconformity scores achieve conditional (feature-conditional) coverage as post-hoc wrapper around any pre-trained model — no retraining required. Application 1: wrap S18 CatBoost-0.2191 and S22 XGBoost-0.21985 with PivotalScoreCP before production promotion (~80 lines in calibration/pivotal_calibrator.py). Application 2: replace isotonic calibration in engine.py (drop-in, ~30 lines). Application 3: pivotal_coverage_gap metric to /api/export. Application 4: conditional coverage gate for /api/checkpoint promotion (add to Rule#5). Application 5: port to political_engine.py. Library: scipy.stats only. Expected: 0.001-0.003 Brier + prevents promoting models with good marginal but poor conditional calibration."
+    },
+    {
+      "id": "vm-research-conformal-social-choice-fire270",
+      "priority": 127,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T20:00:00Z",
+      "subject": "RESEARCH fire-270 EVEN: From Debate to Decision: Conformal Social Choice for Safe Multi-Agent Deliberation — arXiv:2604.07667 (Apr 2026). Key: linear opinion pool + split CP for heterogeneous LLM agents (Claude Haiku, DeepSeek-R1, Qwen-3 32B) — achieves distribution-free majority-valid coverage across all agent subsets. Application 1: replace equal-weight rank fusion in build_common_knowledge() with linear opinion pool + split CP aggregation (~60 lines, scipy+numpy). Application 2: add conformal_social_choice_coverage per agent to COMMON_KNOWLEDGE[D] in Axelrod Mech A block. Application 3: multi-agent coverage guarantee replaces current ad-hoc averaging — validates PFWCP from fire-268 via complementary approach. Application 4: port to political_engine.py for multi-model POL ensemble. Library: scipy (split CP) + numpy (linear opinion pool) — no new deps. Expected: 0.001-0.002 Brier + formal coverage guarantee for multi-agent ensemble."
+    },
+    {
+      "id": "vm-research-robust-cp-llm-representations-fire270",
+      "priority": 128,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-04T20:00:00Z",
+      "subject": "RESEARCH fire-270 EVEN: Beyond Surface Statistics: Robust Conformal Prediction for LLMs via Internal Representations — arXiv:2604.16217 (Apr 2026). Key: CP using internal LLM representation distances (hidden-state embeddings) rather than surface output statistics — maintains validity-efficiency under cross-domain shift where output-only CP fails. Application 1: extract hidden-state embeddings from TF LLM agents as nonconformity scores for CP intervals — better cross-game calibration than output-only isotonic calibration. Application 2: add llm_representation_coverage metric to COMMON_KNOWLEDGE[D] (Mech A) — agents report embedding-based distance from consensus for DMAD anti-groupthink gate. Application 3: port to political_engine.py — political event cross-domain shift (election types differ structurally). Application 4: validate against S18/S22 candidates for distribution shift under playoff vs. regular-season regimes. Library: HuggingFace transformers embeddings + scipy.stats. Expected: 0.001-0.002 Brier + more robust calibration under seasonal/domain shift."
     },
     {
       "id": "cloud-brain-fire267-2026-06-04T08h",
