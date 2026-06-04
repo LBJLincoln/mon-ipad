@@ -245,6 +245,15 @@ with genuine capital; models lost 16–30.8% on Kalshi but only −1.1%
 on Polymarket, with platform microstructure emerging as a more
 important performance driver than model capability.
 
+MarketBench [@fradkin2026marketbench] benchmarks AI agents as market participants
+across 93 software-engineering tasks, finding that *scaffold diversity* — fielding
+a heterogeneous set of agents — significantly improves allocation quality, but that
+the gains are limited by agents' weak self-assessment (poor probability calibration on
+their own success probability). This finding corroborates our Lemma 1 from a different
+angle: diversity increases ensemble performance (supporting H2), but only if agents are
+individually calibrated — precisely the joint property that SRR plus a proper scoring
+rule together enforce.
+
 Two concurrent works deserve explicit positioning against ours.
 PolySwarm [@polyswarm2026] deploys a 50-persona LLM swarm on Polymarket with
 cross-market KL-divergence analysis and Kelly stake sizing — architecturally close
@@ -302,6 +311,7 @@ endogenous diversity maintenance via SRR.
 | PolySwarm [@polyswarm2026] | ✓ | ✓ (Polymarket) | — | — (fixed personas) |
 | Silicon Crowd [@schoenegger2024wisdom] | ✓ | ✓ (geo. events) | — | — |
 | TimeSeek [@lee2026timeseek] | ✓ | ✓ (Kalshi) | — | — |
+| MarketBench [@fradkin2026marketbench] | ✓ | ✓ (task market) | — | — (static diversity) |
 | **Axelrod-LLM (this work)** | **✓** | **✓ (NBA + Political)** | **✓** | **✓ (SRR, endogenous)** |
 
 *Table 1: Comparison with related work across four key framework properties.
