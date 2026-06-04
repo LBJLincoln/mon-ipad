@@ -89,7 +89,7 @@ The LPSG is a repeated game with the following structure.
 > 2. **Prediction.** Each agent $i$ independently samples $\mathbf{p}_{i,d} \sim \sigma_i(r_i, x_d, h_{i,d-1})$.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
-> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Strictly, broadcasting cumulative bankroll standings could allow partial reverse-engineering of peer stake sizes. We bound this leakage: (a) the rolling Brier $\overline{B}_{j,d}$ that determines each agent's Kelly cap $\kappa_j$ is private and changes daily; (b) the broadcast shows cumulative totals rather than marginal day-over-day increments; and (c) the personality risk weight $\rho_j$ is an internal agent parameter not included in the broadcast. Exact prediction inference therefore requires knowledge of $\kappa_j$, $\rho_j$, and $\kappa_{\min}^{(r_j)}$ simultaneously — all three are either private or daily-varying. The leakage is thus partial and approximate, not exact, and constitutes a minor acknowledged deviation from strict informational separation (see §7.3).]
+> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Strictly, broadcasting cumulative bankroll standings could allow partial reverse-engineering of peer stake sizes. We bound this leakage: (a) the rolling Brier $\overline{B}_{j,d}$ that determines each agent's Kelly cap $\kappa_j$ is private and changes daily; (b) the broadcast shows cumulative totals rather than marginal day-over-day increments; and (c) the personality risk weight $\rho_j$ is an internal agent parameter not included in the broadcast. Exact prediction inference therefore requires knowledge of $\kappa_j$, $\rho_j$, and $\kappa_{\min}^{(r_j)}$ simultaneously — all three are either private or daily-varying. The leakage is thus partial and approximate, not exact, and constitutes a minor acknowledged deviation from strict informational separation (see §7.8).]
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *population games with type
@@ -384,7 +384,7 @@ Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and
 $\mathbb{E}[|\delta_i|] \leq 0.014$ (A4), the LHS $\geq \frac{11}{12}\times 0.037 = 0.03392$
 and the RHS $= 0.028(1+\eta_{\text{A3}})$. The inequality holds iff
 $\eta_{\text{A3}} < 0.03392/0.028 - 1 = 0.211$; pilot data must confirm
-$\eta_{\text{A3}} < 0.211$ before Conditions B–E (pre-submission checklist item 12,
+$\eta_{\text{A3}} < 0.211$ before Conditions B–E (pre-submission checklist item 13,
 bound tightened from earlier stated 0.22). $\checkmark$
 
 Combining Cases 1 and 2: taking the expectation over the joint distribution of
@@ -434,7 +434,7 @@ Vacant archetypes are those not currently occupied in the population; because th
 sacrifice-eligible agent's current archetype has been demonstrated to underperform
 ($\overline{B}_{i,d} \geq \bar{B}_d + \delta_{\text{sac}}$), switching to an as-yet-untested
 strategy is, in expectation, no worse than the current society mean. A6 is pre-registered
-and empirically testable via the within-agent matched-pairs analysis (§4.3, §5.4); if
+and empirically testable via the within-agent matched-pairs analysis (§4.3, §5.6); if
 violated for a specific agent–archetype pair, the retention test (Definition 2, step 5)
 reverts the assignment, bounding practical impact.
 
@@ -483,9 +483,16 @@ and the archetype-distinguishability and centroid-deviation bounds hold
 agent-uniformly; specifically, A4's bound of 0.014 applies to each $i \in \mathcal{C}$
 individually — by A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}[\frac{1}{N}\sum_j|\delta_j|]$,
 which A4 caps at 0.014 for all sacrifice-eligible agents, so the sub-population centroid
-deviation satisfies $\mathbb{E}_t[\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}
-|p_{j,t}-\bar{p}_t^{\mathcal{C}}|] \leq 0.014$ by the convexity of absolute value
-and the per-agent bound) yields:
+deviation satisfies $\text{Amb}^{\mathcal{C}}_{\text{deviation}} \leq
+\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}(p_{j,t}-\bar{p}_t)^2$ by the
+\emph{least-squares property of the sample mean} ($\bar{p}_t^{\mathcal{C}}$
+minimises $\sum_{j\in\mathcal{C}}(p_{j,t}-c)^2$ over all $c \in \mathbb{R}$,
+so the sub-population centroid can only reduce the within-$\mathcal{C}$ squared
+deviation below that measured against the full-population centroid $\bar{p}_t$);
+the A2+A4 per-agent bound $\mathbb{E}[|p_{j,t}-\bar{p}_t|] \leq 0.014$
+(using the Centroid Note convention that $\delta_i$ is the full-population
+deviation throughout the Lemma~1 arithmetic) then establishes the Case 2
+sufficient condition for the sub-population) yields:
 
 $$\mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{SRR}}\right] > \mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}}\right]$$
 
@@ -644,7 +651,7 @@ $0.6/0.4 = 1.5$ per unit staked versus $0.4/0.6 \approx 0.67$ for a correct
 home-bet, reflecting the higher implied difficulty of the contrarian position.
 For an incorrect bet: $g_{i,t} = -1$ (unit loss on the per-event allocation $\frac{s_i}{|\mathcal{B}_d^+|} V_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
-`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in §C.5.
+`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`; vig-corrected outputs are recorded in the log schema (§C.5).
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference
@@ -707,7 +714,7 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $\rho_i$ | Personality risk weight (agent-level) | $[0.35, 0.70]$ (actual per Table 3; design floor: 0.30) |
 | $\kappa_{\min}^{(r)}$ | Archetype minimum stake floor | $[0.01, 0.08]$ (Table A.1) |
 | $\epsilon_{\text{keep}}$ | Retain threshold (Brier improvement) | 0.005 |
-| $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (empirical) |
+| $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (pre-registered; verification pending §5.1, Table 4) |
 
 *Table 2: LPSG hyperparameters. Values for $\delta_{\text{sac}}$, $W$, and $\tau_{\text{vac}}$ were
 selected on a held-out 2024–25 season pilot; see Appendix C.2 for sensitivity analysis.

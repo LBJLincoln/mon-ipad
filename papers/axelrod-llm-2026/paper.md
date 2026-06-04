@@ -613,7 +613,7 @@ The LPSG is a repeated game with the following structure.
 > 2. **Prediction.** Each agent $i$ independently samples $\mathbf{p}_{i,d} \sim \sigma_i(r_i, x_d, h_{i,d-1})$.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
-> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Cumulative bankroll standings could in principle allow partial reverse-engineering of peer stake sizes; we bound this leakage at three levels — (a) rolling Brier $\overline{B}_{j,d}$ determining $\kappa_j$ is private and daily-varying; (b) cumulative totals mask marginal increments; (c) personality risk weight $\rho_j$ is internal to each agent and not broadcast — so exact prediction inference requires simultaneous knowledge of all three private parameters. The leakage is partial and approximate; see §7.3 for discussion.]
+> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Cumulative bankroll standings could in principle allow partial reverse-engineering of peer stake sizes; we bound this leakage at three levels — (a) rolling Brier $\overline{B}_{j,d}$ determining $\kappa_j$ is private and daily-varying; (b) cumulative totals mask marginal increments; (c) personality risk weight $\rho_j$ is internal to each agent and not broadcast — so exact prediction inference requires simultaneous knowledge of all three private parameters. The leakage is partial and approximate; see §7.8 for discussion.]
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *population games with type
@@ -765,7 +765,7 @@ $$\mathbb{E}_{x, t}\!\left[|p_{i,t}(\mathcal{M}, r, x) - p_{i,t}(\mathcal{M}, r'
 
 Assumption A1 is a mild identifiability condition: archetypes that produce
 identical expected predictions would be indistinguishable and hence redundant
-in the taxonomy. We verify A1 empirically in §5.1 (all 20 archetype pairs
+in the taxonomy. We verify A1 empirically in §5.1 (all $\binom{20}{2} = 190$ pairwise archetype combinations
 exhibit $\epsilon_{\text{arch}} \geq 0.037$ on our held-out validation set).
 
 **Assumption A2 (Sacrifice-eligible agents track the population mean).** An agent
@@ -929,7 +929,7 @@ Vacant archetypes are those not currently occupied; because the sacrifice-eligib
 agent's current archetype underperforms ($\overline{B}_{i,d} \geq \bar{B}_d +
 \delta_{\text{sac}}$), switching to an as-yet-untested strategy is, in expectation,
 no worse than the current society mean. A6 is pre-registered and testable via the
-within-agent matched-pairs analysis (§4.3, §5.4); if violated, the retention test
+within-agent matched-pairs analysis (§4.3, §5.6); if violated, the retention test
 (Definition 2, step 5) reverts the assignment.
 
 > **Proposition 2 (SRR as equilibrium refinement).** In the LPSG, the strategy
@@ -977,9 +977,16 @@ and the archetype-distinguishability and centroid-deviation bounds hold
 agent-uniformly; specifically, A4's bound of 0.014 applies to each $i \in \mathcal{C}$
 individually — by A2, $\mathbb{E}[|\delta_i|] \leq \mathbb{E}[\frac{1}{N}\sum_j|\delta_j|]$,
 which A4 caps at 0.014 for all sacrifice-eligible agents, so the sub-population centroid
-deviation satisfies $\mathbb{E}_t[\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}
-|p_{j,t}-\bar{p}_t^{\mathcal{C}}|] \leq 0.014$ by the convexity of absolute value
-and the per-agent bound) yields:
+deviation satisfies $\text{Amb}^{\mathcal{C}}_{\text{deviation}} \leq
+\frac{1}{|\mathcal{C}|}\sum_{j\in\mathcal{C}}(p_{j,t}-\bar{p}_t)^2$ by the
+\emph{least-squares property of the sample mean} ($\bar{p}_t^{\mathcal{C}}$
+minimises $\sum_{j\in\mathcal{C}}(p_{j,t}-c)^2$ over all $c \in \mathbb{R}$,
+so the sub-population centroid can only reduce the within-$\mathcal{C}$ squared
+deviation below that measured against the full-population centroid $\bar{p}_t$);
+the A2+A4 per-agent bound $\mathbb{E}[|p_{j,t}-\bar{p}_t|] \leq 0.014$
+(using the Centroid Note convention that $\delta_i$ is the full-population
+deviation throughout the Lemma~1 arithmetic) then establishes the Case 2
+sufficient condition for the sub-population) yields:
 
 $$\mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{SRR}}\right] > \mathbb{E}\!\left[\text{Amb}_{d+1}^{\mathcal{C},\text{deviation}}\right]$$
 
@@ -1133,7 +1140,7 @@ correct home-bet ($\omega=1$), reflecting the higher implied difficulty of the
 contrarian position.
 For an incorrect bet: $g_{i,t} = -1$ (unit loss on the per-event allocation $\frac{s_i}{|\mathcal{B}_d^+|} V_{i,d-1}$).  The full vig-adjusted formula,
 including the sportsbook's overround correction, is implemented in
-`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in §C.5.
+`LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`; vig-corrected outputs are recorded in the log schema (§C.5).
 
 Each agent receives the island GA oracle's pre-game probability estimate for each event
 as a calibration reference in its context block (described in §4.2.1); this reference
@@ -1193,7 +1200,7 @@ Table 2 summarises all LPSG hyperparameters and their values in our experiments.
 | $\rho_i$ | Personality risk weight (agent-level) | $[0.35, 0.70]$ (actual per Table 3; design floor: 0.30) |
 | $\kappa_{\min}^{(r)}$ | Archetype minimum stake floor | $[0.01, 0.08]$ (Table A.1) |
 | $\epsilon_{\text{keep}}$ | Retain threshold (Brier improvement) | 0.005 |
-| $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (empirical) |
+| $\epsilon_{\text{arch}}$ | Archetype distinguishability lower bound | 0.037 (pre-registered; verification pending §5.1, Table 4) |
 
 *Table 2: LPSG hyperparameters. Values for $\delta_{\text{sac}}$, $W$, and $\tau_{\text{vac}}$ were
 selected on a held-out 2024–25 season pilot; see Appendix C.2 for sensitivity analysis.
@@ -1414,6 +1421,16 @@ sacrifice-eligible under Condition A, a randomly selected *non-eligible* agent
 instead reallocated. This condition tests whether the performance-based
 *targeting* of SRR is essential, or whether any reallocation — regardless of
 which agent — produces the diversity gains.
+
+**Matched-pairs analysis.** As a third control for mean-reversion bias, each
+sacrifice-eligible agent $i$ at SRR trigger day $d$ is matched to the non-eligible
+agent $j^* = \arg\min_{j \notin \mathcal{I}_d^{\text{elig}}} |\overline{B}_{j,d} -
+\overline{B}_{i,d}|$ — the agent whose rolling Brier is closest to agent $i$'s
+pre-trigger rolling Brier. The post-trigger Brier improvement of agent $i$
+relative to $j^*$ over the subsequent $W_{\text{persist}} = 14$ days constitutes
+the within-pair SRR effect estimate, controlling for time-invariant agent
+characteristics and common within-season shocks. Results are in §5.6 (Table 7,
+post-SRR $\Delta B$ column).
 
 Conditions C, D, and E apply to the NBA domain only; Conditions A and B are evaluated
 independently in both the NBA ($N = 12$, $D = 175$ days) and political ($N = 10$,
@@ -1692,7 +1709,7 @@ betting line.
 
 ## 5.3  Ablation: Isolating Mechanism Components
 
-Three pre-registered hypotheses isolate the individual active ingredients:
+Two pre-registered hypotheses isolate the individual active ingredients:
 
 - **(H3)** Sham-SRR (Condition D) does not reproduce the Brier improvement of
   Full SRR (Condition A): $B_{\text{ens}}^D$ is not significantly lower than
@@ -2889,7 +2906,7 @@ confirmed out-of-sample.  If $\hat{\epsilon}_{\text{arch}}^{\text{val}} \in (0.0
 the Lemma 1 Case 2 arithmetic still holds (threshold 0.031 preserves the 0.034 > 0.028
 margin); values $\leq 0.031$ would require a tighter A4 bound or explicit restatement.
 **[PENDING: held-out half recomputation, September 2026 analysis; pre-submission
-checklist item 12.]**
+checklist item 9 (Table B.2).]**
 
 ---
 

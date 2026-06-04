@@ -120,7 +120,7 @@ betting line.
 
 ## 5.3  Ablation: Isolating Mechanism Components
 
-Three pre-registered hypotheses isolate the individual active ingredients:
+Two pre-registered hypotheses isolate the individual active ingredients:
 
 - **(H3)** Sham-SRR (Condition D) does not reproduce the Brier improvement of
   Full SRR (Condition A): $B_{\text{ens}}^D$ is not significantly lower than

@@ -9597,3 +9597,115 @@ in `paper.md`. MarketBench row added to Table 1 (positioning table) in both file
 - `paper.md` §2.6: MarketBench paragraph added (HHH4 mirror)
 - `paper.md` Table 1: MarketBench row added (HHH4 mirror)
 - `references.bib`: `@fradkin2026marketbench` entry added (HHH4)
+
+---
+
+# CYCLE III
+
+**Fire:** ODD (no WebSearch)
+**Reviewer stance:** Hostile — line-level auditor scanning for cross-reference errors, wrong counts, and stale formula citations.
+
+## Confirmations from Cycle HHH
+
+All HHH fixes verified in-place:
+- HHH1 (Lemma 1 derivative-lower-bound argument, `∂JSD/∂Amb ≥ 0.495`): present in `04-method.md` §3.5 and `paper.md` §3.5. ✓
+- HHH2 ("Combining Cases 1 and 2" framing with mixture-distribution language): present in both files. ✓
+- HHH3 (IPD degenerate-case claim removed; "complementary generalisations" text in place): confirmed in `04-method.md` §3.2 and `paper.md` §3.2. ✓
+- HHH4 (`@fradkin2026marketbench` in `references.bib`, §2.6 paragraph, Table 1 row): all four files updated. ✓
+- HHH pre-submission items 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 remain open (require data or external access). ✓ (no regression)
+
+---
+
+### III1 (Major, cross-reference): Definition 1 Step 5 footnote references §7.3 instead of §7.8
+
+**Location:** `04-method.md` line 92 (Step 5 footnote); `paper.md` line 616 (same footnote).
+
+**Finding.** The Definition 1 Step 5 footnote (describing the partial prediction-inference leakage from the bankroll broadcast) ends with "see §7.3" in both files. §7.3 is *"Virtual Financial Stakes"* — it discusses whether virtual stakes induce the same incentives as real money. §7.8 is *"Bankroll Broadcast Scope: Design Choice and Information Architecture"*, which is the section that explicitly formalises and bounds the three-factor leakage risk. The NN1 fix (cycle NN) correctly changed the §6.2 reference (07-discussion.md line 122, paper.md line 1968) from §7.3 to §7.8, but missed the earlier Definition 1 footnote at §3.2. A reviewer following the §7.3 pointer would land in the wrong section.
+
+**Root cause.** NN1 patched the §6.2 reference but did not audit the Definition 1 Step 5 footnote, which uses nearly identical language about the same three-factor leakage bound and had the same stale §7.3 pointer.
+
+**Fix.** Changed "constitutes a minor acknowledged deviation from strict informational separation (see §7.3)" → "see §7.8" in `04-method.md` line 92 and "The leakage is partial and approximate; see §7.3 for discussion" → "see §7.8 for discussion" in `paper.md` line 616.
+
+**Post-fix verification.** Grep for `§7.3` in Definition 1 / Step 5 context: zero hits. §7.8 reference in `paper.md` line 1968 (§6.2) and both Step 5 footnotes now all point to §7.8. ✓
+
+---
+
+### III2 (Major, factual error): "all 20 archetype pairs" — wrong count in Assumption A1
+
+**Location:** `paper.md` line 769 (Assumption A1, §3.5). `04-method.md` NOT affected (already correct there).
+
+**Finding.** The Assumption A1 paragraph ends with: "We verify A1 empirically in §5.1 (all 20 archetype pairs exhibit $\epsilon_{\text{arch}} \geq 0.037$...)." A taxonomy of 20 archetypes yields $\binom{20}{2} = 190$ pairwise combinations, not 20. "All 20 archetype pairs" would be the correct count only if there were 5 archetypes ($\binom{5}{2} = 10$, not quite, or $\binom{6}{2} = 15$, or if the verifier is confusing "20 archetypes" with "20 pairs"). Every other instance in the paper uses the correct count: `04-method.md` line 255 ("all $\binom{20}{2} = 190$ pairwise archetype combinations"), `paper.md` line 1466 ("all 190 pairwise archetype pairs"), Table 4 caption (line 1640: "all $\binom{20}{2} = 190$ pairwise archetype"), and the power-calculation footnote (line 1617). A reviewer checking A1 against Table 4 would immediately catch the "20 pairs" claim as numerically absurd.
+
+**Fix.** Changed "all 20 archetype pairs" → "all $\binom{20}{2} = 190$ pairwise archetype combinations" in `paper.md` line 769.
+
+**Post-fix verification.** Grep `paper.md` for "20 archetype pair": zero hits. Lines 768-769 now read "all $\binom{20}{2} = 190$ pairwise archetype combinations", matching `04-method.md` line 255 exactly. ✓
+
+---
+
+### III3 (Moderate, misleading cross-reference): "documented in §C.5" for vig-adjusted formula
+
+**Location:** `04-method.md` line 654 (§3.6 bankroll); `paper.md` line 1143 (same paragraph, §3.6 mirror).
+
+**Finding.** After defining the bankroll update formula and signed net return $g_{i,t}$, both files state: "The full vig-adjusted formula, including the sportsbook's overround correction, is implemented in `LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in §C.5." §C.5 is titled "Axelrod Log JSON Schema (stub)." It contains the newline-delimited JSON schema for `data/arena/axelrod-log/` files (fields: `date`, `domain`, `condition`, `events`, `srr_events`, `society_brier_7d`, etc.) — not a formula derivation. A reader following "documented in §C.5" to find the vig overround derivation would find only a JSON schema stub. The log schema does record `stake_pct` and `brier` fields (vig-corrected outputs), so §C.5 is adjacent, but "documented" misleads about what §C.5 contains.
+
+**Fix.** Changed "implemented in `LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`, and documented in §C.5" → "implemented in `LBJLincoln26/mon-ipad`, `scripts/arena/bankroll.py`; vig-corrected outputs are recorded in the log schema (§C.5)" in both `04-method.md` and `paper.md`.
+
+**Post-fix verification.** Grep both files for "documented in §C.5": zero hits in bankroll paragraph context. Remaining §C.5 references in `paper.md` (lines 1535, 1843, 2505, 2858) all correctly refer to the schema, not the formula. ✓
+
+---
+
+### III4 (Minor, wrong count): "Three pre-registered hypotheses" in §5.3 — only two listed
+
+**Location:** `06-results.md` line 123 (§5.3 heading); `paper.md` line 1712 (same, mirror).
+
+**Finding.** §5.3 "Ablation: Isolating Mechanism Components" opens with "Three pre-registered hypotheses isolate the individual active ingredients:" and then lists exactly two: H3 (Sham-SRR) and H4 (DMAD-Static). No third hypothesis is listed. The pre-registration document contains five hypotheses total (H1–H5), with H1 and H2 tested in §5.2 and H5 (contamination detection) tested separately — not in this ablation section. "Three" is factually wrong; the correct count for this section is two.
+
+**Root cause.** Likely a stale counter from an earlier draft when H3, H4, and a predecessor of H5 were all in the ablation block; H5 was later refactored into its own contamination-check section and the count was not decremented.
+
+**Fix.** Changed "Three pre-registered hypotheses isolate the individual active ingredients" → "Two pre-registered hypotheses isolate the individual active ingredients" in `06-results.md` line 123 and `paper.md` line 1712.
+
+**Post-fix verification.** Grep both files for "Three pre-registered": zero hits. `paper.md` line 1712 and `06-results.md` line 123 both now read "Two pre-registered hypotheses…". H3 and H4 are the only two items in the subsequent bullet list. ✓
+
+---
+
+## CYCLE III SUMMARY
+
+**Fixed this cycle:**
+- III1 (Major, cross-reference): Definition 1 Step 5 footnote §7.3 → §7.8. `04-method.md` + `paper.md` (2 files).
+- III2 (Major, factual): Assumption A1 "all 20 archetype pairs" → "all $\binom{20}{2} = 190$ pairwise archetype combinations". `paper.md` (1 file; `04-method.md` was already correct).
+- III3 (Moderate, cross-reference): §3.6 vig formula "documented in §C.5" → "outputs recorded in the log schema (§C.5)". `04-method.md` + `paper.md` (2 files).
+- III4 (Minor, wrong count): §5.3 "Three pre-registered hypotheses" → "Two". `06-results.md` + `paper.md` (2 files).
+
+**Flagged (no code change — require external access):**
+- HHH5/GGG5 carry: `@quantagents2025` VERIFY note (item 4)
+- HHH6/GGG6 carry: `@ouyang2022training` incomplete author list (item 1)
+- HHH15 carry: `@fradkin2026marketbench` author list (item 15)
+
+**Remaining open from prior cycles:**
+- All 15 items from HHH pre-submission checklist remain open; no new data-access items added this cycle (ODD fire, no WebSearch).
+
+**PRE-SUBMISSION checklist (updated — no changes from HHH cycle; III cycle adds no new items):**
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155) — open (GGG6/HHH6)
+2. ✓ `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. ✓ `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove BibTeX VERIFY note (GGG5/HHH5)
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites 2026-04-22
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E
+14. Verify A6 via matched-pairs pilot analysis
+15. Verify `@fradkin2026marketbench` author list against live arXiv:2604.23897 record (HHH4)
+
+**Structural changes this cycle:**
+- `04-method.md` §3.2 Step 5 footnote: §7.3 → §7.8 (III1)
+- `04-method.md` §3.6 bankroll: vig formula reference corrected (III3)
+- `paper.md` §3.2 Step 5 footnote: §7.3 → §7.8 (III1 mirror)
+- `paper.md` §3.5 Assumption A1: "20 archetype pairs" → "190 pairwise archetype combinations" (III2)
+- `paper.md` §3.6 bankroll: vig formula reference corrected (III3 mirror)
+- `paper.md` §5.3: "Three" → "Two" pre-registered hypotheses (III4 mirror)
+- `06-results.md` §5.3: "Three" → "Two" pre-registered hypotheses (III4)

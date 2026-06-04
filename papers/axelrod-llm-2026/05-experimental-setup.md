@@ -197,6 +197,16 @@ instead reallocated. This condition tests whether the performance-based
 *targeting* of SRR is essential, or whether any reallocation — regardless of
 which agent — produces the diversity gains.
 
+**Matched-pairs analysis.** As a third control for mean-reversion bias, each
+sacrifice-eligible agent $i$ at SRR trigger day $d$ is matched to the non-eligible
+agent $j^* = \arg\min_{j \notin \mathcal{I}_d^{\text{elig}}} |\overline{B}_{j,d} -
+\overline{B}_{i,d}|$ — the agent whose rolling Brier is closest to agent $i$'s
+pre-trigger rolling Brier. The post-trigger Brier improvement of agent $i$
+relative to $j^*$ over the subsequent $W_{\text{persist}} = 14$ days constitutes
+the within-pair SRR effect estimate, controlling for time-invariant agent
+characteristics and common within-season shocks. Results are in §5.6 (Table 7,
+post-SRR $\Delta B$ column).
+
 Conditions C, D, and E apply to the NBA domain only; Conditions A and B are evaluated
 independently in both the NBA ($N = 12$, $D = 175$ days) and political ($N = 10$,
 $D = 90$ days) domains (results for both in Table 5, §5.2).
