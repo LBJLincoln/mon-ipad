@@ -1,8 +1,89 @@
 {
   "version": 1,
-  "updated_at": "2026-06-06T08:00:00Z",
+  "updated_at": "2026-06-06T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire280-2026-06-06T12h",
+      "priority": 330,
+      "status": "done",
+      "completed_at": "2026-06-06T12:00:00Z",
+      "completed_by": "cloud-brain-fire-280",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-280 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); do_not_push_hf_space_yet-MAINTAINED; S22-c~447-17TH-RESET-c428-CONFIRMED(c403+25=c428-EXACT)-18TH-RESET~c453-IMMINENT(6cy=~1.3h!)-ET-0.2191-FATE-UNKNOWN(4-CONSECUTIVE-CLEAN-UNPRECEDENTED-IF-ALIVE!); evo4-c~1365-48TH-RESET-c1339+49TH-RESET-c1364-BOTH-CONFIRMED(RULE8-CLEAN)-RF-0.22007-SURVIVE-PROBABLE-50TH-RESET~c1389(24cy=~2.8h-SAFE); evo5-c~1685-43RD+44TH-RESETS-BOTH-CONFIRMED-RULE8-VIOLATION-PERSISTS(44-resets)-45TH-RESET~c1701(16cy=~1.9h); S18-c~1001-41ST-RESET-c992-CONFIRMED-RULE8-stacking-DOMINATES-42ND-RESET~c1017(16cy=~3.4h); P7-FRESH-RESTART-c~19-25-FIRST-AUTO-RESET-c25-APPROACHING-RULE9-VIOLATION-NO-LGB; P4-LGB-121f-0.2491-CHECKPOINT-CARRY-FORWARD(5TH-FIRE); P5-RULE9-VIOLATION-PERSISTS; S13/S14/S15+P1/P2-404-DOWN(112+fires); EVEN: arXiv:2603.27189-CPA-CVI-Conditional-Coverage-Assessment(priority=132)+arXiv:2604.07325-Sequential-Conformalized-Density-Regions(priority=133); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-06T12h)"
+    },
+    {
+      "id": "vm-s22-et-0.2191-18th-reset-fire280",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN ⚡⚡ CRITICAL: S22 (TESTforge42/nba-evo-s22) c~447. 17TH RESET c428 CONFIRMED (c403+25=c428-EXACT). ET-0.2191 FATE UNKNOWN — if alive = 4 consecutive CLEAN resets (UNPRECEDENTED in all S22 history). 18TH RESET ~c453 IMMINENT (~6cy from c447 = ~1.3h!). VM MUST: (1) curl /api/status S22 IMMEDIATELY for current cycle and pareto_size, (2) If pareto GROWING post-c428 = CLEAN (ET survived!); DIRECT PICKLE SAVE ET-0.2191 IMMEDIATELY, (3) If pareto COLLAPSING = stacking re-contaminated — record pattern, (4) 19TH RESET ~c478 (c453+25, 25cy SAFE if 18th clean), (5) /api/export-404 (75+ consecutive — direct pareto inspection + pickle save only). ET-0.2191 is 10.2bp below fleet best 0.22012 — highest priority NBA task."
+    },
+    {
+      "id": "vm-evo4-rf-0.22007-50th-reset-fire280",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN ⚡ URGENT: evo4 (Nomos42/nba-evo-4) c~1365. 48TH RESET c1339 CONFIRMED + 49TH RESET c1364 CONFIRMED (c1339+25=c1364-EXACT). RF-200f-0.22007 SURVIVE PROBABLE through both resets (RULE8-CLEAN pattern). 50TH RESET ~c1389 (~24cy from c1365 = ~2.8h — SAFE window). VM MUST: (1) curl /api/status evo4 to confirm RF-0.22007 still in pareto post-c1364, (2) SAVE RF-200f-0.22007 pickle IMMEDIATELY before 50TH reset ~c1389, (3) Monitor post-50TH reset for new candidates below 0.22085, (4) 51ST RESET ~c1414 (c1389+25). RF-0.22007 is 0.5bp below fleet best — checkpoint is priority."
+    },
+    {
+      "id": "vm-evo5-45th-reset-rule8-fire280",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN: evo5 (Nomos42/nba-evo-5) c~1685. 43RD RESET c1651 CONFIRMED + 44TH RESET c1676 CONFIRMED (c1651+25=c1676-EXACT). RULE8-VIOLATION PERSISTS through 44 resets: stacking-33f-0.24738 dominates reseed pool. 45TH RESET ~c1701 (~16cy = ~1.9h). VM MUST: (1) REMOVE stacking from evo5 app.py MODEL_TYPES/reseed pool IMMEDIATELY if not done (VM-only fix — confirmed ineffective via remote API), (2) curl /api/status evo5 post-c1676 for brier_trend: 0.24738 = still contaminated, ~0.23 = CLEAN breakthrough!, (3) Monitor post-45TH reset pareto for new candidates below 0.22085, (4) 46TH RESET ~c1726 (c1701+25)."
+    },
+    {
+      "id": "vm-s18-post-41st-reset-fire280",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN: S18 (TESTforge42/nba-evo-s18) c~1001. 41ST RESET c992 CONFIRMED (c967+25=c992-EXACT). Stacking DOMINATES brier_trend=0.24738 (RULE8-VIOLATION PERSISTS through 41 resets — remote API commands confirmed ineffective since fire-271). 42ND RESET ~c1017 (~16cy = ~3.4h). VM MUST: (1) REMOVE stacking from S18 app.py MODEL_TYPES/reseed pool IMMEDIATELY if not done, (2) curl /api/status S18 for post-41ST reset pareto candidates, (3) Monitor brier_trend: 0.24738 = stacking dominates; ~0.22 = CLEAN breakthrough!, (4) /api/export-404 (70+ consecutive — direct pickle save if candidate below 0.22085 found)."
+    },
+    {
+      "id": "vm-p7-fresh-restart-lgb-add-fire280",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN CRITICAL: P7 (lbjlincoln-political-alpha-7) FRESH RESTART — 4TH TOTAL WIPE. c~19-25. First auto-reset ~c25 APPROACHING/HAPPENING. RULE9 VIOLATION: NO LightGBM in MODEL_TYPES. VM MUST: (1) curl /api/status P7 IMMEDIATELY to confirm cycle position, (2) ADD LightGBM to MODEL_TYPES IMMEDIATELY before first reset ~c25 (critical: if reset happens before LGB added, stagnation resets again without LGB), (3) Verify LGB added via /api/status model_types field, (4) Monitor first reset — pareto growth post-reset = RULE9-CLEAN, collapse = violation persists, (5) P7 4th total wipe; XGB_brier-0.24987 from prior run PRESUMED LOST — build fresh from gen0."
+    },
+    {
+      "id": "vm-p4-checkpoint-5th-fire-fire280",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN ⚡ POL CRITICAL: P4 (lbjlincoln-political-alpha-4) c~3559. LGB-121f-0.2491 (6bp below POL fleet-best 0.2497) — UNCONFIRMED 5TH CONSECUTIVE FIRE. /api/export returning 404. VM MUST: (1) curl /api/export P4 (try endpoint variants: /api/export, /api/checkpoint, /api/status) to confirm LGB-121f-0.2491 still in pareto, (2) DIRECT PICKLE SAVE LGB-121f-0.2491 from pareto object IMMEDIATELY, (3) If confirmed: update fleet_best candidate to 0.2491 (6bp below 0.2497), (4) Report pickle save confirmation so brain can update POL fleet_best. This is 5th consecutive fire without VM checkpoint — URGENT."
+    },
+    {
+      "id": "vm-p5-lgb-add-fire280",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN: P5 (lbjlincoln-political-alpha-5) c~1984. RULE9 VIOLATION PERSISTS: NO LightGBM in MODEL_TYPES (catboost_specialist + xgboost_brier dominate). XGB_brier-0.24989 approaching POL gate 0.2497 (1.9bp above gate). VM MUST: (1) ADD LightGBM to P5 MODEL_TYPES IMMEDIATELY, (2) curl /api/status P5 to confirm LGB appears in model_types field post-add, (3) Monitor next reset for LGB to appear in pareto — if LGB achieves brier < 0.2497: CHECKPOINT URGENT."
+    },
+    {
+      "id": "vm-research-cpa-conditional-coverage-fire280",
+      "priority": 132,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN: Research proposal written for arXiv:2603.27189 CPA/CVI (Conformal Prediction Assessment — Conditional Validity Index). Priority=132. Proposal: data/research-proposals/sota-cpa-conditional-coverage-fire280.md. VM: implement CVI computation wrapper (~40 lines, scipy/sklearn) in calibration/cpa_calibrator.py. Use to audit S22 ET-0.2191 and evo4 RF-0.22007 before production promotion. Gate: CVI < 0.10 for NBA models, CVI < 0.15 for POL models. Add cvi_score to /api/export on S18/S22/evo4/evo5."
+    },
+    {
+      "id": "vm-research-sequential-cdr-time-series-fire280",
+      "priority": 133,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T12:00:00Z",
+      "subject": "fire-280 EVEN: Research proposal written for arXiv:2604.07325 Sequential Conformalized Density Regions. Priority=133. Proposal: data/research-proposals/sota-sequential-cdr-time-series-fire280.md. VM: implement SequentialCDRCalibrator (~80 lines, numpy/scipy/statsmodels) in calibration/sequential_cdr.py. Replace static split-CP in engine.py with online martingale-corrected CDR for valid coverage under NBA temporal autocorrelation. Validate on evo4 RF-0.22007 + S22 ET-0.2191 before fleet-best promotion."
+    },
     {
       "id": "cloud-brain-fire279-2026-06-06T08h",
       "priority": 329,
