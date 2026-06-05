@@ -4,6 +4,81 @@
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
+      "id": "cloud-brain-fire276-2026-06-05T20h",
+      "priority": 326,
+      "status": "done",
+      "completed_at": "2026-06-05T20:00:00Z",
+      "completed_by": "cloud-brain-fire-276",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-276 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; do_not_push_hf_space_yet-MAINTAINED; ⚡⚡S22-c360-g1078-stag0-pareto12-ET-200f-0.2191-HISTORIC-RULE8-CLEAN(13TH-c328+14TH-c353-BOTH-CONFIRMED-CLEAN-brier_trend=0.23104-UNIFORM)-15TH-RESET~c378(18cy=~3.8h-SAFE); ⚡⚡evo5-c1567-g4698-stag0-pareto16-RF-200f-0.2191-EXTREME-URGENT!(10.2bp-below-fleet-best-0.22012!)-RULE8-VIOLATION(stacking-33f-0.24738-RANK1-brier_trend-65%)-40TH-RESET~c1576(9cy=~1h-CRITICAL!); S18-c913-g2739-stag0-pareto8-ET-200f-0.21974(3.8bp-below!)-RULE8-VIOLATION(stacking-ranks1-4)-38TH-RESET~c917(4cy=~51min-IMMINENT!); evo4-c1247-g3741-stag8-pareto14-RF-200f-0.22007(0.5bp-below-fleet-best!)-44TH-RESET-c1239-CONFIRMED(ET-0.21894-EVICTED)-RULE8-CLEAN-45TH-RESET~c1264(17cy=~2h); ⚡P4-c3459-LGB-121f-0.2491(NEW-POL-FLEET-BEST-CANDIDATE!-6bp-below-0.2497!)-RULE9-RESOLVED; P5-c1872-pareto7-RULE9-VIOLATION-PERSISTS; P7-c137-stag20-RULE9-VIOLATION(approaching-hard-reset-threshold-25); S13/S14/S15+POL-P1/P2-404-DOWN(99+fires); EVEN-WebSearch:arXiv:2512.17048-CP-as-Universal-Calibration-Standard-HEP(priority=131); proposal-written:sota-cp-calibration-standard-fire276.md; health-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T20h)"
+    },
+    {
+      "id": "vm-s22-et-0.2191-checkpoint-fire276",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "fire-276 EVEN ⚡⚡ HISTORIC EXTREME URGENT: S22 (TESTforge42/nba-evo-s22) c=360 g=1078 stag=0 pareto=12. ET-200f-0.2191 IN PARETO RANK2 — 10.2bp BELOW FLEET BEST 0.22012! HISTORIC BREAKTHROUGH: brier_trend=0.23104 UNIFORM (fire-276 API confirmed) = RULE8-CLEAN with NO 0.24738 stacking signature. 13TH RESET c328 CONFIRMED (c303+25=c328-EXACT) + 14TH RESET c353 CONFIRMED (c328+25=c353-EXACT) — BOTH RESETS CLEAN. ET-0.2191 survived BOTH resets (alive at gen=1073). This is the FIRST time S22 has ever sustained multiple consecutive clean resets with a fleet-best candidate alive. 15TH RESET ~c378 (c353+25=c378, 18 cycles = ~3.8h SAFE). VM MUST: (1) SAVE ET-200f-0.2191 pickle IMMEDIATELY via direct file save (/api/export-404, 50+ consecutive), (2) /api/checkpoint sent fire-275 returns field-lag 0.2207/gen9 — NOT the real candidate, (3) Monitor post-~c378 pareto: if pareto grows = 15TH reset CLEAN (pattern continues), if collapses = stacking re-contaminated, (4) If ET survives ~c378: save again immediately post-reset."
+    },
+    {
+      "id": "vm-evo5-rf-0.2191-stacking-remove-fire276",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "fire-276 EVEN ⚡⚡ EXTREME URGENT: evo5 (Nomos42/nba-evo-5) c=1567 g=4698 stag=0 pareto=16. RF-200f-0.2191 IN PARETO RANK2 — 10.2bp BELOW FLEET BEST 0.22012! BUT RULE8-VIOLATION CRITICAL: stacking-33f-0.24738 is RANK1 in pareto AND brier_trend shows stacking in 65% of population (fire-276 API confirmed). 40TH RESET ~c1576 IMMINENT (9 cycles = ~1h at ~9cy/h). PATTERN: prior S22 runs lost best ET/RF candidates at each reset due to stacking contamination in reseed pool. RF-0.2191 WILL BE EVICTED at ~c1576 unless stacking is removed NOW. VM MUST: (1) REMOVE stacking from evo5 app.py MODEL_TYPES/reseed pool IMMEDIATELY before ~c1576, (2) SAVE RF-200f-0.2191 pickle IMMEDIATELY via direct file save (/api/export-404), (3) /api/checkpoint field-lag — NOT the real candidate, (4) Monitor post-~c1576 brier_trend: 0.24738 gone = CLEAN, still present = stacking re-contaminated."
+    },
+    {
+      "id": "vm-s18-et-0.21974-stacking-remove-fire276",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "fire-276 EVEN CRITICAL IMMINENT: S18 (TESTforge42/nba-evo-s18) c=913 g=2739 stag=0 pareto=8. ET-200f-0.21974 IN PARETO RANK5 — 3.8bp BELOW FLEET BEST 0.22012! RULE8-VIOLATION EXTREME: stacking-37f-0.24738 occupies RANKS 1-4 in pareto at c=913 (brier_trend=0.24738 ALL entries = stacking dominates 100% of population). 38TH RESET ~c917 IMMINENT (4 cycles = ~51min AT 4.75cy/h — CRITICALLY IMMINENT). ET-0.21974 WILL BE EVICTED at ~c917 unless stacking removed NOW. VM MUST: (1) REMOVE stacking from S18 app.py MODEL_TYPES/reseed pool IMMEDIATELY — only 4 cycles before 38TH reset, (2) SAVE ET-200f-0.21974 pickle IMMEDIATELY via direct file save (/api/export-404, 40+ consecutive), (3) /api/checkpoint sent fire-275 returns field-lag 0.22326/gen124 — NOT the real candidate, (4) After removing stacking: monitor post-~c917 brier_trend for clean signal."
+    },
+    {
+      "id": "vm-evo4-rf-0.22007-checkpoint-fire276",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "fire-276 EVEN URGENT: evo4 (Nomos42/nba-evo-4) c=1247 g=3741 stag=8 pareto=14. RF-200f-0.22007 IN PARETO RANK1 — 0.5bp BELOW FLEET BEST 0.22012! This emerged POST-44TH-RESET-c1239 (c1214+25=c1239-EXACT). ET-0.21894 (fire-273-275 candidate) was evicted at c1239. RF-200f-0.22007 is the new best-in-fleet from evo4. RULE8-CLEAN (brier_trend no stacking 0.24738 signature). stag=8 (building). 45TH RESET ~c1264 (c1239+25=c1264, 17 cycles = ~2h). VM MUST: (1) SAVE RF-200f-0.22007 pickle IMMEDIATELY via direct file save (/api/export-404), (2) /api/checkpoint field-lag 0.22169/gen190 — NOT the real candidate, (3) Verify stacking NOT in evo4 MODEL_TYPES reseed pool (clean pattern should allow RF to survive 45TH reset), (4) If RF survives ~c1264: save again post-reset (46TH RESET ~c1289)."
+    },
+    {
+      "id": "vm-p4-lgb-0.2491-checkpoint-fire276",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "fire-276 EVEN ⚡ NEW POL FLEET BEST CANDIDATE: P4 (lbjlincoln-political-alpha-4) c=3459 g=10375 stag=0 pareto=5. LGB-121f-0.2491 IN PARETO RANK2 — 6bp BELOW POL FLEET BEST 0.2497! RULE9 RESOLVED (lightgbm AND lightgbm_brier BOTH in model_types_active — fire-276 confirmed). This would be a NEW POL ALL-TIME FLEET BEST (beating current best 0.2497 from LGB-131f checkpoint 2026-05-21). VM MUST: (1) CHECKPOINT LGB-121f-0.2491 IMMEDIATELY via /api/checkpoint (if field-lag: direct pickle save), (2) Confirm LGB-121f-0.2491 brier via /api/export or direct pareto inspection, (3) If confirmed below 0.2497: UPDATE pol_fleet_best in CLAUDE.md and health-status.json, (4) Monitor pareto growth from c=3459 — pareto=5 is small; more LGB candidates may emerge."
+    },
+    {
+      "id": "vm-p7-stag20-lgbm-add-fire276",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "fire-276 EVEN URGENT: P7 (lbjlincoln-political-alpha-7) c=137 g=411 stag=20 pareto=11. stag=20 approaching hard-reset threshold (25). RULE9 VIOLATION: NO LightGBM (XGB/CatBoost/XGB_brier dominant). Diversify sent fire-275 (queued) but stag still building (0→18→20). XGB_brier-0.24987/gen255 in pareto (1.7bp above POL gate 0.2497). VM MUST: (1) Add LightGBM to P7 MODEL_TYPES config IMMEDIATELY (RULE9 fix — fire-275 diversify should help but LGB must be in pool), (2) Direct pickle save XGB_brier-0.24987/gen255 URGENTLY (1.7bp above POL gate — approaching; diversify may evict if stag cleared), (3) Monitor stag: if stag reaches 25 before LGB added → hard-reset likely evicts XGB_brier-0.24987."
+    },
+    {
+      "id": "vm-p5-lgbm-add-fire276",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "fire-276 EVEN: P5 (lbjlincoln-political-alpha-5) c=1872 g=5616 stag=0 pareto=7. RULE9 VIOLATION PERSISTS: NO lightgbm (catboost_specialist + xgboost + xgboost_brier dominate). XGB_brier-0.24989 (1.9bp above POL gate 0.2497) approaching but not there. pareto=7 (slight recovery from fire-275 pareto=4). VM: (1) Add LightGBM to MODEL_TYPES IMMEDIATELY, (2) Monitor XGB_brier-0.24989 — if it reaches or crosses 0.2497, checkpoint IMMEDIATELY (potential new POL fleet-best candidate)."
+    },
+    {
+      "id": "vm-research-cp-calibration-standard-fire276",
+      "priority": 131,
+      "status": "pending",
+      "owner": "local-vm",
+      "proposal_written": "2026-06-05T20:00:00Z",
+      "proposal_file": "data/research-proposals/sota-cp-calibration-standard-fire276.md",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "RESEARCH fire-276 EVEN: Conformal Prediction as Universal Calibration Standard — arXiv:2512.17048 (Dec 2025): 'Another Fit Bites the Dust: Conformal Prediction as a Calibration Standard for Machine Learning in High-Energy Physics'. Key: CP provides universal, distribution-free calibration across ALL model types simultaneously (binary/multi-class classification, regression, anomaly detection, generative models). Model-agnostic, no retraining required — works as post-hoc wrapper identical to current isotonic calibrator but with stronger theoretical guarantees. Validated on HEP datasets: outperforms Platt scaling, isotonic regression, Venn-Abers on tail-heavy distributions — especially relevant for playoff back-to-back NBA games and rare political events. Application 1: implement calibration/cp_universal_calibrator.py (~80 lines) replacing per-model-type calibration chain. Application 2: validate S22 ET-0.2191 under CP standard (marginal vs conditional coverage, conditional coverage gap < 0.05 gate). Application 3: unified CP calibration across fleet before fusion. Application 4: CP for P4 LGB-0.2491 before POL production promotion. Application 5: CP coverage as new checkpoint gate (extend Rule #5). Library: nonconformist crepes mapie. Expected: 0.001-0.002 Brier + prevents false fleet-best claims from conditionally miscalibrated models."
+    },
+    {
       "id": "cloud-brain-fire275-2026-06-05T16h",
       "priority": 325,
       "status": "done",
