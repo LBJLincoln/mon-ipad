@@ -9805,3 +9805,80 @@ grep -n "xu2026discovermalgos" references.bib 03-related-work.md paper.md
 - `references.bib`: added `@xu2026discovermalgos` (arXiv:2602.16928) (JJJ4)
 - `03-related-work.md` §2.4: added concurrent-works paragraph for Xu et al. 2026 (JJJ4)
 - `paper.md` §2.4: mirrored Xu et al. 2026 paragraph (JJJ4)
+
+---
+
+## Cycle 30 — Peer-Review Self-Critique
+
+**Date:** 2026-06-05
+**Files read:** `08-limitations.md`, `06-results.md`, `appendix-c.md`, `paper.md`
+**Issues found:** 3 (1 critical, 1 moderate, 1 minor)
+**Issues fixed:** 3
+
+---
+
+### KKK25 (Critical) — §7.8 Bankroll-broadcast justification contradicts §3.3 / §6.5 definition of $\bar{p}_t$
+
+**Location:** `08-limitations.md` §7.8, lines 348–353; `paper.md` §7.8, lines 2559–2565.
+
+**Problem:** Reason (b) in the bankroll-broadcast retention paragraph read:
+
+> "(b) agents require absolute bankroll data to compute the ensemble mean prediction $\bar{p}_t$ used in the morning council brief"
+
+This is factually incorrect. §3.3 defines $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$ as the simple equal-weighted mean of agent predictions — independent of bankroll levels or stake fractions. §6.5 contains an explicit footnote reiterating this: "The ensemble mean prediction $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t}$ (§3.3) is equal-weighted over agent predictions, independent of stake fractions or bankroll size." The stated reason (b) therefore contradicted two other sections of the same paper.
+
+**Fix:** Replaced the incorrect reason (b) with the correct rationale: the morning council brief quality depends on absolute bankroll *levels* — not mere rank-order standings — because magnitude differences reflect substantially different cumulative track records that rank-ordering alone cannot convey to the moderator.
+
+**Files changed:** `08-limitations.md`, `paper.md`.
+
+---
+
+### KKK27 (Moderate) — Table 7 caption mislabels matched-pairs column as "pre-post Brier delta"
+
+**Location:** `06-results.md` §5.6 Table 7 caption (lines 216–220); `paper.md` §5.6 Table 7 caption (lines 1815–1819).
+
+**Problem:** The caption described the "Post-SRR $\Delta B$" column as "pre-post Brier delta (mean across all SRR events for that agent)." However, §4.3 explicitly states that the post-SRR $\Delta B$ column reports a *matched-pairs* comparison: each SRR-eligible agent is matched to a non-eligible control agent $j^*$, and the reported $\Delta B$ is the improvement *relative to that control*, not the raw pre-post delta for the treated agent alone. A raw pre-post delta conflates SRR-attributable improvement with the secular skill trajectory that would have occurred anyway; the matched-pairs design is the causal identification strategy.
+
+**Fix:** Rewrote the caption to accurately describe the column as "post-SRR Brier delta versus matched non-eligible control agent (mean over all SRR events; matched-pairs analysis per §4.3)."
+
+**Files changed:** `06-results.md`, `paper.md`.
+
+---
+
+### KKK12 (Minor) — §C.2.4 title contains orphan internal tracking label "(HH4)"
+
+**Location:** `appendix-c.md` §C.2.4 heading (line 87).
+
+**Problem:** The section heading read "### C.2.4  Archetype Distinguishability Out-of-Sample Validation (HH4)". The tag "(HH4)" is an internal issue-tracking label from an early critique cycle (before the triple-letter notation system was adopted in Cycle 26). It was never intended to appear in the manuscript and has no meaning to readers. It does not correspond to any currently tracked issue or hypothesis label (hypotheses are H1–H4 in §4.6; this label does not match any of them). `paper.md` did not contain the orphan tag (it was already clean there from a prior edit); the source file `appendix-c.md` was the sole remaining location.
+
+**Fix:** Removed "(HH4)" from the section title in `appendix-c.md`.
+
+**Files changed:** `appendix-c.md` (only; `paper.md` was already clean).
+
+---
+
+### Data-blocked checklist (updated — 16 items unchanged)
+
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove VERIFY note (GGG5/HHH5)
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites 2026-04-22
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E
+14. Verify A6 via matched-pairs pilot analysis
+15. Verify `@fradkin2026marketbench` author list against live arXiv:2604.23897 record (HHH4)
+16. Verify `@xu2026discovermalgos` author list against live arXiv:2602.16928 abstract (JJJ4)
+
+**Structural changes this cycle:**
+- `08-limitations.md` §7.8: replaced incorrect reason (b) "$\bar{p}_t$ requires bankroll data" with correct "morning brief quality depends on absolute bankroll levels, not just rank" (KKK25)
+- `paper.md` §7.8: mirrored KKK25 fix
+- `06-results.md` §5.6 Table 7 caption: changed "pre-post Brier delta (mean across all SRR events for that agent)" to "post-SRR Brier delta versus matched non-eligible control agent (mean over all SRR events; matched-pairs analysis per §4.3)" (KKK27)
+- `paper.md` §5.6 Table 7 caption: mirrored KKK27 fix
+- `appendix-c.md` §C.2.4 heading: removed orphan label "(HH4)" (KKK12)

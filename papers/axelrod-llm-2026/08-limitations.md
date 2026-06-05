@@ -347,8 +347,10 @@ sharing in Aumann's sense.
 
 We retain the bankroll-magnitude broadcast in Condition A because: (a) the three-factor
 bound limits leakage to a one-sided direction signal rather than a precise probability
-recovery; (b) agents require absolute bankroll data to compute the ensemble mean
-prediction $\bar{p}_t$ used in the morning council brief; and (c) omitting magnitudes
+recovery; (b) the morning council brief quality depends on absolute bankroll levels —
+not merely rank-order standings — since magnitude differences (e.g., a 3× bankroll
+differential between two agents) reflect substantially different cumulative track records
+that a rank-ordering alone cannot convey to the moderator; and (c) omitting magnitudes
 would prevent agents from identifying the highest-weight peers when formulating
 the council brief, weakening the collaborative council-discussion quality.
 The rank-only design is a viable alternative for deployments where prediction-inference
