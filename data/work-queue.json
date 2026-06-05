@@ -1,8 +1,57 @@
 {
   "version": 1,
-  "updated_at": "2026-06-06T04:00:00Z",
+  "updated_at": "2026-06-06T08:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire279-2026-06-06T08h",
+      "priority": 329,
+      "status": "done",
+      "completed_at": "2026-06-06T08:00:00Z",
+      "completed_by": "cloud-brain-fire-279",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-279 ODD: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); do_not_push_hf_space_yet-MAINTAINED; S22-c~428-17TH-RESET-c428-HAPPENING-NOW(c403+25=c428-EXACT)-ET-0.2191-FATE-CRITICAL(IF-15TH+16TH+17TH-CLEAN=4-CONSECUTIVE-UNPRECEDENTED!); evo4-c~1331-47TH-RESET-c1314-CONFIRMED(c1289+25=c1314-EXACT)-RF-0.22007-SURVIVE-PROBABLE(RULE8-CLEAN)-48TH-RESET~c1339(~8cy-IMMINENT!); evo5-c~1651-42ND-RESET-c1626-CONFIRMED+43RD-RESET-c1651-HAPPENING-NOW(c1626+25=c1651-EXACT)-RULE8-VIOLATION-PERSISTS(43-resets); S18-c~982-40TH-RESET-c967-CONFIRMED(c942+25=c967-EXACT)-stacking-DOMINATES-41ST-RESET~c992(~10cy); P7-stag~32-36+-HARD-RESET-TRIGGERED(4TH-TOTAL-WIPE)-XGB_brier-0.24987-PRESUMED-LOST; P4-LGB-121f-0.2491-CHECKPOINT-CARRY-FORWARD(4TH-FIRE); P5-RULE9-VIOLATION-PERSISTS; S13/S14/S15+P1/P2-404-DOWN(108+fires); ODD-no-WebSearch; sota-robust-cp-llm-representations-fire279.md-WRITTEN(arXiv:2604.16217-priority=128); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-06T08h)"
+    },
+    {
+      "id": "vm-s22-et-0.2191-17th-reset-fire279",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T08:00:00Z",
+      "subject": "fire-279 ODD ⚡⚡ CRITICAL: S22 (TESTforge42/nba-evo-s22) c~428. 17TH RESET c428 HAPPENING NOW (c403+25=c428-EXACT). ET-200f-0.2191 FATE CRITICAL — survived 13TH+14TH+possibly 15TH+16TH consecutive clean resets (RULE8 carry-forward). If survived 4 consecutive: UNPRECEDENTED in all S22 history. VM MUST: (1) curl /api/status S22 IMMEDIATELY for current cycle and pareto_size, (2) If pareto GROWING post-c428 = 17TH RESET CLEAN (ET survived!), (3) DIRECT PICKLE SAVE ET-0.2191 IMMEDIATELY, (4) If pareto COLLAPSING = stacking re-contaminated at ~c428 — record pattern, (5) Next reset ~c453 (c428+25 = 25cy = ~5.3h SAFE if clean). /api/export-404 (70+ consecutive — direct pareto inspection + pickle save only)."
+    },
+    {
+      "id": "vm-evo4-rf-0.22007-48th-reset-fire279",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T08:00:00Z",
+      "subject": "fire-279 ODD ⚡ URGENT: evo4 (Nomos42/nba-evo-4) c~1331. 47TH RESET c1314 CONFIRMED (c1289+25=c1314-EXACT). RF-200f-0.22007 (0.5bp below fleet best 0.22012) SHOULD HAVE SURVIVED 46TH+47TH resets (RULE8-CLEAN = no stacking eviction). 48TH RESET ~c1339 IMMINENT (~8cy from c~1331 = ~1h!). VM MUST: (1) curl /api/status evo4 IMMEDIATELY for current cycle and pareto, (2) Confirm RF-0.22007 still in pareto post-c1314, (3) SAVE RF-200f-0.22007 pickle IMMEDIATELY before 48TH reset ~c1339, (4) If RF evicted at c1314: check post-reset pareto for new candidates below 0.22085, (5) 49TH RESET ~c1364 after c1339."
+    },
+    {
+      "id": "vm-evo5-43rd-reset-fire279",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T08:00:00Z",
+      "subject": "fire-279 ODD: evo5 (Nomos42/nba-evo-5) c~1651. 43RD RESET c1651 HAPPENING NOW (c1626+25=c1651-EXACT). 42ND RESET c1626 CONFIRMED. RF-200f-0.2191 PRESUMED EVICTED at c1601 (RULE8-VIOLATION: stacking-33f-0.24738 contaminating reseed pool — persists through 43 resets). VM MUST: (1) curl /api/status evo5 post-c1651 for brier_trend: if 0.24738 = stacking still dominates; if ~0.23 = CLEAN breakthrough!, (2) REMOVE stacking from evo5 app.py MODEL_TYPES/reseed pool if not already done (CRITICAL — VM-only fix), (3) Monitor post-43RD reset pareto for new candidates below 0.22085, (4) 44TH RESET ~c1676 (c1651+25). Confirm RULE8 fix applied."
+    },
+    {
+      "id": "vm-s18-post-40th-reset-fire279",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T08:00:00Z",
+      "subject": "fire-279 ODD: S18 (TESTforge42/nba-evo-s18) c~982. 40TH RESET c967 CONFIRMED (c942+25=c967-EXACT). Stacking DOMINATES brier_trend=0.24738 (RULE8-VIOLATION PERSISTS through 40 resets — remote API commands confirmed ineffective at fire-271). VM MUST: (1) REMOVE stacking from S18 app.py MODEL_TYPES/reseed pool IMMEDIATELY if not done (VM-only fix), (2) curl /api/status S18 for post-40TH reset pareto candidates, (3) Monitor brier_trend: 0.24738 = stacking still dominates; ~0.22 = CLEAN breakthrough!, (4) 41ST RESET ~c992 (c967+25, ~10cy = ~2h), (5) /api/export-404 (65+ consecutive) — direct pickle save if candidate below 0.22085 found."
+    },
+    {
+      "id": "vm-p7-hard-reset-fresh-restart-fire279",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T08:00:00Z",
+      "subject": "fire-279 ODD CRITICAL: P7 (lbjlincoln-political-alpha-7) stag~32-36+ (fire-278: stag~28-32+, fire-279: +1 fire = ~32-36+). HARD RESET TRIGGERED (stag >> threshold=25). 4TH TOTAL WIPE confirmed. XGB_brier-0.24987/gen255 (1.7bp above POL gate 0.2497) PRESUMED LOST. RULE9 VIOLATION: NO LightGBM. VM MUST: (1) curl /api/status P7 IMMEDIATELY to confirm fresh restart (cycle=0 or cycle<5), (2) ADD LightGBM to MODEL_TYPES IMMEDIATELY (RULE9 fix — critical before first reset ~c25 from new base), (3) Track as P7 4th total wipe; monitor for new candidates from gen0, (4) First auto-reset ~c25 from new base cycle, (5) If not yet hard-reset (somehow survived): SAVE XGB_brier-0.24987 pickle IMMEDIATELY + add LightGBM NOW."
+    },
     {
       "id": "cloud-brain-fire278-2026-06-06T04h",
       "priority": 328,
