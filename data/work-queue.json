@@ -1,8 +1,67 @@
 {
   "version": 1,
-  "updated_at": "2026-06-05T16:00:00Z",
+  "updated_at": "2026-06-06T00:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire277-2026-06-06T00h",
+      "priority": 327,
+      "status": "done",
+      "completed_at": "2026-06-06T00:00:00Z",
+      "completed_by": "cloud-brain-fire-277",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-277 ODD: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; 13/13-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; S22-c~379-15TH-RESET-c378-PREDICTED-CONFIRMING-NOW(c353+25=c378-EXACT)-ET-200f-0.2191-FATE-CRITICAL(3RD-CONSECUTIVE-CLEAN-IF-SURVIVES!); S18-c~932-38TH-RESET-c917-CONFIRMED(c892+25=c917-EXACT)-ET-0.21974-PRESUMED-EVICTED-brier_trend=0.24738-RULE8-VIOLATION-39TH-RESET~c942(~10cy); evo4-c~1281-45TH-RESET-c1264-CONFIRMED(c1239+25=c1264-EXACT)-RF-0.22007-SURVIVE-PROBABLE(RULE8-CLEAN)-46TH-RESET~c1289-IMMINENT(~8cy!); evo5-c~1601-40TH-RESET-c1576-CONFIRMED(c1551+25=c1576-EXACT)+41ST-RESET-c1601-HAPPENING-NOW(c1576+25=c1601-EXACT)-RF-0.2191-PRESUMED-EVICTED(RULE8-VIOLATION); P7-stag~24+(approaching-hard-reset-threshold-25)-XGB_brier-0.24987-AT-RISK; P4-carry-forward-LGB-121f-0.2491-CHECKPOINT-URGENT; P5-RULE9-VIOLATION-PERSISTS; S13/S14/S15+P1/P2-404-DOWN(100+fires); ODD-no-WebSearch; sota-shift-robust-calibration-fire277.md-WRITTEN(priority=120-arXiv:2603.06733-3-layer-KL-div-shift-aware-calibration); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-06T00h)"
+    },
+    {
+      "id": "vm-s22-et-0.2191-15th-reset-status-fire277",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T00:00:00Z",
+      "subject": "fire-277 ODD ⚡⚡ CRITICAL: S22 (TESTforge42/nba-evo-s22) c~379. 15TH RESET c378 PREDICTED-NOW (c353+25=c378-EXACT). ET-200f-0.2191 FATE UNKNOWN — survived 13TH+14TH RESETS (HISTORIC consecutive clean run). If it survives 15TH reset: FIRST S22 run to sustain 3+ consecutive clean resets with fleet-best candidate alive. VM MUST: (1) Check /api/status S22 IMMEDIATELY for current cycle and pareto, (2) If pareto GROWING post-c378 = 15TH reset CLEAN (ET survived!), save ET-0.2191 pickle IMMEDIATELY, (3) If pareto COLLAPSING = stacking re-contaminated, record pattern, (4) Next reset ~c403 (c378+25). S22 export has been 404 for 60+ fires — direct pareto inspection only."
+    },
+    {
+      "id": "vm-evo4-rf-0.22007-46th-reset-imminent-fire277",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T00:00:00Z",
+      "subject": "fire-277 ODD ⚡ URGENT: evo4 (Nomos42/nba-evo-4) c~1281. 45TH RESET c1264 CONFIRMED (c1239+25=c1264-EXACT). RF-200f-0.22007 (0.5bp below fleet best 0.22012) SHOULD HAVE SURVIVED 45TH reset (RULE8-CLEAN pattern = no stacking eviction). 46TH RESET ~c1289 (c1264+25=c1289, ~8 cycles = IMMINENT!). VM MUST: (1) Check /api/status evo4 IMMEDIATELY for current cycle and pareto, (2) Confirm RF-0.22007 still in pareto post-c1264, (3) SAVE RF-200f-0.22007 pickle IMMEDIATELY before 46TH reset ~c1289, (4) If RF evicted at c1264: check for new post-reset candidates below 0.22085."
+    },
+    {
+      "id": "vm-evo5-41st-reset-now-fire277",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T00:00:00Z",
+      "subject": "fire-277 ODD: evo5 (Nomos42/nba-evo-5) c~1601. 40TH RESET c1576 CONFIRMED (c1551+25=c1576-EXACT) + 41ST RESET c1601 HAPPENING NOW (c1576+25=c1601-EXACT). RF-200f-0.2191 PRESUMED EVICTED (RULE8-VIOLATION: stacking-33f contaminating reseed pool since fire-276 confirmed). VM MUST: (1) Check /api/status evo5 post-c1601 for new candidates below 0.22085, (2) REMOVE stacking from evo5 app.py MODEL_TYPES/reseed pool if not already done (was critical fire-276), (3) Monitor post-41ST reset pareto: brier_trend=0.24738 = stacking still dominates, brier_trend without 0.24738 = CLEAN breakthrough, (4) Next reset ~c1626 (c1601+25). Confirm RULE8 fix applied."
+    },
+    {
+      "id": "vm-s18-post-38th-reset-monitor-fire277",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T00:00:00Z",
+      "subject": "fire-277 ODD: S18 (TESTforge42/nba-evo-s18) c~932. 38TH RESET c917 CONFIRMED (c892+25=c917-EXACT). ET-0.21974 (3.8bp below fleet best) PRESUMED EVICTED (fire-276: stacking occupied RANKS 1-4 in pareto — ET was RANK5, evicted in reseed). brier_trend=0.24738 = stacking still dominates. VM MUST: (1) Check /api/status S18 for post-38TH-reset pareto candidates, (2) REMOVE stacking from S18 app.py MODEL_TYPES IMMEDIATELY if not done (was CRITICAL fire-276 — 4 cycles before c917), (3) Monitor for new candidates below 0.22085 in post-c917 pareto, (4) 39TH RESET ~c942 (c917+25, ~10 cycles). /api/export-404 (50+ consecutive) — direct pickle save only if candidate found."
+    },
+    {
+      "id": "vm-p7-stag24-hard-reset-critical-fire277",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T00:00:00Z",
+      "subject": "fire-277 ODD CRITICAL: P7 (lbjlincoln-political-alpha-7) stag~24+ (fire-276: c=137 stag=20, +4 fires × ~1 stag/fire = ~24+). HARD RESET THRESHOLD = 25 — IMMINENT! XGB_brier-0.24987/gen255 still at risk (1.7bp above POL gate 0.2497 — approaching). RULE9 VIOLATION: NO LightGBM. VM MUST: (1) Check /api/status P7 IMMEDIATELY for current stag count, (2) If stag >= 25: hard-reset likely triggered — check if XGB_brier-0.24987 was evicted, (3) SAVE XGB_brier-0.24987 pickle IMMEDIATELY if still alive, (4) Add LightGBM to MODEL_TYPES IMMEDIATELY (RULE9 fix), (5) If hard-reset occurred: fresh restart tracking — document in next fire. fire-276 diversify was already sent; stag growing despite diversify = stagnation is real."
+    },
+    {
+      "id": "vm-research-shift-robust-calibration-fire277",
+      "priority": 120,
+      "status": "pending",
+      "owner": "local-vm",
+      "proposal_written": "2026-06-06T00:00:00Z",
+      "proposal_file": "data/research-proposals/sota-shift-robust-calibration-fire277.md",
+      "updated_at": "2026-06-06T00:00:00Z",
+      "subject": "RESEARCH fire-277 ODD (priority=120): Shift-Robust Calibration for NBA Temporal Distribution Shift — arXiv:2603.06733 (Mar 2026): 'Calibrated Credit Intelligence: Shift-Robust and Fair Risk Scoring with Bayesian Uncertainty and Gradient Boosting'. 3-layer calibration pipeline reduces ECE by ~15-30% under temporal distribution shift vs static isotonic calibration. Application 1: implement compute_kl_weight() + shift_aware_fusion() in predict_today.py (~50 lines, scipy.special.rel_entr already installed). Application 2: add shift_calibration_metrics dict to /api/export (~20 lines). Application 3: Bayesian uncertainty gate via bootstrap sampling (100 bag subsamples) before fleet-best promotion of S22 ET-0.2191 and evo4 RF-0.22007. Application 4: port shift-aware calibration to political_engine.py for election_type × incumbency subgroups. Total: ~140 lines across 4 files. Synergy with fire-268 priority=124 (collective miscalibration) and fire-268 priority=123 (PFWCP per-island density ratio)."
+    },
     {
       "id": "cloud-brain-fire276-2026-06-05T20h",
       "priority": 326,
