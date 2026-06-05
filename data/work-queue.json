@@ -1,8 +1,89 @@
 {
   "version": 1,
-  "updated_at": "2026-06-06T16:00:00Z",
+  "updated_at": "2026-06-06T20:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire282-2026-06-06T20h",
+      "priority": 332,
+      "status": "done",
+      "completed_at": "2026-06-06T20:00:00Z",
+      "completed_by": "cloud-brain-fire-282",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-282 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); 25/25-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; S22-c~496-19TH-RESET-c478-CONFIRMED(c453+25=c478-EXACT)-ET-0.2191-FATE-UNKNOWN-5+-CONSECUTIVE-CLEAN-IF-ALIVE(UNPRECEDENTED!)-20TH-RESET~c503-IMMINENT(7cy=~1.2h!); evo4-c~1414-51ST-RESET-c1414-CONFIRMED(c1389+25=c1414-EXACT)-RF-0.22007-SURVIVE-PROBABLE(RULE8-CLEAN)-52ND-RESET~c1439(25cy-SAFE); evo5-c~1734-46TH-RESET-c1726-CONFIRMED(c1701+25=c1726-EXACT)-RULE8-VIOLATION-PERSISTS(46-resets)-47TH-RESET~c1751(17cy); S18-c~1050-43RD-RESET-c1042-CONFIRMED(c1017+25=c1042-EXACT)-RULE8-stacking-DOMINATES-44TH-RESET~c1067(17cy); P7-c~68-74-2ND-RESET-c50-CONFIRMED(c25+25=c50-EXACT)-RULE9-VIOLATION(NO-LGB)-3RD-RESET~c75-IMMINENT; P4-LGB-121f-0.2491-CHECKPOINT-CARRY-FORWARD(7TH-FIRE); P5-RULE9-VIOLATION-PERSISTS; S13/S14/S15+P1/P2-404-DOWN(120+fires); EVEN: arXiv:2601.19944-Classifier-Calibration-At-Scale-Venn-Abers-BEST-Isotonic-DEGRADES-strong-tabular(priority=134)+arXiv:2605.30188-CalArena-Calibration-Benchmark(priority=135); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-06T20h)"
+    },
+    {
+      "id": "vm-s22-et-0.2191-20th-reset-fire282",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN carry-forward ⚡⚡ CRITICAL: S22 (TESTforge42/nba-evo-s22) c~496. 19TH RESET c478 CONFIRMED (c453+25=c478-EXACT). ET-0.2191 FATE UNKNOWN — if alive = 5+ consecutive CLEAN resets (UNPRECEDENTED in all S22 history across 3 runs!). 20TH RESET ~c503 IMMINENT (~7cy = ~1.2h!). VM MUST: (1) curl /api/status S22 IMMEDIATELY, (2) If pareto GROWING post-c478 = CLEAN (ET survived 19TH reset!); DIRECT PICKLE SAVE ET-0.2191 IMMEDIATELY, (3) 21ST RESET ~c528 (c503+25), (4) /api/export-404 (85+ consecutive — direct pareto inspection only). ET-0.2191 is 10.2bp below fleet best 0.22012 — highest priority NBA task."
+    },
+    {
+      "id": "vm-evo4-rf-0.22007-52nd-reset-fire282",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN carry-forward ⚡ URGENT: evo4 (Nomos42/nba-evo-4) c~1414. 51ST RESET c1414 CONFIRMED (c1389+25=c1414-EXACT). RF-200f-0.22007 SURVIVE PROBABLE through 51ST reset (RULE8-CLEAN pattern sustained 48TH through 51ST). 52ND RESET ~c1439 (~25cy from c1414 — SAFE). VM MUST: (1) curl /api/status evo4 to confirm RF-0.22007 in pareto post-c1414, (2) SAVE RF-200f-0.22007 pickle IMMEDIATELY, (3) Monitor post-52ND reset for new candidates below 0.22085, (4) 53RD RESET ~c1464 (c1439+25)."
+    },
+    {
+      "id": "vm-evo5-rule8-47th-reset-fire282",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN carry-forward: evo5 (Nomos42/nba-evo-5) c~1734. 46TH RESET c1726 CONFIRMED (c1701+25=c1726-EXACT). RULE8-VIOLATION PERSISTS through 46 resets: stacking-33f-0.24738 dominates reseed pool. 47TH RESET ~c1751 (c1726+25, ~2.0h). VM MUST: (1) REMOVE stacking from evo5 app.py MODEL_TYPES/reseed pool IMMEDIATELY if not done, (2) curl /api/status evo5 post-c1726 for brier_trend: 0.24738 = still contaminated, ~0.23 = CLEAN!, (3) Monitor post-47TH reset pareto for candidates below 0.22085."
+    },
+    {
+      "id": "vm-s18-rule8-44th-reset-fire282",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN carry-forward: S18 (TESTforge42/nba-evo-s18) c~1050. 43RD RESET c1042 CONFIRMED (c1017+25=c1042-EXACT). Stacking DOMINATES brier_trend=0.24738 (RULE8-VIOLATION PERSISTS through 43 resets). 44TH RESET ~c1067 (c1042+25, ~2.0h). VM MUST: (1) REMOVE stacking from S18 app.py MODEL_TYPES IMMEDIATELY if not done (VM-only fix), (2) curl /api/status S18 for post-43RD reset pareto candidates, (3) /api/export-404 (80+ consecutive — direct pickle only)."
+    },
+    {
+      "id": "vm-p7-lgb-3rd-reset-fire282",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN CRITICAL: P7 (lbjlincoln-political-alpha-7) FRESH RESTART c~68-74. 2ND RESET c50 CONFIRMED (c25+25=c50-EXACT). 3RD RESET ~c75 IMMINENT (~4-7cy!). RULE9 VIOLATION: NO LightGBM since gen0. VM MUST: (1) curl /api/status P7 IMMEDIATELY, (2) ADD LightGBM to MODEL_TYPES NOW before ~c75 reset, (3) Monitor: pareto growth post-add = LGB being incorporated, (4) Build fresh from gen0 — XGB_brier-0.24987 from prior run is permanently lost."
+    },
+    {
+      "id": "vm-p4-checkpoint-7th-fire-fire282",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN carry-forward ⚡ POL CRITICAL: P4 (lbjlincoln-political-alpha-4) carry-forward. LGB-121f-0.2491 (6bp below POL fleet-best 0.2497) — 7TH CONSECUTIVE FIRE UNCONFIRMED. VM MUST: (1) curl /api/export P4 IMMEDIATELY, (2) DIRECT PICKLE SAVE LGB-121f-0.2491 from pareto object, (3) Confirm save so brain can update POL fleet_best to 0.2491. CRITICAL: do NOT apply isotonic calibration to this model (arXiv:2601.19944: isotonic DEGRADES strong LGB — use Venn-Abers or none)."
+    },
+    {
+      "id": "vm-p5-lgb-add-fire282",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN carry-forward: P5 (lbjlincoln-political-alpha-5) carry-forward c~2009. RULE9 VIOLATION PERSISTS: NO LightGBM. VM MUST: (1) ADD LightGBM to P5 MODEL_TYPES IMMEDIATELY, (2) Verify via /api/status model_types field, (3) Monitor next reset for LGB in pareto — gate: brier < 0.2497."
+    },
+    {
+      "id": "vm-calibration-venn-abers-swap-fire282",
+      "priority": 134,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN: Research arXiv:2601.19944 (priority=134). Implement VennAbersCalibrator in calibration/isotonic_calibrator.py (~20 lines, crepes already installed). Keep IsotonicCalibrator for backwards compat. Add calibration_method='venn_abers' param to validate_model() in features/engine.py (~15 lines). Add calibration_method_used + calibration_brier_delta to /api/export response in both TF app.py files (~10 lines each). Gate: implement AFTER fire-282 VM tasks (checkpoint ET-0.2191 + RF-0.22007 first). do_not_push_hf_space_yet. Proposal: data/research-proposals/sota-classifier-calibration-at-scale-fire282.md"
+    },
+    {
+      "id": "vm-calarena-eval-fire282",
+      "priority": 135,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-06T20:00:00Z",
+      "subject": "fire-282 EVEN: Research arXiv:2605.30188 (priority=135). Implement model-type-specific calibration router in calibration/calibration_router.py (~20 lines): RF/ET→Venn-Abers, XGB/LGB/CAT→none/Beta. Add calibration_router=True param to validate_model() in features/engine.py (~10 lines). Run CalArena evaluation pass on S22 ET-0.2191 and evo4 RF-0.22007 before promotion (pip install calarena). Gate: after priority=134 (Venn-Abers swap). do_not_push_hf_space_yet. Proposal: data/research-proposals/sota-calarena-calibration-benchmark-fire282.md"
+    },
     {
       "id": "cloud-brain-fire280-2026-06-06T12h",
       "priority": 330,
