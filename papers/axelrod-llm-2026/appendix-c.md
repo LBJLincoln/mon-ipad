@@ -84,7 +84,7 @@ are therefore possible but rare. **[PENDING: comparison of immediately-prior vs.
 home-base reversal designs from pilot data, to be populated from
 `data/arena/axelrod-log/srr-chain-analysis.jsonl`.]**
 
-### C.2.4  Archetype Distinguishability Out-of-Sample Validation (HH4)
+### C.2.4  Archetype Distinguishability Out-of-Sample Validation
 
 The pairwise distinguishability estimates $\hat{\epsilon}_{\text{arch}}$ reported in
 Table B.2 and cited in Assumption A1 are computed from the full 2024–25 pilot season.

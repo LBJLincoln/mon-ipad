@@ -1813,8 +1813,9 @@ Domain-transfer correlation: **[PENDING: populate from
 ## 5.6  Agent-Level Analysis and Bankroll Growth
 
 *Table 7: Per-agent 175-day CAGR under Condition A versus Condition B,
-number of SRR events triggered, final archetype at Day 175, pre-post
-Brier delta (mean across all SRR events for that agent), and whether the
+number of SRR events triggered, final archetype at Day 175, post-SRR Brier
+delta versus matched non-eligible control agent (mean over all SRR events;
+matched-pairs analysis per §4.3), and whether the
 Brier-improvement retention test ($\epsilon_{\text{keep}} = 0.005$) confirmed
 the archetype on each event. NBA domain ($N = 12$).*
 
@@ -2558,9 +2559,12 @@ common-knowledge prediction sharing in Aumann's sense.
 
 We retain the bankroll-magnitude broadcast in Condition A because: (a) the three-factor
 bound limits leakage to a directional signal rather than a precise probability recovery;
-(b) agents require absolute bankroll data to compute the ensemble mean prediction $\bar{p}_t$;
-and (c) omitting magnitudes would prevent agents from identifying the highest-weight
-peers when formulating the morning council brief. The rank-only design is a viable
+(b) the morning council brief quality depends on absolute bankroll levels —
+not merely rank-order standings — since magnitude differences (e.g., a 3× bankroll
+differential between two agents) reflect substantially different cumulative track records
+that a rank-ordering alone cannot convey to the moderator; and (c) omitting magnitudes
+would prevent agents from identifying the highest-weight peers when formulating the
+morning council brief. The rank-only design is a viable
 alternative for deployments where prediction-inference risk is paramount; we recommend
 evaluating it in replications via a sixth condition (Condition F: Rank-Only Broadcast).
 

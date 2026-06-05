@@ -214,8 +214,9 @@ Domain-transfer correlation: **[PENDING: populate from
 ## 5.6  Agent-Level Analysis and Bankroll Growth
 
 *Table 7: Per-agent 175-day CAGR under Condition A versus Condition B,
-number of SRR events triggered, final archetype at Day 175, pre-post
-Brier delta (mean across all SRR events for that agent), and whether the
+number of SRR events triggered, final archetype at Day 175, post-SRR Brier
+delta versus matched non-eligible control agent (mean over all SRR events;
+matched-pairs analysis per §4.3), and whether the
 Brier-improvement retention test ($\epsilon_{\text{keep}} = 0.005$) confirmed
 the archetype on each event. NBA domain ($N = 12$).*
 
