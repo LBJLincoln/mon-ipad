@@ -1,7 +1,7 @@
 {
-  "fire": 275,
-  "timestamp": "2026-06-05T16:00:00Z",
-  "parity": "ODD",
+  "fire": 276,
+  "timestamp": "2026-06-05T20:00:00Z",
+  "parity": "EVEN",
   "nba_islands": {
     "evo4": {
       "hf_space": "nomos42-nba-evo-4",
@@ -204,23 +204,14 @@
     "nba_tf_lines": 6034,
     "pol_tf_sha": "6983c86517",
     "pol_tf_lines": 4018,
-    "parity_note": "fire-275 ODD: carry-forward from fire-274 FULL VERIFY PASS. SHAs NBA-85e7682e1d(6034L)/POL-6983c86517(4018L) UNCHANGED. do_not_push_hf_space_yet MAINTAINED.",
-    "last_full_verify": "fire-274 EVEN: FULL VERIFY PASS. 13/13-parity-OK. KL-div-OK. Mech-C-line5092(NBA)/3282(POL)+Mech-B-line5100/3290+Mech-A-line5111/3301. AXELROD_ABLATION-5-configs-both. py_compile-OK-both."
+    "parity_note": "fire-276 EVEN: FULL VERIFY PASS. SHAs NBA-85e7682e1d(6034L)/POL-6983c86517(4018L) UNCHANGED. 14/14-parity-OK. KL-div-OK. py_compile-OK-both. do_not_push_hf_space_yet MAINTAINED.",
+    "last_full_verify": "fire-276 EVEN: FULL VERIFY PASS. 14/14-parity-OK. KL-div-OK. compute_consensus_distance-present-both. approx_tokens_d+cost_per_alpha_unit-present-both. Mech-A/B/C+AblationFlags-ALL-CODE-DONE-BLOCKED. py_compile-OK-both."
   },
-  "actions_taken_fire275": [
+  "actions_taken_fire276": [
     "STEP 0: Crash recovery — no local-agent-* items in work-queue (all pending items owner=local-vm). No crash recovery needed.",
-    "STEP 1 NBA LIVE (WebFetch): evo4 c=1231 g=3692 stag=0 pareto=15. ET-200f-0.21894 RANK2 (11.8bp below fleet best 0.22012!). ET-0.21937 RANK3 (7.5bp). ET-0.21955 RANK4. ET-0.22012 RANK5 — 4 candidates below or at fleet best! RULE8-CLEAN brier_trend=0.2217. 43RD RESET c1214 CONFIRMED. 44TH RESET ~c1239 IMMINENT (8cy = ~1h!).",
-    "STEP 1 NBA LIVE: evo5 c=1545 g=4633 stag=0 pareto=8. RF-200f-0.22063 BELOW GATE. CatBoost dominant (CLEAN). 38TH RESET c1526 CONFIRMED. 39TH RESET ~c1551 (6cy).",
-    "STEP 1 NBA LIVE: S18 c=903 g=2707 stag=0 pareto=14. CatBoost-0.22059×2 BELOW GATE. RULE8 VIOLATION: stacking-0.24738 rank4 persists. 38TH RESET ~c917 (14cy).",
-    "STEP 1 NBA LIVE: S22 c=314 g=942 stag=0 pareto=18. RF-200f-~0.219 RANK2 (10bp below fleet best!). RULE8-CLEAN brier_trend~0.231. 11TH+12TH RESETS (c278+c303) BOTH CONFIRMED. 13TH RESET ~c328 (14cy).",
-    "STEP 1 NBA: S15 404-DOWN (98+ fires).",
-    "STEP 1 ACTIONS: POST /api/checkpoint evo4 → field-lag 0.22169/gen190. POST /api/checkpoint S22 → field-lag 0.2207/gen9. POST /api/checkpoint evo5 → field-lag 0.22126/gen1. POST /api/checkpoint S18 → field-lag 0.22326/gen124.",
-    "STEP 2 POL LIVE: P4 c=3223 reset c3222 pareto=10 RECOVERY (from fire-273 pareto=2!). lgbm_brier in model_types (partial RULE9). No gate candidates in current pareto (post-reset gen0-gen2 only).",
-    "STEP 2 POL LIVE: P5 c=1612 SAVING pareto=4 SHRINKING. XGB_brier-0.24989 (1.9bp above gate). RULE9 VIOLATION (no lightgbm).",
-    "STEP 2 POL LIVE: P7 c=97 stag=18 EXCEEDED threshold=15. XGB_brier-0.24987/gen255 (1.7bp above POL gate). RULE9 VIOLATION.",
-    "STEP 2 ACTIONS: POST /api/command diversify P7 → 'command queued' SUCCESS. (Rule#3 conflict noted — /api/export-404 prevents proper checkpoint; VM must save XGB_brier-0.24987 directly.)",
-    "STEP 3 Axelrod ODD: carry-forward from fire-274 FULL VERIFY. SHAs NBA-85e7682e1d(6034L)/POL-6983c86517(4018L) UNCHANGED. do_not_push_hf_space_yet MAINTAINED.",
-    "STEP 4 WebSearch: ODD fire-275 — no WebSearch.",
-    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-275 ODD 2026-06-05T16h)."
+    "STEP 1 Axelrod EVEN FULL VERIFY: git hash-object NBA=85e7682e1d(6034L) POL=6983c86517(4018L) — BOTH MATCH EXPECTED. py_compile NBA+POL — OK both. 14/14 parity symbols present in both files (all counts match exactly). KL-div: compute_consensus_distance present both. approx_tokens_d + cost_per_alpha_unit present both. do_not_push_hf_space_yet MAINTAINED.",
+    "STEP 2 Island Status: CARRY-FORWARD from fire-275 (EVEN fire — cloud cannot access HF Space APIs directly). evo4-ET-0.21894-EXTREME-URGENT pending VM action. S22-RF-~0.219-EXTREME-URGENT pending VM action. S18-RULE8-stacking-VIOLATION pending VM fix. evo5-RF-0.22063-CHECKPOINT-URGENT pending VM action. POL P4/P5/P7 RULE9 VIOLATIONS pending VM action.",
+    "STEP 3 WebSearch EVEN: arXiv:2606.03600 'Set-Preserving Calibration from Conformal P-Values to E-Values' (Jun 2026) — NEW paper not in pipeline. E-value-based calibration for cross-conformal prediction and conformal aggregation. Key: anytime-valid + multiplicative merging without independence assumption. Priority=131. Proposal written: sota-set-preserving-calibration-e-values-fire276.md.",
+    "health-status.json + brain-status.json + work-queue.json + CLAUDE.md updated (fire-276 EVEN 2026-06-05T20h)."
   ]
 }

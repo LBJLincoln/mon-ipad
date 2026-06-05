@@ -1,8 +1,17 @@
 {
   "version": 1,
-  "updated_at": "2026-06-05T16:00:00Z",
+  "updated_at": "2026-06-05T20:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire276-2026-06-05T20h",
+      "priority": 326,
+      "status": "done",
+      "completed_at": "2026-06-05T20:00:00Z",
+      "completed_by": "cloud-brain-fire-276",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-276 EVEN: Axelrod-verify-FULL-PASS-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; py_compile-OK-both; 14/14-parity-OK; KL-div-OK(compute_consensus_distance-present-both); approx_tokens_d+cost_per_alpha_unit-present-both; Mech-A/B/C+AblationFlags-ALL-CODE-DONE-BLOCKED(do_not_push_hf_space_yet); S18/S22/evo4/evo5/POL-carry-forward-from-fire275; EVEN-WebSearch:arXiv:2606.03600-Set-Preserving-Calibration-CP-P-Values-to-E-Values-Jun2026-NEW(priority=131); sota-set-preserving-calibration-e-values-fire276.md-WRITTEN; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-05T20h)"
+    },
     {
       "id": "cloud-brain-fire275-2026-06-05T16h",
       "priority": 325,
@@ -224,6 +233,14 @@
       "owner": "local-vm",
       "updated_at": "2026-06-05T12:00:00Z",
       "subject": "RESEARCH fire-274 EVEN: Multi-Variable Conformal Prediction: Optimizing Prediction Sets without Data Splitting — arXiv:2605.12341 (May 2026). Key: MV-CP extends CP to vector-valued score functions (RemMCP + RelMCP variants); eliminates data-splitting overhead while preserving finite-sample coverage; produces smaller prediction sets than split-CP baseline. Direct complement to fire-244 calibration-set-reuse (priority=114). Application 1: replace split-CP calibration in engine.py validate_model() with MV-CP RemMCP variant — eliminates held-out calibration split (recovering ~15% training data). Application 2: multi-metric Pareto calibration across all k island models simultaneously using RelMCP variant (replaces sequential per-model calibration loops). Application 3: add mvcp_coverage_gap metric to /api/export — monitors vector-score coverage validity across Brier+CRPS+CRLS jointly. Application 4: port to political_engine.py — rare-event elections have few calibration samples; no-split MV-CP trades none for coverage. Library: MAPIE + scipy.optimize (~80 lines). Expected: 0.001-0.002 Brier + more data-efficient calibration under small-N regime (late-season playoffs, rare POL events)."
+    },
+    {
+      "id": "vm-research-set-preserving-e-values-fire276",
+      "priority": 131,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-05T20:00:00Z",
+      "subject": "RESEARCH fire-276 EVEN: Set-Preserving Calibration from Conformal P-Values to E-Values — arXiv:2606.03600 (Jun 2026). Key: e-value-based calibration from conformal p-values satisfies 1-alpha coverage guarantee while improving efficiency over p-value baselines; 'set-preserving' mapping keeps original prediction set structure intact; enables principled e-value merging and randomization in cross-conformal prediction and conformal aggregation. Why e-values matter: anytime-valid (no fixed sample size needed), multiplicative merging WITHOUT independence assumption (unlike Fisher's p-values), sequential model promotion decisions per-fire. Application 1: Add calibration/e_value_calibrator.py (~40 lines, scipy.stats only) — drop-in replacement for isotonic calibration in engine.py. Application 2: Cross-island e-value aggregation in predict_today.py — multiply e-values from S18/S22/evo4/evo5 for joint fleet-best claim; add joint_e_value to /api/export. Application 3: Replace split-CP in compute_consensus_distance() with e-value distance metric (anytime-valid KL bounds per-fire). Application 4: E-value stopping criterion for /api/checkpoint logic — promote when joint_e_value > threshold (replaces field-lag heuristic). Application 5: Port to political_engine.py — e-value merging for rare POL event calibration; directly complements arXiv:2605.20515 priority=118 (corrupted feedback). Library: scipy.stats (already available — no new dependencies). Expected: 0.001-0.002 Brier + anytime-valid island promotion + principled multi-island fusion. Proposal: data/research-proposals/sota-set-preserving-calibration-e-values-fire276.md."
     },
     {
       "id": "cloud-brain-fire271-2026-06-05T00h",
