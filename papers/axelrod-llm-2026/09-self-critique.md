@@ -9709,3 +9709,99 @@ All HHH fixes verified in-place:
 - `paper.md` §3.6 bankroll: vig formula reference corrected (III3 mirror)
 - `paper.md` §5.3: "Three" → "Two" pre-registered hypotheses (III4 mirror)
 - `06-results.md` §5.3: "Three" → "Two" pre-registered hypotheses (III4)
+
+---
+
+## Cycle JJJ — fire-276 (2026-06-05, EVEN)
+
+**Reviewer persona:** hostile NMI methods editor, scanning for process artifacts, factual inconsistencies, and stale citations.
+
+### Issues found
+
+**JJJ1 — Process artifact in §3.5 Lemma 1 proof body (HIGH)**
+
+`04-method.md` lines 387–388 contained internal project-tracking text embedded inside a formal mathematical proof:
+
+> `$\eta_{\text{A3}} < 0.211$ before Conditions B–E (pre-submission checklist item 13, bound tightened from earlier stated 0.22). $\checkmark$`
+
+The parenthetical `(pre-submission checklist item 13, bound tightened from earlier stated 0.22)` is CLAUDE.md-style work-queue language that must not appear in the manuscript. The `$\checkmark$` is being used as a completion-tracking marker, not a mathematical symbol. A hostile reviewer encountering "pre-submission checklist item 13" inside a formal proof would flag the paper as not ready for review. Pattern matches prior artifact removals in Cycles Q5, V5 (COLLECTIVE_MISSION codename), W5 (escaped backslash variant).
+
+`paper.md` line 883 had the stripped version `. $\checkmark$` at the same location.
+
+**Fix:** Remove the parenthetical and checkmark; leave the mathematically complete statement `$\eta_{\text{A3}} < 0.211$ before Conditions B–E.`
+
+**JJJ2 — Kelly cap Brier attribution: factual error in §3.2 Step 5 footnote (HIGH)**
+
+`04-method.md` line 92 and `paper.md` line 616 both described the privacy argument for the Kelly cap using:
+
+> `(a) the rolling Brier $\overline{B}_{j,d}$ that determines each agent's Kelly cap $\kappa_j$ is private and changes daily`
+
+This is factually wrong in two ways:
+1. The Kelly cap formula (§3.6, Table 2) is $\kappa_i = \max(0.01,\; 0.30 - \overline{B}_i^{\text{pilot}} \times 0.50)$ — it is derived from the **pilot-season Brier** $\overline{B}_i^{\text{pilot}}$, a **pre-season constant** fixed before the 2025–26 season begins and not updated in-season.
+2. "changes daily" is precisely wrong: the pilot Brier never changes during the season.
+
+The privacy argument is still valid — the pilot Brier is held out and private — but describing it as "daily-varying" contradicts the model's own parameter table. The error is isolated to the (a) clause; (b) and (c) were correct.
+
+**Fix:** Replace with: `(a) each agent's Kelly cap $\kappa_j$ is derived from the private held-out 2024–25 pilot-season Brier $\overline{B}_j^{\text{pilot}}$, a pre-season constant not disclosed in the broadcast`; also update the closing summary to remove "or daily-varying".
+
+**JJJ3 — Informal `*Centroid note:*` label in §3.5 proof (MINOR)**
+
+`04-method.md` line 314 and `paper.md` line 823 used `*Centroid note:*` as a label for a within-proof clarifying remark. The label `*Centroid note:*` is informal (sounds like a margin annotation); standard mathematical writing uses `*Remark.*` or a named remark environment. Within-proof remarks of this kind should use `*Remark (centroid convention):*` to signal it is a definitional clarification, not a result.
+
+**Fix:** `*Centroid note:*` → `*Remark (centroid convention):*` in both files.
+
+**JJJ4 — New citation: Xu et al. 2026, LLM meta-learning for multiagent algorithm discovery (EVEN fire WebSearch)**
+
+WebSearch query: "arXiv 2026 LLM multi-agent diversity ensemble prediction market tournament evolutionary roles"
+
+Top result: arXiv:2602.16928 (Feb 2026), "Discovering Multiagent Learning Algorithms with Large Language Models" — Xu, Huang, Wang, Ganzfried, Li. LLMs used as meta-learners to discover novel CFR and PSRO variants through evolutionary search over role-structured agent populations; role-level diversity at the LLM agent level is the operative variable for collective performance improvement in two-player zero-sum games.
+
+Relevance to §2.4: Provides independent support for the SRR premise from a distinct angle (static algorithm discovery vs. dynamic in-season reallocation). The shared insight — that assigning and varying *roles* across LLM agents improves collective outcomes — directly extends the narrative of the concurrent-works paragraph and positions our dynamic mechanism against their static one. Adding this strengthens the paper's claim that role-level diversity is a recognized design principle, not an idiosyncratic feature of our system.
+
+**Fix:** (1) Add `@xu2026discovermalgos` BibTeX entry to `references.bib`; (2) Add one-paragraph positioning sentence in `03-related-work.md` §2.4 concurrent-works block and mirror to `paper.md`.
+
+### Verification grep (post-fix)
+
+```bash
+grep -n "checklist item 13\|checkmark\|\$\\\\checkmark\$" 04-method.md paper.md
+# → 0 hits (JJJ1 confirmed clean)
+
+grep -n "rolling Brier.*kelly cap\|B_{j,d}.*determines.*kappa\|daily-varying" 04-method.md paper.md
+# → 0 hits (JJJ2 confirmed clean)
+
+grep -n "Centroid note" 04-method.md paper.md
+# → 0 hits (JJJ3 confirmed clean)
+
+grep -n "xu2026discovermalgos" references.bib 03-related-work.md paper.md
+# → 3 hits (JJJ4 confirmed)
+```
+
+### Data-blocked checklist (unchanged from Cycle III)
+
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove VERIFY note (GGG5/HHH5)
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites 2026-04-22
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E
+14. Verify A6 via matched-pairs pilot analysis
+15. Verify `@fradkin2026marketbench` author list against live arXiv:2604.23897 record (HHH4)
+16. Verify `@xu2026discovermalgos` author list against live arXiv:2602.16928 abstract (JJJ4)
+
+**Structural changes this cycle:**
+- `04-method.md` §3.5 Lemma 1 proof: removed process artifact "(pre-submission checklist item 13, bound tightened from earlier stated 0.22). $\checkmark$" (JJJ1)
+- `04-method.md` §3.2 Step 5 footnote: Kelly cap Brier attribution corrected from "rolling $\overline{B}_{j,d}$... changes daily" to "pilot-season $\overline{B}_j^{\text{pilot}}$, a pre-season constant" (JJJ2)
+- `04-method.md` §3.5 proof: `*Centroid note:*` → `*Remark (centroid convention):*` (JJJ3)
+- `paper.md` §3.5 Lemma 1 proof: removed `. $\checkmark$` (JJJ1 mirror)
+- `paper.md` §3.2 Step 5 footnote: Kelly cap Brier attribution corrected (JJJ2 mirror)
+- `paper.md` §3.5 proof: `*Centroid note:*` → `*Remark (centroid convention):*` (JJJ3 mirror)
+- `references.bib`: added `@xu2026discovermalgos` (arXiv:2602.16928) (JJJ4)
+- `03-related-work.md` §2.4: added concurrent-works paragraph for Xu et al. 2026 (JJJ4)
+- `paper.md` §2.4: mirrored Xu et al. 2026 paragraph (JJJ4)

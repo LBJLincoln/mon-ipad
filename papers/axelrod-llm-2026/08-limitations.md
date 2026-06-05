@@ -335,12 +335,12 @@ the Kelly-weighting framing of §6.5 assumes agents observe the bankroll distrib
 to identify dominant contributors).
 
 The three-factor bound in the §3.2 footnote argues leakage is partial and approximate
-in the current design: (a) $\overline{B}_{j,d}$, which determines $\kappa_j$, is
-private and changes daily; (b) the broadcast reports cumulative totals rather than
-marginal daily increments; and (c) the personality risk weight $\rho_j$ is never
-broadcast. Recovering exact stake fractions requires simultaneous knowledge of
-$\kappa_j$, $\rho_j$, and $\kappa_{\min}^{(r_j)}$ — at least two of which are either
-private or daily-varying. Partial inference (e.g., inferring whether an agent bet
+in the current design: (a) $\kappa_j$ is derived from the private held-out 2024–25
+pilot-season Brier $\overline{B}_j^{\text{pilot}}$, a pre-season constant not disclosed
+in the broadcast; (b) the broadcast reports cumulative totals rather than marginal daily
+increments; and (c) the personality risk weight $\rho_j$ is never broadcast. Recovering
+exact stake fractions requires simultaneous knowledge of $\kappa_j$, $\rho_j$, and
+$\kappa_{\min}^{(r_j)}$ — all three of which are private. Partial inference (e.g., inferring whether an agent bet
 *heavily* on a game without recovering the exact probability) is possible for an
 adversarially informed agent but does not constitute common-knowledge prediction
 sharing in Aumann's sense.

@@ -277,6 +277,15 @@ maximal. TimeSeek also finds that simple two-model ensembles reduce prediction
 error without surpassing the market aggregate — further motivating the need for
 a diversity-maintenance mechanism (SRR) beyond naive ensemble averaging.
 
+Concurrent work by Xu et al. [@xu2026discovermalgos] uses LLMs as meta-learners to
+discover multiagent learning algorithms (variants of CFR and PSRO) through evolutionary
+search, showing that LLM-guided role-structured diversity outperforms hand-designed
+baselines in two-player zero-sum games. Their setting differs from ours — static offline
+algorithm discovery versus dynamic in-season role reallocation in a continuous-action
+market — but both share the insight that role-level diversity in LLM agents is the
+operative variable for collective performance improvement, and their evolutionary
+framing provides independent support for the SRR premise.
+
 Our work differs from all of these predecessors in three respects.
 First, we study *society-level dynamics* across a multi-agent
 population rather than the performance of individual agents or
