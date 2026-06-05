@@ -457,6 +457,15 @@ maximal. TimeSeek also finds that simple two-model ensembles reduce prediction
 error without surpassing the market aggregate — further motivating the need for
 a diversity-maintenance mechanism (SRR) beyond naive ensemble averaging.
 
+Concurrent work by Xu et al. [@xu2026discovermalgos] uses LLMs as meta-learners to
+discover multiagent learning algorithms (variants of CFR and PSRO) through evolutionary
+search, showing that LLM-guided role-structured diversity outperforms hand-designed
+baselines in two-player zero-sum games. Their setting differs from ours — static offline
+algorithm discovery versus dynamic in-season role reallocation in a continuous-action
+market — but both share the insight that role-level diversity in LLM agents is the
+operative variable for collective performance improvement, and their evolutionary
+framing provides independent support for the SRR premise.
+
 Our work differs from all of these predecessors in three respects.
 First, we study *society-level dynamics* across a multi-agent
 population rather than the performance of individual agents or
@@ -613,7 +622,7 @@ The LPSG is a repeated game with the following structure.
 > 2. **Prediction.** Each agent $i$ independently samples $\mathbf{p}_{i,d} \sim \sigma_i(r_i, x_d, h_{i,d-1})$.
 > 3. **Resolution.** Outcomes $\omega_t$ are revealed as events $t \in \mathcal{B}_d$ resolve.
 > 4. **Score.** $B_{i,d}$ is computed for all $i$.
-> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Cumulative bankroll standings could in principle allow partial reverse-engineering of peer stake sizes; we bound this leakage at three levels — (a) rolling Brier $\overline{B}_{j,d}$ determining $\kappa_j$ is private and daily-varying; (b) cumulative totals mask marginal increments; (c) personality risk weight $\rho_j$ is internal to each agent and not broadcast — so exact prediction inference requires simultaneous knowledge of all three private parameters. The leakage is partial and approximate; see §7.8 for discussion.]
+> 5. **Broadcast.** $\Omega_d$ is broadcast as common knowledge. The current leaderboard — comprising agent archetype labels $\{r_j\}_{j \in \mathcal{I}}$ and cumulative bankroll standings — is also broadcast as common knowledge, enabling each agent to compute the population state $\mathbf{x}_d$ required for SRR vacancy checking (§3.4). Peer predictions $\mathbf{p}_{j,d}$ for $j \neq i$ are NOT broadcast.^[Cumulative bankroll standings could in principle allow partial reverse-engineering of peer stake sizes; we bound this leakage at three levels — (a) each agent's Kelly cap $\kappa_j$ is derived from the private held-out 2024–25 pilot-season Brier $\overline{B}_j^{\text{pilot}}$, a pre-season constant not disclosed in the broadcast; (b) cumulative totals mask marginal increments; (c) personality risk weight $\rho_j$ is internal to each agent and not broadcast — so exact prediction inference requires simultaneous knowledge of all three private parameters. The leakage is partial and approximate; see §7.8 for discussion.]
 > 6. **SRR check.** Sacrifice eligibility is evaluated; reallocations execute (§3.4).
 
 This structure places the LPSG in the family of *population games with type
@@ -820,7 +829,7 @@ be triggered before the main conditions run.
 *Proof.* Let agent $i$ be sacrifice-eligible, $\Delta p = p_{i,t}' - p_{i,t}$,
 and $\delta_i = p_{i,t} - \bar{p}_t$ (deviation from the **full-population** centroid
 $\bar{p}_t = \frac{1}{N}\sum_j p_{j,t}$).
-*Centroid note:* $\delta_i$ here is always the full-population deviation, not the
+*Remark (centroid convention):* $\delta_i$ here is always the full-population deviation, not the
 sub-population deviation $p_{i,t} - \bar{p}_t^{\mathcal{C}}$ used in Proposition 2's
 Claim 1 Ambiguity decomposition.  The two quantities are distinct: the vacancy set
 $\mathcal{V}_d$ and the archetype shift $\Delta p$ are defined with respect to the full
@@ -880,7 +889,7 @@ $\mathbb{E}[(\Delta p)^2] \geq (\mathbb{E}[|\Delta p|])^2$; factoring out $\math
 yields the exact sufficient condition $\frac{N-1}{N}\mathbb{E}[|\Delta p|] > 2(1+\eta_{\text{A3}})\mathbb{E}[|\delta_i|]$.
 Since $\mathbb{E}[|\Delta p|] \geq \epsilon_{\text{arch}} = 0.037$ (A1) and $\mathbb{E}[|\delta_i|] \leq 0.014$ (A4):
 LHS $\geq \frac{11}{12}\times 0.037 = 0.03392$; RHS $= 0.028(1+\eta_{\text{A3}})$.
-Inequality holds iff $\eta_{\text{A3}} < 0.211$; pilot data must confirm this before Conditions B–E. $\checkmark$
+Inequality holds iff $\eta_{\text{A3}} < 0.211$; pilot data must confirm this before Conditions B–E.
 
 Combining Cases 1 and 2: taking the expectation over the joint distribution of
 $(r^*, \delta_i)$ — which mixes Case 1 realisations ($\delta_i\Delta p \geq 0$,
@@ -2539,12 +2548,12 @@ of the ensemble (§6.5) would become invisible to individual agents, potentially
 degrading morning council quality (§3.6) and the SRR incentive calculation.
 
 The three-factor bound in the §3.2 footnote argues leakage is partial and approximate
-in the current design: (a) $\overline{B}_{j,d}$, which determines $\kappa_j$, is
-private and changes daily; (b) the broadcast reports cumulative totals rather than
-marginal daily increments; and (c) the personality risk weight $\rho_j$ is never
-broadcast. Recovering exact stake fractions requires simultaneous knowledge of
-$\kappa_j$, $\rho_j$, and $\kappa_{\min}^{(r_j)}$ — at least two of which are either
-private or daily-varying. Partial inference is possible but does not constitute
+in the current design: (a) $\kappa_j$ is derived from the private held-out 2024–25
+pilot-season Brier $\overline{B}_j^{\text{pilot}}$, a pre-season constant not disclosed
+in the broadcast; (b) the broadcast reports cumulative totals rather than marginal daily
+increments; and (c) the personality risk weight $\rho_j$ is never broadcast. Recovering
+exact stake fractions requires simultaneous knowledge of $\kappa_j$, $\rho_j$, and
+$\kappa_{\min}^{(r_j)}$ — all three of which are private. Partial inference is possible but does not constitute
 common-knowledge prediction sharing in Aumann's sense.
 
 We retain the bankroll-magnitude broadcast in Condition A because: (a) the three-factor
