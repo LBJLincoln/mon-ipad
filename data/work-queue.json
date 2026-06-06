@@ -1,8 +1,25 @@
 {
   "version": 1,
-  "updated_at": "2026-06-07T12:00:00Z",
+  "updated_at": "2026-06-07T16:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire287-2026-06-07T16h",
+      "priority": 337,
+      "status": "done",
+      "completed_at": "2026-06-07T16:00:00Z",
+      "completed_by": "cloud-brain-fire-287",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-287 ODD: Axelrod-verify-pass-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; py_compile-OK-both; 25/25-parity-OK(11/12-symbols-exact-count-DMAD-NBA29/POL28-known-1-diff; compute_consensus_distance-2x-both; AXELROD_MECH_A/B/C_ON+AXELROD_ABLATION-5-configs-confirmed-both); KL-div-OK(compute_consensus_distance-def-present-both); Mech-C-line5092(NBA)/3282(POL)+Mech-B-line5100(NBA)/3290(POL)+Mech-A-line5111(NBA)/3301(POL)-CONFIRMED; order-C->B->A-CORRECT; do_not_push_hf_space_yet-MAINTAINED; S22-carry-forward-c563-22ND-RESET-c553-CONFIRMED-ET-EVICTED(7-clean-streak-ended)-RF-42f-0.2223-above-gate-23RD-RESET~c578; S18-carry-forward-c1052-44TH-RESET~c1067-RULE8-stacking; evo4-carry-forward-c1494-55TH-RESET~c1514-RULE8-stacking; evo5-carry-forward-c1772-48TH-RESET~c1776-LR+LGB-post-47TH-RULE8-CLEAN-BREAKTHROUGH-POSSIBLE; P4-LGB-0.2491-carry-forward-12TH-FIRE; P5-FRESH-RESTART-RULE9-VIOLATION; P7-XGB-0.24981-approaching-gate-RULE9-VIOLATION; S13/S14/S15+P1/P2-404-DOWN(131+fires); ODD-no-WebSearch; sota-venn-abers-classifier-calibration-at-scale-fire287.md-WRITTEN(arXiv:2601.19944-priority=134-Venn-Abers-BEST-Isotonic-DEGRADES-strong-tabular); work-queue.json+CLAUDE.md updated (2026-06-07T16h)"
+    },
+    {
+      "id": "vm-research-venn-abers-calibration-at-scale-fire287",
+      "priority": 134,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD: Research arXiv:2601.19944 (priority=134). 'Classifier Calibration At Scale: Venn-Abers is BEST, Isotonic DEGRADES on strong tabular (XGB/LGB/RF/ET >5k samples)'. Implementation: (1) Replace isotonic with VennAbersCalibrator(mondrian=True) from crepes library in engine.py validate_model() calibration step, (2) Add venn_abers_brier pre-promotion gate to /api/checkpoint (promote only if va_brier < 0.22085), (3) Add va_brier+va_ece to /api/export, (4) Apply to all active islands S18/S22/evo4/evo5, (5) Port to political_engine.py for POL islands. Expected 3-10bp Brier improvement. Proposal: data/research-proposals/sota-venn-abers-classifier-calibration-at-scale-fire287.md"
+    },
     {
       "id": "cloud-brain-fire286-2026-06-07T12h",
       "priority": 336,
