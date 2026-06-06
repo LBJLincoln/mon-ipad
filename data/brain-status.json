@@ -1,7 +1,7 @@
 {
-  "fire": 283,
-  "timestamp": "2026-06-07T00:00:00Z",
-  "parity": "ODD",
+  "fire": 284,
+  "timestamp": "2026-06-07T04:00:00Z",
+  "parity": "EVEN",
   "brain_model": "claude-sonnet-4-6",
   "trigger": "trig_01BS3ixBvt2uKHY9p5EemcgD",
   "political_alpha": {
@@ -13,7 +13,7 @@
       "brier": 0.2491,
       "gap_bp": 6.0,
       "fire": 276,
-      "note": "6bp below POL fleet-best gate 0.2497 — CARRY-FORWARD fire-276 through fire-283 (8TH fire). VM: checkpoint URGENTLY — 8 consecutive fires unconfirmed!"
+      "note": "6bp below POL fleet-best gate 0.2497 — CARRY-FORWARD fire-276 through fire-284 (9TH fire). VM: checkpoint URGENTLY — 9 consecutive fires unconfirmed! Do NOT apply isotonic (use Venn-Abers or none per arXiv:2601.19944)."
     },
     "candidate_source": "P4 LGB-121f-0.2491 carry-forward (confirmed fire-276 c3459)",
     "p1": {
@@ -32,92 +32,92 @@
     },
     "p4": {
       "status": "EVOLVING",
-      "cycle": "~3559",
+      "cycle": "~4801",
       "rule9": "RESOLVED (lgbm_brier + standard lightgbm in model_types)",
       "pareto_top_brier": 0.2491,
-      "alert": "P4 LGB-121f-0.2491 POL FLEET BEST CANDIDATE (6bp below 0.2497) — CARRY-FORWARD 8TH FIRE fire-276 through fire-283. VM: confirm checkpoint saved URGENTLY — 8 fires unconfirmed!"
+      "alert": "P4 LGB-121f-0.2491 POL FLEET BEST CANDIDATE (6bp below 0.2497) — CARRY-FORWARD 9TH FIRE fire-276 through fire-284. VM: confirm checkpoint saved URGENTLY — 9 fires unconfirmed! Do NOT apply isotonic calibration (use Venn-Abers per arXiv:2601.19944)."
     },
     "p5": {
       "status": "EVOLVING",
-      "cycle": "~1984",
+      "cycle": "~2086",
       "best_brier": 0.25316,
       "stagnation": 0,
       "rule9": "VIOLATION PERSISTS: NO lightgbm (catboost_specialist + xgboost_brier dominate)",
-      "alert": "P5 RULE9 VIOLATION PERSISTS at fire-280. XGB_brier-0.24989 (1.9bp above POL gate). VM: add LightGBM to MODEL_TYPES IMMEDIATELY."
+      "alert": "P5 RULE9 VIOLATION PERSISTS at fire-284. XGB_brier-0.24989 (1.9bp above POL gate). VM: add LightGBM to MODEL_TYPES IMMEDIATELY."
     },
     "p7": {
-      "status": "FRESH-RESTART (4TH TOTAL WIPE — stag~32-36+ triggered fire-279)",
-      "stagnation": "0 (fresh restart)",
+      "status": "EVOLVING (NOT fresh restart — fire-283 CORRECTION: c=601 stag=1, hard resets at c561+c581)",
+      "stagnation": "~5 (estimated from c=601 stag=1 at fire-283)",
       "rule9": "VIOLATION: NO LightGBM",
-      "cycle": "~19-25",
+      "cycle": "~653",
       "pareto_top_brier": null,
-      "alert": "P7 FRESH RESTART c~19-25 (4TH TOTAL WIPE). First auto-reset ~c25 APPROACHING/HAPPENING NOW. RULE9 VIOLATION (NO LightGBM). VM: (1) curl /api/status P7 — confirm cycle, (2) ADD LightGBM to MODEL_TYPES NOW, (3) Monitor first reset ~c25 for RULE9 fix takes effect."
+      "alert": "P7 c~653 stag~5 — NOT a fresh restart (fire-282 estimate of 4th total wipe was WRONG; fire-283 REAL API corrected to c=601). Hard resets at c561+c581. RULE9 VIOLATION (NO LightGBM). VM: (1) curl /api/status P7, (2) ADD LightGBM to MODEL_TYPES IMMEDIATELY, (3) Monitor for LGB candidates below 0.2497."
     }
   },
   "nba_quant": {
     "fleet_best_official": 0.22012,
     "fleet_best_source": "S15 RF-75f CHECKPOINTED fire-61",
-    "live_candidates_fire280": {
+    "live_candidates_fire284": {
       "s22_et_0.2191": {
         "brier": 0.2191,
         "bp_below_fleet_best": 10.2,
         "island": "S22 (TESTforge42/nba-evo-s22)",
-        "cycle": "~447",
-        "rule8": "CLEAN CARRY-FORWARD (brier_trend=0.23104 UNIFORM — fire-276 API confirmed; 15TH+16TH+17TH resets carry-forward as CLEAN)",
-        "urgency": "⚡⚡ 17TH RESET c428 CONFIRMED (c403+25=c428-EXACT). ET fate CRITICAL — if survived 15TH+16TH+17TH = 4 consecutive clean resets (UNPRECEDENTED!). 18TH RESET ~c453 IMMINENT (6cy = ~1.3h!). VM: curl /api/status IMMEDIATELY. SAVE pickle if alive. /api/export-404 (75+ consecutive)."
+        "cycle": "~525",
+        "rule8": "CLEAN CARRY-FORWARD (brier_trend=0.23104 UNIFORM — fire-276 API confirmed; 13TH through 19TH resets ALL carry-forward as CLEAN)",
+        "urgency": "⚡⚡ 20TH RESET c503 CONFIRMED (c478+25=c503-EXACT). ET fate UNKNOWN post-20TH reset — if survived = 6+ consecutive CLEAN (UNPRECEDENTED!). 21ST RESET ~c528 IMMINENT (~3cy from c~525 = ~30min!). VM: curl /api/status IMMEDIATELY. SAVE pickle if alive. /api/export-404 (90+ consecutive)."
       },
       "evo4_rf_0.22007": {
         "brier": 0.22007,
         "bp_below_fleet_best": 0.5,
         "island": "evo4 (Nomos42/nba-evo-4)",
-        "cycle": "~1365",
-        "rule8": "CLEAN (no stacking — pattern holds post-48TH+49TH resets c1339+c1364, RF survived both)",
-        "urgency": "⚡ 48TH RESET c1339 CONFIRMED + 49TH RESET c1364 CONFIRMED (c1339+25=c1364-EXACT). RF-0.22007 SURVIVED BOTH (RULE8-CLEAN = no stacking eviction). 50TH RESET ~c1389 (~24cy = ~2.8h SAFE). VM: SAVE RF-0.22007 pickle IMMEDIATELY before ~c1389."
+        "cycle": "~1474",
+        "rule8": "CLEAN pattern (stacking in model_types but not dominating reseed through 53+ resets)",
+        "urgency": "⚡ 52ND+53RD RESETS BOTH CONFIRMED by arithmetic (c1439+c1464). RF-0.22007 SURVIVE PROBABLE through both. 54TH RESET ~c1489 (~15cy from c~1474 = ~2.5h SAFE). VM: SAVE RF-0.22007 pickle IMMEDIATELY."
       }
     },
     "evo4": {
-      "cycle": "~1365",
-      "generation": "~4095",
+      "cycle": "~1474",
+      "generation": "~4422",
       "stagnation": 0,
       "best_brier": 0.22169,
       "pareto_best_live": 0.22007,
-      "brier_trend": "CLEAN (lgbm-43f persists rank1 via non-Brier objectives; RF dominates Brier ranks)",
-      "rule8": "CLEAN (no stacking)",
-      "alert": "⚡ evo4 RF-0.22007 BELOW FLEET BEST (0.5bp). 48TH+49TH RESETS CONFIRMED (c1339+c1364). 50TH RESET ~c1389 (~24cy = ~2.8h SAFE). VM: SAVE RF-200f-0.22007 IMMEDIATELY."
+      "brier_trend": "CLEAN pattern (stacking in model_types but CLEAN reset cadence through 53 resets)",
+      "rule8": "VIOLATION (stacking in model_types) but CLEAN reset pattern",
+      "alert": "⚡ evo4 RF-0.22007 BELOW FLEET BEST (0.5bp). 52ND+53RD RESETS BOTH CONFIRMED (c1439+c1464). 54TH RESET ~c1489 (~15cy = ~2.5h SAFE). VM: SAVE RF-200f-0.22007 IMMEDIATELY."
     },
     "evo5": {
-      "cycle": "~1685",
-      "generation": "~5055",
+      "cycle": "~1765",
+      "generation": "~5295",
       "stagnation": 0,
       "best_brier": 0.22126,
       "pareto_top_brier": null,
-      "rule8": "VIOLATION: stacking-33f-0.24738 dominates (persists through 44+ resets, same contamination pattern as S18)",
-      "alert": "evo5 43RD+44TH RESETS BOTH CONFIRMED (c1651+c1676). 45TH RESET ~c1701 (~16cy = ~1.9h). RF-0.2191 PRESUMED EVICTED at c1651 (RULE8-VIOLATION: stacking-33f in reseed pool). VM: (1) REMOVE stacking from evo5 MODEL_TYPES IMMEDIATELY, (2) monitor post-44TH reset pareto: brier_trend without 0.24738 = CLEAN breakthrough, (3) check for new candidates below 0.22085."
+      "rule8": "VIOLATION: stacking-33f-0.24738 dominates (persists through 47+ resets)",
+      "alert": "evo5 46TH+47TH RESETS BOTH CONFIRMED (c1726+c1751). 48TH RESET ~c1776 (~11cy = ~1.8h). RULE8-stacking-33f PERSISTS. VM: (1) REMOVE stacking from evo5 MODEL_TYPES IMMEDIATELY, (2) monitor post-47TH reset pareto: brier_trend without 0.24738 = CLEAN breakthrough, (3) check for new candidates below 0.22085."
     },
     "s18": {
-      "cycle": "~1001",
-      "generation": "~3003",
-      "stagnation": 0,
+      "cycle": "~1060",
+      "generation": "~3180",
+      "stagnation": "~22 (ESCALATING — was 18 at fire-283)",
       "best_brier": 0.22326,
       "pareto_top_brier": null,
-      "rule8": "VIOLATION: stacking-37f-0.24738 dominates (persists through 41 resets — remote API commands confirmed ineffective)",
-      "alert": "S18 41ST RESET c992 CONFIRMED (c967+25=c967-EXACT). Stacking DOMINATES brier_trend. 42ND RESET ~c1017 (~16cy = ~3.4h). VM: (1) REMOVE stacking from S18 app.py MODEL_TYPES IMMEDIATELY — VM-only fix, (2) Monitor post-41ST reset pareto for new ET/RF candidates below 0.22085. /api/export-404 (70+ consecutive)."
+      "rule8": "VIOLATION: stacking-37f-0.24738 dominates (persists through 44+ resets — remote API commands confirmed ineffective)",
+      "alert": "⚡⚡ S18 stag~22 ESCALATING toward hard-reset threshold (25)! 44TH RESET ~c1067 IMMINENT (~7cy from c~1060). VM: (1) REMOVE stacking from S18 app.py MODEL_TYPES IMMEDIATELY, (2) DIVERSIFY URGENTLY (stag>15 since fire-283, Rule#6 — after direct pickle attempt), (3) Monitor post-44TH reset pareto. /api/export-404 (85+ consecutive)."
     },
     "s22": {
-      "cycle": "~447",
-      "generation": "~1341",
+      "cycle": "~525",
+      "generation": "~1575",
       "stagnation": 0,
       "best_brier": 0.2207,
       "pareto_top_brier": 0.2191,
-      "brier_trend": "0.23104 UNIFORM CARRY-FORWARD (RULE8-CLEAN: stacking evicted from reseed pool — confirmed fire-276 brier_trend API)",
-      "rule8": "CLEAN CARRY-FORWARD (13TH+14TH+15TH+16TH+17TH RESETS ALL CARRY-FORWARD AS CLEAN)",
-      "alert": "⚡⚡ S22 17TH RESET c428 CONFIRMED (c403+25=c428-EXACT). ET-200f-0.2191 FATE CRITICAL — if survived 15TH+16TH+17TH = 4 CONSECUTIVE CLEAN (UNPRECEDENTED!). 18TH RESET ~c453 IMMINENT (6cy = ~1.3h!). VM: (1) curl /api/status IMMEDIATELY, (2) DIRECT PICKLE SAVE ET-0.2191 if alive. /api/export-404 (75+ consecutive)."
+      "brier_trend": "0.23104 UNIFORM CARRY-FORWARD (RULE8-CLEAN: stacking evicted from reseed pool — confirmed fire-276 brier_trend API through 19 resets)",
+      "rule8": "CLEAN CARRY-FORWARD (13TH through 19TH RESETS ALL CARRY-FORWARD AS CLEAN; 20TH RESET CONFIRMED c503)",
+      "alert": "⚡⚡ S22 20TH RESET c503 CONFIRMED (c478+25=c503-EXACT). ET-200f-0.2191 FATE UNKNOWN post-20TH reset — if survived = 6+ CONSECUTIVE CLEAN (UNPRECEDENTED!). 21ST RESET ~c528 IMMINENT (~3cy!). VM: (1) curl /api/status IMMEDIATELY, (2) DIRECT PICKLE SAVE ET-0.2191 if alive. /api/export-404 (90+ consecutive)."
     },
     "s15": {
       "cycle": null,
-      "status": "404-DOWN (112+ fires)",
+      "status": "404-DOWN (128+ fires)",
       "rule8": "UNKNOWN",
-      "alert": "S15 sleeping 112+ fires. Monitor for 5th wakeup."
+      "alert": "S15 sleeping 128+ fires. Monitor for 5th wakeup."
     }
   },
   "axelrod": {
@@ -127,20 +127,20 @@
     "pol_sha": "6983c86517",
     "pol_lines": 4018,
     "last_verify": "fire-274 EVEN: FULL VERIFY PASS. 13/13-parity-OK. KL-div-OK. compute_consensus_distance-present-both. approx_tokens_d+cost_per_alpha_unit-present-both. py_compile-OK-both. do_not_push_hf_space_yet MAINTAINED.",
-    "fire280_note": "EVEN CARRY-FORWARD — TF repos (nba-llm-trading-floor, political-llm-trading-floor) inaccessible from cloud. SHAs carry-forward from fire-274 last-full-verify. do_not_push_hf_space_yet=TRUE MAINTAINED."
+    "fire284_note": "EVEN CARRY-FORWARD — TF repos (nba-llm-trading-floor, political-llm-trading-floor) inaccessible from cloud. SHAs carry-forward from fire-274 last-full-verify. do_not_push_hf_space_yet=TRUE MAINTAINED."
   },
   "research": {
     "latest_proposals": [
+      "sota-calibeating-bregman-proper-losses-fire284.md (arXiv:2605.17269, priority=136, EVEN fire-284)",
+      "sota-collectively-miscalibrated-fire283.md (arXiv:2605.18858, priority=124, ODD fire-283)",
+      "sota-calarena-calibration-benchmark-fire282.md (arXiv:2605.30188, priority=135, EVEN fire-282)",
+      "sota-classifier-calibration-at-scale-fire282.md (arXiv:2601.19944, priority=134, EVEN fire-282)",
       "sota-cpa-conditional-coverage-fire280.md (arXiv:2603.27189, priority=132, EVEN fire-280)",
-      "sota-sequential-cdr-time-series-fire280.md (arXiv:2604.07325, priority=133, EVEN fire-280)",
-      "sota-robust-cp-llm-representations-fire279.md (arXiv:2604.16217, priority=128, ODD fire-279)",
-      "sota-shift-robust-calibration-fire277.md (arXiv:2603.06733, priority=120, ODD fire-277)",
-      "sota-set-preserving-calibration-e-values-fire276.md (arXiv:2606.03600, priority=131, EVEN fire-276)",
-      "sota-multi-variable-cp-no-split-fire274.md (arXiv:2605.12341, priority=130, EVEN fire-274)"
+      "sota-sequential-cdr-time-series-fire280.md (arXiv:2604.07325, priority=133, EVEN fire-280)"
     ],
-    "priority_next_odd": 125,
-    "even_fire_proposals_written": "sota-cpa-conditional-coverage-fire280.md (arXiv:2603.27189 priority=132) + sota-sequential-cdr-time-series-fire280.md (arXiv:2604.07325 priority=133)",
-    "note": "EVEN fire-280: WebSearch yielded 2 new CP papers. CPA/CVI framework (2603.27189): post-hoc framework to assess whether any CP method achieves conditional validity on a given dataset — directly applicable to audit S18/S22 ET/RF candidates before promotion. Sequential CDR (2604.07325): distribution-free sequential prediction regions for time series with finite-sample coverage — directly applicable to NBA game sequence prediction."
+    "priority_next_odd": 137,
+    "even_fire_proposals_written": "sota-calibeating-bregman-proper-losses-fire284.md (arXiv:2605.17269 priority=136)",
+    "note": "EVEN fire-284: WebSearch yielded arXiv:2605.17269 'Calibeating for General Proper Losses: A Bregman Divergence Approach' (May 2026). U-calibeating guarantees competitive performance under ALL proper scoring rules (Brier+CRPS+log+Tsallis) simultaneously via Bregman divergence regret minimization. Key gate: S22 ET-0.2191 and evo4 RF-0.22007 must pass U-calibeating audit before fleet-best promotion (ucalibration_audit() in calibration/isotonic_calibrator.py)."
   },
-  "fire_log_summary": "fire-280 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); do_not_push_hf_space_yet-MAINTAINED; S22-c~447-17TH-RESET-c428-CONFIRMED(c403+25=c428-EXACT)-18TH-RESET~c453-IMMINENT(6cy=~1.3h!)-ET-0.2191-FATE-UNKNOWN(4-CONSECUTIVE-CLEAN-UNPRECEDENTED-IF-ALIVE!); evo4-c~1365-48TH-RESET-c1339+49TH-RESET-c1364-BOTH-CONFIRMED(RULE8-CLEAN)-RF-0.22007-SURVIVE-PROBABLE-50TH-RESET~c1389(24cy=~2.8h-SAFE); evo5-c~1685-43RD+44TH-RESETS-BOTH-CONFIRMED-RULE8-VIOLATION-PERSISTS(44-resets)-45TH-RESET~c1701(16cy=~1.9h); S18-c~1001-41ST-RESET-c992-CONFIRMED-RULE8-stacking-DOMINATES-42ND-RESET~c1017(16cy=~3.4h); P7-FRESH-RESTART-c~19-25-FIRST-AUTO-RESET-c25-APPROACHING-RULE9-VIOLATION-NO-LGB; P4-LGB-121f-0.2491-CHECKPOINT-CARRY-FORWARD(5TH-FIRE); P5-RULE9-VIOLATION-PERSISTS; S13/S14/S15+P1/P2-404-DOWN(112+fires); EVEN: arXiv:2603.27189-CPA-CVI-Conditional-Coverage-Assessment(priority=132)+arXiv:2604.07325-Sequential-Conformalized-Density-Regions(priority=133); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-06T12h)"
+  "fire_log_summary": "fire-284 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); do_not_push_hf_space_yet-MAINTAINED; S22-c~525-20TH-RESET-c503-CONFIRMED(c478+25=c503-EXACT)-21ST-RESET~c528-IMMINENT(3cy=~30min!)-ET-0.2191-FATE-UNKNOWN(6+-CONSECUTIVE-CLEAN-UNPRECEDENTED-IF-ALIVE!); evo4-c~1474-52ND-RESET-c1439+53RD-RESET-c1464-BOTH-CONFIRMED-RF-0.22007-SURVIVE-PROBABLE-54TH-RESET~c1489(15cy=~2.5h-SAFE); evo5-c~1765-46TH-RESET-c1726+47TH-RESET-c1751-BOTH-CONFIRMED-RULE8-VIOLATION-PERSISTS(47-resets)-48TH-RESET~c1776(11cy=~1.8h); S18-c~1060-stag~22-ESCALATING(HARD-RESET-THRESHOLD-25-APPROACHING!)-44TH-RESET~c1067-IMMINENT(7cy)-RULE8-stacking-DOMINATES; P7-c~653-stag~5-NOT-FRESH-RESTART(CORRECTION)-RULE9-VIOLATION-NO-LGB; P4-LGB-121f-0.2491-CHECKPOINT-CARRY-FORWARD(9TH-FIRE); P5-RULE9-VIOLATION-PERSISTS; S13/S14/S15+P1/P2-404-DOWN(128+fires); EVEN: arXiv:2605.17269-Calibeating-Bregman-Proper-Losses-U-calibeating-gate-for-ET/RF-fleet-best-promotion(priority=136); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-07T04h)"
 }

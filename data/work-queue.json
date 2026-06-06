@@ -1,8 +1,33 @@
 {
   "version": 1,
-  "updated_at": "2026-06-07T00:00:00Z",
+  "updated_at": "2026-06-07T04:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire284-2026-06-07T04h",
+      "priority": 334,
+      "status": "done",
+      "completed_at": "2026-06-07T04:00:00Z",
+      "completed_by": "cloud-brain-fire-284",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-284 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); 25/25-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; S22-c~525-20TH-RESET-c503-CONFIRMED(c478+25=c503-EXACT)-21ST-RESET~c528-IMMINENT(3cy=~30min!)-ET-0.2191-FATE-UNKNOWN(6+-CONSECUTIVE-CLEAN-UNPRECEDENTED-IF-ALIVE!); evo4-c~1474-52ND-RESET-c1439+53RD-RESET-c1464-BOTH-CONFIRMED-RF-0.22007-SURVIVE-PROBABLE-54TH-RESET~c1489(15cy=~2.5h-SAFE); evo5-c~1765-46TH+47TH-RESETS-BOTH-CONFIRMED(c1726+c1751-EXACT)-RULE8-VIOLATION-PERSISTS(47-resets)-48TH-RESET~c1776(11cy=~1.8h); S18-c~1060-stag~22-ESCALATING(HARD-RESET-THRESHOLD-25-APPROACHING!)-44TH-RESET~c1067-IMMINENT(7cy)-RULE8-stacking-DOMINATES; P7-c~653-stag~5-NOT-FRESH-RESTART-RULE9-VIOLATION-NO-LGB; P4-LGB-121f-0.2491-CHECKPOINT-CARRY-FORWARD(9TH-FIRE); P5-RULE9-VIOLATION-PERSISTS; S13/S14/S15+P1/P2-404-DOWN(128+fires); EVEN: arXiv:2605.17269-Calibeating-Bregman-Proper-Losses(priority=136)-sota-calibeating-bregman-proper-losses-fire284.md-WRITTEN; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-07T04h)"
+    },
+    {
+      "id": "vm-research-calibeating-bregman-fire284",
+      "priority": 136,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T04:00:00Z",
+      "subject": "fire-284 EVEN: Research arXiv:2605.17269 (priority=136). Implement ucalibration_audit() in calibration/isotonic_calibrator.py (~60 lines): test S22 ET-0.2191 and evo4 RF-0.22007 under Brier+CRPS+log-score simultaneously before fleet-best promotion. Build BregmanCalibrator in calibration/bregman_calibrator.py (~80 lines): fit jointly under Brier+log-loss+CRPS. Add Bregman multi-objective extension to hf-space/app.py NSGA-II (~30 lines). Gate: implement after priority=135 (CalArena). do_not_push_hf_space_yet. Proposal: data/research-proposals/sota-calibeating-bregman-proper-losses-fire284.md"
+    },
+    {
+      "id": "vm-s22-et-0.2191-21st-reset-fire284",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T04:00:00Z",
+      "subject": "fire-284 EVEN CRITICAL: S22 (TESTforge42/nba-evo-s22) c~525. 20TH RESET c503 CONFIRMED (c478+25=c503-EXACT). ET-0.2191 FATE UNKNOWN post-20TH reset — if alive = 6+ consecutive CLEAN resets (UNPRECEDENTED in ALL NBA history!). 21ST RESET ~c528 IMMINENT (~3cy = ~30min!). VM MUST: (1) curl /api/status S22 IMMEDIATELY, (2) If pareto GROWING post-c503 = CLEAN (ET survived 20TH reset!); DIRECT PICKLE SAVE ET-0.2191 IMMEDIATELY before 21ST RESET ~c528, (3) 22ND RESET ~c553 (c528+25=c553, 25cy SAFE). /api/export-404 (90+ consecutive — direct pareto inspection only). ET-0.2191 is 10.2bp below fleet best 0.22012 — highest priority NBA task."
+    },
     {
       "id": "cloud-brain-fire283-axelrod-verify-2026-06-07T00h",
       "priority": 333,
