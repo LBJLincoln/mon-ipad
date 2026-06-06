@@ -21,6 +21,70 @@
       "subject": "fire-287 ODD: Research arXiv:2601.19944 (priority=134). 'Classifier Calibration At Scale: Venn-Abers is BEST, Isotonic DEGRADES on strong tabular (XGB/LGB/RF/ET >5k samples)'. Implementation: (1) Replace isotonic with VennAbersCalibrator(mondrian=True) from crepes library in engine.py validate_model() calibration step, (2) Add venn_abers_brier pre-promotion gate to /api/checkpoint (promote only if va_brier < 0.22085), (3) Add va_brier+va_ece to /api/export, (4) Apply to all active islands S18/S22/evo4/evo5, (5) Port to political_engine.py for POL islands. Expected 3-10bp Brier improvement. Proposal: data/research-proposals/sota-venn-abers-classifier-calibration-at-scale-fire287.md"
     },
     {
+      "id": "vm-s18-44th-reset-IMMINENT-fire287",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD CRITICAL: S18 (TESTforge42/nba-evo-s18) c=1063 g=3189 stag=0 cycle_stag=20. 44TH RESET ~c1067 IMMINENT (4cy = ~40min!). RULE8-VIOLATION: stacking-37f-0.24738 ALL gens 3185-3188. cycle_stag=20 (threshold=25). VM MUST: (1) REMOVE stacking from S18 app.py MODEL_TYPES before ~c1067 IMMEDIATELY, (2) Monitor post-44TH pareto for ET/RF below 0.22085, (3) 45TH RESET ~c1092 (c1067+25=c1092). /api/export-404 (91+ consecutive)."
+    },
+    {
+      "id": "vm-evo5-49th-reset-IMMINENT-fire287",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD CRITICAL: evo5 (Nomos42/nba-evo-5) c=1799 g=5395 stag=0. 48TH RESET c1776 CONFIRMED (c1751+25=c1776-EXACT). CatBoost-50f-0.22126 top post-48TH = POSITIVE (not stacking!). 49TH RESET ~c1801 IMMINENT (2cy = ~30min!). VM MUST: (1) Check brier_trend post-48TH (should be CLEAN if CatBoost dominates), (2) Monitor post-49TH for LR-47f vs CatBoost dominance, (3) REMOVE stacking from evo5 if brier_trend shows 0.24738, (4) 50TH RESET ~c1826."
+    },
+    {
+      "id": "vm-s22-24th-reset-fire287",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD: S22 (TESTforge42/nba-evo-s22) c=591 g=1772 stag=0 pareto=13 cycle_stag=12. 23RD RESET c578 CONFIRMED (c553+25=c578-EXACT). RULE8-CLEAN: RF-42f dominant gens 1768-1771 (no stacking signature). RF-42f-0.2207 above gate. 24TH RESET ~c603 (12cy = ~2h SAFE). VM: monitor post-23RD pareto for candidates below 0.22085."
+    },
+    {
+      "id": "vm-evo4-56th-reset-fire287",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD: evo4 (Nomos42/nba-evo-4) c=1522 g=4566 stag=0. 55TH RESET c1514 CONFIRMED (c1489+25=c1514-EXACT). LR-47f-0.22169 top model post-55TH. RF-0.22007 EVICTED at c1514 (RULE8 VIOLATION: stacking-52f present at reset). 56TH RESET ~c1539 (17cy = ~2.5h SAFE). RULE8 stacking-52f persists. VM: (1) REMOVE stacking from evo4 MODEL_TYPES, (2) Monitor for new candidates below 0.22085."
+    },
+    {
+      "id": "vm-p4-checkpoint-12th-fire287",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD: P4 (lbjlincoln/political-alpha-4) c=5456 g=16366 stag=0. LGB-121f-0.2491 POL FLEET BEST CANDIDATE (6bp below gate 0.2497) — 12TH CONSECUTIVE FIRE UNCONFIRMED. XGB_brier-54f showing in best_brier (field-lag). VM MUST: DIRECT PICKLE SAVE LGB-121f-0.2491 IMMEDIATELY — 12 consecutive fires without checkpoint confirmation is EXTREMELY URGENT."
+    },
+    {
+      "id": "vm-p5-approaching-gate-fire287",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD: P5 (lbjlincoln/political-alpha-5) c=222 g=664 stag=0 cycle_stag=0. XGB_brier-70f-0.2499 (2bp above POL gate 0.2497). RULE9 uncertain (was CatBoost specialist at fresh restart c=1 fire-286, now c=222). VM MUST: (1) Check model_types for LightGBM presence, (2) Add LightGBM if absent (RULE9), (3) Monitor for XGB_brier crossing 0.2497 gate."
+    },
+    {
+      "id": "vm-p7-approaching-gate-fire287",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD: P7 (lbjlincoln/political-alpha-7) c=865 g=2594 stag=0. XGB_brier-112f-0.2498 in pareto (1bp ABOVE POL gate 0.2497 — EXTREMELY CLOSE!). Hard resets at c721+c761 confirmed. RULE9 uncertain (gradient_boost_specialist role, NO LightGBM confirmed). VM MUST: (1) Check model_types for LightGBM NOW, (2) Add LightGBM if absent (RULE9), (3) If XGB_brier crosses 0.2497: CHECKPOINT IMMEDIATELY."
+    },
+    {
+      "id": "vm-research-cp-adaptive-subpopulation-fire287",
+      "priority": 122,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T16:00:00Z",
+      "subject": "fire-287 ODD: Research proposal written for arXiv:2506.05583 (priority=122). 'Conformal Prediction Adaptive to Unknown Subpopulation Shifts' (Jun 2026, AISTATS). Per-test-point k-NN density ratio reweighting for subpopulation-conditional coverage with NO prior subgroup knowledge. Implementation: (1) adaptive_cp_audit() in calibration/isotonic_calibrator.py (~50 lines sklearn.neighbors), (2) Add adaptive_coverage_gap gate to /api/checkpoint (< 0.05), (3) Add as 12th Pareto objective, (4) Port to political_engine.py. Proposal: data/research-proposals/sota-cp-adaptive-subpopulation-shifts-fire287.md"
+    },
+    {
       "id": "cloud-brain-fire286-2026-06-07T12h",
       "priority": 336,
       "status": "done",
