@@ -4,6 +4,79 @@
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
     {
+      "id": "cloud-brain-fire290-2026-06-08T04h",
+      "priority": 340,
+      "status": "done",
+      "completed_at": "2026-06-08T04:00:00Z",
+      "completed_by": "cloud-brain-fire-290",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-290 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); 25/25-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; S22-c651-g1952-stag0-cycle_stag22-26TH-RESET-c653-IMMINENT(2cy!)-RF69f-RULE8-CLEAN-DIVERSIFY-SENT; S18-c1086-g3258-stag0-RF71f-top-RULE8-IMPROVING-45TH-RESET-~c1092(6cy~1h-CRITICAL!); S15-c1820-g5460-stag0-RF-BACK-UP-5TH-WAKEUP!(134+fires); evo4-c1584-g4752-stag0-LR47f-0.22169-58TH-RESET-~c1589(5cy-IMMINENT!); evo5-c1872-g5616-stag0-CatBoost50f-0.22126-52ND-RESET-~c1876(4cy-IMMINENT!); P4-c5993-g17977-stag0-LGB80f-0.24904-15TH-FIRE-UNCONFIRMED-FIELD-LAG; P5-c500-g1498-stag0-XGB_brier-0.2499(2bp-above-gate); P7-c1065-g3193-stag20-CHECKPOINT-SAVED(0.25373-gen3112)-DIVERSIFY-SENT; S13/S14+P1/P2-404-DOWN(134+fires); EVEN: arXiv:2605.28554-High-Performance-Low-Reliability-Uncertainty-Benchmarking-TFMs(priority=139)-sota-tfm-uncertainty-benchmarking-fire290.md-WRITTEN; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-08T04h)"
+    },
+    {
+      "id": "vm-s22-26th-reset-fire290",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN CRITICAL: S22 (TESTforge42/nba-evo-s22) c=651 g=1952 stag=0 cycle_stag=22. 25TH RESET c628 CONFIRMED (c603+25=c628-EXACT, fire-290 live API: c=651 > c628). RULE8-CLEAN: RF-69f dominant. Diversify SENT from cloud (cycle_stag=22 > threshold=15). 26TH RESET ~c653 IMMINENT (2cy = ~20min!). VM MUST: (1) curl /api/status S22 IMMEDIATELY, (2) Monitor post-26TH pareto for RF/ET-200f candidates below 0.22085, (3) 27TH RESET ~c678 (c653+25=c678, safe after 26TH)."
+    },
+    {
+      "id": "vm-s18-45th-reset-fire290",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN CRITICAL: S18 (TESTforge42/nba-evo-s18) c=1086 g=3258 stag=0. 45TH RESET ~c1092 IMMINENT (c1067+25=c1092, ~6cy = ~1h!). RF-71f top model (RULE8 IMPROVING). VM MUST: (1) Monitor post-45TH reset pareto for RF/ET candidates below 0.22085, (2) If brier_trend shows 0.24738 at 45TH = stacking still reinjected (VM app.py fix needed), (3) If brier_trend CLEAN = RULE8 BREAKTHROUGH after 45+ resets! (4) 46TH RESET ~c1117 (c1092+25=c1117). /api/export-404 (100+ consecutive)."
+    },
+    {
+      "id": "vm-s15-5th-wakeup-fire290",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN: S15 (Nomos42/nba-evo-6) BACK UP 5TH TIME! c=1820 g=5460 stag=0 RF top. After 134+ fires sleeping. Previous best: 0.22342 (above gate 0.22085). VM MUST: (1) curl /api/status S15 IMMEDIATELY to confirm active, (2) Monitor for candidates below 0.22085, (3) Check reset cycle estimate (c1820 — predict next reset from pattern), (4) Check brier_trend for RULE8 status."
+    },
+    {
+      "id": "vm-evo4-58th-reset-fire290",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN CRITICAL: evo4 (Nomos42/nba-evo-4) c=1584 g=4752 stag=0. LR-47f-0.22169 top model. 58TH RESET ~c1589 IMMINENT (5cy = ~50min!). VM MUST: (1) Monitor post-58TH reset pareto: LR dominance = CLEAN signal, (2) Check brier_trend after 58TH (if 0.24738 = stacking still reinjecting), (3) Monitor for any XGB/LGB/RF/ET candidates below 0.22085, (4) 59TH RESET ~c1614 (c1589+25=c1614). RULE8 status: LR dominant = likely clean (no stacking visible in recent fires)."
+    },
+    {
+      "id": "vm-evo5-52nd-reset-fire290",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN CRITICAL: evo5 (Nomos42/nba-evo-5) c=1872 g=5616 stag=0. CatBoost-50f-0.22126 top. 52ND RESET ~c1876 IMMINENT (c1851+25=c1876, ~4cy = ~40min!). VM MUST: (1) Monitor post-52ND reset pareto: CatBoost dominant = POSITIVE signal, (2) Check brier_trend after 52ND reset (0.24738 = stacking reinjected), (3) Monitor for RF/ET-200f candidates below 0.22085, (4) 53RD RESET ~c1901 (c1876+25=c1901)."
+    },
+    {
+      "id": "vm-p4-lgb80f-checkpoint-fire290",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN EXTREME URGENT: P4 (lbjlincoln/political-alpha-4) c=5993 g=17977 stag=0. LGB-80f-0.24904 gen17047 Venn-Abers = NEW POL FLEET BEST CANDIDATE (6.6bp below gate 0.2497!) — 15TH CONSECUTIVE FIRE UNCONFIRMED. best_brier=0.25144 (field-lag confirmed). VM MUST: (1) curl /api/export P4 IMMEDIATELY to confirm LGB-80f-0.24904, (2) DIRECT PICKLE SAVE LGB-80f-0.24904 IMMEDIATELY, (3) Also save LGB-121f-0.2491 as backup, (4) Do NOT apply isotonic calibration — Venn-Abers already applied. 15 consecutive fires without checkpoint = EXTREMELY URGENT."
+    },
+    {
+      "id": "vm-p7-post-diversify-fire290",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN: P7 (lbjlincoln/political-alpha-7) c=1065 g=3193 stag=20. CHECKPOINT SAVED from cloud (brier=0.25373 gen=3112). DIVERSIFY SENT from cloud. VM MUST: (1) curl /api/status P7 to confirm diversify processed (stag should drop from 20), (2) Check model_types for LightGBM — RULE9 VIOLATION if absent (LR dominant at fire-290 = no LGB), (3) ADD LightGBM to P7 MODEL_TYPES if absent IMMEDIATELY, (4) Monitor for gate crossing 0.2497."
+    },
+    {
+      "id": "vm-research-tfm-uncertainty-benchmarking-fire290",
+      "priority": 139,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-08T04:00:00Z",
+      "subject": "fire-290 EVEN: Research arXiv:2605.28554 (priority=139). 'High Performance, Low Reliability: Uncertainty Benchmarking for Tabular Foundation Models' (ESANN 2026, May 27). TFMs (TabICLv2/TabPFN) achieve superior AUC but LOWER conditional coverage under conformal prediction (SSCS metric) vs GBDTs on TALENT benchmark (112 datasets). Key implication: our GBDT candidates (S18/S22 ET/RF below 0.22012) are MORE RELIABLE than TabICL upgrade despite marginally higher Brier. Implementation: (1) Add sscs_gate_check() to calibration/sscs_calibrator.py (~60 lines, MAPIE), (2) Wrap TabICLv2 with Venn-Abers before fleet-best comparison, (3) Add SSCS as 5th Pareto objective, (4) Require sscs_score > gbdt_baseline before TabICLv2 promotion, (5) Port to political_engine.py for P4/P7 gates. Proposal: data/research-proposals/sota-tfm-uncertainty-benchmarking-fire290.md"
+    },
+    {
       "id": "cloud-brain-fire289-2026-06-08T00h",
       "priority": 339,
       "status": "done",
