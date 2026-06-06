@@ -9992,3 +9992,98 @@ grep -n "T11\|T12\|NBA-only" papers/axelrod-llm-2026/04-method.md | head -5
 - `paper.md` §B.1: mirrored LLL2 fix
 - `04-method.md` §3.6: inserted parenthetical clarifying T1–T10 are the same agents in both domains; T11 and T12 NBA-only (LLL3)
 - `paper.md` §3.6: mirrored LLL3 fix
+
+---
+
+# Peer-Review Self-Critique — Cycle MMM (2026-06-06, fire-287)
+
+**Scope:** Citation hygiene (QuantAgents VERIFY resolved) + internal scaffolding removal (§2.7 blockquote) + three new substantive issues.
+
+---
+
+### Housekeeping — items completed this cycle
+
+**Item 4 resolved (`@quantagents2025` VERIFY note):**
+The BibTeX entry previously contained an unprofessional `VERIFY:` flag in the `note` field that would appear in any compiled reference list. Replaced with a confirmation: the intended paper is Du et al.\ (arXiv:2510.04643, 2025) — multi-agent simulated quantitative trading on A-share and HK-share markets — distinct from arXiv:2509.09995 (QuantAgent HFT). A pre-submission action item for full author list confirmation is retained. The in-text disambiguation footnote in §2.6 was already present and is sufficient.
+
+**Internal citation verification blockquote removed (§2.7 / Table 1 section):**
+Both `03-related-work.md` and `paper.md` contained a blockquote reading "Note on citation verification: All arXiv IDs and DOIs in this section were verified…" This was internal scaffolding. The DMAD OpenReview ID is captured in the BibTeX `note` field; the QuantAgents disambiguation is covered by the in-text footnote in §2.6. Removing the blockquote leaves the section clean for submission. Both source and compiled files updated.
+
+**Files changed this housekeeping pass:** `references.bib`, `03-related-work.md`, `paper.md`.
+
+---
+
+### MMM1 (Moderate) — Bankroll bankruptcy condition undefined
+
+**Location:** `04-method.md` §3.1 "Bankroll evolution" (lines ~47–62); `paper.md` §3.1 corresponding paragraph.
+
+**Problem:** The bankroll update rule in Definition 1 is:
+
+$$V_{i,d+1} = V_{i,d} \cdot \left(1 + \sum_{t \in \mathcal{T}_d} \lambda_{i,t} \cdot s_{i,t}\right)$$
+
+with $\lambda_{i,t} \leq \lambda_{\max}$ bounding within-day exposure. This prevents negative balances within a single day (since a day-loss $> 1$ requires $\lambda_{\max} > 1/|\mathcal{T}_d|$ and is excluded by design), but it does not prevent multi-day exponential decay toward zero. Repeated Brier-score losses can drive $V_{i,d}$ arbitrarily close to zero without ever reaching exactly zero.
+
+The paper never states: (a) whether an agent with $V_{i,d} < V_{\min}$ is excluded from the market; (b) whether bankroll decay below some floor constitutes "bankruptcy" and what the agent's strategy defaults to; (c) whether SRR is still triggered for agents whose bankroll approaches zero (since they may be underperforming due to structural reasons unrelated to their archetype). The absence of a bankruptcy floor is especially relevant to Proposition 2, which describes SNE in terms of agents comparing payoff trajectories — an agent in a near-zero bankroll state has degenerate incentives that differ from the proposition's payoff structure.
+
+**Impact on claims:** The theoretical analysis assumes agents remain "active" throughout the $T$-day season. If no bankruptcy floor is specified, the SNE characterisation in Proposition 2 implicitly assumes $V_{i,d} > 0$ for all $i, d$, but this is never stated as an assumption. Table 7 lists agent CAGRs including presumably near-bankrupt agents; the formula for CAGR becomes undefined at $V = 0$.
+
+**Recommended fix:** Add a sentence to §3.1 specifying either (a) a bankruptcy floor $V_{\min} > 0$ below which the agent participates with $\lambda_{i,t} = 0$ (ghost participant — receives outcome signals but places no stakes), or (b) a statement that the initial endowment $V_0$ and the constraint $\lambda_{i,t} \leq \lambda_{\max}$ together imply $V_{i,d} \geq V_0 \cdot (1-\lambda_{\max})^d > 0$ for finite $d$, which suffices for the 175-day season. Option (b) is likely already implicit in the design but requires explicit statement.
+
+**Severity:** Moderate — does not invalidate any empirical claim but leaves the theoretical formulation underdetermined for degenerate bankroll trajectories. Reviewers at NMI or Science Advances with a game-theory background will ask.
+
+---
+
+### MMM2 (Minor) — A2 citation imprecise for consensus herding claim
+
+**Location:** `04-method.md` §3.5 Assumption A2 inline citation (line ~248); `paper.md` §3.5 corresponding line.
+
+**Problem:** Assumption A2 states: "The prevailing market line acts as a Schelling focal point [@zhang2026arena; @schelling1960strategy]; without an explicit diversity mechanism, agents' probability estimates converge toward the market-implied probability."
+
+The `@zhang2026arena` citation (Prediction Arena, Zhang et al.\ 2026) benchmarks LLM models on Kalshi and Polymarket with real capital. While it documents relative performance across models (and notes platform microstructure effects), it does not specifically study or report consensus herding — the tendency of LLM agents to converge toward the market line in the absence of a diversity mechanism. The herding-toward-market-consensus finding is better attributed to `@schoenegger2024wisdom` (Silicon Crowd, Schoenegger et al.\ 2024), which explicitly studies the herding behavior of a 12-LLM ensemble toward a human crowd consensus as an emergent phenomenon, or to `@fontana2024llm` (the LLM-IPD paper) which documents shared pre-training priors creating correlated strategy adoption.
+
+Using `@zhang2026arena` here risks a reviewer noting that the cited paper does not document the claimed phenomenon.
+
+**Recommended fix:** Replace `[@zhang2026arena; @schelling1960strategy]` with `[@schoenegger2024wisdom; @schelling1960strategy]` (or add `@schoenegger2024wisdom` alongside `@zhang2026arena`). The Zhang et al.\ paper is better cited in §2.6 where it currently appears for its Kalshi/Polymarket performance finding. Alternatively, cite `@liu2025dmad` here, as DMAD's justification explicitly invokes pre-training homogeneity → groupthink as the herding mechanism.
+
+**Severity:** Minor — the Schelling reference makes the theoretical point independently of the empirical citation; the A2 assumption is stated rather than derived. But the citation should accurately reflect what the cited work demonstrates.
+
+---
+
+### MMM3 (Minor) — $\eta_{\text{A3}}$ bound described as "pre-registered" rather than "pre-specified"
+
+**Location:** `04-method.md` §3.5 Assumption A3 proof sketch paragraph (line ~261); `paper.md` §3.5 corresponding line.
+
+**Problem:** The text reads: "The pre-registered bound $\eta_{\text{A3}} < 0.211$ ensures that the $\beta_1$ coefficient in Lemma 1 remains negative even under maximum A3 noise."
+
+The term "pre-registered" is a scientific norm referring to hypotheses or analysis plans deposited with a registry (e.g., OSF, AsPredicted) before data collection. The bound $\eta_{\text{A3}} < 0.211$ is not a scientific hypothesis; it is a **design-stage theoretical constraint** on an assumption parameter — derived analytically from the requirement that the Brier ambiguity decomposition inequality holds in the presence of bounded A3 perturbations. Calling it "pre-registered" is technically incorrect and could mislead reviewers about the nature of the bound (they may look for a registry entry that does not exist).
+
+**Recommended fix:** Replace "pre-registered bound" with "pre-specified design bound" or "analytically derived bound." The change is purely terminological but removes a false implication of prospective empirical registration.
+
+**Severity:** Minor — one phrase, but misuse of scientific terminology ("pre-registered" has a specific, loaded meaning in the open-science context) is worth fixing before NMI submission.
+
+---
+
+### Data-blocked checklist (updated — 15 items; item 4 DONE)
+
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. ~~Confirm `@quantagents2025` as arXiv:2510.04643; remove VERIFY note~~ **DONE (MMM, fire-287)**
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites 2026-04-22
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E
+14. Verify A6 via matched-pairs pilot analysis
+15. Verify `@fradkin2026marketbench` author list against live arXiv:2604.23897 record (HHH4)
+16. Verify `@xu2026discovermalgos` author list against live arXiv:2602.16928 abstract (JJJ4)
+
+**Structural changes this cycle:**
+- `references.bib`: `@quantagents2025` note field — replaced VERIFY flag with confirmation + pre-submission action item (MMM housekeeping)
+- `03-related-work.md`: removed internal citation verification blockquote after Table 1 (MMM housekeeping)
+- `paper.md`: mirrored blockquote removal from §2.7 (MMM housekeeping)
+- No changes to `04-method.md` or `appendix-b.md` this cycle — MMM issues flagged for next cycle pass

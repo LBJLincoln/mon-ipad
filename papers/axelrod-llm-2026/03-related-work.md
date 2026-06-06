@@ -338,11 +338,3 @@ population-level diversity mechanism. Our framework is the first to
 close this gap.
 
 ---
-
-> **Note on citation verification:** All arXiv IDs and DOIs in this section
-> were verified against live records as of 2026-04-18. DMAD (Liu et al.,
-> ICLR 2025) was published directly through OpenReview (ID: t6QHYUOQL7);
-> no arXiv preprint was found. The QuantAgents citation uses
-> arXiv:2510.04643 (Du et al., 2025); readers should verify this is the
-> intended paper as two works share the "QuantAgents" name
-> (see also arXiv:2509.09995 for QuantAgent HFT).
