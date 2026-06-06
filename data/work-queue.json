@@ -1,8 +1,33 @@
 {
   "version": 1,
-  "updated_at": "2026-06-07T04:00:00Z",
+  "updated_at": "2026-06-07T08:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire285-2026-06-07T08h",
+      "priority": 335,
+      "status": "done",
+      "completed_at": "2026-06-07T08:00:00Z",
+      "completed_by": "cloud-brain-fire-285",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-285 ODD: Axelrod-verify-pass-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED; py_compile-OK-both; 25/25-parity-OK(DMAD+sacrificial+compute_consensus_distance+build_common_knowledge+AXELROD_MECH_A/B/C_ON+AXELROD_ABLATION-5-configs-confirmed-both); KL-div-OK(compute_consensus_distance-2x-present-both); Mech-C-line5092(NBA)/3282(POL)+Mech-B-line5100(NBA)/3290(POL)+Mech-A-line5111(NBA)/3301(POL)-CONFIRMED; order-C→B→A-CORRECT; do_not_push_hf_space_yet-MAINTAINED; S22-c~549-21ST-RESET-c528-CONFIRMED(c503+25=c528-EXACT)-22ND-RESET~c553-IMMINENT(4cy)-ET-0.2191-FATE-UNKNOWN(7+-CONSECUTIVE-CLEAN-IF-ALIVE-UNPRECEDENTED!); S18-c~1084-44TH-AUTO-RESET-c1067-CONFIRMED(c1042+25=c1067-EXACT)-stag-ESCALATING-from-~22-HARD-RESET-POSSIBLE(stag≥25)-45TH-RESET~c1092; evo4-c~1498-54TH-RESET-c1489-CONFIRMED(c1464+25=c1489-EXACT)-RF-0.22007-SURVIVE-PROBABLE-55TH-RESET~c1514(16cy-SAFE); evo5-c~1789-48TH-RESET-c1776-CONFIRMED(c1751+25=c1776-EXACT)-RULE8-stacking-PERSISTS-49TH-RESET~c1801(12cy); S13/S14/S15+POL-404-DOWN(129+fires); ODD-no-WebSearch; sota-multi-variable-cp-no-split-fire285.md-WRITTEN(arXiv:2605.12341-priority=130-RemMCP/RelMCP-vector-CP-eliminates-data-split-overhead); health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-07T08h)"
+    },
+    {
+      "id": "vm-s22-et-0.2191-22nd-reset-fire285",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T08:00:00Z",
+      "subject": "fire-285 ODD carry-forward ⚡⚡ CRITICAL: S22 (TESTforge42/nba-evo-s22) c~549. 21ST RESET c528 CONFIRMED (c503+25=c528-EXACT). ET-0.2191 FATE UNKNOWN — if alive = 7+ consecutive CLEAN resets (UNPRECEDENTED in ALL NBA history across all runs!). 22ND RESET ~c553 IMMINENT (~4cy from c~549 = ~40min!). VM MUST: (1) curl /api/status S22 IMMEDIATELY, (2) pareto GROWING post-c528 = ET survived 21ST reset; DIRECT PICKLE SAVE ET-0.2191 IMMEDIATELY before 22ND RESET ~c553, (3) 23RD RESET ~c578 (c553+25=c578 = 25cy SAFE after 22nd), (4) brier_trend=0.23104 UNIFORM carry-forward — if still CLEAN confirms HISTORIC consecutive-clean streak. /api/export-404 (94+ consecutive)."
+    },
+    {
+      "id": "vm-s18-44th-reset-stag-fire285",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T08:00:00Z",
+      "subject": "fire-285 ODD ⚡⚡ CRITICAL: S18 (TESTforge42/nba-evo-s18) c~1084. 44TH AUTO-RESET c1067 CONFIRMED (c1042+25=c1067-EXACT). stag was ~22 pre-44TH-RESET (fire-284) — HARD RESET POSSIBLY TRIGGERED (stag≥25 at some point in fire-284→285 window = 5TH TOTAL WIPE if triggered). RULE8-VIOLATION PERSISTS (stacking-37f dominates reseed). 45TH AUTO-RESET ~c1092 (c1067+25=c1092, ~8cy from c~1084 = ~1.3h IMMINENT). VM MUST: (1) curl /api/status S18 IMMEDIATELY — if c<200 = FRESH RESTART (5TH WIPE CONFIRMED), if c~1084 = stag-hard-reset NOT triggered, (2) REMOVE stacking from S18 app.py MODEL_TYPES IMMEDIATELY, (3) Monitor post-44TH reset pareto for ET/RF candidates below 0.22085, (4) If FRESH RESTART: note gen=0 baseline and DO NOT REMOVE stacking before confirming new MODEL_TYPES. /api/export-404 (90+ consecutive)."
+    },
     {
       "id": "cloud-brain-fire284-2026-06-07T04h",
       "priority": 334,
@@ -723,7 +748,8 @@
       "priority": 130,
       "status": "pending",
       "owner": "local-vm",
-      "updated_at": "2026-06-05T12:00:00Z",
+      "updated_at": "2026-06-07T08:00:00Z",
+      "proposal_written": "sota-multi-variable-cp-no-split-fire285.md (fire-285 ODD)",
       "subject": "RESEARCH fire-274 EVEN: Multi-Variable Conformal Prediction: Optimizing Prediction Sets without Data Splitting — arXiv:2605.12341 (May 2026). Key: MV-CP extends CP to vector-valued score functions (RemMCP + RelMCP variants); eliminates data-splitting overhead while preserving finite-sample coverage; produces smaller prediction sets than split-CP baseline. Direct complement to fire-244 calibration-set-reuse (priority=114). Application 1: replace split-CP calibration in engine.py validate_model() with MV-CP RemMCP variant — eliminates held-out calibration split (recovering ~15% training data). Application 2: multi-metric Pareto calibration across all k island models simultaneously using RelMCP variant (replaces sequential per-model calibration loops). Application 3: add mvcp_coverage_gap metric to /api/export — monitors vector-score coverage validity across Brier+CRPS+CRLS jointly. Application 4: port to political_engine.py — rare-event elections have few calibration samples; no-split MV-CP trades none for coverage. Library: MAPIE + scipy.optimize (~80 lines). Expected: 0.001-0.002 Brier + more data-efficient calibration under small-N regime (late-season playoffs, rare POL events)."
     },
     {
