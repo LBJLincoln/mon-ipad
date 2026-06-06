@@ -1,8 +1,81 @@
 {
   "version": 1,
-  "updated_at": "2026-06-07T08:00:00Z",
+  "updated_at": "2026-06-07T12:00:00Z",
   "purpose": "Crash-recovery queue read by the cloud Brain trigger. Each item is an outstanding task. Items with status=done are kept for audit but brain skips them. Brain picks lowest priority number among status=pending.",
   "items": [
+    {
+      "id": "cloud-brain-fire286-2026-06-07T12h",
+      "priority": 336,
+      "status": "done",
+      "completed_at": "2026-06-07T12:00:00Z",
+      "completed_by": "cloud-brain-fire-286",
+      "owner": "cloud-brain-sonnet4-6",
+      "subject": "fire-286 EVEN: Axelrod-carry-forward-SHAs-NBA-85e7682e1d(6034L)/POL-6983c86517(4018L)-UNCHANGED(TF-repos-inaccessible-from-cloud); 25/25-parity-carry-forward; do_not_push_hf_space_yet-MAINTAINED; S22-c563-g1687-stag0-pareto18-22ND-AUTO-RESET-c553-CONFIRMED(c528+25=c553-EXACT)-ET-0.2191-EVICTED(7-CONSECUTIVE-CLEAN-STREAK-13TH-THROUGH-21ST-ENDED)-RF-42f-0.2223-above-gate-next-reset~c578(15cy-SAFE); S18-c1052-g3155-stag0-pareto9-LIVE-API-CORRECTS(est-was-c~1084)-stag=0-NO-HARD-RESET-44TH-RESET~c1067-IMMINENT(15cy=~2.5h!)-RULE8-stacking; evo4-c1494-g4480-stag0-pareto12-54TH-RESET-c1489-CONFIRMED-LR47f-top-RF-0.22007-FATE-UNCERTAIN-55TH-RESET~c1514(20cy-SAFE)-RULE8-stacking52f; evo5-c1772-g5314-stag0-pareto11-48TH-RESET~c1776-IMMINENT(4cy=~40min!)-POST-47TH-LR+LGB-dominant-RULE8-CLEAN-BREAKTHROUGH-POSSIBLE; P4-c5232-g15696-stag0-pareto10-LGB-0.2491-CARRY-FORWARD-11TH-FIRE; P5-FRESH-RESTART-c1-g1-2ND-TOTAL-WIPE-~c2058-GONE-RULE9-VIOLATION; P7-c779-stag0-XGB112f-0.24981(approaching-gate)-RULE9-VIOLATION; S13/S14/S15+P1/P2-404-DOWN(130+fires); EVEN: arXiv:2602.11139-TabICLv2-SOTA-tabular-FM(priority=137)-sota-tabicl-v2-upgrade-fire286.md-WRITTEN; health-status.json+brain-status.json+work-queue.json+CLAUDE.md updated (2026-06-07T12h)"
+    },
+    {
+      "id": "vm-s22-post-22nd-reset-fire286",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN: S22 (TESTforge42/nba-evo-s22) c=563. 22ND AUTO-RESET c553 CONFIRMED (c528+25=c553-EXACT). ET-0.2191 EVICTED at 22ND reset — 7-consecutive-clean-streak (13TH through 21ST) ENDED. Current best: RF-42f-0.2223 (ABOVE gate 0.22085 — no checkpoint needed). Pareto=18 GROWING. 23RD RESET ~c578 (~15cy SAFE). VM MUST: (1) Monitor post-22ND pareto for new ET/RF-200f below 0.22085, (2) Check brier_trend post-22ND reset (if ~0.23 = CLEAN continues), (3) /api/export-404 (96+ consecutive — direct pickle save only if candidate found)."
+    },
+    {
+      "id": "vm-s18-44th-reset-fire286",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN CRITICAL: S18 (TESTforge42/nba-evo-s18) c=1052. LIVE API CORRECTS CARRY-FORWARD (est was c~1084). stag=0 CONFIRMED — NO hard reset triggered. 44TH RESET ~c1067 IMMINENT (~15cy = ~2.5h!). RULE8-VIOLATION: stacking-37f brier_trend=0.2474 confirmed. VM MUST: (1) REMOVE stacking from S18 app.py MODEL_TYPES IMMEDIATELY before ~c1067, (2) Monitor post-44TH reset pareto for ET/RF candidates below 0.22085, (3) 45TH RESET ~c1092 (c1067+25=c1092). /api/export-404 (91+ consecutive)."
+    },
+    {
+      "id": "vm-evo5-48th-reset-fire286",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN ⚡⚡ CRITICAL: evo5 (Nomos42/nba-evo-5) c=1772. 48TH RESET ~c1776 IMMINENT (~4cy = ~40min!). POST-47TH RESET POSITIVE SIGNAL: LR dominant + LGB variants present, NO stacking mention — RULE8-CLEAN BREAKTHROUGH POSSIBLE after 48+ resets! VM MUST: (1) Monitor post-48TH reset brier_trend IMMEDIATELY: if ≠ 0.24738 = CLEAN BREAKTHROUGH!, (2) Check for new RF/ET-200f below 0.22085 in pareto, (3) 49TH RESET ~c1801 (c1776+25=c1801, ~25cy after 48TH)."
+    },
+    {
+      "id": "vm-evo4-rf-55th-reset-fire286",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN: evo4 (Nomos42/nba-evo-4) c=1494. 54TH RESET c1489 CONFIRMED (c1464+25=c1489-EXACT). LR 47f is now top model — RF-0.22007 may have been replaced. 55TH RESET ~c1514 (~20cy SAFE). VM MUST: (1) VERIFY RF-0.22007 presence in pareto (LR replaced rank-1), (2) DIRECT PICKLE SAVE if alive, (3) REMOVE stacking from evo4 app.py, (4) Monitor post-55TH reset for new candidates below 0.22085."
+    },
+    {
+      "id": "vm-p4-checkpoint-11th-fire286",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN carry-forward ⚡ POL CRITICAL: P4 (lbjlincoln-political-alpha-4) c=5232. LGB-121f-0.2491 (6bp below POL fleet-best 0.2497) — 11TH CONSECUTIVE FIRE UNCONFIRMED. LGB variants present (Venn-Abers, RULE9 RESOLVED). VM MUST: (1) curl /api/export P4 to confirm LGB-121f-0.2491 still in pareto at c=5232, (2) DIRECT PICKLE SAVE LGB-121f-0.2491, (3) Do NOT apply isotonic (use Venn-Abers per arXiv:2601.19944)."
+    },
+    {
+      "id": "vm-p5-lgb-fresh-restart-fire286",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN ⚡⚡ CRITICAL: P5 (lbjlincoln-political-alpha-5) FRESH RESTART c=1 g=1 (2ND TOTAL WIPE — ALL PRIOR HISTORY ~c2058 PERMANENTLY LOST). CatBoost specialist. RULE9 VIOLATION: NO LightGBM from gen0. VM MUST: (1) ADD LightGBM to P5 MODEL_TYPES IMMEDIATELY before first auto-reset ~c25, (2) Verify via /api/status model_types, (3) Monitor first reset ~c25 for RULE9-CLEAN signal. This is P5's 2nd total wipe."
+    },
+    {
+      "id": "vm-p7-lgb-add-fire286",
+      "priority": 0,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN CRITICAL: P7 (lbjlincoln-political-alpha-7) c=779 stag=0. XGB-112f-0.24981 (0.31bp ABOVE POL gate 0.2497 — APPROACHING!). RULE9 VIOLATION: NO LightGBM. VM MUST: (1) ADD LightGBM to MODEL_TYPES IMMEDIATELY, (2) Monitor XGB-0.24981 — if crosses 0.2497: CHECKPOINT URGENTLY, (3) Hard resets at c721+c761 — monitor stagnation."
+    },
+    {
+      "id": "vm-research-tabicl-v2-upgrade-fire286",
+      "priority": 137,
+      "status": "pending",
+      "owner": "local-vm",
+      "updated_at": "2026-06-07T12:00:00Z",
+      "subject": "fire-286 EVEN: Research arXiv:2602.11139 (priority=137). TabICLv2: 'A better, faster, scalable, and open tabular foundation model' (Feb 11, 2026). Upgrade colab/nba_evolution_gpu.ipynb from TabICL to TabICLv2 (pip install tabicl --upgrade, context_size=8192, n_ensembles=8). Expected 0.001-0.003 Brier improvement from current 0.22169 CV. If TabICLv2 CV Brier < 0.22012: update oracle model at LBJLincoln26/nba-oracle-model. Application 2: context_size=11440 (all games). Application 3: CRPS+CRLS multi-metric eval. Application 4: feature selection via attention weights. Application 5: political_engine.py. Proposal: data/research-proposals/sota-tabicl-v2-upgrade-fire286.md"
+    },
     {
       "id": "cloud-brain-fire285-2026-06-07T08h",
       "priority": 335,
