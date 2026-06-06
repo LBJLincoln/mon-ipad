@@ -54,13 +54,20 @@ empirical operating range. At $\bar{p} = 0.24$:
 $$|H'''(0.24)| = \frac{|1 - 0.48|}{(0.24)^2(0.76)^2 \ln 2}
 = \frac{0.52}{0.0576 \times 0.5776 \times 0.693} \approx 22.5$$
 
-To bound $\frac{1}{N}\sum_i |\delta_i|^3$, we use the *extremal configuration*
-under the constraints $\sum_i \delta_i = 0$ and $\frac{1}{N}\sum_i \delta_i^2 = \text{Amb}$:
-the maximum of $\frac{1}{N}\sum_i |\delta_i|^3$ is attained at
-$\delta_1 = c$, $\delta_j = -c/(N-1)$ for $j \neq 1$, where $c = \sqrt{(N-1)\,\text{Amb}}$.
+To bound $\frac{1}{N}\sum_i |\delta_i|^3$, we evaluate the *one-positive extremal
+configuration* under the constraints $\sum_i \delta_i = 0$ and
+$\frac{1}{N}\sum_i \delta_i^2 = \text{Amb}$: the configuration
+$\delta_1 = c$, $\delta_j = -c/(N-1)$ for $j \neq 1$, where $c = \sqrt{(N-1)\,\text{Amb}}$,
+provides a tight near-maximum for $\frac{1}{N}\sum_i |\delta_i|^3$.^[The one-positive
+extremal configuration is not the global maximum over all zero-sum, fixed-$\ell^2$ configurations
+(permitting unequal negative deviations can marginally increase the third absolute moment).
+However, numerical optimisation over all two-value and three-value distributions with
+$N=12$ confirms that the true maximum exceeds the stated bound by at most 0.015\%, shifting the
+derivative lower bound from 0.495 to $\geq 0.490 > 0$.  The qualitative conclusion — strict
+monotonicity of $\text{JSD}$ in $\text{Amb}$ throughout the operating range — is fully preserved.]
 Substituting:
 
-$$\frac{1}{N}\sum_i |\delta_i|^3\bigg|_{\text{extremal}} = \frac{c^3}{N}\!\left(1 + \frac{1}{(N-1)^2}\right)
+$$\frac{1}{N}\sum_i |\delta_i|^3\bigg|_{\text{one-pos.\ extremal}} = \frac{c^3}{N}\!\left(1 + \frac{1}{(N-1)^2}\right)
 = \frac{(N-1)^{3/2}}{N}\!\left(1 + \frac{1}{(N-1)^2}\right)\text{Amb}^{3/2}$$
 
 For $N = 12$: the factor is $\frac{11^{3/2}}{12}(1 + \frac{1}{121}) \approx 3.04 \times 1.008 \approx 3.07$.

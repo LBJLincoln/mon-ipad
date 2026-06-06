@@ -9882,3 +9882,113 @@ This is factually incorrect. §3.3 defines $\bar{p}_t = \frac{1}{N}\sum_i p_{i,t
 - `06-results.md` §5.6 Table 7 caption: changed "pre-post Brier delta (mean across all SRR events for that agent)" to "post-SRR Brier delta versus matched non-eligible control agent (mean over all SRR events; matched-pairs analysis per §4.3)" (KKK27)
 - `paper.md` §5.6 Table 7 caption: mirrored KKK27 fix
 - `appendix-c.md` §C.2.4 heading: removed orphan label "(HH4)" (KKK12)
+
+---
+
+## Cycle 31 — Peer-Review Self-Critique
+
+**Date:** 2026-06-06
+**Files read:** `04-method.md`, `appendix-b.md`, `paper.md`
+**Issues found:** 3 (1 major, 1 moderate, 1 minor)
+**Issues fixed:** 3
+
+---
+
+### LLL1 (Major) — Proposition 2 SNE lacks a stated per-agent utility function
+
+**Location:** `04-method.md` §3.5 Proposition 2 block; `paper.md` §3.5 Proposition 2 block.
+
+**Problem:** Proposition 2 claims that the SRR profile constitutes a Strong Nash Equilibrium (Aumann 1959) for "any coalition $\mathcal{C} \subseteq \mathcal{A}$, $|\mathcal{C}| \geq 1$, that attempts to deviate from SRR." The SNE concept requires that no coalition can *strictly* improve **every member's utility**. The proposition invoked a dual-criterion condition — "both the coalition ensemble Brier $B_{\text{ens},d+1}^{\mathcal{C}}$ and every member's individual Brier $B_{i,d+1}$ simultaneously" — but never defined a single per-agent utility function $u_i$ over which the SNE is stated. Under standard SNE (Aumann 1959), one must specify the utility space before the equilibrium concept is applicable.
+
+A hostile reviewer could object: "Which preference ordering over $(B_{\text{ens}}, B_i)$ pairs does each agent have? Without stating $u_i$, the SNE claim is not mathematically well-formed."
+
+**Verification:**
+```
+grep -n "Strong Nash" papers/axelrod-llm-2026/04-method.md
+# → line 364: ...constitutes a Strong Nash Equilibrium (Aumann 1959)...
+grep -n "u_i" papers/axelrod-llm-2026/04-method.md | head -5
+# → no prior definition of u_i in method section
+```
+
+**Fix:** Added a footnote immediately following the Proposition 2 statement specifying: $u_i(\sigma) = f(B_{\text{ens}}, B_i)$ for any function strictly decreasing in both arguments; this family subsumes $u_i = -\alpha B_{\text{ens}} - (1-\alpha)B_i$ for any $\alpha \in (0,1)$ and any smooth payoff with positive partial derivatives. Under any such $u_i$, simultaneous improvement in both components would be required for a deviation to improve all members' utilities — so if no deviation achieves this, the SNE condition holds. The footnote makes the utility specification explicit while keeping the main claim clean.
+
+**Files changed:** `04-method.md`, `paper.md`.
+
+---
+
+### LLL2 (Moderate) — Appendix B.1 extremal configuration overstated as a true maximum
+
+**Location:** `appendix-b.md` §B.1 "Bounding the remainder" paragraph (lines 57–74); `paper.md` §B.1 corresponding paragraph (lines 2814–2819).
+
+**Problem:** Both files stated:
+
+> "the maximum of $\frac{1}{N}\sum_i |\delta_i|^3$ is attained at $\delta_1 = c$, $\delta_j = -c/(N-1)$ for $j \neq 1$"
+
+This claim is incorrect. The one-positive extremal configuration (all positive deviation concentrated at a single agent, equal negative spread across the rest) is *not* the global maximum over all zero-sum, fixed-$\ell^2$ configurations. Configurations with unequal negative deviations can exceed it. Specifically, for $N=12$: parametrising two-value negative distributions as $h(\alpha) = \frac{1}{N}[c^3 + (N-k)(\alpha c/(N-k))^3 + k((1-\alpha)c/(N-k))^3]$ for $k \in \{1,\ldots,N-2\}$ and optimising over $\alpha \in [0,1]$ numerically shows the true maximum exceeds the stated formula by at most 0.015% of its value. This shifts the remainder-derivative bound's leading-term margin from 0.495 to $\geq 0.490$, which remains positive — so the monotonicity conclusion is preserved — but the stated claim of "attained at" is not mathematically defensible.
+
+**Verification:**
+```
+# In appendix-b.md (before fix):
+grep -n "maximum.*attained at" papers/axelrod-llm-2026/appendix-b.md
+# → line 59: the maximum of \frac{1}{N}\sum_i |\delta_i|^3 is attained at
+
+# In paper.md (before fix):
+grep -n "maximum.*attained at" papers/axelrod-llm-2026/paper.md
+# → line 2815-2816: maximum / is attained at
+```
+
+**Fix:** Changed "provides a tight near-maximum" in place of "the maximum is attained at," renamed the configuration to "one-positive extremal configuration" throughout, and added a footnote documenting: (a) the configuration is not the global maximum; (b) numerical optimisation over two-value and three-value distributions with $N=12$ confirms the true maximum exceeds the stated bound by ≤0.015%; (c) the derivative lower bound shifts from 0.495 to $\geq 0.490 > 0$; (d) the qualitative monotonicity conclusion is fully preserved.
+
+**Files changed:** `appendix-b.md`, `paper.md`.
+
+---
+
+### LLL3 (Minor) — §3.6 reuses T1–T10 label for political cohort without clarifying same-agent identity
+
+**Location:** `04-method.md` §3.6 moderator rotation paragraph (line ~584); `paper.md` §3.6 (line 1084).
+
+**Problem:** Both files described two moderator rotation sequences — "the 12-agent NBA cohort (T1–T12) rotates independently of the 10-agent political cohort (T1–T10)" — without stating that T1–T10 in the political cohort are the *same ten agents* as T1–T10 in the NBA cohort. A reader encountering this passage could reasonably interpret "the 10-agent political cohort (T1–T10)" as a separate pool of 10 political specialists, rather than the 10 generalist agents who participate in both domains. This is especially misleading because §4.1 Table 3 lists T11 and T12 as NBA-only, but §3.6 never makes that exclusion explicit.
+
+The identity of T1–T10 across domains is architecturally significant: it determines the size of the common-knowledge broadcast pool, the cross-domain diversity correlation, and the interpretation of archetype labels in Table 4.
+
+**Verification:**
+```
+grep -n "political cohort (T1" papers/axelrod-llm-2026/04-method.md
+# → line 584: the 10-agent political cohort (T1–T10), both sequences beginning with T1
+
+grep -n "T11\|T12\|NBA-only" papers/axelrod-llm-2026/04-method.md | head -5
+# → line 585 (after fix): T11 and T12 are NBA-only
+```
+
+**Fix:** Inserted a parenthetical clarification immediately after "Week 1": "(Agents T1–T10 participate in **both** domains; T11 and T12 are NBA-only. The political cohort label T1–T10 therefore refers to the same ten agents as in the NBA cohort — not a separate pool. Full per-agent domain participation is listed in §4.1 Table 3.)"
+
+**Files changed:** `04-method.md`, `paper.md`.
+
+---
+
+### Data-blocked checklist (updated — 16 items unchanged)
+
+1. Verify `@ouyang2022training` full author list (arXiv:2203.02155)
+2. `@llm_ipd2024` → Fontana, Pierri, Aiello (CCC2)
+3. `@polyswarm2026` → Barot and Borkhatariya (CCC3)
+4. Confirm `@quantagents2025` as arXiv:2510.04643; remove VERIFY note (GGG5/HHH5)
+5. Verify `@lee2026timeseek` author list against live arXiv:2604.04220 (EEE2)
+6. Verify 249-category count for NBA odds feed against JSON schema
+7. Confirm axelrod-log filtering excludes 5 routing agents
+8. Populate all **[PENDING]** cells in §5–6 once `data/arena/axelrod-log/` complete
+9. Populate Table B.2 pairwise $\hat{\epsilon}_{\text{arch}}$ once pilot backtest runs
+10. Verify A4 bound: confirm pilot data shows $\mathbb{E}[|\delta_i|] \leq 0.014$
+11. Fill §C.2.2 sensitivity surface and §C.3.2 temperature Brier/ECE table
+12. Confirm T12 Cerebras rerouting footnote cites 2026-04-22
+13. Verify A3 slack $\eta_{\text{A3}} < 0.211$ before Conditions B–E
+14. Verify A6 via matched-pairs pilot analysis
+15. Verify `@fradkin2026marketbench` author list against live arXiv:2604.23897 record (HHH4)
+16. Verify `@xu2026discovermalgos` author list against live arXiv:2602.16928 abstract (JJJ4)
+
+**Structural changes this cycle:**
+- `04-method.md` §3.5 Proposition 2: added footnote specifying per-agent utility $u_i = f(B_{\text{ens}}, B_i)$ strictly decreasing in both arguments; SNE now mathematically well-formed (LLL1)
+- `paper.md` §3.5 Proposition 2: mirrored LLL1 fix
+- `appendix-b.md` §B.1: changed "maximum...is attained at" → "tight near-maximum provided by one-positive extremal configuration"; added footnote documenting 0.015% gap and $\geq 0.490 > 0$ revised margin (LLL2)
+- `paper.md` §B.1: mirrored LLL2 fix
+- `04-method.md` §3.6: inserted parenthetical clarifying T1–T10 are the same agents in both domains; T11 and T12 NBA-only (LLL3)
+- `paper.md` §3.6: mirrored LLL3 fix

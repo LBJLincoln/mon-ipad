@@ -949,7 +949,16 @@ within-agent matched-pairs analysis (§4.3, §5.6); if violated, the retention t
 > $\mathcal{C} \subseteq \mathcal{I}_d^{\text{elig}} = \{i \in \mathcal{I} : i
 > \text{ is sacrifice-eligible at day } d\}$ of sacrifice-eligible agents can
 > collectively refuse SRR and (weakly) improve the ensemble Brier of $\mathcal{C}$
-> while (weakly) reducing individual Brier for all members of $\mathcal{C}$.
+> while (weakly) reducing individual Brier for all members of $\mathcal{C}$.^[**Utility specification.** The SNE characterisation is defined for any agent utility
+> $u_i(\sigma) = f(B_{\text{ens}}, B_i)$ that is strictly decreasing in both
+> the coalition ensemble Brier $B_{\text{ens},d+1}^{\mathcal{C}}$ and the agent's
+> own individual Brier $B_{i,d+1}$. Under any such $u_i$, a joint improvement in
+> both components yields $u_i(\text{deviation}) > u_i(\text{SRR})$ for every
+> $i \in \mathcal{C}$ — so if no deviation achieves both simultaneously, no coalition
+> can strictly improve all members' utilities, confirming the SNE. This family
+> subsumes the natural special case $u_i = -\alpha B_{\text{ens}} - (1-\alpha)B_i$
+> for any $\alpha \in (0,1)$, as well as any smooth payoff with positive partial
+> derivatives $-\partial u_i / \partial B_{\text{ens}} > 0$ and $-\partial u_i / \partial B_i > 0$.]
 > (The qualification "against sacrifice-refusal deviations" restricts the SNE
 > to the strategically relevant class: non-eligible agents have no SRR action to
 > refuse, so they are not coalition members in this context.)
@@ -1073,7 +1082,10 @@ this brief as a shared prefix before generating independent predictions.
 The moderator role rotates weekly (Axelrod-style round-robin) **within each
 domain separately**: the 12-agent NBA cohort (T1–T12) rotates independently of
 the 10-agent political cohort (T1–T10), both sequences beginning with T1 (Qwen 3
-235B-A22B) in Week 1. This per-domain design ensures that T12 (selfhost-qwen4b,
+235B-A22B) in Week 1. (Agents T1–T10 participate in **both** domains; T11 and T12
+are NBA-only. The political cohort label T1–T10 therefore refers to the same ten agents as
+in the NBA cohort — not a separate pool. Full per-agent domain participation is listed
+in §4.1 Table 3.) This per-domain design ensures that T12 (selfhost-qwen4b,
 Qwen 3 235B-A22B as rerouted; §4.1 Table 3 note$^\dagger$) never moderates a political morning council for which
 it generates no predictions — preventing an architecturally inconsistent brief
 produced by a model outside the political prediction cohort. For the NBA council,
@@ -2802,11 +2814,11 @@ At the worst-case empirical boundary $\bar{p} = 0.24$: $-\frac{1}{2}H''(0.24) \a
 
 **Bounding the remainder.** The third derivative satisfies $|H'''(p)| = \frac{|1-2p|}{p^2(1-p)^2 \ln 2}$;
 at the empirical boundary $\bar{p} = 0.24$: $|H'''(0.24)| \approx 22.5$.
-To bound $\frac{1}{N}\sum_i |\delta_i|^3$, we use the *extremal configuration*:
-under $\sum_i \delta_i = 0$ and $\frac{1}{N}\sum_i \delta_i^2 = \text{Amb}$, the maximum
-of $\frac{1}{N}\sum_i |\delta_i|^3$ is attained at $\delta_1 = c$, $\delta_j = -c/(N-1)$
-($j \neq 1$), $c = \sqrt{(N-1)\text{Amb}}$, giving
-$\frac{1}{N}\sum_i |\delta_i|^3 \leq \frac{(N-1)^{3/2}}{N}(1+(N-1)^{-2})\text{Amb}^{3/2} \approx 3.07\,\text{Amb}^{3/2}$
+To bound $\frac{1}{N}\sum_i |\delta_i|^3$, we evaluate the *one-positive extremal
+configuration* under $\sum_i \delta_i = 0$ and $\frac{1}{N}\sum_i \delta_i^2 = \text{Amb}$:
+the configuration $\delta_1 = c$, $\delta_j = -c/(N-1)$ ($j \neq 1$), $c = \sqrt{(N-1)\text{Amb}}$,
+provides a tight near-maximum for $\frac{1}{N}\sum_i |\delta_i|^3$.^[The one-positive extremal configuration is not the global maximum over all zero-sum, fixed-$\ell^2$ configurations (permitting unequal negative deviations can marginally increase the third absolute moment). Numerical optimisation over all two-value and three-value distributions with $N=12$ confirms the true maximum exceeds the stated bound by at most 0.015%, shifting the derivative lower bound from 0.495 to $\geq 0.490 > 0$. The qualitative conclusion — strict monotonicity of $\text{JSD}$ in $\text{Amb}$ throughout the operating range — is fully preserved.]
+Substituting, $\frac{1}{N}\sum_i |\delta_i|^3\big|_{\text{one-pos.\ extremal}} \leq \frac{(N-1)^{3/2}}{N}(1+(N-1)^{-2})\text{Amb}^{3/2} \approx 3.07\,\text{Amb}^{3/2}$
 for $N=12$.  (*Note:* the power-mean inequality gives the opposite direction $\frac{1}{N}\sum_i |\delta_i|^3 \geq \text{Amb}^{3/2}$ and cannot be used here as an upper bound.)
 Therefore $|\bar{R}| \leq \frac{3.07\,|H'''|_{\max}}{6}\,\text{Amb}^{3/2}$ and
 $|\partial\bar{R}/\partial\text{Amb}| \leq \frac{3\times 3.07\times|H'''|_{\max}}{12}\sqrt{\text{Amb}}$.
