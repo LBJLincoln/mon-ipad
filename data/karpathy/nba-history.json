@@ -1,171 +1,116 @@
 [
   {
     "iteration": 1,
-    "brier": 0.266378,
+    "brier": 0.240566,
     "best_brier": 0.212183,
     "improved": false,
-    "mutation": "model: random_forest -> gradient_boosting",
-    "model_type": "gradient_boosting",
-    "n_features": 200,
-    "elapsed_seconds": 12.3,
-    "timestamp": "2026-06-20T04:51:37.230767+00:00"
-  },
-  {
-    "iteration": 2,
-    "brier": 0.222661,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "min_samples_leaf: 5 -> 6",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 3.9,
-    "timestamp": "2026-06-20T04:51:41.169371+00:00"
-  },
-  {
-    "iteration": 3,
-    "brier": 0.224017,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "add 5 features (now 205)",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.2,
-    "timestamp": "2026-06-20T04:51:45.329658+00:00"
-  },
-  {
-    "iteration": 4,
-    "brier": 0.223945,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "swap 10 features (total 200)",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.1,
-    "timestamp": "2026-06-20T04:51:49.454198+00:00"
-  },
-  {
-    "iteration": 5,
-    "brier": 0.22434,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "swap 10 features (total 200)",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.0,
-    "timestamp": "2026-06-20T04:51:53.488157+00:00"
-  },
-  {
-    "iteration": 6,
-    "brier": 0.22296,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "swap 10 features (total 200)",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 3.9,
-    "timestamp": "2026-06-20T04:51:57.338575+00:00"
-  },
-  {
-    "iteration": 7,
-    "brier": 0.224345,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "min_samples_leaf: 5 -> 2",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.3,
-    "timestamp": "2026-06-20T04:52:01.615284+00:00"
-  },
-  {
-    "iteration": 8,
-    "brier": 0.223077,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "remove 5 features (now 195)",
-    "model_type": "random_forest",
-    "n_features": 195,
-    "elapsed_seconds": 3.9,
-    "timestamp": "2026-06-20T04:52:05.481893+00:00"
-  },
-  {
-    "iteration": 9,
-    "brier": 0.22323,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "remove 5 features (now 195)",
-    "model_type": "random_forest",
-    "n_features": 195,
-    "elapsed_seconds": 3.9,
-    "timestamp": "2026-06-20T04:52:09.402294+00:00"
-  },
-  {
-    "iteration": 10,
-    "brier": 0.222818,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "max_depth: 13 -> 10",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 3.6,
-    "timestamp": "2026-06-20T04:52:13.039853+00:00"
-  },
-  {
-    "iteration": 11,
-    "brier": 1.0,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> catboost",
-    "model_type": "catboost",
-    "n_features": 200,
-    "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:52:13.050603+00:00"
-  },
-  {
-    "iteration": 12,
-    "brier": 0.220981,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> extra_trees",
-    "model_type": "extra_trees",
-    "n_features": 200,
-    "elapsed_seconds": 1.1,
-    "timestamp": "2026-06-20T04:52:14.175564+00:00"
-  },
-  {
-    "iteration": 13,
-    "brier": 0.265469,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> gradient_boosting",
-    "model_type": "gradient_boosting",
-    "n_features": 200,
-    "elapsed_seconds": 11.7,
-    "timestamp": "2026-06-20T04:52:25.885869+00:00"
-  },
-  {
-    "iteration": 14,
-    "brier": 0.255819,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> gradient_boosting",
-    "model_type": "gradient_boosting",
-    "n_features": 200,
-    "elapsed_seconds": 11.7,
-    "timestamp": "2026-06-20T04:52:37.579136+00:00"
-  },
-  {
-    "iteration": 15,
-    "brier": 0.23694,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
+    "mutation": "model: random_forest -> lightgbm",
     "model_type": "lightgbm",
     "n_features": 200,
     "elapsed_seconds": 0.4,
-    "timestamp": "2026-06-20T04:52:38.012059+00:00"
+    "timestamp": "2026-06-20T09:48:04.898943+00:00"
   },
   {
-    "iteration": 16,
+    "iteration": 2,
+    "brier": 0.223388,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "model: random_forest -> extra_trees",
+    "model_type": "extra_trees",
+    "n_features": 200,
+    "elapsed_seconds": 1.1,
+    "timestamp": "2026-06-20T09:48:05.956857+00:00"
+  },
+  {
+    "iteration": 3,
+    "brier": 0.225301,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "remove 5 features (now 195)",
+    "model_type": "random_forest",
+    "n_features": 195,
+    "elapsed_seconds": 3.5,
+    "timestamp": "2026-06-20T09:48:09.495257+00:00"
+  },
+  {
+    "iteration": 4,
+    "brier": 0.223716,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.8,
+    "timestamp": "2026-06-20T09:48:13.341953+00:00"
+  },
+  {
+    "iteration": 5,
+    "brier": 0.22325,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:48:16.967210+00:00"
+  },
+  {
+    "iteration": 6,
+    "brier": 0.223765,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "min_samples_leaf: 5 -> 7",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.5,
+    "timestamp": "2026-06-20T09:48:20.494972+00:00"
+  },
+  {
+    "iteration": 7,
+    "brier": 0.224322,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "n_estimators: 275 -> 225",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.0,
+    "timestamp": "2026-06-20T09:48:23.521637+00:00"
+  },
+  {
+    "iteration": 8,
+    "brier": 0.223952,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.7,
+    "timestamp": "2026-06-20T09:48:27.193031+00:00"
+  },
+  {
+    "iteration": 9,
+    "brier": 0.223567,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "remove 5 features (now 195)",
+    "model_type": "random_forest",
+    "n_features": 195,
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:48:30.791205+00:00"
+  },
+  {
+    "iteration": 10,
+    "brier": 0.223015,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.7,
+    "timestamp": "2026-06-20T09:48:34.463490+00:00"
+  },
+  {
+    "iteration": 11,
     "brier": 1.0,
     "best_brier": 0.212183,
     "improved": false,
@@ -173,29 +118,84 @@
     "model_type": "xgboost",
     "n_features": 200,
     "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:52:38.023221+00:00"
+    "timestamp": "2026-06-20T09:48:34.470194+00:00"
   },
   {
-    "iteration": 17,
-    "brier": 0.256687,
+    "iteration": 12,
+    "brier": 1.0,
     "best_brier": 0.212183,
     "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> gradient_boosting",
-    "model_type": "gradient_boosting",
+    "mutation": "STAGNATION swap 30 features + model -> catboost",
+    "model_type": "catboost",
     "n_features": 200,
-    "elapsed_seconds": 12.5,
-    "timestamp": "2026-06-20T04:52:50.490297+00:00"
+    "elapsed_seconds": 0.0,
+    "timestamp": "2026-06-20T09:48:34.476292+00:00"
   },
   {
-    "iteration": 18,
-    "brier": 0.221386,
+    "iteration": 13,
+    "brier": 0.222946,
     "best_brier": 0.212183,
     "improved": false,
     "mutation": "STAGNATION swap 30 features + model -> extra_trees",
     "model_type": "extra_trees",
     "n_features": 200,
-    "elapsed_seconds": 1.1,
-    "timestamp": "2026-06-20T04:52:51.605690+00:00"
+    "elapsed_seconds": 1.0,
+    "timestamp": "2026-06-20T09:48:35.502968+00:00"
+  },
+  {
+    "iteration": 14,
+    "brier": 1.0,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> xgboost",
+    "model_type": "xgboost",
+    "n_features": 200,
+    "elapsed_seconds": 0.0,
+    "timestamp": "2026-06-20T09:48:35.509575+00:00"
+  },
+  {
+    "iteration": 15,
+    "brier": 0.246751,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
+    "model_type": "lightgbm",
+    "n_features": 200,
+    "elapsed_seconds": 0.4,
+    "timestamp": "2026-06-20T09:48:35.925258+00:00"
+  },
+  {
+    "iteration": 16,
+    "brier": 0.24111,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
+    "model_type": "lightgbm",
+    "n_features": 200,
+    "elapsed_seconds": 0.4,
+    "timestamp": "2026-06-20T09:48:36.323687+00:00"
+  },
+  {
+    "iteration": 17,
+    "brier": 1.0,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> catboost",
+    "model_type": "catboost",
+    "n_features": 200,
+    "elapsed_seconds": 0.0,
+    "timestamp": "2026-06-20T09:48:36.330050+00:00"
+  },
+  {
+    "iteration": 18,
+    "brier": 0.2382,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
+    "model_type": "lightgbm",
+    "n_features": 200,
+    "elapsed_seconds": 0.4,
+    "timestamp": "2026-06-20T09:48:36.766474+00:00"
   },
   {
     "iteration": 19,
@@ -206,7 +206,7 @@
     "model_type": "catboost",
     "n_features": 200,
     "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:52:51.617162+00:00"
+    "timestamp": "2026-06-20T09:48:36.774086+00:00"
   },
   {
     "iteration": 20,
@@ -217,117 +217,117 @@
     "model_type": "catboost",
     "n_features": 200,
     "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:52:51.628930+00:00"
+    "timestamp": "2026-06-20T09:48:36.780270+00:00"
   },
   {
     "iteration": 21,
-    "brier": 0.222076,
+    "brier": 0.225037,
     "best_brier": 0.212183,
     "improved": false,
-    "mutation": "add 5 features (now 205)",
+    "mutation": "max_features_ratio: 0.32 -> 0.42",
     "model_type": "random_forest",
     "n_features": 200,
-    "elapsed_seconds": 4.4,
-    "timestamp": "2026-06-20T04:52:56.046275+00:00"
+    "elapsed_seconds": 4.8,
+    "timestamp": "2026-06-20T09:48:41.552402+00:00"
   },
   {
     "iteration": 22,
-    "brier": 0.25994,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "model: random_forest -> gradient_boosting",
-    "model_type": "gradient_boosting",
-    "n_features": 200,
-    "elapsed_seconds": 13.3,
-    "timestamp": "2026-06-20T04:53:09.327965+00:00"
-  },
-  {
-    "iteration": 23,
-    "brier": 0.222567,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "min_samples_leaf: 5 -> 6",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.3,
-    "timestamp": "2026-06-20T04:53:13.626645+00:00"
-  },
-  {
-    "iteration": 24,
-    "brier": 0.222978,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "swap 10 features (total 200)",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.3,
-    "timestamp": "2026-06-20T04:53:17.878352+00:00"
-  },
-  {
-    "iteration": 25,
-    "brier": 0.223712,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "min_samples_leaf: 5 -> 3",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.6,
-    "timestamp": "2026-06-20T04:53:22.458008+00:00"
-  },
-  {
-    "iteration": 26,
-    "brier": 0.222669,
+    "brier": 0.223065,
     "best_brier": 0.212183,
     "improved": false,
     "mutation": "remove 5 features (now 195)",
     "model_type": "random_forest",
     "n_features": 195,
-    "elapsed_seconds": 4.4,
-    "timestamp": "2026-06-20T04:53:26.823229+00:00"
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:48:45.128787+00:00"
   },
   {
-    "iteration": 27,
-    "brier": 0.223397,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "max_depth: 13 -> 10",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 3.9,
-    "timestamp": "2026-06-20T04:53:30.765907+00:00"
-  },
-  {
-    "iteration": 28,
-    "brier": 0.220495,
+    "iteration": 23,
+    "brier": 0.225097,
     "best_brier": 0.212183,
     "improved": false,
     "mutation": "swap 10 features (total 200)",
     "model_type": "random_forest",
     "n_features": 200,
-    "elapsed_seconds": 4.3,
-    "timestamp": "2026-06-20T04:53:35.061675+00:00"
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:48:48.745848+00:00"
+  },
+  {
+    "iteration": 24,
+    "brier": 0.224794,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "max_features_ratio: 0.32 -> 0.37",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 4.2,
+    "timestamp": "2026-06-20T09:48:52.981527+00:00"
+  },
+  {
+    "iteration": 25,
+    "brier": 0.224903,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "remove 5 features (now 195)",
+    "model_type": "random_forest",
+    "n_features": 195,
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:48:56.609557+00:00"
+  },
+  {
+    "iteration": 26,
+    "brier": 0.224416,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "add 5 features (now 205)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:49:00.238007+00:00"
+  },
+  {
+    "iteration": 27,
+    "brier": 0.225084,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.5,
+    "timestamp": "2026-06-20T09:49:03.771433+00:00"
+  },
+  {
+    "iteration": 28,
+    "brier": 0.225761,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "remove 5 features (now 195)",
+    "model_type": "random_forest",
+    "n_features": 195,
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:49:07.390606+00:00"
   },
   {
     "iteration": 29,
-    "brier": 0.223529,
+    "brier": 0.2247,
     "best_brier": 0.212183,
     "improved": false,
-    "mutation": "max_features_ratio: 0.32 -> 0.27",
+    "mutation": "remove 5 features (now 195)",
     "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 3.7,
-    "timestamp": "2026-06-20T04:53:38.772795+00:00"
+    "n_features": 195,
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:49:11.013002+00:00"
   },
   {
     "iteration": 30,
-    "brier": 0.221547,
+    "brier": 0.224503,
     "best_brier": 0.212183,
     "improved": false,
-    "mutation": "max_depth: 13 -> 11",
+    "mutation": "max_depth: 13 -> 16",
     "model_type": "random_forest",
     "n_features": 200,
-    "elapsed_seconds": 4.1,
-    "timestamp": "2026-06-20T04:53:42.916922+00:00"
+    "elapsed_seconds": 3.8,
+    "timestamp": "2026-06-20T09:49:14.833781+00:00"
   },
   {
     "iteration": 31,
@@ -338,43 +338,32 @@
     "model_type": "xgboost",
     "n_features": 200,
     "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:53:42.928176+00:00"
+    "timestamp": "2026-06-20T09:49:14.841781+00:00"
   },
   {
     "iteration": 32,
-    "brier": 0.265459,
+    "brier": 0.279542,
     "best_brier": 0.212183,
     "improved": false,
     "mutation": "STAGNATION swap 30 features + model -> gradient_boosting",
     "model_type": "gradient_boosting",
     "n_features": 200,
-    "elapsed_seconds": 13.2,
-    "timestamp": "2026-06-20T04:53:56.168164+00:00"
+    "elapsed_seconds": 12.1,
+    "timestamp": "2026-06-20T09:49:26.982295+00:00"
   },
   {
     "iteration": 33,
-    "brier": 0.223431,
+    "brier": 0.22381,
     "best_brier": 0.212183,
     "improved": false,
     "mutation": "STAGNATION swap 30 features + model -> extra_trees",
     "model_type": "extra_trees",
     "n_features": 200,
-    "elapsed_seconds": 1.1,
-    "timestamp": "2026-06-20T04:53:57.278766+00:00"
+    "elapsed_seconds": 1.0,
+    "timestamp": "2026-06-20T09:49:28.032246+00:00"
   },
   {
     "iteration": 34,
-    "brier": 0.21958,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> extra_trees",
-    "model_type": "extra_trees",
-    "n_features": 200,
-    "elapsed_seconds": 1.1,
-    "timestamp": "2026-06-20T04:53:58.419322+00:00"
-  },
-  {
-    "iteration": 35,
     "brier": 1.0,
     "best_brier": 0.212183,
     "improved": false,
@@ -382,10 +371,54 @@
     "model_type": "xgboost",
     "n_features": 200,
     "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:53:58.430539+00:00"
+    "timestamp": "2026-06-20T09:49:28.040996+00:00"
+  },
+  {
+    "iteration": 35,
+    "brier": 0.232401,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
+    "model_type": "lightgbm",
+    "n_features": 200,
+    "elapsed_seconds": 0.4,
+    "timestamp": "2026-06-20T09:49:28.450988+00:00"
   },
   {
     "iteration": 36,
+    "brier": 0.234546,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
+    "model_type": "lightgbm",
+    "n_features": 200,
+    "elapsed_seconds": 0.4,
+    "timestamp": "2026-06-20T09:49:28.865240+00:00"
+  },
+  {
+    "iteration": 37,
+    "brier": 0.223665,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> extra_trees",
+    "model_type": "extra_trees",
+    "n_features": 200,
+    "elapsed_seconds": 1.1,
+    "timestamp": "2026-06-20T09:49:29.920236+00:00"
+  },
+  {
+    "iteration": 38,
+    "brier": 0.263652,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "STAGNATION swap 30 features + model -> gradient_boosting",
+    "model_type": "gradient_boosting",
+    "n_features": 200,
+    "elapsed_seconds": 11.4,
+    "timestamp": "2026-06-20T09:49:41.300862+00:00"
+  },
+  {
+    "iteration": 39,
     "brier": 1.0,
     "best_brier": 0.212183,
     "improved": false,
@@ -393,160 +426,127 @@
     "model_type": "catboost",
     "n_features": 200,
     "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:53:58.441164+00:00"
-  },
-  {
-    "iteration": 37,
-    "brier": 0.23938,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
-    "model_type": "lightgbm",
-    "n_features": 200,
-    "elapsed_seconds": 0.4,
-    "timestamp": "2026-06-20T04:53:58.884949+00:00"
-  },
-  {
-    "iteration": 38,
-    "brier": 0.230337,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
-    "model_type": "lightgbm",
-    "n_features": 200,
-    "elapsed_seconds": 0.5,
-    "timestamp": "2026-06-20T04:53:59.345545+00:00"
-  },
-  {
-    "iteration": 39,
-    "brier": 0.24102,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> lightgbm",
-    "model_type": "lightgbm",
-    "n_features": 200,
-    "elapsed_seconds": 0.5,
-    "timestamp": "2026-06-20T04:53:59.817396+00:00"
+    "timestamp": "2026-06-20T09:49:41.309399+00:00"
   },
   {
     "iteration": 40,
-    "brier": 1.0,
+    "brier": 0.264374,
     "best_brier": 0.212183,
     "improved": false,
-    "mutation": "STAGNATION swap 30 features + model -> xgboost",
-    "model_type": "xgboost",
+    "mutation": "STAGNATION swap 30 features + model -> gradient_boosting",
+    "model_type": "gradient_boosting",
     "n_features": 200,
-    "elapsed_seconds": 0.0,
-    "timestamp": "2026-06-20T04:53:59.828586+00:00"
+    "elapsed_seconds": 10.9,
+    "timestamp": "2026-06-20T09:49:52.204046+00:00"
   },
   {
     "iteration": 41,
-    "brier": 0.218732,
+    "brier": 0.22515,
     "best_brier": 0.212183,
     "improved": false,
-    "mutation": "swap 10 features (total 200)",
+    "mutation": "n_estimators: 275 -> 225",
     "model_type": "random_forest",
     "n_features": 200,
-    "elapsed_seconds": 4.0,
-    "timestamp": "2026-06-20T04:54:03.786699+00:00"
+    "elapsed_seconds": 3.0,
+    "timestamp": "2026-06-20T09:49:55.229954+00:00"
   },
   {
     "iteration": 42,
-    "brier": 0.224129,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "remove 5 features (now 195)",
-    "model_type": "random_forest",
-    "n_features": 195,
-    "elapsed_seconds": 3.9,
-    "timestamp": "2026-06-20T04:54:07.690881+00:00"
-  },
-  {
-    "iteration": 43,
-    "brier": 0.224474,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "remove 5 features (now 195)",
-    "model_type": "random_forest",
-    "n_features": 195,
-    "elapsed_seconds": 3.8,
-    "timestamp": "2026-06-20T04:54:11.525964+00:00"
-  },
-  {
-    "iteration": 44,
-    "brier": 0.223388,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "model: random_forest -> extra_trees",
-    "model_type": "extra_trees",
-    "n_features": 200,
-    "elapsed_seconds": 1.1,
-    "timestamp": "2026-06-20T04:54:12.607093+00:00"
-  },
-  {
-    "iteration": 45,
-    "brier": 0.223388,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "model: random_forest -> extra_trees",
-    "model_type": "extra_trees",
-    "n_features": 200,
-    "elapsed_seconds": 1.1,
-    "timestamp": "2026-06-20T04:54:13.675006+00:00"
-  },
-  {
-    "iteration": 46,
-    "brier": 0.223566,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.32 -> 0.37",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.5,
-    "timestamp": "2026-06-20T04:54:18.178633+00:00"
-  },
-  {
-    "iteration": 47,
-    "brier": 0.224687,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "max_depth: 13 -> 12",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 3.9,
-    "timestamp": "2026-06-20T04:54:22.090345+00:00"
-  },
-  {
-    "iteration": 48,
-    "brier": 0.223253,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "max_depth: 13 -> 16",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 4.1,
-    "timestamp": "2026-06-20T04:54:26.190524+00:00"
-  },
-  {
-    "iteration": 49,
-    "brier": 0.223553,
-    "best_brier": 0.212183,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.32 -> 0.27",
-    "model_type": "random_forest",
-    "n_features": 200,
-    "elapsed_seconds": 3.4,
-    "timestamp": "2026-06-20T04:54:29.621392+00:00"
-  },
-  {
-    "iteration": 50,
-    "brier": 0.223517,
+    "brier": 0.223201,
     "best_brier": 0.212183,
     "improved": false,
     "mutation": "swap 10 features (total 200)",
     "model_type": "random_forest",
     "n_features": 200,
-    "elapsed_seconds": 4.1,
-    "timestamp": "2026-06-20T04:54:33.692714+00:00"
+    "elapsed_seconds": 3.8,
+    "timestamp": "2026-06-20T09:49:59.001946+00:00"
+  },
+  {
+    "iteration": 43,
+    "brier": 0.224794,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.7,
+    "timestamp": "2026-06-20T09:50:02.698450+00:00"
+  },
+  {
+    "iteration": 44,
+    "brier": 0.223242,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "remove 5 features (now 195)",
+    "model_type": "random_forest",
+    "n_features": 195,
+    "elapsed_seconds": 3.5,
+    "timestamp": "2026-06-20T09:50:06.236481+00:00"
+  },
+  {
+    "iteration": 45,
+    "brier": 0.221808,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.5,
+    "timestamp": "2026-06-20T09:50:09.732499+00:00"
+  },
+  {
+    "iteration": 46,
+    "brier": 0.222683,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "min_samples_leaf: 5 -> 6",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.6,
+    "timestamp": "2026-06-20T09:50:13.304563+00:00"
+  },
+  {
+    "iteration": 47,
+    "brier": 0.225371,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "n_estimators: 275 -> 325",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 4.3,
+    "timestamp": "2026-06-20T09:50:17.639524+00:00"
+  },
+  {
+    "iteration": 48,
+    "brier": 0.22507,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "n_estimators: 275 -> 300",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 4.0,
+    "timestamp": "2026-06-20T09:50:21.616039+00:00"
+  },
+  {
+    "iteration": 49,
+    "brier": 0.222875,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "swap 10 features (total 200)",
+    "model_type": "random_forest",
+    "n_features": 200,
+    "elapsed_seconds": 3.7,
+    "timestamp": "2026-06-20T09:50:25.328011+00:00"
+  },
+  {
+    "iteration": 50,
+    "brier": 0.234391,
+    "best_brier": 0.212183,
+    "improved": false,
+    "mutation": "model: random_forest -> lightgbm",
+    "model_type": "lightgbm",
+    "n_features": 200,
+    "elapsed_seconds": 0.4,
+    "timestamp": "2026-06-20T09:50:25.737063+00:00"
   }
 ]
