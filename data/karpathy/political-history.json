@@ -1,6 +1,17 @@
 [
   {
     "iteration": 1,
+    "brier": 0.204786,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "n_estimators: 50 -> 150",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.2,
+    "timestamp": "2026-08-27T09:44:54.063191+00:00"
+  },
+  {
+    "iteration": 2,
     "brier": 0.201058,
     "best_brier": 0.190299,
     "improved": false,
@@ -8,65 +19,87 @@
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:41.919940+00:00"
-  },
-  {
-    "iteration": 2,
-    "brier": 0.201832,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "n_estimators: 50 -> 100",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.2,
-    "timestamp": "2026-08-26T20:14:42.115904+00:00"
+    "timestamp": "2026-08-27T09:44:54.161161+00:00"
   },
   {
     "iteration": 3,
-    "brier": 0.20871,
+    "brier": 0.24078,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "model: random_forest -> lightgbm",
-    "model_type": "lightgbm",
-    "n_features": 70,
-    "elapsed_seconds": 0.0,
-    "timestamp": "2026-08-26T20:14:42.158184+00:00"
+    "mutation": "remove 5 features (now 65)",
+    "model_type": "random_forest",
+    "n_features": 65,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:54.245548+00:00"
   },
   {
     "iteration": 4,
-    "brier": 0.207041,
+    "brier": 0.190299,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "max_depth: 7 -> 5",
+    "mutation": "n_estimators: 50 -> 50",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.257625+00:00"
+    "timestamp": "2026-08-27T09:44:54.344416+00:00"
   },
   {
     "iteration": 5,
-    "brier": 0.24641,
+    "brier": 0.232608,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "model: random_forest -> extra_trees",
+    "model_type": "extra_trees",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:54.409060+00:00"
+  },
+  {
+    "iteration": 6,
+    "brier": 0.200715,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "n_estimators: 50 -> 75",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:54.542759+00:00"
+  },
+  {
+    "iteration": 7,
+    "brier": 0.216122,
     "best_brier": 0.190299,
     "improved": false,
     "mutation": "swap 10 features (total 70)",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.358130+00:00"
+    "timestamp": "2026-08-27T09:44:54.631700+00:00"
   },
   {
-    "iteration": 6,
-    "brier": 0.217015,
+    "iteration": 8,
+    "brier": 0.225502,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.42",
+    "mutation": "min_samples_leaf: 1 -> 4",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.467105+00:00"
+    "timestamp": "2026-08-27T09:44:54.721856+00:00"
   },
   {
-    "iteration": 7,
+    "iteration": 9,
+    "brier": 0.210675,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "add 5 features (now 75)",
+    "model_type": "random_forest",
+    "n_features": 75,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:54.822337+00:00"
+  },
+  {
+    "iteration": 10,
     "brier": 0.190299,
     "best_brier": 0.190299,
     "improved": false,
@@ -74,120 +107,164 @@
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.566712+00:00"
-  },
-  {
-    "iteration": 8,
-    "brier": 0.245077,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "swap 10 features (total 70)",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.676102+00:00"
-  },
-  {
-    "iteration": 9,
-    "brier": 0.20301,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_depth: 7 -> 9",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.789980+00:00"
-  },
-  {
-    "iteration": 10,
-    "brier": 0.223466,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "swap 10 features (total 70)",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.895434+00:00"
+    "timestamp": "2026-08-27T09:44:54.918515+00:00"
   },
   {
     "iteration": 11,
-    "brier": 0.219985,
+    "brier": 0.222744,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "remove 5 features (now 65)",
+    "mutation": "max_depth: 7 -> 4",
     "model_type": "random_forest",
-    "n_features": 65,
+    "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:42.995863+00:00"
+    "timestamp": "2026-08-27T09:44:54.996139+00:00"
   },
   {
     "iteration": 12,
     "brier": 0.190299,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "n_estimators: 50 -> 50",
+    "mutation": "min_samples_leaf: 1 -> 1",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:43.107287+00:00"
+    "timestamp": "2026-08-27T09:44:55.095496+00:00"
   },
   {
     "iteration": 13,
-    "brier": 0.201058,
+    "brier": 0.200986,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "min_samples_leaf: 1 -> 2",
+    "mutation": "max_depth: 7 -> 10",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:43.206928+00:00"
+    "timestamp": "2026-08-27T09:44:55.193341+00:00"
   },
   {
     "iteration": 14,
-    "brier": 0.201832,
+    "brier": 0.225524,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "n_estimators: 50 -> 100",
+    "mutation": "max_features_ratio: 0.4 -> 0.5",
     "model_type": "random_forest",
     "n_features": 70,
-    "elapsed_seconds": 0.2,
-    "timestamp": "2026-08-26T20:14:43.399771+00:00"
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:55.291389+00:00"
   },
   {
     "iteration": 15,
-    "brier": 0.20871,
+    "brier": 0.190299,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "model: random_forest -> lightgbm",
-    "model_type": "lightgbm",
+    "mutation": "min_samples_leaf: 1 -> 1",
+    "model_type": "random_forest",
     "n_features": 70,
-    "elapsed_seconds": 0.0,
-    "timestamp": "2026-08-26T20:14:43.439608+00:00"
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:55.379989+00:00"
   },
   {
     "iteration": 16,
-    "brier": 0.222165,
+    "brier": 0.206211,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "add 5 features (now 75)",
+    "model_type": "random_forest",
+    "n_features": 75,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:55.473787+00:00"
+  },
+  {
+    "iteration": 17,
+    "brier": 0.213274,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "swap 10 features (total 70)",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:55.568561+00:00"
+  },
+  {
+    "iteration": 18,
+    "brier": 0.200986,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "max_depth: 7 -> 10",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:55.664622+00:00"
+  },
+  {
+    "iteration": 19,
+    "brier": 0.207697,
     "best_brier": 0.190299,
     "improved": false,
     "mutation": "remove 5 features (now 65)",
     "model_type": "random_forest",
     "n_features": 65,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:43.543539+00:00"
+    "timestamp": "2026-08-27T09:44:55.758460+00:00"
   },
   {
-    "iteration": 17,
-    "brier": 0.20871,
+    "iteration": 20,
+    "brier": 0.236661,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "model: random_forest -> lightgbm",
-    "model_type": "lightgbm",
-    "n_features": 70,
-    "elapsed_seconds": 0.0,
-    "timestamp": "2026-08-26T20:14:43.582125+00:00"
+    "mutation": "add 5 features (now 75)",
+    "model_type": "random_forest",
+    "n_features": 75,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:55.853559+00:00"
   },
   {
-    "iteration": 18,
+    "iteration": 21,
+    "brier": 0.225502,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "min_samples_leaf: 1 -> 4",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:55.943021+00:00"
+  },
+  {
+    "iteration": 22,
+    "brier": 0.235996,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "swap 10 features (total 70)",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:56.039338+00:00"
+  },
+  {
+    "iteration": 23,
+    "brier": 0.190299,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "min_samples_leaf: 1 -> 1",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:56.127849+00:00"
+  },
+  {
+    "iteration": 24,
+    "brier": 0.232608,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "model: random_forest -> extra_trees",
+    "model_type": "extra_trees",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:56.191297+00:00"
+  },
+  {
+    "iteration": 25,
     "brier": 0.206818,
     "best_brier": 0.190299,
     "improved": false,
@@ -195,95 +272,18 @@
     "model_type": "gradient_boosting",
     "n_features": 70,
     "elapsed_seconds": 0.2,
-    "timestamp": "2026-08-26T20:14:43.825859+00:00"
-  },
-  {
-    "iteration": 19,
-    "brier": 0.225018,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "remove 5 features (now 65)",
-    "model_type": "random_forest",
-    "n_features": 65,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:43.935037+00:00"
-  },
-  {
-    "iteration": 20,
-    "brier": 0.230292,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "remove 5 features (now 65)",
-    "model_type": "random_forest",
-    "n_features": 65,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.036353+00:00"
-  },
-  {
-    "iteration": 21,
-    "brier": 0.223569,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.38",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.138716+00:00"
-  },
-  {
-    "iteration": 22,
-    "brier": 0.226424,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "remove 5 features (now 65)",
-    "model_type": "random_forest",
-    "n_features": 65,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.238581+00:00"
-  },
-  {
-    "iteration": 23,
-    "brier": 0.250432,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "swap 10 features (total 70)",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.347581+00:00"
-  },
-  {
-    "iteration": 24,
-    "brier": 0.233668,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "add 5 features (now 75)",
-    "model_type": "random_forest",
-    "n_features": 75,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.458870+00:00"
-  },
-  {
-    "iteration": 25,
-    "brier": 0.224725,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "swap 10 features (total 70)",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.560984+00:00"
+    "timestamp": "2026-08-27T09:44:56.401199+00:00"
   },
   {
     "iteration": 26,
-    "brier": 0.190299,
+    "brier": 0.217015,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "n_estimators: 50 -> 50",
+    "mutation": "max_features_ratio: 0.4 -> 0.42",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.671737+00:00"
+    "timestamp": "2026-08-27T09:44:56.499053+00:00"
   },
   {
     "iteration": 27,
@@ -294,7 +294,7 @@
     "model_type": "lightgbm",
     "n_features": 70,
     "elapsed_seconds": 0.0,
-    "timestamp": "2026-08-26T20:14:44.711631+00:00"
+    "timestamp": "2026-08-27T09:44:56.535737+00:00"
   },
   {
     "iteration": 28,
@@ -305,65 +305,21 @@
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.814962+00:00"
+    "timestamp": "2026-08-27T09:44:56.623509+00:00"
   },
   {
     "iteration": 29,
-    "brier": 0.223543,
+    "brier": 0.213989,
     "best_brier": 0.190299,
     "improved": false,
     "mutation": "swap 10 features (total 70)",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:44.912039+00:00"
+    "timestamp": "2026-08-27T09:44:56.721632+00:00"
   },
   {
     "iteration": 30,
-    "brier": 0.225524,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.5",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.032621+00:00"
-  },
-  {
-    "iteration": 31,
-    "brier": 0.190299,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "n_estimators: 50 -> 50",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.136871+00:00"
-  },
-  {
-    "iteration": 32,
-    "brier": 0.218535,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "remove 5 features (now 65)",
-    "model_type": "random_forest",
-    "n_features": 65,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.242190+00:00"
-  },
-  {
-    "iteration": 33,
-    "brier": 0.224416,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "add 5 features (now 75)",
-    "model_type": "random_forest",
-    "n_features": 75,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.353827+00:00"
-  },
-  {
-    "iteration": 34,
     "brier": 0.232608,
     "best_brier": 0.190299,
     "improved": false,
@@ -371,120 +327,76 @@
     "model_type": "extra_trees",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.420893+00:00"
+    "timestamp": "2026-08-27T09:44:56.784893+00:00"
+  },
+  {
+    "iteration": 31,
+    "brier": 0.223569,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "max_features_ratio: 0.4 -> 0.38",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:56.875846+00:00"
+  },
+  {
+    "iteration": 32,
+    "brier": 0.217015,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "max_features_ratio: 0.4 -> 0.42",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:56.961249+00:00"
+  },
+  {
+    "iteration": 33,
+    "brier": 0.219301,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "remove 5 features (now 65)",
+    "model_type": "random_forest",
+    "n_features": 65,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:57.045471+00:00"
+  },
+  {
+    "iteration": 34,
+    "brier": 0.231126,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "swap 10 features (total 70)",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:57.142313+00:00"
   },
   {
     "iteration": 35,
-    "brier": 0.223569,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.38",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.531557+00:00"
-  },
-  {
-    "iteration": 36,
-    "brier": 0.223569,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.38",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.639856+00:00"
-  },
-  {
-    "iteration": 37,
-    "brier": 0.215815,
+    "brier": 0.219839,
     "best_brier": 0.190299,
     "improved": false,
     "mutation": "add 5 features (now 75)",
     "model_type": "random_forest",
     "n_features": 75,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.753415+00:00"
+    "timestamp": "2026-08-27T09:44:57.237062+00:00"
   },
   {
-    "iteration": 38,
-    "brier": 0.20301,
+    "iteration": 36,
+    "brier": 0.229727,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "max_depth: 7 -> 9",
+    "mutation": "remove 5 features (now 65)",
     "model_type": "random_forest",
-    "n_features": 70,
+    "n_features": 65,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.853774+00:00"
+    "timestamp": "2026-08-27T09:44:57.321272+00:00"
   },
   {
-    "iteration": 39,
-    "brier": 0.213069,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.45",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:45.963269+00:00"
-  },
-  {
-    "iteration": 40,
-    "brier": 0.233775,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.3",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:46.056983+00:00"
-  },
-  {
-    "iteration": 41,
-    "brier": 0.201058,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "min_samples_leaf: 1 -> 2",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:46.164822+00:00"
-  },
-  {
-    "iteration": 42,
-    "brier": 0.233775,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.3",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:46.262976+00:00"
-  },
-  {
-    "iteration": 43,
-    "brier": 0.223569,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.38",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:46.363969+00:00"
-  },
-  {
-    "iteration": 44,
-    "brier": 0.201832,
-    "best_brier": 0.190299,
-    "improved": false,
-    "mutation": "n_estimators: 50 -> 100",
-    "model_type": "random_forest",
-    "n_features": 70,
-    "elapsed_seconds": 0.2,
-    "timestamp": "2026-08-26T20:14:46.564884+00:00"
-  },
-  {
-    "iteration": 45,
+    "iteration": 37,
     "brier": 0.204786,
     "best_brier": 0.190299,
     "improved": false,
@@ -492,10 +404,54 @@
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.3,
-    "timestamp": "2026-08-26T20:14:46.849538+00:00"
+    "timestamp": "2026-08-27T09:44:57.574395+00:00"
   },
   {
-    "iteration": 46,
+    "iteration": 38,
+    "brier": 0.210656,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "add 5 features (now 75)",
+    "model_type": "random_forest",
+    "n_features": 75,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:57.660413+00:00"
+  },
+  {
+    "iteration": 39,
+    "brier": 0.255655,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "swap 10 features (total 70)",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:57.756008+00:00"
+  },
+  {
+    "iteration": 40,
+    "brier": 0.20311,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "max_depth: 7 -> 6",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:57.848417+00:00"
+  },
+  {
+    "iteration": 41,
+    "brier": 0.206818,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "model: random_forest -> gradient_boosting",
+    "model_type": "gradient_boosting",
+    "n_features": 70,
+    "elapsed_seconds": 0.2,
+    "timestamp": "2026-08-27T09:44:58.054149+00:00"
+  },
+  {
+    "iteration": 42,
     "brier": 0.200715,
     "best_brier": 0.190299,
     "improved": false,
@@ -503,50 +459,94 @@
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:46.996173+00:00"
+    "timestamp": "2026-08-27T09:44:58.186457+00:00"
   },
   {
-    "iteration": 47,
-    "brier": 0.214983,
+    "iteration": 43,
+    "brier": 0.202946,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "max_depth: 7 -> 8",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:58.281834+00:00"
+  },
+  {
+    "iteration": 44,
+    "brier": 0.190299,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "n_estimators: 50 -> 50",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:58.378338+00:00"
+  },
+  {
+    "iteration": 45,
+    "brier": 0.235202,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "swap 10 features (total 70)",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:58.465978+00:00"
+  },
+  {
+    "iteration": 46,
+    "brier": 0.215546,
     "best_brier": 0.190299,
     "improved": false,
     "mutation": "remove 5 features (now 65)",
     "model_type": "random_forest",
     "n_features": 65,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:47.096279+00:00"
+    "timestamp": "2026-08-27T09:44:58.554025+00:00"
+  },
+  {
+    "iteration": 47,
+    "brier": 0.217063,
+    "best_brier": 0.190299,
+    "improved": false,
+    "mutation": "swap 10 features (total 70)",
+    "model_type": "random_forest",
+    "n_features": 70,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:58.649315+00:00"
   },
   {
     "iteration": 48,
-    "brier": 0.225524,
+    "brier": 0.222141,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "max_features_ratio: 0.4 -> 0.5",
+    "mutation": "swap 10 features (total 70)",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:47.220610+00:00"
+    "timestamp": "2026-08-27T09:44:58.746422+00:00"
   },
   {
     "iteration": 49,
-    "brier": 0.20301,
+    "brier": 0.217291,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "max_depth: 7 -> 9",
+    "mutation": "swap 10 features (total 70)",
     "model_type": "random_forest",
     "n_features": 70,
     "elapsed_seconds": 0.1,
-    "timestamp": "2026-08-26T20:14:47.326755+00:00"
+    "timestamp": "2026-08-27T09:44:58.832343+00:00"
   },
   {
     "iteration": 50,
-    "brier": 0.20871,
+    "brier": 0.208826,
     "best_brier": 0.190299,
     "improved": false,
-    "mutation": "model: random_forest -> lightgbm",
-    "model_type": "lightgbm",
-    "n_features": 70,
-    "elapsed_seconds": 0.0,
-    "timestamp": "2026-08-26T20:14:47.367390+00:00"
+    "mutation": "add 5 features (now 75)",
+    "model_type": "random_forest",
+    "n_features": 75,
+    "elapsed_seconds": 0.1,
+    "timestamp": "2026-08-27T09:44:58.927708+00:00"
   }
 ]
